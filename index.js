@@ -10,7 +10,7 @@ var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var ncp = require('ncp').ncp
 
-var latest = '0.22.1'
+var latest = '0.22.3'
 
 module.exports = function packager (opts, cb) {
   if (!opts.version) opts.version = latest
