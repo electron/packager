@@ -9,7 +9,7 @@ For an example project using this, check out [Monu](https://github.com/maxogden/
 ### installation
 
 ```
-npm i atom-shell-packager
+npm i atom-shell-packager -g
 ```
 
 ### usage
