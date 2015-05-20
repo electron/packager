@@ -28,7 +28,11 @@ module.exports = {
     }
 
     function copyUserApp () {
-      ncp(opts.dir, userAppDir, {filter: userFilter}, function copied (err) {
+      var ncpOpts = {
+        dereference: opts.dereference || false,
+        filter: userFilter
+      }
+      ncp(opts.dir, userAppDir, ncpOpts, function copied (err) {
         if (err) return cb(err)
         if (opts.prune) {
           prune(function pruned (err) {
