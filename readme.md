@@ -41,8 +41,11 @@ helper-bundle-id   bundle identifier to use in the app helper plist
 ignore             do not copy files into App whose filenames regex .match this string
 prune              runs `npm prune --production` on the app
 asar               packages the source code within your app into an archive
+deference          If set to true, the build will follow symbolic links. For example, a symlink in the source tree pointing to a regular file will become a regular file in the destination tree.
 sign               should contain the identity to be used when running `codesign` (OS X only)
 ```
+
+
 
 This will:
 
