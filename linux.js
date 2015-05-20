@@ -29,7 +29,7 @@ module.exports = {
 
     function copyUserApp () {
       var ncpOpts = {
-        dereference : opts.dereference || false,
+        dereference: opts.dereference || false,
         filter: userFilter
       }
       ncp(opts.dir, userAppDir, ncpOpts, function copied (err) {
