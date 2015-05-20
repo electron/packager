@@ -13,6 +13,7 @@ module.exports = {
   createApp: function createApp (opts, electronApp, cb) {
     var tmpDir = path.join(os.tmpdir(), 'electron-packager-windows')
 
+
     var newApp = path.join(tmpDir, opts.name + '-win32')
     // reset build folders + copy template app
     rimraf(tmpDir, function rmrfd () {
@@ -61,8 +62,13 @@ function buildWinApp (opts, cb, newApp) {
     return true
   }
 
+    var ncpOpts = {
+      dereference : opts.dereference || false,
+      filter: filter
+    }
+
   // copy users app into .app
-  ncp(opts.dir, paths.app, {filter: filter}, function copied (err) {
+  ncp(opts.dir, paths.app, ncpOpts, function copied (err) {
     if (err) return cb(err)
 
     if (opts.prune) {

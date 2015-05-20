@@ -79,8 +79,13 @@ function buildMacApp (opts, cb, newApp) {
     return true
   }
 
+    var ncpOpts = {
+      dereference : opts.dereference || false,
+      filter: filter
+    }
+
   // copy users app into .app
-  ncp(opts.dir, paths.app, {filter: filter}, function copied (err) {
+  ncp(opts.dir, paths.app, ncpOpts, function copied (err) {
     if (err) return cb(err)
 
     if (opts.prune) {
