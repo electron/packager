@@ -32,9 +32,32 @@ module.exports = function packager (opts, cb) {
   }
 
   // Ignore this and related modules by default
-  var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)']
+  var defaultIgnores = [
+    '(^|/)\.git$',
+    '^node_modules/electron-prebuilt$',
+    '^node_modules/electron-packager$',
+    '^node_modules/electron-rebuild$'
+  ]
   if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
   opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+
+  opts.ignoreFilter = function (file) {
+    // strip the fromDir from the file path
+    file = file.substring(opts.dir.length + 1)
+
+    // convert slashes so unix-format ignores work
+    file = file.replace(/\\/g, '/')
+
+    var ignore = opts.ignore || []
+    if (!Array.isArray(ignore)) ignore = [ignore]
+    for (var i = 0; i < ignore.length; i++) {
+      if (file.match(ignore[i])) {
+        console.log('Ignoring:', file)
+        return false
+      }
+    }
+    return true
+  }
 
   download({
     platform: platform,

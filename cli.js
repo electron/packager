@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 var fs = require('fs')
+var path = require('path')
 var args = require('minimist')(process.argv.slice(2), {boolean: ['prune', 'asar']})
 var packager = require('./')
 var usage = fs.readFileSync(__dirname + '/usage.txt').toString()
 
-args.dir = args._[0]
+args.dir = path.resolve(args._[0])
 args.name = args._[1]
 
 var protocolSchemes = [].concat(args.protocol || [])
