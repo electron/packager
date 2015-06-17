@@ -59,7 +59,7 @@ function buildWinApp (opts, cb, newApp) {
       copy(newApp, finalPath, function moved (err) {
         if (err) return cb(err)
         if (opts.asar) {
-          var finalPath = path.join(opts.out || process.cwd(), opts.name + '-win32', 'resources')
+          var finalPath = path.join(opts.out || process.cwd(), opts.name + '-win32')
           common.asarApp(finalPath, function (err) {
             if (err) return cb(err)
             updateIcon()
