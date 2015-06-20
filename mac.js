@@ -68,8 +68,8 @@ function buildMacApp (opts, cb, newApp) {
   fs.writeFileSync(paths.info1, plist.build(pl1))
   fs.writeFileSync(paths.info2, plist.build(pl2))
 
-  // copy users app into .app
-  ncp(opts.dir, paths.app, {filter: common.userIgnoreFilter(opts), dereference: true}, function copied (err) {
+  // copy users files into .app
+  ncp(opts.files, paths.app, {dereference: true}, function copied (err) {
     if (err) return cb(err)
 
     function moveApp () {
