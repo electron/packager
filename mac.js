@@ -35,7 +35,7 @@ function buildMacApp (opts, cb, newApp) {
   var paths = {
     info1: path.join(newApp, 'Contents', 'Info.plist'),
     info2: path.join(newApp, 'Contents', 'Frameworks', 'Electron Helper.app', 'Contents', 'Info.plist'),
-    app: path.join(newApp, 'Contents', 'Resources', 'app')
+    app: path.join(newApp, 'Contents', 'Resources', 'resources', 'app')
   }
 
   // update plist files
