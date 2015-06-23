@@ -15,8 +15,12 @@ module.exports = function packager (opts, cb) {
   var platform = opts.platform
   var arch = opts.arch
   var version = opts.version
+  var config = require(__dirname + '/package.json').config
 
-  if (!platform || !arch || !version) cb(new Error('Must specify platform, arch and version'))
+  if (!platform) cb(new Error('Please specify a platform with --platform=, see --help'))
+  if (!arch) cb(new Error('Please specify a arch with --arch=, see --help'))
+  if (!version) cb(new Error('Please specify an Electron version with --version=, see --help'))
+  if (!config) cb(new Error('Please specify a package.json for your app'))
 
   switch (arch) {
     case 'ia32': break
@@ -31,10 +35,11 @@ module.exports = function packager (opts, cb) {
     default: return cb(new Error('Unsupported platform. Must be either darwin, linux, or win32'))
   }
 
-  // Ignore this and related modules by default
-  var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)']
-  if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-  opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+  // Only include files specified
+  var defaultFiles = ['package.json']
+  opts.files = (defaultFiles + config.files).map(function (item) {
+    path.join(opts.dir, item)
+  })
 
   download({
     platform: platform,

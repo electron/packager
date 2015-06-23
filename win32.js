@@ -49,8 +49,8 @@ function buildWinApp (opts, cb, newApp) {
     app: path.join(newApp, 'resources', 'app')
   }
 
-  // copy users app into destination path
-  ncp(opts.dir, paths.app, {filter: common.userIgnoreFilter(opts, true), dereference: true}, function copied (err) {
+  // copy users files into destination path
+  ncp(opts.files, paths.app, {dereference: true}, function copied (err) {
     if (err) return cb(err)
 
     function moveApp () {
