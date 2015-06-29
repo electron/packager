@@ -21,7 +21,7 @@ npm i electron-packager -g
 ### usage
 
 ```
-Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<version>
+Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<version> --version-string.<property>=<value>
   
 Required options
 
@@ -29,7 +29,7 @@ platform           linux, win32, darwin
 arch               ia32, x64
 version            see https://github.com/atom/electron/releases
                   
-Example            electron-packager ./ FooBar --platform=darwin --arch=x64 --version=0.25.1
+Example            electron-packager ./ FooBar --platform=darwin --arch=x64 --version=0.25.1 --version-string.CompanyName="Company Inc" --version-string.ProductName="Product"
 
 Optional options
 
