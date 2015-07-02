@@ -7,6 +7,8 @@ var extract = require('extract-zip')
 var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var series = require('run-series')
+var resolve = require('resolve')
+var getPackageInfo = require('get-package-info')
 var common = require('./common')
 
 var supportedArchs = {
@@ -60,6 +62,32 @@ function validateList (list, supported, name) {
   }
 
   return list
+}
+
+function getNameAndVersion (opts, dir, cb) {
+  var props = []
+  if (!opts.name) props.push(['productName', 'name'])
+  if (!opts.version) props.push(['dependencies.electron-prebuilt', 'devDependencies.electron-prebuilt'])
+
+  // Name and version provided, no need to infer
+  if (props.length === 0) return cb(null)
+
+  // Search package.json files to infer name and version from
+  getPackageInfo(props, dir, function (err, result) {
+    if (err) return cb(err)
+    if (result.values.productName) opts.name = result.values.productName
+    if (result.values['dependencies.electron-prebuilt']) {
+      resolve('electron-prebuilt', {
+        basedir: path.dirname(result.source['dependencies.electron-prebuilt'].src)
+      }, function (err, res, pkg) {
+        if (err) return cb(err)
+        opts.version = pkg.version
+        return cb(null)
+      })
+    } else {
+      return cb(null)
+    }
+  })
 }
 
 function createSeries (opts, archs, platforms) {
@@ -151,21 +179,27 @@ function createSeries (opts, archs, platforms) {
 module.exports = function packager (opts, cb) {
   var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
   var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
-  if (!opts.version) return cb(new Error('Must specify version'))
   if (!Array.isArray(archs)) return cb(new Error(archs))
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
 
-  // Ignore this and related modules by default
-  var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\\.git($|/)', '/node_modules/\\.bin($|/)']
-  if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-  opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+  getNameAndVersion(opts, opts.dir || process.cwd(), function (err) {
+    if (err) {
+      err.message = 'Unable to infer name or version. Please specify a name and version.\n' + err.message
+      return cb(err)
+    }
+    // Ignore this and related modules by default
+    var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)', '/node_modules/\\.bin($|/)']
+    if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
+    opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
 
-  series(createSeries(opts, archs, platforms), function (err, appPaths) {
-    if (err) return cb(err)
+    series(createSeries(opts, archs, platforms), function (err, appPaths) {
+      if (err) return cb(err)
 
-    cb(null, appPaths.filter(function (appPath) {
-      // Remove falsy entries (e.g. skipped platforms)
-      return appPath
-    }))
+      cb(null, appPaths.filter(function (appPath) {
+        // Remove falsy entries (e.g. skipped platforms)
+        return appPath
+      }))
+    })
   })
+
 }
