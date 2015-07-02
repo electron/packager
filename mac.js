@@ -33,6 +33,7 @@ module.exports = {
 
       if (appVersion) {
         appPlist.CFBundleVersion = appVersion
+        appPlist.CFBundleShortVersionString = appVersion
       }
 
       if (opts.protocols) {
