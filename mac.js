@@ -75,7 +75,7 @@ module.exports = {
 
       if (opts.sign) {
         operations.push(function (cb) {
-          child.exec('codesign --deep --force --sign "' + opts.sign + '" ' + finalAppPath, cb)
+          child.exec('codesign --deep --force --sign "' + opts.sign + '" "' + finalAppPath + '"', cb)
         })
       }
 
