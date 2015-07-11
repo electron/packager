@@ -9,18 +9,20 @@ var waterfall = require('run-waterfall')
 var config = require('./config.json')
 var util = require('./util')
 
+var baseOpts = {
+  name: 'basicTest',
+  dir: path.join(__dirname, 'fixtures', 'basic'),
+  version: config.version,
+  arch: 'x64',
+  platform: 'darwin'
+}
+
 function createIconTest (icon, iconPath) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = {
-      name: 'basicTest',
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      version: config.version,
-      arch: 'x64',
-      platform: 'darwin',
-      icon: icon
-    }
+    var opts = Object.create(baseOpts)
+    opts.icon = icon
 
     var resourcesPath
 
@@ -43,6 +45,46 @@ function createIconTest (icon, iconPath) {
   }
 }
 
+util.setup()
+test('helper app paths test', function (t) {
+  t.timeoutAfter(config.timeout)
+
+  function getHelperExecutablePath (helperName) {
+    return path.join(helperName + '.app', 'Contents', 'MacOS', helperName)
+  }
+
+  var opts = Object.create(baseOpts)
+  var frameworksPath
+
+  waterfall([
+    function (cb) {
+      packager(opts, cb)
+    }, function (paths, cb) {
+      frameworksPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Frameworks')
+      // main Helper.app is already tested in basic test suite; test its executable and the other helpers
+      fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper')), cb)
+    }, function (stats, cb) {
+      t.true(stats.isFile(), 'The Helper.app executable should reflect opts.name')
+      fs.stat(path.join(frameworksPath, opts.name + ' Helper EH.app'), cb)
+    }, function (stats, cb) {
+      t.true(stats.isDirectory(), 'The Helper EH.app should reflect opts.name')
+      fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper EH')), cb)
+    }, function (stats, cb) {
+      t.true(stats.isFile(), 'The Helper EH.app executable should reflect opts.name')
+      fs.stat(path.join(frameworksPath, opts.name + ' Helper NP.app'), cb)
+    }, function (stats, cb) {
+      t.true(stats.isDirectory(), 'The Helper NP.app should reflect opts.name')
+      fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper NP')), cb)
+    }, function (stats, cb) {
+      t.true(stats.isFile(), 'The Helper NP.app executable should reflect opts.name')
+      cb()
+    }
+  ], function (err) {
+    t.end(err)
+  })
+})
+util.teardown()
+
 var iconBase = path.join(__dirname, 'fixtures', 'monochrome')
 var icnsPath = iconBase + '.icns'
 util.setup()
@@ -61,14 +103,8 @@ util.setup()
 test('codesign test', function (t) {
   t.timeoutAfter(config.timeout)
 
-  var opts = {
-    name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
-    version: config.version,
-    arch: 'x64',
-    platform: 'darwin',
-    sign: '-' // Ad-hoc
-  }
+  var opts = Object.create(baseOpts)
+  opts.sign = '-' // Ad-hoc
 
   var appPath
 
