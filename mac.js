@@ -95,7 +95,8 @@ module.exports = {
         })
       }
 
-      series(operations, function () {
+      series(operations, function (err) {
+        if (err) return callback(err)
         common.moveApp(opts, tempPath, callback)
       })
     })
