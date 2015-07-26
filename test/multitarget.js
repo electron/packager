@@ -23,89 +23,63 @@ function verifyPackageExistence (finalPaths, callback) {
   })
 }
 
-util.setup()
-test('all test', function (t) {
-  t.timeoutAfter(config.timeout * 5) // 4-5 packages will be built during this test
+function createAllTest (version, expected, all, platform, arch) {
+  return function (t) {
+    t.timeoutAfter(config.timeout * expected) // expectde packages will be built during this test
 
-  var opts = {
-    name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
-    version: config.version,
-    all: true
-  }
-
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (finalPaths, cb) {
-      // Windows skips packaging for OS X, and OS X only has 64-bit releases
-      t.equal(finalPaths.length, process.platform === 'win32' ? 4 : 5,
-        'packager call should resolve with expected number of paths')
-      verifyPackageExistence(finalPaths, cb)
-    }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for all possible platforms')
-      cb()
+    var opts = {
+      name: 'basicTest',
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      all: all,
+      platform: platform,
+      arch: arch,
+      version: version
     }
-  ], function (err) {
-    t.end(err)
-  })
-})
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (finalPaths, cb) {
+        // Windows skips packaging for OS X, and OS X only has 64-bit releases
+        t.equal(finalPaths.length, process.platform === 'win32' && (all || platform === 'all') ? expected - 1 : expected,
+          'packager call should resolve with expected number of paths')
+        verifyPackageExistence(finalPaths, cb)
+      }, function (exists, cb) {
+        t.true(exists, 'Packages should be generated for all possible platforms')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+util.setup()
+test('all test (v' + config.version + ')', createAllTest(config.version, 6, 'all'))
 util.teardown()
 
 util.setup()
-test('platform=all test (one arch)', function (t) {
-  t.timeoutAfter(config.timeout * 2) // 2 packages will be built during this test
-
-  var opts = {
-    name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
-    version: config.version,
-    arch: 'ia32',
-    platform: 'all'
-  }
-
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (finalPaths, cb) {
-      t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
-      verifyPackageExistence(finalPaths, cb)
-    }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for both 32-bit platforms')
-      cb()
-    }
-  ], function (err) {
-    t.end(err)
-  })
-})
+test('all test (v0.28.3)', createAllTest('0.28.3', 5, 'all'))
 util.teardown()
 
 util.setup()
-test('arch=all test (one platform)', function (t) {
-  t.timeoutAfter(config.timeout * 2) // 2 packages will be built during this test
+test('all test (v0.29.0)', createAllTest('0.29.0', 6, 'all'))
+util.teardown()
 
-  var opts = {
-    name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
-    version: config.version,
-    arch: 'all',
-    platform: 'linux'
-  }
+util.setup()
+test('arch=all test (one platform, v' + config.version + ')', createAllTest(config.version, 3, undefined, 'linux', 'all'))
+util.teardown()
 
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (finalPaths, cb) {
-      t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
-      verifyPackageExistence(finalPaths, cb)
-    }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for both architectures')
-      cb()
-    }
-  ], function (err) {
-    t.end(err)
-  })
-})
+util.setup()
+test('arch=all test (one platform, v0.28.3)', createAllTest('0.28.3', 2, undefined, 'linux', 'all'))
+util.teardown()
+
+util.setup()
+test('arch=all test (one platform, v0.29.0)', createAllTest('0.29.0', 3, undefined, 'linux', 'all'))
+util.teardown()
+
+util.setup()
+test('platform=all test (one arch)', createAllTest(config.version, 2, undefined, 'all', 'ia32'))
 util.teardown()
 
 function createMultiTest (arch, platform) {
