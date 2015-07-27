@@ -1,4 +1,4 @@
-Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<version>
+Usage: electron-packager <sourcedir | source ASAR> <appname> --platform=<platform> --arch=<arch> --version=<version>
 
 Required options
 

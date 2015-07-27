@@ -79,7 +79,8 @@ module.exports = {
         ncp(templatePath, tempPath, cb)
       },
       function (cb) {
-        ncp(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+        if (opts.dir) ncp(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+        else ncp(opts['asar-package'], path.join(appPath, '..', 'app.asar'), cb)
       }
     ]
 
@@ -91,7 +92,7 @@ module.exports = {
       })
     }
 
-    if (opts.asar) {
+    if (opts.asar && opts.dir) {
       operations.push(function (cb) {
         asarApp(path.join(appPath), cb)
       })
