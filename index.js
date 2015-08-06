@@ -71,7 +71,8 @@ function createSeries (opts, archs, platforms) {
       combinations.push({
         platform: platform,
         arch: arch,
-        version: opts.version
+        version: opts.version,
+        cache: opts.cache
       })
     })
   })
