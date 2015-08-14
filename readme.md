@@ -38,6 +38,7 @@ out                the dir to put the app into at the end. defaults to current w
 icon               the icon file to use as the icon for the app
 app-bundle-id      bundle identifier to use in the app plist
 app-version        version to set for the app
+cache              directory of cached electron downloads. Defaults to '$HOME/.electron'
 helper-bundle-id   bundle identifier to use in the app helper plist
 ignore             do not copy files into App whose filenames regex .match this string
 prune              runs `npm prune --production` on the app
@@ -107,6 +108,8 @@ Shortcut for `--arch=all --platform=all`
 `app-bundle-id` - *String*
 
 `app-version` - *String*
+
+`cache` - *String*
 
 `helper-bundle-id` - *String*
 
