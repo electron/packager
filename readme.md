@@ -113,7 +113,7 @@ Shortcut for `--arch=all --platform=all`
 
 `helper-bundle-id` - *String*
 
-`ignore` - *String*
+`ignore` - *RegExp*
 
 `prune` - *Boolean*
 
