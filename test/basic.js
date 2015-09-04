@@ -117,7 +117,7 @@ function createAsarTest (combination) {
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.asar = true
-    opts.asar_unpack = '*.pac'
+    opts['asar-unpack'] = '*.pac'
     var finalPath
     var resourcesPath
 

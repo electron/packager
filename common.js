@@ -94,11 +94,8 @@ module.exports = {
     if (opts.asar) {
       operations.push(function (cb) {
         var options = {}
-        if (opts.asar_unpack) {
-          options['unpack'] = opts.asar_unpack
-        }
-        if (opts.asar_snapshot) {
-          options['snapshot'] = opts.asar_snapshot
+        if (opts['asar-unpack']) {
+          options['unpack'] = opts['asar-unpack']
         }
         asarApp(path.join(appPath), options, cb)
       })
