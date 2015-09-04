@@ -93,7 +93,7 @@ module.exports = {
 
     if (opts.asar) {
       operations.push(function (cb) {
-        var options = {};
+        var options = {}
         if (opts.asar_unpack) {
           options['unpack'] = opts.asar_unpack
         }
