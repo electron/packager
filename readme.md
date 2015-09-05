@@ -105,7 +105,11 @@ Shortcut for `--arch=all --platform=all`
 
 `icon` - *String*
 
-For OS X, this must be `.icns` format.
+  Currently you must look for conversion tools in order to supply an icon in the
+  format required by the platform:
+  
+  - OS X: `.icns`
+  - Windows: `.ico`
 
 `app-bundle-id` - *String*
 
