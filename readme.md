@@ -78,27 +78,27 @@ packager(opts, function done (err, appPath) { })
 #### packager(opts, callback)
 
 ##### opts
-**Required**  
-`dir` - *String*  
+**Required**
+`dir` - *String*
 The source directory.
 
-`name` - *String*  
+`name` - *String*
 The application name.
 
-`platform` - *String*  
-Allowed values: *linux, win32, darwin, all*  
-Not required if `all` is used.  
+`platform` - *String*
+Allowed values: *linux, win32, darwin, all*
+Not required if `all` is used.
 Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
 
-`arch` - *String*  
-Allowed values: *ia32, x64, all*  
+`arch` - *String*
+Allowed values: *ia32, x64, all*
 Not required if `all` is used.
 
-`version` - *String*  
+`version` - *String*
 Electron version (without the 'v'). See https://github.com/atom/electron/releases
 
-**Optional**  
-`all` - *Boolean*  
+**Optional**
+`all` - *Boolean*
 Shortcut for `--arch=all --platform=all`
 
 `out` - *String*
@@ -107,7 +107,7 @@ Shortcut for `--arch=all --platform=all`
 
   Currently you must look for conversion tools in order to supply an icon in the
   format required by the platform:
-  
+
   - OS X: `.icns`
   - Windows: `.ico`
   - Linux: '.png'
@@ -132,8 +132,8 @@ Note that on Linux the icon should set the dock icon. Setting the icon in the fi
 
 `sign` - *String*
 
-`version-string` - *Object*  
-Object hash of application metadata to embed into the executable (Windows only):  
+`version-string` - *Object*
+Object hash of application metadata to embed into the executable (Windows only):
 * `CompanyName`
 * `LegalCopyright`
 * `FileDescription`
@@ -145,10 +145,10 @@ Object hash of application metadata to embed into the executable (Windows only):
 
 ##### callback
 
-`err` - *Error*  
+`err` - *Error*
 Contains errors if any.
 
-`appPath` - *String*  
+`appPath` - *String*
 Path to the newly created application.
 
 ### Building windows apps from non-windows platforms
