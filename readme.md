@@ -110,6 +110,9 @@ Shortcut for `--arch=all --platform=all`
   
   - OS X: `.icns`
   - Windows: `.ico`
+  - Linux: '.png'
+
+Note that on Linux the icon should set the dock icon. Setting the icon in the file manager is not currently supported.
 
 `app-bundle-id` - *String*
 
