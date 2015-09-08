@@ -8,6 +8,7 @@ var waterfall = require('run-waterfall')
 
 var config = require('./config.json')
 var util = require('./util')
+var plist = require('plist')
 
 var baseOpts = {
   name: 'basicTest',
@@ -37,6 +38,39 @@ function createIconTest (icon, iconPath) {
         util.areFilesEqual(iconPath, path.join(resourcesPath, 'atom.icns'), cb)
       }, function (equal, cb) {
         t.true(equal, 'atom.icns should be identical to the specified icon file')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createAppVersionTest (appVersion, buildVersion) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var plistPath
+    var opts = Object.create(baseOpts)
+    opts['app-version'] = opts['build-version'] = appVersion
+
+    if (buildVersion) {
+      opts['build-version'] = buildVersion
+    }
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        var obj = plist.parse(file)
+        t.equal(obj.CFBundleVersion, opts['build-version'], 'CFBundleVersion should reflect build-version')
+        t.equal(obj.CFBundleShortVersionString, opts['app-version'], 'CFBundleShortVersionString should reflect app-version')
         cb()
       }
     ], function (err) {
@@ -127,4 +161,12 @@ test('codesign test', function (t) {
     t.end(notFound ? null : err)
   })
 })
+util.teardown()
+
+util.setup()
+test('app and build version test', createAppVersionTest('1.1.0', '1.1.0.1234'))
+util.teardown()
+
+util.setup()
+test('app version test', createAppVersionTest('1.1.0'))
 util.teardown()
