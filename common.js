@@ -9,10 +9,10 @@ var ncp = require('ncp').ncp
 var rimraf = require('rimraf')
 var series = require('run-series')
 
-function asarApp (appPath, cb) {
+function asarApp (appPath, asarOptions, cb) {
   var src = path.join(appPath)
   var dest = path.join(appPath, '..', 'app.asar')
-  asar.createPackage(src, dest, function (err) {
+  asar.createPackageWithOptions(src, dest, asarOptions, function (err) {
     if (err) return cb(err)
     rimraf(src, function (err) {
       if (err) return cb(err)
@@ -93,7 +93,11 @@ module.exports = {
 
     if (opts.asar) {
       operations.push(function (cb) {
-        asarApp(path.join(appPath), cb)
+        var options = {}
+        if (opts['asar-unpack']) {
+          options['unpack'] = opts['asar-unpack']
+        }
+        asarApp(path.join(appPath), options, cb)
       })
     }
 
