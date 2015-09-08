@@ -68,7 +68,7 @@ This will:
 
 You should be able to launch the app on the platform you built for. If not, check your settings and try again.
 
-**Be careful** not to include node_modules you don't want into your final app. `electron-packager`, `electron-prebuilt` and `.git` will be ignored by default. You can use `--ignore` to ignore files and folders, e.g. `--ignore=node_modules/electron-packager` or `--ignore="node_modules/(electron-packager|electron-prebuilt)"`.
+**Be careful** not to include `node_modules` you don't want into your final app. `electron-packager`, `electron-prebuilt` and `.git` will be ignored by default. You can use `--ignore` to ignore files and folders, e.g. `--ignore=node_modules/electron-packager` or `--ignore="node_modules/(electron-packager|electron-prebuilt)"`.
 
 ### API
 ```javascript
@@ -110,9 +110,10 @@ Shortcut for `--arch=all --platform=all`
 
   - OS X: `.icns`
   - Windows: `.ico`
-  - Linux: '.png'
 
-Note that on Linux the icon should set the dock icon. Setting the icon in the file manager is not currently supported.
+For Linux builds, this option is not required, as the dock/window list icon is set via [the icon option in the BrowserWindow contructor](http://electron.atom.io/docs/v0.30.0/api/browser-window/#new-browserwindow-options). Setting the icon in the file manager is not currently supported.
+
+If the file extension is omitted, it is auto-completed to the correct extension based on the platform, including when `--platform=all` is in effect.
 
 `app-bundle-id` - *String*
 
