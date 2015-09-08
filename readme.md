@@ -22,20 +22,20 @@ npm i electron-packager -g
 
 ```
 Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<version>
-  
+
 Required options
 
 platform           all, or one or more of: linux, win32, darwin (comma-delimited if multiple)
 arch               all, ia32, x64
 version            see https://github.com/atom/electron/releases
-                  
+
 Example            electron-packager ./ FooBar --platform=darwin --arch=x64 --version=0.25.1
 
 Optional options
 
 all                equivalent to --platform=all --arch=all
 out                the dir to put the app into at the end. defaults to current working dir
-icon               the icon file to use as the icon for the app
+icon               the icon file to use as the icon for the app. Note: Format depends on OS.
 app-bundle-id      bundle identifier to use in the app plist
 app-version        version to set for the app
 cache              directory of cached electron downloads. Defaults to '$HOME/.electron'
@@ -57,7 +57,7 @@ version-string     should contain a hash of the application metadata to be embed
                    - ProductVersion
                    - ProductName
                    - InternalName
-                   
+
 
 ```
 
@@ -104,6 +104,12 @@ Shortcut for `--arch=all --platform=all`
 `out` - *String*
 
 `icon` - *String*
+
+  Currently you must look for conversion tools in order to supply an icon in the
+  format required by the platform:
+  
+  - OS X: `.icns`
+  - Windows: `.ico`
 
 `app-bundle-id` - *String*
 
