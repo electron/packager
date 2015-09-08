@@ -37,7 +37,8 @@ all                equivalent to --platform=all --arch=all
 out                the dir to put the app into at the end. defaults to current working dir
 icon               the icon file to use as the icon for the app. Note: Format depends on OS.
 app-bundle-id      bundle identifier to use in the app plist
-app-version        version to set for the app
+app-version        release version to set for the app
+build-version      build version to set for the app (OS X only)
 cache              directory of cached electron downloads. Defaults to '$HOME/.electron'
 helper-bundle-id   bundle identifier to use in the app helper plist
 ignore             do not copy files into App whose filenames regex .match this string

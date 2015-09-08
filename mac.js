@@ -43,6 +43,7 @@ module.exports = {
       // Update plist files
       var defaultBundleName = 'com.electron.' + opts.name.toLowerCase().replace(/ /g, '_')
       var appVersion = opts['app-version']
+      var buildVersion = opts['build-version']
 
       appPlist.CFBundleDisplayName = opts.name
       appPlist.CFBundleIdentifier = opts['app-bundle-id'] || defaultBundleName
@@ -51,7 +52,11 @@ module.exports = {
       helperPlist.CFBundleName = opts.name
 
       if (appVersion) {
-        appPlist.CFBundleVersion = appVersion
+        appPlist.CFBundleShortVersionString = appPlist.CFBundleVersion = appVersion
+      }
+
+      if (buildVersion) {
+        appPlist.CFBundleVersion = buildVersion
       }
 
       if (opts.protocols) {
