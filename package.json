@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/maxogden/electron-packager",
   "dependencies": {
-    "asar": "^0.6.1",
+    "asar": "^0.8.0",
     "electron-download": "^1.0.0",
     "extract-zip": "^1.0.3",
     "minimist": "^1.1.1",
