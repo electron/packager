@@ -163,3 +163,4 @@ If you run this on windows and you want to set the icon for your app using the `
 ### related
 
 - [grunt-electron](https://github.com/sindresorhus/grunt-electron) - grunt plugin for electron-packager
+- [electron-packager-interactive](https://github.com/Urucas/electron-packager-interactive) - an interactive cli for electron-packager
