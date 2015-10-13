@@ -30,6 +30,9 @@ function generateFinalPath (opts) {
 }
 
 function userIgnoreFilter (opts) {
+  var ignore = opts.ignore || []
+  if (!Array.isArray(ignore)) ignore = [ignore]
+  if (opts.out && opts.out.indexOf('./') === 0) ignore.push('^/' + opts.out.substr(2))
   return function filter (file) {
     file = file.split(path.resolve(opts.dir))[1]
 
@@ -38,8 +41,6 @@ function userIgnoreFilter (opts) {
       file = file.replace(/\\/g, '/')
     }
 
-    var ignore = opts.ignore || []
-    if (!Array.isArray(ignore)) ignore = [ignore]
     for (var i = 0; i < ignore.length; i++) {
       if (file.match(ignore[i])) {
         return false
