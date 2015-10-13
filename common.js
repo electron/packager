@@ -32,7 +32,12 @@ function generateFinalPath (opts) {
 function userIgnoreFilter (opts) {
   var ignore = opts.ignore || []
   if (!Array.isArray(ignore)) ignore = [ignore]
-  if (opts.out && opts.out.indexOf('./') === 0) ignore.push('^/' + opts.out.substr(2))
+  if (opts.out) {
+    var out = path.join(process.cwd(), opts.out)
+    if (out.indexOf(process.cwd()) === 0) {
+      ignore.push('^' + out.substr(process.cwd().length))
+    }
+  }
   return function filter (file) {
     file = file.split(path.resolve(opts.dir))[1]
 
