@@ -121,6 +121,8 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `app-version` - *String*
 
+`build-version` - *String*
+
 `cache` - *String*
 
 `helper-bundle-id` - *String*
