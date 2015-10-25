@@ -6,3 +6,7 @@ node_js:
 cache:
   directories:
     - $HOME/.electron
+addons:
+  apt:
+    packages:
+    - wine
