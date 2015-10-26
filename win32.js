@@ -26,6 +26,10 @@ module.exports = {
               if (opts['version-string'].FileVersion) {
                 rcOpts['file-version'] = opts['version-string'].FileVersion
               }
+
+              if (opts['version-string'].ProductVersion) {
+                rcOpts['product-version'] = opts['version-string'].ProductVersion
+              }
             }
 
             // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
