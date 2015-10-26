@@ -4,7 +4,8 @@ var args = require('minimist')(process.argv.slice(2), {boolean: ['prune', 'asar'
 var packager = require('./')
 var usage = fs.readFileSync(__dirname + '/usage.txt').toString()
 
-args.dir = args._[0]
+if (fs.statSync(args._[0]).isDirectory()) args.dir = args._[0]
+else args['asar-package'] = args._[0]
 args.name = args._[1]
 
 var protocolSchemes = [].concat(args.protocol || [])
@@ -16,7 +17,7 @@ if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes
   })
 }
 
-if (!args.dir || !args.name || !args.version || (!args.all && (!args.platform || !args.arch))) {
+if (!(args.dir || args['asar-package']) || !args.name || !args.version || (!args.all && (!args.platform || !args.arch))) {
   console.error(usage)
   process.exit(1)
 }

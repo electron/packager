@@ -21,7 +21,7 @@ npm i electron-packager -g
 ### usage
 
 ```
-Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<version>
+Usage: electron-packager <sourcedir | source ASAR> <appname> --platform=<platform> --arch=<arch> --version=<version>
 
 Required options
 
@@ -80,9 +80,15 @@ packager(opts, function done (err, appPath) { })
 #### packager(opts, callback)
 
 ##### opts
+<<<<<<< HEAD
+**Required**  
+`dir` or `asar-package` - *String*  
+The source directory or path to source ASAR. One of the two required.
+=======
 **Required**
 `dir` - *String*
 The source directory.
+>>>>>>> 0af8ece391f71d0e4e57359b6c287ca4ea09d500
 
 `name` - *String*
 The application name.
