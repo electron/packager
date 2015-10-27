@@ -118,6 +118,7 @@ function createAsarTest (combination) {
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.asar = true
     opts['asar-unpack'] = '*.pac'
+    opts['asar-unpack-dir'] = 'dir_to_unpack'
     var finalPath
     var resourcesPath
 
@@ -142,6 +143,9 @@ function createAsarTest (combination) {
         fs.stat(path.join(resourcesPath, 'app.asar.unpacked'), cb)
       }, function (stats, cb) {
         t.true(stats.isDirectory(), 'app.asar.unpacked should exist under the resources subdirectory when opts.asar_unpack is set some expression')
+        fs.stat(path.join(resourcesPath, 'app.asar.unpacked', 'dir_to_unpack'), cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'dir_to_unpack should exist under app.asar.unpacked subdirectory when opts.asar-unpack-dir is set dir_to_unpack')
         cb()
       }
     ], function (err) {

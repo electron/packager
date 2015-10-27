@@ -97,6 +97,9 @@ module.exports = {
         if (opts['asar-unpack']) {
           options['unpack'] = opts['asar-unpack']
         }
+        if (opts['asar-unpack-dir']) {
+          options['unpackDir'] = opts['asar-unpack-dir']
+        }
         asarApp(path.join(appPath), options, cb)
       })
     }

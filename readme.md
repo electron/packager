@@ -134,6 +134,8 @@ packager(opts, function done (err, appPath) { })
 
 `asar-unpack` - *String*
 
+`asar-unpack-dir` - *String*
+
 `build-version` - *String*
 
 `cache` - *String*
