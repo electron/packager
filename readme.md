@@ -2,11 +2,15 @@
 
 Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line. Supports building Windows, Linux or Mac executables.
 
-*formerly known as atom-shell-packager*
-
-[![NPM](https://nodei.co/npm/electron-packager.png)](https://nodei.co/npm/electron-packager/)
-
 [![Build Status](https://travis-ci.org/maxogden/electron-packager.svg?branch=master)](https://travis-ci.org/maxogden/electron-packager)
+
+## About
+
+Electron Packager is a command line tool that packages electron app source code into executables like `.app` or `.exe` along with a copy of Electron.
+
+This module was developed as part of [Dat](http://dat-data.com/), a grant funded non-profit open source project. It is maintained by volunteers. If you are benefitting from this module please consider making contributions back.
+
+Note that packaged Electron applications can be relatively large. A zipped barebones OS X Electron application is around 40MB.
 
 ## Installation
 
@@ -58,11 +62,11 @@ When one runs the following command for the first time in the `foobar` directory
 electron-packager . FooBar --platform=darwin --arch=x64 --version=0.28.2
 ```
 
-`electron-packager` does the following:
+`electron-packager` will do the following:
 
-* downloads Electron 0.28.2 for OS X on x64 (and caches the download)
+* downloads Electron 0.28.2 for OS X on x64 (and caches the download in `~/.electron`)
 * builds the OS X `FooBar.app`
-* places `FooBar.app` in `foobar/FooBar-darwin-x64/` (tsince an `out` directory was not specified)
+* places `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified)
 
 The file structure now looks like:
 
@@ -82,7 +86,7 @@ foobar
 
 The `FooBar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app.
 
-### API
+### Programmatic API
 ```javascript
 var packager = require('electron-packager')
 packager(opts, function done (err, appPath) { })
@@ -188,5 +192,6 @@ Building an Electron app for the Windows platform with a custom icon requires ed
 
 ## Related
 
+- [electron-builder](https://www.npmjs.com/package/electron-builder) - for creating installer wizards
 - [grunt-electron](https://github.com/sindresorhus/grunt-electron) - grunt plugin for electron-packager
 - [electron-packager-interactive](https://github.com/Urucas/electron-packager-interactive) - an interactive CLI for electron-packager
