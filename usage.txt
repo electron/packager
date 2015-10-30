@@ -15,6 +15,8 @@ app-bundle-id      bundle identifier to use in the app plist (darwin platform on
 app-version        release version to set for the app
 asar               packages the source code within your app into an archive
 asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match this string
+asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names match this string. It's relative to the <sourcedir>.
+                   For example, `--asar-unpack-dir=sub_dir` will unpack the directory `/<sourcedir>/sub_dir`.
 build-version      build version to set for the app (darwin platform only)
 cache              directory of cached Electron downloads. Defaults to '$HOME/.electron'
 helper-bundle-id   bundle identifier to use in the app helper plist (darwin platform only)

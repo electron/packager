@@ -138,6 +138,11 @@ packager(opts, function done (err, appPath) { })
 
 `asar-unpack` - *String*
 
+`asar-unpack-dir` - *String*
+
+  Unpacks the dir to app.asar.unpacked directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`.
+  For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
+
 `build-version` - *String*
 
 `cache` - *String*
