@@ -155,7 +155,7 @@ module.exports = function packager (opts, cb) {
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
 
   // Ignore this and related modules by default
-  var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)']
+  var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\\.git($|/)', '/node_modules/\\.bin($|/)']
   if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
   opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
 
