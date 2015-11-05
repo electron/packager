@@ -73,7 +73,7 @@ module.exports = {
         })
       },
       function (cb) {
-        mkdirp(tempPath, cb)
+        mkdirp(appPath, cb)
       },
       function (cb) {
         ncp(templatePath, tempPath, cb)
