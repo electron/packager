@@ -4,7 +4,7 @@
     "run-series": "^1.1.1"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
+    "ncp": "^2.0.0",
     "run-waterfall": "^1.1.1"
   }
 }
