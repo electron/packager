@@ -44,6 +44,7 @@ module.exports = {
       var defaultBundleName = 'com.electron.' + opts.name.toLowerCase().replace(/ /g, '_')
       var appVersion = opts['app-version']
       var buildVersion = opts['build-version']
+      var appCategoryType = opts['app-category-type']
 
       appPlist.CFBundleDisplayName = opts.name
       appPlist.CFBundleIdentifier = opts['app-bundle-id'] || defaultBundleName
@@ -66,6 +67,10 @@ module.exports = {
             CFBundleURLSchemes: [].concat(protocol.schemes)
           }
         })
+      }
+
+      if (appCategoryType) {
+        appPlist.LSApplicationCategoryType = appCategoryType
       }
 
       fs.writeFileSync(appPlistFilename, plist.build(appPlist))
