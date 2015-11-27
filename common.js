@@ -80,6 +80,9 @@ module.exports = {
       },
       function (cb) {
         ncp(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+      },
+      function (cb) {
+        rimraf(path.join(tempPath, 'resources', 'default_app'), cb);
       }
     ]
 
