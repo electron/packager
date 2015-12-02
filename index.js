@@ -72,7 +72,8 @@ function createSeries (opts, archs, platforms) {
         platform: platform,
         arch: arch,
         version: opts.version,
-        cache: opts.cache
+        cache: opts.cache,
+        strictSSL: opts['strict-ssl']
       })
     })
   })
