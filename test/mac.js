@@ -79,6 +79,34 @@ function createAppVersionTest (appVersion, buildVersion) {
   }
 }
 
+function createAppCategoryTypeTest (appCategoryType) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var plistPath
+    var opts = Object.create(baseOpts)
+    opts['app-category-type'] = appCategoryType
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        var obj = plist.parse(file)
+        t.equal(obj.LSApplicationCategoryType, opts['app-category-type'], 'LSApplicationCategoryType should reflect opts.["app-category-type"]')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 util.setup()
 test('helper app paths test', function (t) {
   t.timeoutAfter(config.timeout)
@@ -169,4 +197,8 @@ util.teardown()
 
 util.setup()
 test('app version test', createAppVersionTest('1.1.0'))
+util.teardown()
+
+util.setup()
+test('app categoryType test', createAppCategoryTypeTest('public.app-category.developer-tools'))
 util.teardown()
