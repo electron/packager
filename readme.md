@@ -132,6 +132,14 @@ packager(opts, function done (err, appPath) { })
 
 `app-bundle-id` - *String*
 
+`app-category-type` - *String*
+
+  The application category type, as shown in the Finder via *View -> Arrange by Application Category* when viewing the Applications directory (OS X only).
+
+  For example, `app-category-type=public.app-category.developer-tools` will set the application category to *Developer Tools*.
+
+  Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
+
 `app-version` - *String*
 
 `asar` - *Boolean*
@@ -168,14 +176,6 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 `prune` - *Boolean*
 
 `sign` - *String*
-
-`app-category-type` - *String*
-
-  The application category type, as shown in the Finder via *View -> Arrange by Application Category* when viewing the Applications directory (OS X only).
-
-  For example, `app-category-type=public.app-category.developer-tools` will set the application category to *Developer Tools*.
-
-  Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
 
 `version-string` - *Object*
 
