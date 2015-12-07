@@ -177,6 +177,10 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `sign` - *String*
 
+`strict-ssl` - *Boolean*
+
+  Whether SSL certificates are required to be valid when downloading Electron. Defaults to true.
+
 `version-string` - *Object*
 
   Object hash of application metadata to embed into the executable (Windows only):

@@ -28,6 +28,8 @@ out                the dir to put the app into at the end. defaults to current w
 overwrite          if output directory for a platform already exists, replaces it rather than skipping it
 prune              runs `npm prune --production` on the app
 sign               should contain the identity to be used when running `codesign` (only for building for the darwin platform, on OS X)
+strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
+                   It defaults to true, use --strict-ssl=false to disable checks.
 version-string     should contain a hash of the application metadata to be embedded into the executable (win32 platform only).
                    These can be specified on the command line via dot notation,
                    e.g. --version-string.CompanyName="Company Inc." --version-string.ProductName="Product"
