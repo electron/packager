@@ -144,7 +144,7 @@ packager(opts, function done (err, appPath) { })
 
 `app-version` - *String*
 
-  The release version of the application.
+  The release version of the application. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
 
 `asar` - *Boolean*
 
@@ -163,7 +163,7 @@ packager(opts, function done (err, appPath) { })
 
 `build-version` - *String*
 
-  The build version of the application (OS X only).
+  The build version of the application. Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
 
 `cache` - *String*
 

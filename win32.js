@@ -23,11 +23,15 @@ module.exports = {
             if (opts['version-string']) {
               rcOpts['version-string'] = opts['version-string']
 
-              if (opts['version-string'].FileVersion) {
+              if (opts['build-version']) {
+                rcOpts['file-version'] = opts['build-version']
+              } else if (opts['version-string'].FileVersion) {
                 rcOpts['file-version'] = opts['version-string'].FileVersion
               }
 
-              if (opts['version-string'].ProductVersion) {
+              if (opts['app-version']) {
+                rcOpts['product-version'] = opts['app-version']
+              } else if (opts['version-string'].ProductVersion) {
                 rcOpts['product-version'] = opts['version-string'].ProductVersion
               }
             }

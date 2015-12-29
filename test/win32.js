@@ -18,14 +18,14 @@ var baseOpts = {
   platform: 'win32'
 }
 
-function setFileVersionTest (fileVersion) {
+function generateVersionStringTest (metadata_property, extra_opts, expected_value, assertion_msg) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
     var appExePath
     var opts = Object.create(baseOpts)
-    opts['version-string'] = {
-      FileVersion: fileVersion
+    for (var opt_key in extra_opts) {
+      opts[opt_key] = extra_opts[opt_key]
     }
 
     waterfall([
@@ -40,7 +40,7 @@ function setFileVersionTest (fileVersion) {
       }, function (cb) {
         rcinfo(appExePath, cb)
       }, function (info, cb) {
-        t.equal(info.FileVersion, fileVersion, 'File version should match')
+        t.equal(info[metadata_property], expected_value, assertion_msg)
         cb()
       }
     ], function (err) {
@@ -49,35 +49,46 @@ function setFileVersionTest (fileVersion) {
   }
 }
 
-function setProductVersionTest (productVersion) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
+function setFileVersionTest (fileVersion) {
+  var opts = {
+    'version-string': {
+      FileVersion: fileVersion
+    }
+  }
 
-    var appExePath
-    var opts = Object.create(baseOpts)
-    opts['version-string'] = {
+  return generateVersionStringTest('FileVersion', opts, fileVersion, 'File version should match the value in version-string')
+}
+
+function setBuildAndFileVersionTest (buildVersion, fileVersion) {
+  var opts = {
+    'build-version': buildVersion,
+    'version-string': {
+      FileVersion: fileVersion
+    }
+  }
+
+  return generateVersionStringTest('FileVersion', opts, buildVersion, 'File version should match build version')
+}
+
+function setProductVersionTest (productVersion) {
+  var opts = {
+    'version-string': {
       ProductVersion: productVersion
     }
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        appExePath = path.join(paths[0], opts.name + '.exe')
-        fs.stat(appExePath, cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'The expected EXE file should exist')
-        cb()
-      }, function (cb) {
-        rcinfo(appExePath, cb)
-      }, function (info, cb) {
-        t.equal(info.ProductVersion, productVersion, 'Product version should match')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
   }
+
+  return generateVersionStringTest('ProductVersion', opts, productVersion, 'Product version should match the value in version-string')
+}
+
+function setAppAndProductVersionTest (appVersion, productVersion) {
+  var opts = {
+    'app-version': appVersion,
+    'version-string': {
+      ProductVersion: productVersion
+    }
+  }
+
+  return generateVersionStringTest('ProductVersion', opts, appVersion, 'Product version should match app version')
 }
 
 util.setup()
@@ -85,5 +96,13 @@ test('win32 file version test', setFileVersionTest('1.2.3.4'))
 util.teardown()
 
 util.setup()
+test('win32 build version overrides file version test', setBuildAndFileVersionTest('2.3.4.5', '1.2.3.4'))
+util.teardown()
+
+util.setup()
 test('win32 product version test', setProductVersionTest('4.3.2.1'))
+util.teardown()
+
+util.setup()
+test('win32 app version overrides product version test', setAppAndProductVersionTest('5.4.3.2', '4.3.2.1'))
 util.teardown()
