@@ -64,6 +64,7 @@ module.exports = {
     var tempPath = path.join(tempParent, generateFinalBasename(opts))
     // Path to `app` directory
     var appPath = path.join(tempPath, appRelativePath)
+    var resourcesPath = path.resolve(appPath, '..')
 
     var operations = [
       function (cb) {
@@ -80,6 +81,9 @@ module.exports = {
       },
       function (cb) {
         ncp(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+      },
+      function (cb) {
+        rimraf(path.join(resourcesPath, 'default_app'), cb)
       }
     ]
 

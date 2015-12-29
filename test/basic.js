@@ -69,7 +69,10 @@ function createDefaultsTest (combination) {
       }, function (equal, cb) {
         t.true(equal,
           'File under subdirectory of packaged app directory should match source file and not be ignored by default')
-        cb()
+        fs.exists(path.join(resourcesPath, 'default_app'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default app')
+          cb()
+        })
       }
     ], function (err) {
       t.end(err)
