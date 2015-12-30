@@ -132,6 +132,8 @@ packager(opts, function done (err, appPath) { })
 
 `app-bundle-id` - *String*
 
+  The bundle identifier to use in the application's plist (OS X only).
+
 `app-category-type` - *String*
 
   The application category type, as shown in the Finder via *View -> Arrange by Application Category* when viewing the Applications directory (OS X only).
@@ -142,20 +144,34 @@ packager(opts, function done (err, appPath) { })
 
 `app-version` - *String*
 
+  The release version of the application.
+
 `asar` - *Boolean*
+
+  Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/atom/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
+  
+  Defaults to `false`.
 
 `asar-unpack` - *String*
 
+  A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
+
 `asar-unpack-dir` - *String*
 
-  Unpacks the dir to app.asar.unpacked directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`.
+  Unpacks the dir to `app.asar.unpacked` directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`.
   For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
 
 `build-version` - *String*
 
+  The build version of the application (OS X only).
+
 `cache` - *String*
 
+  The directory where prebuilt, pre-packaged Electron downloads are cached. Defaults to `$HOME/.electron`.
+
 `helper-bundle-id` - *String*
+
+  The bundle identifier to use in the application helper's plist (OS X only).
 
 `icon` - *String*
 
@@ -169,17 +185,27 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `ignore` - *RegExp*
 
+  A pattern which specifies which files to ignore when copying files to create the package(s).
+
 `out` - *String*
+
+  The base directory where the finished package(s) are created. Defaults to the current working directory.
 
 `overwrite` - *Boolean*
 
+  Whether to replace an already existing output directory for a given platform (`true`) or skip recreating it (`false`). Defaults to `false`.
+
 `prune` - *Boolean*
+
+  Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before starting to package the app.
 
 `sign` - *String*
 
+  The identity used when signing the package via `codesign`. (Only for the OS X target platform, when XCode is present on the build platform.)
+
 `strict-ssl` - *Boolean*
 
-  Whether SSL certificates are required to be valid when downloading Electron. Defaults to true.
+  Whether SSL certificates are required to be valid when downloading Electron. **Defaults to `true`**.
 
 `version-string` - *Object*
 
