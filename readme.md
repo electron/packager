@@ -144,7 +144,7 @@ packager(opts, function done (err, appPath) { })
 
 `app-version` - *String*
 
-  The release version of the application.
+  The release version of the application. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
 
 `asar` - *Boolean*
 
@@ -163,7 +163,7 @@ packager(opts, function done (err, appPath) { })
 
 `build-version` - *String*
 
-  The build version of the application (OS X only).
+  The build version of the application. Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
 
 `cache` - *String*
 
@@ -214,8 +214,8 @@ If the file extension is omitted, it is auto-completed to the correct extension 
   - `LegalCopyright`
   - `FileDescription`
   - `OriginalFilename`
-  - `FileVersion`
-  - `ProductVersion`
+  - `FileVersion` (**deprecated** and will be removed in a future major version, please use the top-level `build-version` parameter instead)
+  - `ProductVersion` (**deprecated** and will be removed in a future major version, please use the top-level `app-version` parameter instead)
   - `ProductName`
   - `InternalName`
 
