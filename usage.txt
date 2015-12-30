@@ -38,7 +38,7 @@ version-string     should contain a hash of the application metadata to be embed
                    - LegalCopyright
                    - FileDescription
                    - OriginalFilename
-                   - FileVersion
-                   - ProductVersion
+                   - FileVersion (deprecated, use --build-version instead)
+                   - ProductVersion (deprecated, use --app-version instead)
                    - ProductName
                    - InternalName

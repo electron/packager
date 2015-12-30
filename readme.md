@@ -214,8 +214,8 @@ If the file extension is omitted, it is auto-completed to the correct extension 
   - `LegalCopyright`
   - `FileDescription`
   - `OriginalFilename`
-  - `FileVersion`
-  - `ProductVersion`
+  - `FileVersion` (**deprecated** and will be removed in a future major version, please use the top-level `build-version` parameter instead)
+  - `ProductVersion` (**deprecated** and will be removed in a future major version, please use the top-level `app-version` parameter instead)
   - `ProductName`
   - `InternalName`
 
