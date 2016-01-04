@@ -181,6 +181,7 @@ If the file extension is omitted, it is auto-completed to the correct extension 
   - name - *String*
   - role - *String*
     - Valid values: Editor, Viewer, Shell, or None
+
   e.g. 
   ```JSON
   {
