@@ -64,6 +64,7 @@ module.exports = {
         helperPlist.CFBundleURLTypes = appPlist.CFBundleURLTypes = opts.protocols.map(function (protocol) {
           return {
             CFBundleURLName: protocol.name,
+			CFBundleTypeRole: protocol.role,
             CFBundleURLSchemes: [].concat(protocol.schemes)
           }
         })
@@ -104,6 +105,8 @@ module.exports = {
           child.exec('codesign --deep --force --sign "' + opts.sign + '" "' + finalAppPath + '"', cb)
         })
       }
+	  
+	  
 
       series(operations, function (err) {
         if (err) return callback(err)

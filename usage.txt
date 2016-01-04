@@ -27,6 +27,13 @@ ignore             do not copy files into app whose filenames regex .match this 
 out                the dir to put the app into at the end. defaults to current working dir
 overwrite          if output directory for a platform already exists, replaces it rather than skipping it
 prune              runs `npm prune --production` on the app
+protocol           (Array - iOS, OS X) contains an array of dictionaries, each of which describes the URL schemes (http, ftp, and so on) supported by the app
+                   These can be specified on the command line via dot notation,
+                   e.g. --protocol.scheme="scheme" --protocol.name="com.company.app" --protocol.role="Editor"
+                   Keys supported:
+                   - scheme
+                   - name
+                   - role
 sign               should contain the identity to be used when running `codesign` (only for building for the darwin platform, on OS X)
 strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
                    It defaults to true, use --strict-ssl=false to disable checks.
@@ -42,3 +49,4 @@ version-string     should contain a hash of the application metadata to be embed
                    - ProductVersion
                    - ProductName
                    - InternalName
+

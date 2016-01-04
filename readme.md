@@ -175,6 +175,27 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `prune` - *Boolean*
 
+`protocol` - *Array*
+  Contains an array of Objects, each of which describes the URL schemes (http, ftp, and so on) supported by the app:
+  - schemes - *Array*
+  - name - *String*
+  - role - *String*
+    - Valid values: Editor, Viewer, Shell, or None
+  e.g. 
+  ```JSON
+  {
+      "protocol" : [
+          {
+              "schemes" : [
+                  "scheme"
+              ],
+              "name" : "com.company.app",
+              "role" : "Editor"
+          }
+      ]  
+  }
+
+
 `sign` - *String*
 
 `strict-ssl` - *Boolean*
