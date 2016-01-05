@@ -60,7 +60,7 @@ module.exports = {
     // * Prunes non-production node_modules (if opts.prune is set)
     // * Creates an asar (if opts.asar is set)
 
-    var tempParent = path.join(os.tmpdir(), 'electron-packager', opts.platform + '-' + opts.arch)
+    var tempParent = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', opts.platform + '-' + opts.arch)
     var tempPath = path.join(tempParent, generateFinalBasename(opts))
     // Path to `app` directory
     var appPath = path.join(tempPath, appRelativePath)

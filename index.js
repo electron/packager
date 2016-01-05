@@ -23,30 +23,6 @@ var supportedPlatforms = {
   win32: './win32'
 }
 
-var tempBase = path.join(os.tmpdir(), 'electron-packager')
-
-function testSymlink (cb) {
-  var testPath = path.join(tempBase, 'symlink-test')
-  var testFile = path.join(testPath, 'test')
-  var testLink = path.join(testPath, 'testlink')
-  series([
-    function (cb) {
-      mkdirp(testPath, cb)
-    },
-    function (cb) {
-      fs.writeFile(testFile, '', cb)
-    },
-    function (cb) {
-      fs.symlink(testFile, testLink, cb)
-    }
-  ], function (err) {
-    var result = !err
-    rimraf(testPath, function () {
-      cb(result) // ignore errors on cleanup
-    })
-  })
-}
-
 function validateList (list, supported, name) {
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or an error message string otherwise.
@@ -91,6 +67,30 @@ function getNameAndVersion (opts, dir, cb) {
 }
 
 function createSeries (opts, archs, platforms) {
+  var tempBase = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager')
+
+  function testSymlink (cb) {
+    var testPath = path.join(tempBase, 'symlink-test')
+    var testFile = path.join(testPath, 'test')
+    var testLink = path.join(testPath, 'testlink')
+    series([
+      function (cb) {
+        mkdirp(testPath, cb)
+      },
+      function (cb) {
+        fs.writeFile(testFile, '', cb)
+      },
+      function (cb) {
+        fs.symlink(testFile, testLink, cb)
+      }
+    ], function (err) {
+      var result = !err
+      rimraf(testPath, function () {
+        cb(result) // ignore errors on cleanup
+      })
+    })
+  }
+
   var combinations = []
   archs.forEach(function (arch) {
     platforms.forEach(function (platform) {
