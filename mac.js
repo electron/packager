@@ -8,11 +8,11 @@ var ncp = require('ncp').ncp
 var series = require('run-series')
 var common = require('./common')
 
-function moveHelpers (frameworksPath, appName, callback) {
-  function rename (basePath, oldName, newName, cb) {
+function rename (basePath, oldName, newName, cb) {
     mv(path.join(basePath, oldName), path.join(basePath, newName), cb)
   }
 
+function moveHelpers (frameworksPath, appName, callback) {
   series([' Helper', ' Helper EH', ' Helper NP'].map(function (suffix) {
     return function (cb) {
       var executableBasePath = path.join(frameworksPath, 'Electron' + suffix + '.app', 'Contents', 'MacOS')
@@ -36,6 +36,7 @@ module.exports = {
       var contentsPath = path.join(tempPath, 'Electron.app', 'Contents')
       var frameworksPath = path.join(contentsPath, 'Frameworks')
       var appPlistFilename = path.join(contentsPath, 'Info.plist')
+      var appExecutablePath = path.join(contentsPath, 'MacOS')
       var helperPlistFilename = path.join(frameworksPath, 'Electron Helper.app', 'Contents', 'Info.plist')
       var appPlist = plist.parse(fs.readFileSync(appPlistFilename).toString())
       var helperPlist = plist.parse(fs.readFileSync(helperPlistFilename).toString())
@@ -95,6 +96,10 @@ module.exports = {
       var finalAppPath = path.join(tempPath, opts.name + '.app')
       operations.push(function (cb) {
         moveHelpers(frameworksPath, opts.name, cb)
+      })
+
+      operations.push(function (cb) {
+        rename(appExecutablePath, 'Electron', opts.name, cb)
       }, function (cb) {
         mv(path.dirname(contentsPath), finalAppPath, cb)
       })
