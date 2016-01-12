@@ -64,9 +64,9 @@ electron-packager . FooBar --platform=darwin --arch=x64 --version=0.28.2
 
 `electron-packager` will do the following:
 
-* downloads Electron 0.28.2 for OS X on x64 (and caches the download in `~/.electron`)
-* builds the OS X `FooBar.app`
-* places `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified)
+* download Electron 0.28.2 for OS X on x64 (and cache the download in `~/.electron`)
+* build the OS X `FooBar.app`
+* place `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified)
 
 The file structure now looks like:
 
