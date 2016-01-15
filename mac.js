@@ -62,9 +62,13 @@ module.exports = {
 
       if (opts.protocols) {
         helperPlist.CFBundleURLTypes = appPlist.CFBundleURLTypes = opts.protocols.map(function (protocol) {
+	      var role = protocol.role
+          if ((role != null) || ['Editor', 'Viewer', 'Shell', 'None'].indexOf(role) === -1) {
+            role = 'None';
+          }
           return {
             CFBundleURLName: protocol.name,
-			CFBundleTypeRole: protocol.role,
+			CFBundleTypeRole: role,
             CFBundleURLSchemes: [].concat(protocol.schemes)
           }
         })
