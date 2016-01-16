@@ -1,6 +1,7 @@
 var path = require('path')
 var fs = require('fs')
 var os = require('os')
+var semver = require('semver')
 
 var download = require('electron-download')
 var extract = require('extract-zip')
@@ -11,7 +12,8 @@ var common = require('./common')
 
 var supportedArchs = {
   ia32: 1,
-  x64: 1
+  x64: 1,
+  arm: 1
 }
 
 var supportedPlatforms = {
@@ -68,6 +70,7 @@ function createSeries (opts, archs, platforms) {
     platforms.forEach(function (platform) {
       // Electron does not have 32-bit releases for Mac OS X, so skip that combination
       if (platform === 'darwin' && arch === 'ia32') return
+      if (platform !== 'linux' && arch === 'arm') return
       combinations.push({
         platform: platform,
         arch: arch,
@@ -149,9 +152,15 @@ function createSeries (opts, archs, platforms) {
 }
 
 module.exports = function packager (opts, cb) {
-  var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
-  var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
   if (!opts.version) return cb(new Error('Must specify version'))
+  var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
+  // Linux ARM wasn't available until 0.29.0, remove when all architectures is specified
+  if ((opts.all || opts.arch === 'all') && semver.lt(opts.version, '0.29.0')) {
+    archs = archs.filter(function removeArm (arch) {
+      return arch !== 'arm'
+    })
+  }
+  var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
   if (!Array.isArray(archs)) return cb(new Error(archs))
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
 
