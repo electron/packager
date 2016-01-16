@@ -38,11 +38,13 @@
     "rcinfo": "^0.1.3"
   },
   "scripts": {
+    "pretest": "rimraf test/work",
     "test": "standard && tape test"
   },
   "standard": {
     "ignore": [
-      "test/fixtures/**/node_modules"
+      "test/fixtures/**/node_modules",
+      "test/work"
     ]
   }
 }
