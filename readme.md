@@ -99,6 +99,13 @@ packager(opts, function done (err, appPath) { })
 
 **Required**
 
+`arch` - *String*
+
+  Allowed values: *ia32, x64, all*
+
+  Not required if `all` is used.
+  The non-`all` values correspond to the architecture names used by [Electron releases](https://github.com/atom/electron/releases).
+
 `dir` - *String*
 
   The source directory.
@@ -111,21 +118,7 @@ packager(opts, function done (err, appPath) { })
   Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
   The non-`all` values correspond to the platform names used by [Electron releases](https://github.com/atom/electron/releases).
 
-`arch` - *String*
-
-  Allowed values: *ia32, x64, all*
-
-  Not required if `all` is used.
-  The non-`all` values correspond to the architecture names used by [Electron releases](https://github.com/atom/electron/releases).
-
 **Optional**
-
-`name` - *String*  
-  The application name. If omitted, it will use the "productName" or "name" of the nearest package.json.
-
-`version` - *String*
-
-  The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
 
 `all` - *Boolean*
 
@@ -150,7 +143,7 @@ packager(opts, function done (err, appPath) { })
 `asar` - *Boolean*
 
   Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/atom/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
-  
+
   Defaults to `false`.
 
 `asar-unpack` - *String*
@@ -188,6 +181,9 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   A pattern which specifies which files to ignore when copying files to create the package(s).
 
+`name` - *String*
+  The application name. If omitted, it will use the "productName" or "name" of the nearest package.json.
+
 `out` - *String*
 
   The base directory where the finished package(s) are created. Defaults to the current working directory.
@@ -207,6 +203,10 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 `strict-ssl` - *Boolean*
 
   Whether SSL certificates are required to be valid when downloading Electron. **Defaults to `true`**.
+
+`version` - *String*
+
+  The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
 
 `version-string` - *Object*
 
