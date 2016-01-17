@@ -16,7 +16,7 @@ if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes
   })
 }
 
-if (!args.dir || !args.name || !args.version || (!args.all && (!args.platform || !args.arch))) {
+if (!args.dir || (!args.all && (!args.platform || !args.arch))) {
   console.error(usage)
   process.exit(1)
 }

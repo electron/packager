@@ -39,6 +39,8 @@ This will:
 
 For details on the optional flags, run `electron-packager --help` or see [usage.txt](https://github.com/maxogden/electron-packager/blob/master/usage.txt).
 
+If appname is omitted, this will use the name specified by "productName" or "name" in the nearest package.json. If version is omitted, it will use the version of the nearest installed electron-prebuilt dependency.
+
 You should be able to launch the app on the platform you built for. If not, check your settings and try again.
 
 **Be careful** not to include `node_modules` you don't want into your final app. `electron-packager`, `electron-prebuilt` and `.git` will be ignored by default. You can use `--ignore` to ignore files and folders via a regular expression. For example, `--ignore=node_modules/electron-packager` or `--ignore="node_modules/(electron-packager|electron-prebuilt)"`.
@@ -101,10 +103,6 @@ packager(opts, function done (err, appPath) { })
 
   The source directory.
 
-`name` - *String*
-
-  The application name.
-
 `platform` - *String*
 
   Allowed values: *linux, win32, darwin, all*
@@ -120,11 +118,14 @@ packager(opts, function done (err, appPath) { })
   Not required if `all` is used.
   The non-`all` values correspond to the architecture names used by [Electron releases](https://github.com/atom/electron/releases).
 
+**Optional**
+
+`name` - *String*  
+  The application name. If omitted, it will use the "productName" or "name" of the nearest package.json.
+
 `version` - *String*
 
-  The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions.
-
-**Optional**
+  The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
 
 `all` - *Boolean*
 
