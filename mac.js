@@ -61,7 +61,7 @@ module.exports = {
       }
 
       if (opts.protocols) {
-        helperPlist.CFBundleURLTypes = appPlist.CFBundleURLTypes = opts.protocols.map(function (protocol) {
+        appPlist.CFBundleURLTypes = opts.protocols.map(function (protocol) {
           return {
             CFBundleURLName: protocol.name,
             CFBundleURLSchemes: [].concat(protocol.schemes)
