@@ -131,7 +131,7 @@ function createSeries (opts, archs, platforms) {
         ]
 
         function createApp (comboOpts) {
-          console.error('Packaging app for platform', platform + ' ' + arch, 'using electron v' + version)
+          console.log('Packaging app for platform', platform + ' ' + arch, 'using electron v' + version)
           series(operations, function () {
             require(supportedPlatforms[platform]).createApp(comboOpts, tmpDir, callback)
           })
