@@ -8,6 +8,7 @@ var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var series = require('run-series')
 var resolve = require('resolve')
+var latestVersion = require('latest-version')
 var getPackageInfo = require('get-package-info')
 var common = require('./common')
 
@@ -176,6 +177,22 @@ function createSeries (opts, archs, platforms) {
   }))
 }
 
+function ignoreAndCreateSeries (opts, archs, platforms, cb) {
+  // Ignore this and related modules by default
+  var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)', '/node_modules/\\.bin($|/)']
+  if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
+  opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+
+  series(createSeries(opts, archs, platforms), function (err, appPaths) {
+    if (err) return cb(err)
+
+    cb(null, appPaths.filter(function (appPath) {
+      // Remove falsy entries (e.g. skipped platforms)
+      return appPath
+    }))
+  })
+}
+
 module.exports = function packager (opts, cb) {
   var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
   var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
@@ -184,22 +201,15 @@ module.exports = function packager (opts, cb) {
 
   getNameAndVersion(opts, opts.dir || process.cwd(), function (err) {
     if (err) {
-      err.message = 'Unable to infer name or version. Please specify a name and version.\n' + err.message
-      return cb(err)
+      // get the latest version of electron-prebuilt from the web
+      latestVersion('electron-prebuilt').then(function (version) {
+        opts.version = version
+        ignoreAndCreateSeries(opts, archs, platforms, cb)
+      }).catch(function (err) {
+        return cb('Unable to determine latest electron version, please specify it. \n' + err)
+      })
+    } else {
+      ignoreAndCreateSeries(opts, archs, platforms, cb)
     }
-    // Ignore this and related modules by default
-    var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)', '/node_modules/\\.bin($|/)']
-    if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-    opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
-
-    series(createSeries(opts, archs, platforms), function (err, appPaths) {
-      if (err) return cb(err)
-
-      cb(null, appPaths.filter(function (appPath) {
-        // Remove falsy entries (e.g. skipped platforms)
-        return appPath
-      }))
-    })
   })
-
 }

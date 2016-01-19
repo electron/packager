@@ -29,7 +29,7 @@ npm install electron-packager -g
 Running electron-packager from the command line has this basic form:
 
 ```
-electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<Electron version> [optional flags...]
+electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
 
 This will:
@@ -206,7 +206,7 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `version` - *String*
 
-  The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
+  The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt or fall back to the latest version of electron-prebuilt on npm.
 
 `version-string` - *Object*
 
