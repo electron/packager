@@ -153,7 +153,7 @@ function createSeries (opts, archs, platforms) {
                 })
               } else {
                 console.error('Skipping ' + platform + ' ' + arch +
-                    ' (output dir already exists, use --overwrite to force)')
+                  ' (output dir already exists, use --overwrite to force)')
                 callback()
               }
             } else {
