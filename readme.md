@@ -204,6 +204,10 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   Whether SSL certificates are required to be valid when downloading Electron. **Defaults to `true`**.
 
+`tmpdir` - *String*
+
+  The base directory to use as a temp directory. Defaults to the system temp directory.
+
 `version` - *String*
 
   The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.

@@ -312,6 +312,32 @@ function createInferTest (combination) {
   }
 }
 
+function createTmpdirTest (combination) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var opts = Object.create(combination)
+    opts.name = 'basicTest'
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.out = 'dist'
+    opts.tmpdir = path.join(util.getWorkCwd(), 'tmp')
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        fs.stat(path.join(opts.tmpdir, 'electron-packager'), cb)
+      },
+      function (stats, cb) {
+        t.true(stats.isDirectory(), 'The expected temp directory should exist')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 util.testAllPlatforms('infer test', createInferTest)
 util.testAllPlatforms('defaults test', createDefaultsTest)
 util.testAllPlatforms('out test', createOutTest)
@@ -325,3 +351,4 @@ util.testAllPlatforms('ignore test: string with slash', createIgnoreTest, 'ignor
 util.testAllPlatforms('ignore test: only match subfolder of app', createIgnoreTest, 'electron-packager',
   path.join('electron-packager', 'readme.txt'))
 util.testAllPlatforms('overwrite test', createOverwriteTest)
+util.testAllPlatforms('tmpdir test', createTmpdirTest)
