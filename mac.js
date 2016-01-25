@@ -49,6 +49,7 @@ module.exports = {
       appPlist.CFBundleDisplayName = opts.name
       appPlist.CFBundleIdentifier = opts['app-bundle-id'] || defaultBundleName
       appPlist.CFBundleName = opts.name
+      appPlist.CFBundleExecutable = opts.name
       helperPlist.CFBundleIdentifier = opts['helper-bundle-id'] || defaultBundleName + '.helper'
       helperPlist.CFBundleName = opts.name
 
@@ -98,6 +99,12 @@ module.exports = {
       }, function (cb) {
         mv(path.dirname(contentsPath), finalAppPath, cb)
       })
+
+	  if (appPlist.CFBundleExecutable !== 'Electron') {
+	      operations.push(function (cb) {
+	        mv(tempPath + '/' + opts.name + '.app/Contents/MacOS/Electron', tempPath + '/' + opts.name + '.app/Contents/MacOS/' + appPlist.CFBundleExecutable, cb)
+	      })
+      }
 
       if (opts.sign) {
         operations.push(function (cb) {
