@@ -346,6 +346,7 @@ util.testAllPlatforms('prune test', createPruneTest)
 util.testAllPlatforms('ignore test: string in array', createIgnoreTest, ['ignorethis'], 'ignorethis.txt')
 util.testAllPlatforms('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
 util.testAllPlatforms('ignore test: RegExp', createIgnoreTest, /ignorethis/, 'ignorethis.txt')
+util.testAllPlatforms('ignore test: Function', createIgnoreTest, function (file) { return file.match(/ignorethis/) }, 'ignorethis.txt')
 util.testAllPlatforms('ignore test: string with slash', createIgnoreTest, 'ignore/this',
   path.join('ignore', 'this.txt'))
 util.testAllPlatforms('ignore test: only match subfolder of app', createIgnoreTest, 'electron-packager',
