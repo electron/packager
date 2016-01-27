@@ -30,22 +30,34 @@ function generateFinalPath (opts) {
 }
 
 function userIgnoreFilter (opts) {
+  var ignore = opts.ignore || []
+  var ignoreFunc = null
+
+  if (typeof (ignore) === 'function') {
+    ignoreFunc = function (file) { return !ignore(file) }
+  } else {
+    if (!Array.isArray(ignore)) ignore = [ignore]
+
+    ignoreFunc = function filterByRegexes (file) {
+      for (var i = 0; i < ignore.length; i++) {
+        if (file.match(ignore[i])) {
+          return false
+        }
+      }
+
+      return true
+    }
+  }
+
   return function filter (file) {
-    file = file.split(path.resolve(opts.dir))[1]
+    var name = file.split(path.resolve(opts.dir))[1]
 
     if (path.sep === '\\') {
       // convert slashes so unix-format ignores work
-      file = file.replace(/\\/g, '/')
+      name = name.replace(/\\/g, '/')
     }
 
-    var ignore = opts.ignore || []
-    if (!Array.isArray(ignore)) ignore = [ignore]
-    for (var i = 0; i < ignore.length; i++) {
-      if (file.match(ignore[i])) {
-        return false
-      }
-    }
-    return true
+    return ignoreFunc(name)
   }
 }
 

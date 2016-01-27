@@ -187,10 +187,14 @@ module.exports = function packager (opts, cb) {
       err.message = 'Unable to infer name or version. Please specify a name and version.\n' + err.message
       return cb(err)
     }
+
     // Ignore this and related modules by default
     var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\.git($|/)', '/node_modules/\\.bin($|/)']
-    if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-    opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+
+    if (typeof (opts.ignore) !== 'function') {
+      if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
+      opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+    }
 
     series(createSeries(opts, archs, platforms), function (err, appPaths) {
       if (err) return cb(err)
