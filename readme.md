@@ -177,9 +177,9 @@ packager(opts, function done (err, appPath) { })
 
 If the file extension is omitted, it is auto-completed to the correct extension based on the platform, including when `--platform=all` is in effect.
 
-`ignore` - *RegExp*
+`ignore` - *RegExp* or *Function*
 
-  A pattern which specifies which files to ignore when copying files to create the package(s).
+  A pattern which specifies which files to ignore when copying files to create the package(s). Alternatively, this can be a predicate function that, given the file path, returns true if the file should be ignored or false if the file should be kept.
 
 `name` - *String*
   The application name. If omitted, it will use the "productName" or "name" of the nearest package.json.
