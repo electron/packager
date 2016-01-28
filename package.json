@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "run-waterfall": "^1.1.1",
-    "standard": "^3.3.2",
+    "standard": "^5.4.1",
     "tape": "^4.0.0",
     "rcinfo": "^0.1.3"
   },

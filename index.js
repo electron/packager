@@ -205,5 +205,4 @@ module.exports = function packager (opts, cb) {
       }))
     })
   })
-
 }
