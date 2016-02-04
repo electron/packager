@@ -53,11 +53,11 @@ module.exports = {
       helperPlist.CFBundleName = opts.name
 
       if (appVersion) {
-        appPlist.CFBundleShortVersionString = appPlist.CFBundleVersion = appVersion
+        appPlist.CFBundleShortVersionString = appPlist.CFBundleVersion = '' + appVersion
       }
 
       if (buildVersion) {
-        appPlist.CFBundleVersion = buildVersion
+        appPlist.CFBundleVersion = '' + buildVersion
       }
 
       if (opts.protocols) {

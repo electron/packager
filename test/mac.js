@@ -69,8 +69,10 @@ function createAppVersionTest (appVersion, buildVersion) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.CFBundleVersion, opts['build-version'], 'CFBundleVersion should reflect build-version')
-        t.equal(obj.CFBundleShortVersionString, opts['app-version'], 'CFBundleShortVersionString should reflect app-version')
+        t.equal(obj.CFBundleVersion, '' + opts['build-version'], 'CFBundleVersion should reflect build-version')
+        t.equal(obj.CFBundleShortVersionString, '' + opts['app-version'], 'CFBundleShortVersionString should reflect app-version')
+        t.equal(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
+        t.equal(typeof obj.CFBundleShortVersionString, 'string', 'CFBundleShortVersionString should be a string')
         cb()
       }
     ], function (err) {
@@ -197,6 +199,10 @@ util.teardown()
 
 util.setup()
 test('app version test', createAppVersionTest('1.1.0'))
+util.teardown()
+
+util.setup()
+test('app and build version integer test', createAppVersionTest(12, 1234))
 util.teardown()
 
 util.setup()
