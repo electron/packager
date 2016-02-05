@@ -2,7 +2,8 @@
 var fs = require('fs')
 var args = require('minimist')(process.argv.slice(2), {boolean: ['prune', 'asar', 'all', 'overwrite', 'strict-ssl']})
 var packager = require('./')
-var usage = fs.readFileSync(__dirname + '/usage.txt').toString()
+var path = require('path')
+var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
 
 args.dir = args._[0]
 args.name = args._[1]
