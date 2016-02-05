@@ -61,12 +61,12 @@ foobar
 When one runs the following command for the first time in the `foobar` directory:
 
 ```
-electron-packager . FooBar --platform=darwin --arch=x64 --version=0.28.2
+electron-packager . FooBar --platform=darwin --arch=x64 --version=0.35.6
 ```
 
 `electron-packager` will do the following:
 
-* download Electron 0.28.2 for OS X on x64 (and cache the download in `~/.electron`)
+* download Electron 0.35.6 for OS X on x64 (and cache the download in `~/.electron`)
 * build the OS X `FooBar.app`
 * place `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified)
 
