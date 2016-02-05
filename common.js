@@ -49,7 +49,12 @@ function userIgnoreFilter (opts) {
     }
   }
 
+  var normalizedOut = opts.out ? path.resolve(opts.out) : null
   return function filter (file) {
+    if (normalizedOut === file) {
+      return false
+    }
+
     var name = file.split(path.resolve(opts.dir))[1]
 
     if (path.sep === '\\') {
