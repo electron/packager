@@ -50,8 +50,19 @@ function userIgnoreFilter (opts) {
   }
 
   var normalizedOut = opts.out ? path.resolve(opts.out) : null
+  var outIgnores = []
+  if (normalizedOut === null || normalizedOut === process.cwd()) {
+    ['darwin', 'linux', 'win32'].forEach(function (platform) {
+      ['ia32', 'x64'].forEach(function (arch) {
+        outIgnores.push(path.join(process.cwd(), opts.name + '-' + platform + '-' + arch))
+      })
+    })
+  } else {
+    outIgnores.push(normalizedOut)
+  }
+
   return function filter (file) {
-    if (normalizedOut === file) {
+    if (outIgnores.indexOf(file) !== -1) {
       return false
     }
 

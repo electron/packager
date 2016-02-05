@@ -1,5 +1,8 @@
 var fs = require('fs')
 var path = require('path')
+var mkdirp = require('mkdirp')
+var series = require('run-series')
+var ncp = require('ncp').ncp
 
 var packager = require('..')
 var waterfall = require('run-waterfall')
@@ -338,6 +341,93 @@ function createTmpdirTest (combination) {
   }
 }
 
+function createIgnoreOutDirTest (combination, distPath) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var opts = Object.create(combination)
+    opts.name = 'basicTest'
+    opts.version = combination.version
+
+    var appDir = util.getWorkCwd()
+    opts.dir = appDir
+    // we don't use path.join here to avoid normalizing
+    var outDir = opts.dir + path.sep + distPath
+    opts.out = outDir
+
+    series([
+      function (cb) {
+        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+          return path.basename(file) !== 'node_modules'
+        }}, cb)
+      },
+      function (cb) {
+        // create out dir before packager (real world issue - when second run includes uningnored out dir)
+        mkdirp(outDir, cb)
+      },
+      function (cb) {
+        // create file to ensure that directory will be not ignored because empty
+        fs.open(path.join(outDir, 'ignoreMe'), 'w', cb)
+      },
+      function (cb) {
+        packager(opts, cb)
+      },
+      function (cb) {
+        fs.exists(path.join(outDir, generateBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
+          t.false(exists, 'Out dir must not exist in output app directory')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createIgnoreImplicitOutDirTest (combination) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var opts = Object.create(combination)
+    opts.name = 'basicTest'
+    opts.version = combination.version
+
+    var appDir = util.getWorkCwd()
+    opts.dir = appDir
+    var outDir = opts.dir
+
+    var testFilename = 'ignoreMe'
+    var previousPackedResultDir
+
+    series([
+      function (cb) {
+        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+          return path.basename(file) !== 'node_modules'
+        }}, cb)
+      },
+      function (cb) {
+        previousPackedResultDir = path.join(outDir, opts.name + '-linux-ia32')
+        mkdirp(previousPackedResultDir, cb)
+      },
+      function (cb) {
+        // create file to ensure that directory will be not ignored because empty
+        fs.open(path.join(previousPackedResultDir, testFilename), 'w', cb)
+      },
+      function (cb) {
+        packager(opts, cb)
+      },
+      function (cb) {
+        fs.exists(path.join(outDir, generateBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
+          t.false(exists, 'Out dir must not exist in output app directory')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 util.testAllPlatforms('infer test', createInferTest)
 util.testAllPlatforms('defaults test', createDefaultsTest)
 util.testAllPlatforms('out test', createOutTest)
@@ -353,3 +443,6 @@ util.testAllPlatforms('ignore test: only match subfolder of app', createIgnoreTe
   path.join('electron-packager', 'readme.txt'))
 util.testAllPlatforms('overwrite test', createOverwriteTest)
 util.testAllPlatforms('tmpdir test', createTmpdirTest)
+util.testAllPlatforms('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
+util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
+util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)
