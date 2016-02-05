@@ -1,12 +1,11 @@
-Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<Electron version>
+Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch>
 
 Required options
 
 platform           all, or one or more of: linux, win32, darwin (comma-delimited if multiple)
 arch               all, ia32, x64
-version            the version of Electron that is being packaged, see https://github.com/atom/electron/releases
 
-Example            electron-packager ./ FooBar --platform=darwin --arch=x64 --version=0.28.2
+Example            electron-packager ./ FooBar --platform=darwin --arch=x64
 
 Optional options
 
@@ -31,6 +30,7 @@ sign               should contain the identity to be used when running `codesign
 strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
                    It defaults to true, use --strict-ssl=false to disable checks.
 tmpdir             temp directory. Defaults to system temp directory.
+version            the version of Electron that is being packaged, see https://github.com/atom/electron/releases
 version-string     should contain a hash of the application metadata to be embedded into the executable (win32 platform only).
                    These can be specified on the command line via dot notation,
                    e.g. --version-string.CompanyName="Company Inc." --version-string.ProductName="Product"
