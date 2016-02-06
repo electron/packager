@@ -3,6 +3,7 @@
 Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line. Supports building Windows, Linux or Mac executables.
 
 [![Build Status](https://travis-ci.org/maxogden/electron-packager.svg?branch=master)](https://travis-ci.org/maxogden/electron-packager)
+[![Coverage Status](https://coveralls.io/repos/github/maxogden/electron-packager/badge.svg?branch=master)](https://coveralls.io/github/maxogden/electron-packager?branch=master)
 
 ## About
 
