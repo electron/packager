@@ -12,3 +12,8 @@ addons:
   apt:
     packages:
     - wine
+after_success: npm run coveralls
+env:
+  global:
+    # coveralls token
+    secure: F5+K6BwGHqCV1oLv8DyDd7w8R2zAHsIksK9R9hnfFj31aQ+FqK2cfU9FInFdMtoCJM/Y01J5HcpnNNk+/88JKQ5tV+8uaIey7tlHZ+gLpbecMAIGBlkkx5nbaFVCTKiHbCdvK1dffKdFi0gbLIFQPNZWWvbrxXS191KPEIuL9EE=
