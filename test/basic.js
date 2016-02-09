@@ -25,11 +25,10 @@ function generateNamePath (opts) {
   return opts.name + (opts.platform === 'win32' ? '.exe' : '')
 }
 
-function createDefaultsTest (combination) {
+function createDefaultsTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
@@ -83,11 +82,10 @@ function createDefaultsTest (combination) {
   }
 }
 
-function createOutTest (combination) {
+function createOutTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
@@ -115,11 +113,10 @@ function createOutTest (combination) {
   }
 }
 
-function createAsarTest (combination) {
+function createAsarTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.asar = true
@@ -160,11 +157,10 @@ function createAsarTest (combination) {
   }
 }
 
-function createPruneTest (combination) {
+function createPruneTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.prune = true
@@ -198,11 +194,10 @@ function createPruneTest (combination) {
   }
 }
 
-function createIgnoreTest (combination, ignorePattern, ignoredFile) {
+function createIgnoreTest (opts, ignorePattern, ignoredFile) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.ignore = ignorePattern
@@ -228,11 +223,10 @@ function createIgnoreTest (combination, ignorePattern, ignoredFile) {
   }
 }
 
-function createOverwriteTest (combination) {
+function createOverwriteTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
@@ -272,13 +266,12 @@ function createOverwriteTest (combination) {
   }
 }
 
-function createInferTest (combination) {
+function createInferTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
     // Don't specify name or version
-    delete combination.version
-    var opts = Object.create(combination)
+    delete opts.version
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
     var finalPath
@@ -315,11 +308,10 @@ function createInferTest (combination) {
   }
 }
 
-function createTmpdirTest (combination) {
+function createTmpdirTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
@@ -341,13 +333,11 @@ function createTmpdirTest (combination) {
   }
 }
 
-function createIgnoreOutDirTest (combination, distPath) {
+function createIgnoreOutDirTest (opts, distPath) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
-    opts.version = combination.version
 
     var appDir = util.getWorkCwd()
     opts.dir = appDir
@@ -384,13 +374,11 @@ function createIgnoreOutDirTest (combination, distPath) {
   }
 }
 
-function createIgnoreImplicitOutDirTest (combination) {
+function createIgnoreImplicitOutDirTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
-    opts.version = combination.version
 
     var appDir = util.getWorkCwd()
     opts.dir = appDir

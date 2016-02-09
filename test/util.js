@@ -6,6 +6,7 @@ var download = require('electron-download')
 var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var series = require('run-series')
+var objectAssign = require('object-assign')
 
 var ORIGINAL_CWD = process.cwd()
 var WORK_CWD = path.join(__dirname, 'work')
@@ -102,7 +103,7 @@ exports.testAllPlatforms = function testAllPlatforms (name, createTest /*, ...cr
   exports.setup()
   exports.forEachCombination(function (combination) {
     test(name + ': ' + combination.platform + '-' + combination.arch,
-      createTest.apply(null, [combination].concat(args)))
+      createTest.apply(null, [objectAssign({}, combination)].concat(args)))
   })
   exports.teardown()
 }
