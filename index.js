@@ -11,10 +11,10 @@ var resolve = require('resolve')
 var getPackageInfo = require('get-package-info')
 var common = require('./common')
 
-var supportedArchs = {
-  ia32: 1,
-  x64: 1
-}
+var supportedArchs = common.archs.reduce(function (result, arch) {
+  result[arch] = 1
+  return result
+}, {})
 
 var supportedPlatforms = {
   // Maps to module ID for each platform (lazy-required if used)

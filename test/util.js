@@ -11,18 +11,17 @@ var objectAssign = require('object-assign')
 var ORIGINAL_CWD = process.cwd()
 var WORK_CWD = path.join(__dirname, 'work')
 
-var archs = ['ia32', 'x64']
-var platforms = ['darwin', 'linux', 'mas', 'win32']
 var slice = Array.prototype.slice
 var version = require('./config.json').version
+var common = require('../common')
 
 function isPlatformMac (platform) {
   return platform === 'darwin' || platform === 'mas'
 }
 
 var combinations = []
-archs.forEach(function (arch) {
-  platforms.forEach(function (platform) {
+common.archs.forEach(function (arch) {
+  common.platforms.forEach(function (platform) {
     // Electron does not have 32-bit releases for Mac OS X, so skip that combination
     // Also skip testing darwin/mas target on Windows since electron-packager itself skips it
     // (see https://github.com/electron-userland/electron-packager/issues/71)
