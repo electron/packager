@@ -1,3 +1,18 @@
+# Contributing to electron-packager
+
+electron-packager is a community-driven project. As such, we welcome and encourage all sorts of
+contributions. They include, but are not limited to:
+
+- Constructive feedback
+- Questions about usage
+- [Bug reports / technical issues](#before-opening-bug-reportstechnical-issues)
+- Documentation changes
+- Feature requests
+- [Pull requests](#filing-pull-requests)
+
+We strongly suggest that before filing an issue, you search through the existing issues to see
+if it has already been filed by someone else.
+
 ## Before opening bug reports/technical issues:
 
 Please provide **all of the following information** in your new issue (use this as a template):
@@ -6,9 +21,49 @@ Please provide **all of the following information** in your new issue (use this 
 - What cli arguments are you passing?
 - What platform are you running electron-packager on? What platform(s) are you building for?
 - Is there a stack trace in the error message you're seeing?
-- If possible, please provide instructions to reproduce your problem
+- When possible, please provide instructions to reproduce your problem
 
 Thanks!
+
+## Filing Pull Requests
+
+Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
+
+* Travis CI is used to make sure that the project builds packages as expected on the supported
+  platforms, using supported Node.js versions.
+* Unless it's impractical, please write tests for your changes. This will help us so that we can
+  spot regressions much easier.
+* If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
+  the package's documentation. Files that will likely need to be updated include `readme.md` and
+  `usage.txt`.
+* This project uses the [JavaScript Standard Style](https://www.npmjs.com/package/standard) as a
+  coding convention. CI will fail if the PR does not conform to this standard.
+* One of the philosophies of the project is to keep the code base as small as possible. If you are
+  adding a new feature, think about whether it is appropriate to go into a separate Node module,
+  and then be integrated into this project.
+* Please make sure your commits are rebased onto the latest commit in the master branch, and that
+  you limit/squash the number of commits created to a "feature"-level. For instance:
+
+bad:
+
+```
+commit 1: add foo option
+commit 2: standardize code
+commit 3: add test
+commit 4: add docs
+commit 5: add bar option
+commit 6: add test + docs
+```
+
+good:
+
+```
+commit 1: add foo option
+commit 2: add bar option
+```
+
+If you are continuing the work of another person's PR and need to rebase/squash, please retain the
+attribution of the original author(s) and continue the work in subsequent commits.
 
 ## For Collaborators
 
