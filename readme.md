@@ -174,7 +174,7 @@ packager(opts, function done (err, appPath) { })
 
   - OS X: `.icns`
   - Windows: `.ico` ([See below](#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
-  - Linux: this option is not required, as the dock/window list icon is set via [the icon option in the BrowserWindow contructor](http://electron.atom.io/docs/v0.30.0/api/browser-window/#new-browserwindow-options). Setting the icon in the file manager is not currently supported.
+  - Linux: this option is not required, as the dock/window list icon is set via [the icon option in the BrowserWindow constructor](http://electron.atom.io/docs/v0.30.0/api/browser-window/#new-browserwindow-options). Setting the icon in the file manager is not currently supported.
 
 If the file extension is omitted, it is auto-completed to the correct extension based on the platform, including when `--platform=all` is in effect.
 
