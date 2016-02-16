@@ -103,103 +103,103 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
 
 // Share testing script with platform darwin and mas
 module.exports = function (baseOpts) {
-util.setup()
-test('helper app paths test', function (t) {
-  t.timeoutAfter(config.timeout)
+  util.setup()
+  test('helper app paths test', function (t) {
+    t.timeoutAfter(config.timeout)
 
-  function getHelperExecutablePath (helperName) {
-    return path.join(helperName + '.app', 'Contents', 'MacOS', helperName)
-  }
-
-  var opts = Object.create(baseOpts)
-  var frameworksPath
-
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (paths, cb) {
-      frameworksPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Frameworks')
-      // main Helper.app is already tested in basic test suite; test its executable and the other helpers
-      fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper')), cb)
-    }, function (stats, cb) {
-      t.true(stats.isFile(), 'The Helper.app executable should reflect opts.name')
-      fs.stat(path.join(frameworksPath, opts.name + ' Helper EH.app'), cb)
-    }, function (stats, cb) {
-      t.true(stats.isDirectory(), 'The Helper EH.app should reflect opts.name')
-      fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper EH')), cb)
-    }, function (stats, cb) {
-      t.true(stats.isFile(), 'The Helper EH.app executable should reflect opts.name')
-      fs.stat(path.join(frameworksPath, opts.name + ' Helper NP.app'), cb)
-    }, function (stats, cb) {
-      t.true(stats.isDirectory(), 'The Helper NP.app should reflect opts.name')
-      fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper NP')), cb)
-    }, function (stats, cb) {
-      t.true(stats.isFile(), 'The Helper NP.app executable should reflect opts.name')
-      cb()
+    function getHelperExecutablePath (helperName) {
+      return path.join(helperName + '.app', 'Contents', 'MacOS', helperName)
     }
-  ], function (err) {
-    t.end(err)
+
+    var opts = Object.create(baseOpts)
+    var frameworksPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        frameworksPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Frameworks')
+        // main Helper.app is already tested in basic test suite; test its executable and the other helpers
+        fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper')), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The Helper.app executable should reflect opts.name')
+        fs.stat(path.join(frameworksPath, opts.name + ' Helper EH.app'), cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The Helper EH.app should reflect opts.name')
+        fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper EH')), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The Helper EH.app executable should reflect opts.name')
+        fs.stat(path.join(frameworksPath, opts.name + ' Helper NP.app'), cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The Helper NP.app should reflect opts.name')
+        fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper NP')), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The Helper NP.app executable should reflect opts.name')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
   })
-})
-util.teardown()
+  util.teardown()
 
-var iconBase = path.join(__dirname, 'fixtures', 'monochrome')
-var icnsPath = iconBase + '.icns'
-util.setup()
-test('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
-util.teardown()
+  var iconBase = path.join(__dirname, 'fixtures', 'monochrome')
+  var icnsPath = iconBase + '.icns'
+  util.setup()
+  test('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
+  util.teardown()
 
-util.setup()
-test('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
-util.teardown()
+  util.setup()
+  test('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
+  util.teardown()
 
-util.setup()
-test('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
-util.teardown()
+  util.setup()
+  test('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
+  util.teardown()
 
-util.setup()
-test('codesign test', function (t) {
-  t.timeoutAfter(config.timeout)
+  util.setup()
+  test('codesign test', function (t) {
+    t.timeoutAfter(config.timeout)
 
-  var opts = Object.create(baseOpts)
-  opts.sign = true // Ad-hoc
+    var opts = Object.create(baseOpts)
+    opts.sign = true // Ad-hoc
 
-  var appPath
+    var appPath
 
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (paths, cb) {
-      appPath = path.join(paths[0], opts.name + '.app')
-      fs.stat(appPath, cb)
-    }, function (stats, cb) {
-      t.true(stats.isDirectory(), 'The expected .app directory should exist')
-      exec('codesign -v ' + appPath, cb)
-    }, function (stdout, stderr, cb) {
-      t.pass('codesign should verify successfully')
-      cb()
-    }
-  ], function (err) {
-    var notFound = err && err.code === 127
-    if (notFound) console.log('codesign not installed; skipped')
-    t.end(notFound ? null : err)
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        appPath = path.join(paths[0], opts.name + '.app')
+        fs.stat(appPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The expected .app directory should exist')
+        exec('codesign -v ' + appPath, cb)
+      }, function (stdout, stderr, cb) {
+        t.pass('codesign should verify successfully')
+        cb()
+      }
+    ], function (err) {
+      var notFound = err && err.code === 127
+      if (notFound) console.log('codesign not installed; skipped')
+      t.end(notFound ? null : err)
+    })
   })
-})
-util.teardown()
+  util.teardown()
 
-util.setup()
-test('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
-util.teardown()
+  util.setup()
+  test('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
+  util.teardown()
 
-util.setup()
-test('app version test', createAppVersionTest(baseOpts, '1.1.0'))
-util.teardown()
+  util.setup()
+  test('app version test', createAppVersionTest(baseOpts, '1.1.0'))
+  util.teardown()
 
-util.setup()
-test('app and build version integer test', createAppVersionTest(baseOpts, 12, 1234))
-util.teardown()
+  util.setup()
+  test('app and build version integer test', createAppVersionTest(baseOpts, 12, 1234))
+  util.teardown()
 
-util.setup()
-test('app categoryType test', createAppCategoryTypeTest(baseOpts, 'public.app-category.developer-tools'))
-util.teardown()
+  util.setup()
+  test('app categoryType test', createAppCategoryTypeTest(baseOpts, 'public.app-category.developer-tools'))
+  util.teardown()
 }
