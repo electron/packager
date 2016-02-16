@@ -20,7 +20,12 @@ var supportedPlatforms = {
   // Maps to module ID for each platform (lazy-required if used)
   darwin: './mac',
   linux: './linux',
+  mas: './mac', // map to darwin
   win32: './win32'
+}
+
+function isPlatformMac (platform) {
+  return platform === 'darwin' || platform === 'mas'
 }
 
 function validateList (list, supported, name) {
@@ -95,7 +100,7 @@ function createSeries (opts, archs, platforms) {
   archs.forEach(function (arch) {
     platforms.forEach(function (platform) {
       // Electron does not have 32-bit releases for Mac OS X, so skip that combination
-      if (platform === 'darwin' && arch === 'ia32') return
+      if (isPlatformMac(platform) && arch === 'ia32') return
       combinations.push({
         platform: platform,
         arch: arch,
@@ -161,11 +166,11 @@ function createSeries (opts, archs, platforms) {
           })
         }
 
-        if (combination.platform === 'darwin') {
+        if (isPlatformMac(combination.platform)) {
           testSymlink(function (result) {
             if (result) return checkOverwrite()
 
-            console.error('Cannot create symlinks; skipping darwin platform')
+            console.error('Cannot create symlinks; skipping ' + combination.platform + ' platform')
             callback()
           })
         } else {

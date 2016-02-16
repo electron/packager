@@ -10,15 +10,7 @@ var config = require('./config.json')
 var util = require('./util')
 var plist = require('plist')
 
-var baseOpts = {
-  name: 'basicTest',
-  dir: path.join(__dirname, 'fixtures', 'basic'),
-  version: config.version,
-  arch: 'x64',
-  platform: 'darwin'
-}
-
-function createIconTest (icon, iconPath) {
+function createIconTest (baseOpts, icon, iconPath) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
@@ -46,7 +38,7 @@ function createIconTest (icon, iconPath) {
   }
 }
 
-function createAppVersionTest (appVersion, buildVersion) {
+function createAppVersionTest (baseOpts, appVersion, buildVersion) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
@@ -81,7 +73,7 @@ function createAppVersionTest (appVersion, buildVersion) {
   }
 }
 
-function createAppCategoryTypeTest (appCategoryType) {
+function createAppCategoryTypeTest (baseOpts, appCategoryType) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
@@ -109,6 +101,8 @@ function createAppCategoryTypeTest (appCategoryType) {
   }
 }
 
+// Share testing script with platform darwin and mas
+module.exports = function (baseOpts) {
 util.setup()
 test('helper app paths test', function (t) {
   t.timeoutAfter(config.timeout)
@@ -152,15 +146,15 @@ util.teardown()
 var iconBase = path.join(__dirname, 'fixtures', 'monochrome')
 var icnsPath = iconBase + '.icns'
 util.setup()
-test('icon test: .icns specified', createIconTest(icnsPath, icnsPath))
+test('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
 util.teardown()
 
 util.setup()
-test('icon test: .ico specified (should replace with .icns)', createIconTest(iconBase + '.ico', icnsPath))
+test('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
 util.teardown()
 
 util.setup()
-test('icon test: basename only (should add .icns)', createIconTest(iconBase, icnsPath))
+test('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
 util.teardown()
 
 util.setup()
@@ -168,7 +162,7 @@ test('codesign test', function (t) {
   t.timeoutAfter(config.timeout)
 
   var opts = Object.create(baseOpts)
-  opts.sign = '-' // Ad-hoc
+  opts.sign = true // Ad-hoc
 
   var appPath
 
@@ -180,7 +174,7 @@ test('codesign test', function (t) {
       fs.stat(appPath, cb)
     }, function (stats, cb) {
       t.true(stats.isDirectory(), 'The expected .app directory should exist')
-      exec('codesign --verify --deep ' + appPath, cb)
+      exec('codesign -v ' + appPath, cb)
     }, function (stdout, stderr, cb) {
       t.pass('codesign should verify successfully')
       cb()
@@ -194,17 +188,18 @@ test('codesign test', function (t) {
 util.teardown()
 
 util.setup()
-test('app and build version test', createAppVersionTest('1.1.0', '1.1.0.1234'))
+test('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
 util.teardown()
 
 util.setup()
-test('app version test', createAppVersionTest('1.1.0'))
+test('app version test', createAppVersionTest(baseOpts, '1.1.0'))
 util.teardown()
 
 util.setup()
-test('app and build version integer test', createAppVersionTest(12, 1234))
+test('app and build version integer test', createAppVersionTest(baseOpts, 12, 1234))
 util.teardown()
 
 util.setup()
-test('app categoryType test', createAppCategoryTypeTest('public.app-category.developer-tools'))
+test('app categoryType test', createAppCategoryTypeTest(baseOpts, 'public.app-category.developer-tools'))
 util.teardown()
+}

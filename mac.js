@@ -1,12 +1,12 @@
 var path = require('path')
 var fs = require('fs')
-var child = require('child_process')
 
 var plist = require('plist')
 var mv = require('mv')
 var ncp = require('ncp').ncp
 var series = require('run-series')
 var common = require('./common')
+var sign = require('electron-osx-sign')
 
 function moveHelpers (frameworksPath, appName, callback) {
   function rename (basePath, oldName, newName, cb) {
@@ -101,7 +101,23 @@ module.exports = {
 
       if (opts.sign) {
         operations.push(function (cb) {
-          child.exec('codesign --deep --force --sign "' + opts.sign + '" "' + finalAppPath + '"', cb)
+          sign({
+            app: finalAppPath,
+            platform: opts.platform,
+            // Take argument sign as signing identity:
+            // Provided in command line --sign, opts.sign will be recognized
+            // as boolean value true. Then fallback to null for auto discovery,
+            // otherwise provided signing certificate.
+            identity: opts.sign === true ? null : opts.sign,
+            entitlements: opts['sign-entitlements']
+          }, function (err) {
+            if (err) {
+              console.warn('Code sign failed; please retry manually.')
+              // Though not signed successfully, the application is packed.
+              // It might have to be signed for another time manually.
+            }
+            cb()
+          })
         })
       }
 

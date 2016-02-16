@@ -201,6 +201,10 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   The identity used when signing the package via `codesign`. (Only for the OS X target platform, when XCode is present on the build platform.)
 
+`sign-entitlements` - *String*
+
+  The path to entitlements used in signing. (Currently limited to Mac App Store distribution.)
+
 `strict-ssl` - *Boolean*
 
   Whether SSL certificates are required to be valid when downloading Electron. **Defaults to `true`**.

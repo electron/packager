@@ -11,17 +11,21 @@ var ORIGINAL_CWD = process.cwd()
 var WORK_CWD = path.join(__dirname, 'work')
 
 var archs = ['ia32', 'x64']
-var platforms = ['darwin', 'linux', 'win32']
+var platforms = ['darwin', 'linux', 'mas', 'win32']
 var slice = Array.prototype.slice
 var version = require('./config.json').version
+
+function isPlatformMac (platform) {
+  return platform === 'darwin' || platform === 'mas'
+}
 
 var combinations = []
 archs.forEach(function (arch) {
   platforms.forEach(function (platform) {
     // Electron does not have 32-bit releases for Mac OS X, so skip that combination
-    // Also skip testing darwin target on Windows since electron-packager itself skips it
+    // Also skip testing darwin/mas target on Windows since electron-packager itself skips it
     // (see https://github.com/maxogden/electron-packager/issues/71)
-    if (platform === 'darwin' && (arch === 'ia32' || require('os').platform() === 'win32')) return
+    if (isPlatformMac(platform) && (arch === 'ia32' || require('os').platform() === 'win32')) return
 
     combinations.push({
       arch: arch,
@@ -59,12 +63,16 @@ exports.forEachCombination = function forEachCombination (cb) {
 }
 
 exports.generateResourcesPath = function generateResourcesPath (opts) {
-  return opts.platform === 'darwin' ? path.join(opts.name + '.app', 'Contents', 'Resources') : 'resources'
+  return isPlatformMac(opts.platform)
+    ? path.join(opts.name + '.app', 'Contents', 'Resources')
+    : 'resources'
 }
 
 exports.getWorkCwd = function getWorkCwd () {
   return WORK_CWD
 }
+
+exports.isPlatformMac = isPlatformMac
 
 // tape doesn't seem to have a provision for before/beforeEach/afterEach/after,
 // so run setup/teardown and cleanup tasks as additional "tests" to put them in sequence
