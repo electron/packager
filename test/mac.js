@@ -215,6 +215,34 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
   }
 }
 
+function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var plistPath
+    var opts = Object.create(baseOpts)
+    opts['app-copyright'] = humanReadableCopyright
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        var obj = plist.parse(file)
+        t.equal(obj.NSHumanReadableCopyright, opts['app-copyright'], 'NSHumanReadableCopyright should reflect opts["app-copyright"]')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 // Share testing script with platform darwin and mas
 module.exports = function (baseOpts) {
   util.setup()
@@ -347,5 +375,9 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('app helpers bundle helper-bundle-id & app-bundle-id fallback test', createAppHelpersBundleTest(baseOpts))
+  util.teardown()
+
+  util.setup()
+  test('app humanReadableCopyright test', createAppHumanReadableCopyrightTest(baseOpts, 'Copyright © 2003–2015 Organization. All rights reserved.'))
   util.teardown()
 }

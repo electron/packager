@@ -137,6 +137,10 @@ packager(opts, function done (err, appPath) { })
 
   Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
 
+`app-copyright` - *String*
+
+  The copyrights string to use in the app plist, will be displayed in the application About box (OS X only).
+
 `app-version` - *String*
 
   The release version of the application. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.

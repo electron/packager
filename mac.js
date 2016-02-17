@@ -58,6 +58,7 @@ module.exports = {
       var appVersion = opts['app-version']
       var buildVersion = opts['build-version']
       var appCategoryType = opts['app-category-type']
+      var humanReadableCopyright = opts['app-copyright']
 
       appPlist.CFBundleDisplayName = opts.name
       appPlist.CFBundleIdentifier = appBundleIdentifier
@@ -94,6 +95,10 @@ module.exports = {
 
       if (appCategoryType) {
         appPlist.LSApplicationCategoryType = appCategoryType
+      }
+
+      if (humanReadableCopyright) {
+        appPlist.NSHumanReadableCopyright = humanReadableCopyright
       }
 
       fs.writeFileSync(appPlistFilename, plist.build(appPlist))
