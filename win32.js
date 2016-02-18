@@ -34,6 +34,10 @@ module.exports = {
               } else if (opts['version-string'].ProductVersion) {
                 rcOpts['product-version'] = opts['version-string'].ProductVersion
               }
+
+              if (opts['app-copyright']) {
+                rcOpts['version-string'].LegalCopyright = opts['app-copyright']
+              }
             }
 
             // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error

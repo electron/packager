@@ -91,6 +91,27 @@ function setAppAndProductVersionTest (appVersion, productVersion) {
   return generateVersionStringTest('ProductVersion', opts, appVersion, 'Product version should match app version')
 }
 
+function setLegalCopyrightTest (legalCopyright) {
+  var opts = {
+    'version-string': {
+      LegalCopyright: legalCopyright
+    }
+  }
+
+  return generateVersionStringTest('LegalCopyright', opts, legalCopyright, 'Legal copyright should match the value in version-string')
+}
+
+function setCopyrightOverrideTest (legalCopyright, appCopyright) {
+  var opts = {
+    'app-copyright': appCopyright,
+    'version-string': {
+      LegalCopyright: legalCopyright
+    }
+  }
+
+  return generateVersionStringTest('LegalCopyright', opts, appCopyright, 'Legal copyright should match app copyright')
+}
+
 util.setup()
 test('win32 file version test', setFileVersionTest('1.2.3.4'))
 util.teardown()
@@ -105,4 +126,12 @@ util.teardown()
 
 util.setup()
 test('win32 app version overrides product version test', setAppAndProductVersionTest('5.4.3.2', '4.3.2.1'))
+util.teardown()
+
+util.setup()
+test('win32 legal copyright test', setLegalCopyrightTest('Copyright Foo'))
+util.teardown()
+
+util.setup()
+test('win32 app copyright overrides LegalCopyright test', setCopyrightOverrideTest('Copyright Foo', 'Copyright Bar'))
 util.teardown()

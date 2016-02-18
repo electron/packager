@@ -16,6 +16,10 @@
 * [contributors] Add code coverage support via Coveralls (#257)
 * Better docs around contributing to the project (#258)
 
+### Deprecated
+
+* [win32] `version-string.LegalCopyright` is deprecated in favor of `app-copyright` (#268)
+
 ### Fixed
 
 * [darwin] Ensure `CFBundleVersion` and `CFBundleShortVersionString` are strings (#250)
