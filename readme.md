@@ -160,7 +160,7 @@ packager(opts, function done (err, appPath) { })
 
 `app-copyright` - *String*
 
-  The copyrights string to use in the app plist, will be displayed in the application About box (OS X only).
+  The human-readable copyright line to use in the app plist, will be displayed in the application About box (OS X only).
 
 `app-version` - *String*
 
