@@ -120,7 +120,10 @@ packager(opts, function done (err, appPath) { })
 
   Allowed values: *ia32, x64, all*
 
-  Not required if `all` is used.
+  The target system architecture(s) to build for.
+  Not required if the `all` option is set.
+  If `arch` is set to `all`, all supported architectures for the target platforms specified by `platform` will be built.
+  Arbitrary combinations of individual architectures are also supported via a comma-delimited string or array of strings.
   The non-`all` values correspond to the architecture names used by [Electron releases](https://github.com/atom/electron/releases).
 
 `dir` - *String*
@@ -129,9 +132,11 @@ packager(opts, function done (err, appPath) { })
 
 `platform` - *String*
 
-  Allowed values: *linux, win32, darwin, all*
+  Allowed values: *linux, win32, darwin, mas, all*
 
-  Not required if `all` is used.
+  The target platform(s) to build for.
+  Not required if the `all` option is set.
+  If `platform` is set to `all`, all [supported target platforms](#supported-platforms) for the target architectures specified by `arch` will be built.
   Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
   The non-`all` values correspond to the platform names used by [Electron releases](https://github.com/atom/electron/releases).
 
