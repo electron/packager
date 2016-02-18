@@ -2,7 +2,7 @@ Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arc
 
 Required options
 
-platform           all, or one or more of: linux, win32, darwin (comma-delimited if multiple)
+platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple)
 arch               all, ia32, x64
 
 Example            electron-packager ./ FooBar --platform=darwin --arch=x64
@@ -10,23 +10,25 @@ Example            electron-packager ./ FooBar --platform=darwin --arch=x64
 Optional options
 
 all                equivalent to --platform=all --arch=all
-app-bundle-id      bundle identifier to use in the app plist (darwin platform only)
-app-category-type  the application category type (darwin platform only).
+app-bundle-id      bundle identifier to use in the app plist (darwin/mas platform only)
+app-category-type  the application category type (darwin/mas platform only)
                    For example, `app-category-type=public.app-category.developer-tools` will set the application category to 'Developer Tools'.
+app-copyright      copyrights string to use in the app plist (darwin/mas platform only)
 app-version        release version to set for the app
 asar               packages the source code within your app into an archive
 asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match this string
 asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names match this string. It's relative to the <sourcedir>.
                    For example, `--asar-unpack-dir=sub_dir` will unpack the directory `/<sourcedir>/sub_dir`.
-build-version      build version to set for the app
+build-version      build version to set for the app (darwin/mas platform only)
 cache              directory of cached Electron downloads. Defaults to '$HOME/.electron'
-helper-bundle-id   bundle identifier to use in the app helper plist (darwin platform only)
+helper-bundle-id   bundle identifier to use in the app helper plist (darwin/mas platform only)
 icon               the icon file to use as the icon for the app. Note: Format depends on platform.
 ignore             do not copy files into app whose filenames regex .match this string
 out                the dir to put the app into at the end. defaults to current working dir
 overwrite          if output directory for a platform already exists, replaces it rather than skipping it
 prune              runs `npm prune --production` on the app
-sign               should contain the identity to be used when running `codesign` (only for building for the darwin platform, on OS X)
+sign               should contain the identity to be used when running `codesign` (only for building for the darwin/mas platform, on OS X)
+sign-entitlements  the path to entitlements used in signing (mas platform only)
 strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
                    It defaults to true, use --strict-ssl=false to disable checks.
 tmpdir             temp directory. Defaults to system temp directory.

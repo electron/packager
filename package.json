@@ -19,6 +19,7 @@
   "dependencies": {
     "asar": "^0.8.2",
     "electron-download": "^1.0.0",
+    "electron-osx-sign": "^0.1.6",
     "extract-zip": "^1.0.3",
     "get-package-info": "0.0.2",
     "minimist": "^1.1.1",

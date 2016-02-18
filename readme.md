@@ -1,6 +1,6 @@
 # electron-packager
 
-Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line. Supports building Windows, Linux or Mac executables.
+Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
 [![Build Status](https://travis-ci.org/maxogden/electron-packager.svg?branch=master)](https://travis-ci.org/maxogden/electron-packager)
 [![Coverage Status](https://coveralls.io/repos/github/maxogden/electron-packager/badge.svg?branch=master)](https://coveralls.io/github/maxogden/electron-packager?branch=master)
@@ -12,6 +12,22 @@ Electron Packager is a command line tool that packages electron app source code 
 This module was developed as part of [Dat](http://dat-data.com/), a grant funded non-profit open source project. It is maintained by volunteers. If you are benefitting from this module please consider making contributions back.
 
 Note that packaged Electron applications can be relatively large. A zipped barebones OS X Electron application is around 40MB.
+
+## Supported Platforms
+
+Electron Packager is known to run on the following **host** platforms:
+
+* Windows (32/64 bit)
+* OS X
+* Linux (x86/x86_64)
+
+It generates executables/bundles for the following **target** platforms:
+
+* Windows (also known as `win32`, for both 32/64 bit)
+* OS X (also known as `darwin`) / [Mac App Store](http://electron.atom.io/docs/v0.36.0/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
+* Linux (for both x86/x86_64)
+
+<sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
 
 ## Installation
 
@@ -137,6 +153,10 @@ packager(opts, function done (err, appPath) { })
 
   Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
 
+`app-copyright` - *String*
+
+  The copyrights string to use in the app plist, will be displayed in the application About box (OS X only).
+
 `app-version` - *String*
 
   The release version of the application. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
@@ -199,7 +219,11 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `sign` - *String*
 
-  The identity used when signing the package via `codesign`. (Only for the OS X target platform, when XCode is present on the build platform.)
+  The identity used when signing the package via `codesign`. (Only for the OS X / Mac App Store target platforms, when XCode is present on the host platform.)
+
+`sign-entitlements` - *String*
+
+  The path to entitlements used in signing. (Currently limited to Mac App Store distribution.)
 
 `strict-ssl` - *Boolean*
 
@@ -237,7 +261,7 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 ## Building Windows apps from non-Windows platforms
 
-Building an Electron app for the Windows platform with a custom icon requires editing the `Electron.exe` file. Currently, electron-packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish this. A Windows executable is bundled in that node package and needs to be run in order for this functionality to work, so on non-Windows platforms, [Wine](https://www.winehq.org/) needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
+Building an Electron app for the Windows platform with a custom icon requires editing the `Electron.exe` file. Currently, electron-packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish this. A Windows executable is bundled in that node package and needs to be run in order for this functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
 
 ## Related
 

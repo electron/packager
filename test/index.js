@@ -23,6 +23,7 @@ series([
 
   if (process.platform !== 'win32') {
     // Perform additional tests specific to building for OS X
-    require('./mac')
+    require('./darwin')
+    require('./mas')
   }
 })

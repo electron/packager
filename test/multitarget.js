@@ -38,8 +38,8 @@ test('all test', function (t) {
     function (cb) {
       packager(opts, cb)
     }, function (finalPaths, cb) {
-      // Windows skips packaging for OS X, and OS X only has 64-bit releases
-      t.equal(finalPaths.length, process.platform === 'win32' ? 4 : 5,
+      // Windows skips packaging for OS X (darwin + mas), and OS X only has 64-bit releases
+      t.equal(finalPaths.length, process.platform === 'win32' ? 4 : 6,
         'packager call should resolve with expected number of paths')
       verifyPackageExistence(finalPaths, cb)
     }, function (exists, cb) {
