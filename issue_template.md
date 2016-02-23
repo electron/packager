@@ -14,6 +14,12 @@
 
 
 
+> What version of [Electron](http://electron.atom.io) are you building with?
+<!-- The value of the version parameter, or the specific version of electron-prebuilt in
+     package.json -->
+
+
+
 > What is the host platform are you running electron-packager on?
 <!-- Please supply name, version, and architecture. -->
 
