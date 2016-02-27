@@ -2,16 +2,20 @@
 
 Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![Build Status](https://travis-ci.org/maxogden/electron-packager.svg?branch=master)](https://travis-ci.org/maxogden/electron-packager)
-[![Coverage Status](https://coveralls.io/repos/github/maxogden/electron-packager/badge.svg?branch=master)](https://coveralls.io/github/maxogden/electron-packager?branch=master)
+[![Build Status](https://travis-ci.org/electron-userland/electron-packager.svg?branch=master)](https://travis-ci.org/electron-userland/electron-packager)
+[![Coverage Status](https://coveralls.io/repos/github/electron-userland/electron-packager/badge.svg?branch=master)](https://coveralls.io/github/electron-userland/electron-packager?branch=master)
 
 ## About
 
 Electron Packager is a command line tool that packages electron app source code into executables like `.app` or `.exe` along with a copy of Electron.
 
-This module was developed as part of [Dat](http://dat-data.com/), a grant funded non-profit open source project. It is maintained by volunteers. If you are benefitting from this module please consider making contributions back.
-
 Note that packaged Electron applications can be relatively large. A zipped barebones OS X Electron application is around 40MB.
+
+### electron-packager [OPEN Open Source Project](http://openopensource.org/)
+
+Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
+
+See [CONTRIBUTING.md](contributing.md) and [openopensource.org](http://openopensource.org/) for more details.
 
 ## Supported Platforms
 
@@ -54,7 +58,7 @@ This will:
 - Find or download the correct release of Electron
 - Use that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
 
-For details on the optional flags, run `electron-packager --help` or see [usage.txt](https://github.com/maxogden/electron-packager/blob/master/usage.txt).
+For details on the optional flags, run `electron-packager --help` or see [usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt).
 
 If appname is omitted, this will use the name specified by "productName" or "name" in the nearest package.json. If version is omitted, it will use the version of the nearest installed electron-prebuilt dependency.
 

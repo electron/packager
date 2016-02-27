@@ -24,7 +24,7 @@ archs.forEach(function (arch) {
   platforms.forEach(function (platform) {
     // Electron does not have 32-bit releases for Mac OS X, so skip that combination
     // Also skip testing darwin/mas target on Windows since electron-packager itself skips it
-    // (see https://github.com/maxogden/electron-packager/issues/71)
+    // (see https://github.com/electron-userland/electron-packager/issues/71)
     if (isPlatformMac(platform) && (arch === 'ia32' || require('os').platform() === 'win32')) return
 
     combinations.push({

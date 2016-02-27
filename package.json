@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maxogden/electron-packager.git"
+    "url": "git+https://github.com/electron-userland/electron-packager.git"
   },
   "author": "max ogden",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/maxogden/electron-packager/issues"
+    "url": "https://github.com/electron-userland/electron-packager/issues"
   },
-  "homepage": "https://github.com/maxogden/electron-packager",
+  "homepage": "https://github.com/electron-userland/electron-packager",
   "dependencies": {
     "asar": "^0.8.2",
     "electron-download": "^1.0.0",
@@ -50,5 +50,9 @@
       "test/fixtures/**/node_modules",
       "test/work"
     ]
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "keywords": []
 }

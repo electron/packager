@@ -13,6 +13,7 @@ contributions. They include, but are not limited to:
 We strongly suggest that before filing an issue, you search through the existing issues to see
 if it has already been filed by someone else.
 
+
 ## Before opening bug reports/technical issues:
 
 Please provide **all of the following information** in your new issue (use this as a template):
