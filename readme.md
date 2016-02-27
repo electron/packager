@@ -11,7 +11,7 @@ Electron Packager is a command line tool that packages electron app source code 
 
 Note that packaged Electron applications can be relatively large. A zipped barebones OS X Electron application is around 40MB.
 
-### electron-packager [OPEN Open Source Project](http://openopensource.org/)
+### Electron Packager is an [OPEN Open Source Project](http://openopensource.org/)
 
 Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
 
