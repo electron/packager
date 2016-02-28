@@ -13,7 +13,7 @@ all                equivalent to --platform=all --arch=all
 app-bundle-id      bundle identifier to use in the app plist (darwin/mas platform only)
 app-category-type  the application category type (darwin/mas platform only)
                    For example, `app-category-type=public.app-category.developer-tools` will set the application category to 'Developer Tools'.
-app-copyright      human-readable copyright line to use in the app plist (darwin/mas platform only)
+app-copyright      human-readable copyright line for the app
 app-version        release version to set for the app
 asar               packages the source code within your app into an archive
 asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match this string
@@ -38,7 +38,7 @@ version-string     should contain a hash of the application metadata to be embed
                    e.g. --version-string.CompanyName="Company Inc." --version-string.ProductName="Product"
                    Keys supported:
                    - CompanyName
-                   - LegalCopyright
+                   - LegalCopyright (deprecated, use --app-copyright instead)
                    - FileDescription
                    - OriginalFilename
                    - FileVersion (deprecated, use --build-version instead)

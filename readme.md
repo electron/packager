@@ -164,7 +164,7 @@ packager(opts, function done (err, appPath) { })
 
 `app-copyright` - *String*
 
-  The human-readable copyright line to use in the app plist, will be displayed in the application About box (OS X only).
+  The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on OS X.
 
 `app-version` - *String*
 
@@ -250,7 +250,7 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   Object hash of application metadata to embed into the executable (Windows only):
   - `CompanyName`
-  - `LegalCopyright`
+  - `LegalCopyright` (**deprecated** and will be removed in a future major version, pleas use the top-level `app-copyright` parameter instead)
   - `FileDescription`
   - `OriginalFilename`
   - `FileVersion` (**deprecated** and will be removed in a future major version, please use the top-level `build-version` parameter instead)
