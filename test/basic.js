@@ -1,5 +1,8 @@
 var fs = require('fs')
 var path = require('path')
+var mkdirp = require('mkdirp')
+var series = require('run-series')
+var ncp = require('ncp').ncp
 
 var packager = require('..')
 var waterfall = require('run-waterfall')
@@ -22,11 +25,10 @@ function generateNamePath (opts) {
   return opts.name + (opts.platform === 'win32' ? '.exe' : '')
 }
 
-function createDefaultsTest (combination) {
+function createDefaultsTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
@@ -80,11 +82,10 @@ function createDefaultsTest (combination) {
   }
 }
 
-function createOutTest (combination) {
+function createOutTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
@@ -112,11 +113,10 @@ function createOutTest (combination) {
   }
 }
 
-function createAsarTest (combination) {
+function createAsarTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.asar = true
@@ -157,11 +157,10 @@ function createAsarTest (combination) {
   }
 }
 
-function createPruneTest (combination) {
+function createPruneTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.prune = true
@@ -195,11 +194,10 @@ function createPruneTest (combination) {
   }
 }
 
-function createIgnoreTest (combination, ignorePattern, ignoredFile) {
+function createIgnoreTest (opts, ignorePattern, ignoredFile) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.ignore = ignorePattern
@@ -225,11 +223,10 @@ function createIgnoreTest (combination, ignorePattern, ignoredFile) {
   }
 }
 
-function createOverwriteTest (combination) {
+function createOverwriteTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
@@ -269,13 +266,12 @@ function createOverwriteTest (combination) {
   }
 }
 
-function createInferTest (combination) {
+function createInferTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
     // Don't specify name or version
-    delete combination.version
-    var opts = Object.create(combination)
+    delete opts.version
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
     var finalPath
@@ -312,11 +308,10 @@ function createInferTest (combination) {
   }
 }
 
-function createTmpdirTest (combination) {
+function createTmpdirTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
@@ -331,6 +326,89 @@ function createTmpdirTest (combination) {
       function (stats, cb) {
         t.true(stats.isDirectory(), 'The expected temp directory should exist')
         cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createIgnoreOutDirTest (opts, distPath) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+
+    var appDir = util.getWorkCwd()
+    opts.dir = appDir
+    // we don't use path.join here to avoid normalizing
+    var outDir = opts.dir + path.sep + distPath
+    opts.out = outDir
+
+    series([
+      function (cb) {
+        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+          return path.basename(file) !== 'node_modules'
+        }}, cb)
+      },
+      function (cb) {
+        // create out dir before packager (real world issue - when second run includes uningnored out dir)
+        mkdirp(outDir, cb)
+      },
+      function (cb) {
+        // create file to ensure that directory will be not ignored because empty
+        fs.open(path.join(outDir, 'ignoreMe'), 'w', cb)
+      },
+      function (cb) {
+        packager(opts, cb)
+      },
+      function (cb) {
+        fs.exists(path.join(outDir, generateBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
+          t.false(exists, 'Out dir must not exist in output app directory')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createIgnoreImplicitOutDirTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+
+    var appDir = util.getWorkCwd()
+    opts.dir = appDir
+    var outDir = opts.dir
+
+    var testFilename = 'ignoreMe'
+    var previousPackedResultDir
+
+    series([
+      function (cb) {
+        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+          return path.basename(file) !== 'node_modules'
+        }}, cb)
+      },
+      function (cb) {
+        previousPackedResultDir = path.join(outDir, opts.name + '-linux-ia32')
+        mkdirp(previousPackedResultDir, cb)
+      },
+      function (cb) {
+        // create file to ensure that directory will be not ignored because empty
+        fs.open(path.join(previousPackedResultDir, testFilename), 'w', cb)
+      },
+      function (cb) {
+        packager(opts, cb)
+      },
+      function (cb) {
+        fs.exists(path.join(outDir, generateBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
+          t.false(exists, 'Out dir must not exist in output app directory')
+          cb()
+        })
       }
     ], function (err) {
       t.end(err)
@@ -353,3 +431,6 @@ util.testAllPlatforms('ignore test: only match subfolder of app', createIgnoreTe
   path.join('electron-packager', 'readme.txt'))
 util.testAllPlatforms('overwrite test', createOverwriteTest)
 util.testAllPlatforms('tmpdir test', createTmpdirTest)
+util.testAllPlatforms('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
+util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
+util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)

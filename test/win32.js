@@ -1,5 +1,6 @@
 var fs = require('fs')
 var path = require('path')
+var objectAssign = require('object-assign')
 
 var packager = require('..')
 var test = require('tape')
@@ -23,10 +24,7 @@ function generateVersionStringTest (metadata_property, extra_opts, expected_valu
     t.timeoutAfter(config.timeout)
 
     var appExePath
-    var opts = Object.create(baseOpts)
-    for (var opt_key in extra_opts) {
-      opts[opt_key] = extra_opts[opt_key]
-    }
+    var opts = objectAssign({}, baseOpts, extra_opts)
 
     waterfall([
       function (cb) {

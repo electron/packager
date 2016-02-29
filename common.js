@@ -9,6 +9,9 @@ var ncp = require('ncp').ncp
 var rimraf = require('rimraf')
 var series = require('run-series')
 
+var archs = ['ia32', 'x64']
+var platforms = ['darwin', 'linux', 'mas', 'win32']
+
 function asarApp (appPath, asarOptions, cb) {
   var src = path.join(appPath)
   var dest = path.join(appPath, '..', 'app.asar')
@@ -49,7 +52,23 @@ function userIgnoreFilter (opts) {
     }
   }
 
+  var normalizedOut = opts.out ? path.resolve(opts.out) : null
+  var outIgnores = []
+  if (normalizedOut === null || normalizedOut === process.cwd()) {
+    platforms.forEach(function (platform) {
+      archs.forEach(function (arch) {
+        outIgnores.push(path.join(process.cwd(), opts.name + '-' + platform + '-' + arch))
+      })
+    })
+  } else {
+    outIgnores.push(normalizedOut)
+  }
+
   return function filter (file) {
+    if (outIgnores.indexOf(file) !== -1) {
+      return false
+    }
+
     var name = file.split(path.resolve(opts.dir))[1]
 
     if (path.sep === '\\') {
@@ -62,6 +81,9 @@ function userIgnoreFilter (opts) {
 }
 
 module.exports = {
+  archs: archs,
+  platforms: platforms,
+
   generateFinalPath: generateFinalPath,
 
   initializeApp: function initializeApp (opts, templatePath, appRelativePath, callback) {

@@ -209,7 +209,7 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `ignore` - *RegExp* or *Function*
 
-  A pattern which specifies which files to ignore when copying files to create the package(s). Alternatively, this can be a predicate function that, given the file path, returns true if the file should be ignored or false if the file should be kept.
+  A pattern which specifies which files to ignore when copying files to create the package(s). `out` directory is ignored by default. Alternatively, this can be a predicate function that, given the file path, returns true if the file should be ignored or false if the file should be kept.
 
 `name` - *String*
   The application name. If omitted, it will use the "productName" or "name" of the nearest package.json.
