@@ -39,6 +39,113 @@ function createIconTest (baseOpts, icon, iconPath) {
   }
 }
 
+function createExtraResourceTest (baseOpts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var extra1Base = 'data1.txt'
+    var extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+
+    var opts = Object.create(baseOpts)
+    opts['extra-resource'] = extra1Path
+
+    var resourcesPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+        fs.stat(resourcesPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+        util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base), cb)
+      }, function (equal, cb) {
+        t.true(equal, 'resource file data1.txt should match')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createExtraResource2Test (baseOpts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var extra1Base = 'data1.txt'
+    var extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+    var extra2Base = 'extrainfo.plist'
+    var extra2Path = path.join(__dirname, 'fixtures', extra2Base)
+
+    var opts = Object.create(baseOpts)
+    opts['extra-resource'] = [ extra1Path, extra2Path ]
+
+    var resourcesPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+        fs.stat(resourcesPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+        util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base), cb)
+      }, function (equal, cb) {
+        t.true(equal, 'resource file data1.txt should match')
+        util.areFilesEqual(extra2Path, path.join(resourcesPath, extra2Base), cb)
+      }, function (equal, cb) {
+        t.true(equal, 'resource file extrainfo.plist should match')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createExtendInfoTest (baseOpts, extraPath) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var opts = Object.create(baseOpts)
+    opts['extend-info'] = extraPath
+    opts['build-version'] = '3.2.1'
+    opts['app-bundle-id'] = 'com.electron.extratest'
+    opts['app-category-type'] = 'public.app-category.music'
+
+    var plistPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        var obj = plist.parse(file)
+        t.equal(obj.TestKeyString, 'String data', 'TestKeyString should come from extend-info')
+        t.equal(obj.TestKeyInt, 12345, 'TestKeyInt should come from extend-info')
+        t.equal(obj.TestKeyBool, true, 'TestKeyBool should come from extend-info')
+        t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extend-info')
+        t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extend-info')
+        t.equal(obj.CFBundleVersion, opts['build-version'], 'CFBundleVersion should reflect build-version argument')
+        t.equal(obj.CFBundleIdentifier, 'com.electron.extratest', 'CFBundleIdentifier should reflect app-bundle-id argument')
+        t.equal(obj.LSApplicationCategoryType, 'public.app-category.music', 'LSApplicationCategoryType should reflect app-category-type argument')
+        t.equal(obj.CFBundlePackageType, 'APPL', 'CFBundlePackageType should be Electron default')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createAppVersionTest (baseOpts, appVersion, buildVersion) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -297,6 +404,19 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
+  util.teardown()
+
+  var extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
+  util.setup()
+  test('extend-info test', createExtendInfoTest(baseOpts, extraInfoPath))
+  util.teardown()
+
+  util.setup()
+  test('extra-resource test: one arg', createExtraResourceTest(baseOpts))
+  util.teardown()
+
+  util.setup()
+  test('extra-resource test: two arg', createExtraResource2Test(baseOpts))
   util.teardown()
 
   util.setup()

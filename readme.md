@@ -193,6 +193,14 @@ packager(opts, function done (err, appPath) { })
 
   The directory where prebuilt, pre-packaged Electron downloads are cached. Defaults to `$HOME/.electron`.
 
+`extend-info` - *String*
+
+  Filename of a plist file; the contents are added to the app's plist. Entries in `extend-info` override entries in the base plist file supplied by electron-prebuilt, but are overridden by other explicit arguments such as `app-version` or `app-bundle-id`. (OS X only)
+
+`extra-resource` - *String* or *Array*
+
+  Filename of a file to be copied directly into the app's `Contents/Resources` directory. (OS X only)
+
 `helper-bundle-id` - *String*
 
   The bundle identifier to use in the application helper's plist (OS X only).
