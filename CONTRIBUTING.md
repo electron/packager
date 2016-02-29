@@ -16,7 +16,15 @@ if it has already been filed by someone else.
 
 ## Before opening bug reports/technical issues
 
-Please provide **all of the information** that the new issue asks for in the description textarea.
+### Debugging
+
+One way to troubleshoot potential problems is to set the `DEBUG` environment variable before
+calling electron-packager. This will print debug information from the specified modules. The
+value of the environment variable is a comma-separated list of modules which support this logging
+feature. Known modules include:
+
+* `electron-download`
+* `extract-zip`
 
 ## Filing Pull Requests
 
