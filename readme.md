@@ -246,9 +246,9 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   Whether SSL certificates are required to be valid when downloading Electron. **Defaults to `true`**.
 
-`tmpdir` - *String*
+`tmpdir` - *String* or *false*
 
-  The base directory to use as a temp directory. Defaults to the system temp directory.
+  The base directory to use as a temp directory. Defaults to the system temp directory. Set to `false` to disable use of a temporary directory.
 
 `version` - *String*
 

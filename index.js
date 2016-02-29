@@ -1,11 +1,9 @@
 var path = require('path')
-var fs = require('fs')
+var fs = require('fs-extra')
 var os = require('os')
 
 var download = require('electron-download')
 var extract = require('extract-zip')
-var mkdirp = require('mkdirp')
-var rimraf = require('rimraf')
 var series = require('run-series')
 var resolve = require('resolve')
 var getPackageInfo = require('get-package-info')
@@ -80,17 +78,14 @@ function createSeries (opts, archs, platforms) {
     var testLink = path.join(testPath, 'testlink')
     series([
       function (cb) {
-        mkdirp(testPath, cb)
-      },
-      function (cb) {
-        fs.writeFile(testFile, '', cb)
+        fs.outputFile(testFile, '', cb)
       },
       function (cb) {
         fs.symlink(testFile, testLink, cb)
       }
     ], function (err) {
       var result = !err
-      rimraf(testPath, function () {
+      fs.remove(testPath, function () {
         cb(result) // ignore errors on cleanup
       })
     })
@@ -111,11 +106,14 @@ function createSeries (opts, archs, platforms) {
     })
   })
 
-  return [
-    function (cb) {
-      rimraf(tempBase, cb)
-    }
-  ].concat(combinations.map(function (combination) {
+  var tasks = []
+  var useTempDir = opts.tmpdir !== false
+  if (useTempDir) {
+    tasks.push(function (cb) {
+      fs.remove(tempBase, cb)
+    })
+  }
+  return tasks.concat(combinations.map(function (combination) {
     var arch = combination.arch
     var platform = combination.platform
     var version = combination.version
@@ -124,35 +122,43 @@ function createSeries (opts, archs, platforms) {
       download(combination, function (err, zipPath) {
         if (err) return callback(err)
 
-        var tmpDir = path.join(tempBase, platform + '-' + arch + '-template')
-
-        var operations = [
-          function (cb) {
-            mkdirp(tmpDir, cb)
-          },
-          function (cb) {
-            extract(zipPath, {dir: tmpDir}, cb)
-          }
-        ]
-
         function createApp (comboOpts) {
+          var buildParentDir
+          if (useTempDir) {
+            buildParentDir = tempBase
+          } else {
+            buildParentDir = opts.out || process.cwd()
+          }
+          var buildDir = path.join(buildParentDir, platform + '-' + arch + '-template')
           console.error('Packaging app for platform', platform + ' ' + arch, 'using electron v' + version)
-          series(operations, function () {
-            require(supportedPlatforms[platform]).createApp(comboOpts, tmpDir, callback)
+          series([
+            function (cb) {
+              fs.mkdirs(buildDir, cb)
+            },
+            function (cb) {
+              extract(zipPath, {dir: buildDir}, cb)
+            }
+          ], function () {
+            require(supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
           })
         }
 
-        function checkOverwrite () {
-          // Create delegated options object with specific platform and arch, for output directory naming
-          var comboOpts = Object.create(opts)
-          comboOpts.arch = arch
-          comboOpts.platform = platform
+        // Create delegated options object with specific platform and arch, for output directory naming
+        var comboOpts = Object.create(opts)
+        comboOpts.arch = arch
+        comboOpts.platform = platform
 
+        if (!useTempDir) {
+          createApp(comboOpts)
+          return
+        }
+
+        function checkOverwrite () {
           var finalPath = common.generateFinalPath(comboOpts)
           fs.exists(finalPath, function (exists) {
             if (exists) {
               if (opts.overwrite) {
-                rimraf(finalPath, function () {
+                fs.remove(finalPath, function () {
                   createApp(comboOpts)
                 })
               } else {

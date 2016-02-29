@@ -1,11 +1,9 @@
 var child = require('child_process')
-var fs = require('fs')
+var fs = require('fs-extra')
 var os = require('os')
 var path = require('path')
 
 var asar = require('asar')
-var mkdirp = require('mkdirp')
-var ncp = require('ncp').ncp
 var rimraf = require('rimraf')
 var series = require('run-series')
 
@@ -94,27 +92,23 @@ module.exports = {
     // * Prunes non-production node_modules (if opts.prune is set)
     // * Creates an asar (if opts.asar is set)
 
-    var tempParent = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', opts.platform + '-' + opts.arch)
-    var tempPath = path.join(tempParent, generateFinalBasename(opts))
+    var tempPath
+    if (opts.tmpdir === false) {
+      tempPath = generateFinalPath(opts)
+    } else {
+      tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', opts.platform + '-' + opts.arch, generateFinalBasename(opts))
+    }
+
     // Path to `app` directory
     var appPath = path.join(tempPath, appRelativePath)
     var resourcesPath = path.resolve(appPath, '..')
 
     var operations = [
       function (cb) {
-        rimraf(tempParent, function () {
-          // Ignore errors (e.g. directory didn't exist anyway)
-          cb()
-        })
+        fs.move(templatePath, tempPath, {clobber: true}, cb)
       },
       function (cb) {
-        mkdirp(tempPath, cb)
-      },
-      function (cb) {
-        ncp(templatePath, tempPath, cb)
-      },
-      function (cb) {
-        ncp(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+        fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
       },
       function (cb) {
         rimraf(path.join(resourcesPath, 'default_app'), cb)
@@ -151,15 +145,13 @@ module.exports = {
 
   moveApp: function finalizeApp (opts, tempPath, callback) {
     var finalPath = generateFinalPath(opts)
-    // Prefer ncp over mv (which seems to cause issues on Win8)
-    series([
-      function (cb) {
-        mkdirp(finalPath, cb)
-      },
-      function (cb) {
-        ncp(tempPath, finalPath, cb)
-      }
-    ], function (err) {
+
+    if (opts.tmpdir === false) {
+      callback(null, finalPath)
+      return
+    }
+
+    fs.move(tempPath, finalPath, function (err) {
       callback(err, finalPath)
     })
   },

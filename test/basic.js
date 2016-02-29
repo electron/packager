@@ -333,6 +333,31 @@ function createTmpdirTest (opts) {
   }
 }
 
+function createDisableTmpdirUsingTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.out = 'dist'
+    opts.tmpdir = false
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        fs.stat(paths[0], cb)
+      },
+      function (stats, cb) {
+        t.true(stats.isDirectory(), 'The expected out directory should exist')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createIgnoreOutDirTest (opts, distPath) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -431,6 +456,7 @@ util.testAllPlatforms('ignore test: only match subfolder of app', createIgnoreTe
   path.join('electron-packager', 'readme.txt'))
 util.testAllPlatforms('overwrite test', createOverwriteTest)
 util.testAllPlatforms('tmpdir test', createTmpdirTest)
+util.testAllPlatforms('tmpdir test', createDisableTmpdirUsingTest)
 util.testAllPlatforms('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
 util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
 util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)
