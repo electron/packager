@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## [6.0.0] - YYYY-MM-DD
+
 ### Added
 
 * Add support for a new target platform, Mac App Store (`mas`) (#223)
@@ -11,10 +14,15 @@
 
 ### Changed
 
+* **The GitHub repository has been moved into an organization,
+  [electron-userland](https://github.com/electron-userland).**
 * Allow the `ignore` parameter to take a function (#247)
 * [contributors] Update Standard (JavaScript coding standard) package to 5.4.x
 * [contributors] Add code coverage support via Coveralls (#257)
 * Better docs around contributing to the project (#258)
+* Ignore the directory specified by the `out` parameter by default (#255)
+* [darwin/mas] Add support for merging arbitrary plist files and adding arbitrary resource
+  files (#253)
 
 ### Deprecated
 
@@ -59,5 +67,6 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[6.0.0]: https://github.com/maxogden/electron-packager/compare/v5.2.1...v6.0.0
 [5.2.1]: https://github.com/maxogden/electron-packager/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/maxogden/electron-packager/compare/v5.1.1...v5.2.0
