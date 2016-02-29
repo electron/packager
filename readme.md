@@ -268,7 +268,7 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 ##### callback
 
-`err` - *Error*
+`err` - *Error* (or *Array*, in the case of an `ncp` error)
 
   Contains errors, if any.
 
