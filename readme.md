@@ -240,7 +240,11 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 `sign-entitlements` - *String*
 
-  The path to entitlements used in signing. (Currently limited to Mac App Store distribution.)
+  The path to the 'parent' entitlements used in signing.
+
+ `sign-entitlements-inherit` - *String*
+
+  The path to the 'child' entitlements. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more details.
 
 `strict-ssl` - *Boolean*
 

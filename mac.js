@@ -163,7 +163,8 @@ module.exports = {
             // as boolean value true. Then fallback to null for auto discovery,
             // otherwise provided signing certificate.
             identity: opts.sign === true ? null : opts.sign,
-            entitlements: opts['sign-entitlements']
+            entitlements: opts['sign-entitlements'],
+            'entitlements-inherit': opts['sign-entitlements-inherit']
           }, function (err) {
             if (err) {
               console.warn('Code sign failed; please retry manually.')
