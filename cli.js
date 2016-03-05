@@ -22,6 +22,11 @@ if (!args.dir || (!args.all && (!args.platform || !args.arch))) {
   process.exit(1)
 }
 
+// minimist doesn't support multiple types for a single argument (in this case, `String` or `false`)
+if (args.tmpdir === 'false') {
+  args.tmpdir = false
+}
+
 packager(args, function done (err, appPaths) {
   if (err) {
     if (err.message) console.error(err.message)
