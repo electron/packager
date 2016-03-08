@@ -146,21 +146,11 @@ packager(opts, function done (err, appPath) { })
 
 **Optional**
 
+***All Platforms***
+
 `all` - *Boolean*
 
   When `true`, sets both `arch` and `platform` to `all`.
-
-`app-bundle-id` - *String*
-
-  The bundle identifier to use in the application's plist (OS X only).
-
-`app-category-type` - *String*
-
-  The application category type, as shown in the Finder via *View -> Arrange by Application Category* when viewing the Applications directory (OS X only).
-
-  For example, `app-category-type=public.app-category.developer-tools` will set the application category to *Developer Tools*.
-
-  Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
 
 `app-copyright` - *String*
 
@@ -193,18 +183,6 @@ packager(opts, function done (err, appPath) { })
 
   The directory where prebuilt, pre-packaged Electron downloads are cached. Defaults to `$HOME/.electron`.
 
-`extend-info` - *String*
-
-  Filename of a plist file; the contents are added to the app's plist. Entries in `extend-info` override entries in the base plist file supplied by electron-prebuilt, but are overridden by other explicit arguments such as `app-version` or `app-bundle-id`. (OS X only)
-
-`extra-resource` - *String* or *Array*
-
-  Filename of a file to be copied directly into the app's `Contents/Resources` directory. (OS X only)
-
-`helper-bundle-id` - *String*
-
-  The bundle identifier to use in the application helper's plist (OS X only).
-
 `icon` - *String*
 
   Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
@@ -234,18 +212,6 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before starting to package the app.
 
-`sign` - *String*
-
-  The identity used when signing the package via `codesign`. (Only for the OS X / Mac App Store target platforms, when XCode is present on the host platform.)
-
-`sign-entitlements` - *String*
-
-  The path to the 'parent' entitlements used in signing.
-
- `sign-entitlements-inherit` - *String*
-
-  The path to the 'child' entitlements. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more details.
-
 `strict-ssl` - *Boolean*
 
   Whether SSL certificates are required to be valid when downloading Electron. **Defaults to `true`**.
@@ -258,9 +224,50 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases](https://github.com/atom/electron/releases) for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
 
+
+***OS X/Mac App Store targets only***
+
+`app-bundle-id` - *String*
+
+  The bundle identifier to use in the application's plist.
+
+`app-category-type` - *String*
+
+  The application category type, as shown in the Finder via *View -> Arrange by Application Category* when viewing the Applications directory.
+
+  For example, `app-category-type=public.app-category.developer-tools` will set the application category to *Developer Tools*.
+
+  Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
+
+`extend-info` - *String*
+
+  Filename of a plist file; the contents are added to the app's plist. Entries in `extend-info` override entries in the base plist file supplied by electron-prebuilt, but are overridden by other explicit arguments such as `app-version` or `app-bundle-id`.
+
+`extra-resource` - *String* or *Array*
+
+  Filename of a file to be copied directly into the app's `Contents/Resources` directory.
+
+`helper-bundle-id` - *String*
+
+  The bundle identifier to use in the application helper's plist.
+
+`sign` - *String*
+
+  The identity used when signing the package via `codesign`. (Only for when XCode is present on the host platform.)
+
+`sign-entitlements` - *String*
+
+  The path to the 'parent' entitlements used in signing. (Only for when XCode is present on the host platform.)
+
+`sign-entitlements-inherit` - *String*
+
+  The path to the 'child' entitlements. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more details. (Only for when XCode is present on the host platform.)
+
+***Windows targets only***
+
 `version-string` - *Object*
 
-  Object hash of application metadata to embed into the executable (Windows only):
+  Object hash of application metadata to embed into the executable:
   - `CompanyName`
   - `LegalCopyright` (**deprecated** and will be removed in a future major version, pleas use the top-level `app-copyright` parameter instead)
   - `FileDescription`
