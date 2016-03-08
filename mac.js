@@ -167,7 +167,7 @@ module.exports = {
             'entitlements-inherit': opts['sign-entitlements-inherit']
           }, function (err) {
             if (err) {
-              console.warn('Code sign failed; please retry manually.')
+              console.warn('Code sign failed; please retry manually.', err)
               // Though not signed successfully, the application is packed.
               // It might have to be signed for another time manually.
             }
