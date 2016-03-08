@@ -30,7 +30,9 @@ out                the dir to put the app into at the end. defaults to current w
 overwrite          if output directory for a platform already exists, replaces it rather than skipping it
 prune              runs `npm prune --production` on the app
 sign               should contain the identity to be used when running `codesign` (only for building for the darwin/mas platform, on OS X)
-sign-entitlements  the path to entitlements used in signing (mas platform only)
+sign-entitlements  the path to entitlements used in signing
+sign-entitlements-inherit
+                   the path to the 'child' entitlements
 strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
                    It defaults to true, use --strict-ssl=false to disable checks.
 tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable use of a temporary directory.
