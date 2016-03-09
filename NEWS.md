@@ -7,15 +7,17 @@
 
 ### Added
 
-* Add support for a new target platform, Mac App Store (`mas`) (#223)
+* Add support for a new target platform, Mac App Store (`mas`), including signing OS X apps
+  (#223, #278)
 * Add `app-copyright` parameter (#223)
-* Add `tmpdir` parameter to specify a custom temp directory (#230)
+* Add `tmpdir` parameter to specify a custom temp directory (#230); set to `false` to disable
+  using a temporary directory at all (#251, #276)
 * Add `NEWS.md`, a human-readable list of changes in each version (since 5.2.0) (#263)
 
 ### Changed
 
 * **The GitHub repository has been moved into an organization,
-  [electron-userland](https://github.com/electron-userland).**
+  [electron-userland](https://github.com/electron-userland)**
 * Allow the `ignore` parameter to take a function (#247)
 * [contributors] Update Standard (JavaScript coding standard) package to 5.4.x
 * [contributors] Add code coverage support via Coveralls (#257)
@@ -23,6 +25,8 @@
 * Ignore the directory specified by the `out` parameter by default (#255)
 * [darwin/mas] Add support for merging arbitrary plist files and adding arbitrary resource
   files (#253)
+* Split out the code to sign OS X apps into a separate Node module,
+  [electron-osx-sign](https://github.com/electron-userland/electron-osx-sign) (#223)
 
 ### Deprecated
 
@@ -30,8 +34,8 @@
 
 ### Fixed
 
-* [darwin] Ensure `CFBundleVersion` and `CFBundleShortVersionString` are strings (#250)
-* [darwin] Correctly set the helper bundle ID in all relevant plist files (#223)
+* [darwin/mas] Ensure `CFBundleVersion` and `CFBundleShortVersionString` are strings (#250)
+* [darwin/mas] Correctly set the helper bundle ID in all relevant plist files (#223)
 
 ## [5.2.1] - 2016-01-17
 
