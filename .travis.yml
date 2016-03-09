@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-  - '0.12'
-  - '4.0'
-  - '4.1'
-  - '5.0'
+- '0.12'
+- '4.0'
+- '4.1'
+- '5.0'
 cache:
-  - apt
-  - directories:
-    - $HOME/.electron
+- apt
+- directories:
+  - "$HOME/.electron"
 addons:
   apt:
     packages:
@@ -16,4 +16,4 @@ after_success: npm run coveralls
 env:
   global:
     # coveralls token
-    secure: F5+K6BwGHqCV1oLv8DyDd7w8R2zAHsIksK9R9hnfFj31aQ+FqK2cfU9FInFdMtoCJM/Y01J5HcpnNNk+/88JKQ5tV+8uaIey7tlHZ+gLpbecMAIGBlkkx5nbaFVCTKiHbCdvK1dffKdFi0gbLIFQPNZWWvbrxXS191KPEIuL9EE=
+    secure: hG3cs8/tOGTa8IPewVuahcp1f8gwsk/rX7ReUBPag6cdZdJpkbjzxp8R97mhhCrFOP/fvX8zAbCelXvvhME/mjZTFgzSNHLBL/SJreHP5m2B1yxXkroiQFu1qwewvzzKmfcs5W1CD8J8WbJuBk9zozDQG9c1OxTaK87tBGh1xik=
