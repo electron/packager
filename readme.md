@@ -258,25 +258,20 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
   The bundle identifier to use in the application helper's plist.
 
-`sign` - *String*
+`osx-sign` - *Object* or *true*
 
-  The identity used when signing the package via `codesign`. (Only for when XCode is present on the host platform.)
-
-`sign-entitlements` - *String*
-
-  The path to the 'parent' entitlements used in signing. (Only for when XCode is present on the host platform.)
-
-`sign-entitlements-inherit` - *String*
-
-  The path to the 'child' entitlements. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more details. (Only for when XCode is present on the host platform.)
+  If present, signs OS X target apps when the host platform is OS X and XCode is installed. When the value is `true`, pass default configuration to the signing module. The configuration values listed below can be customized when the value is an `Object`. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more detailed option descriptions and the defaults.
+  - `identity` - *String*: The identity used when signing the package via `codesign`.
+  - `entitlements` - *String*: The path to the 'parent' entitlements.
+  - `entitlements-inherit` - *String*: The path to the 'child' entitlements.
 
 ***Windows targets only***
 
 `version-string` - *Object*
 
-  Object hash of application metadata to embed into the executable:
+  Object (also known as a "hash") of application metadata to embed into the executable:
   - `CompanyName`
-  - `LegalCopyright` (**deprecated** and will be removed in a future major version, pleas use the top-level `app-copyright` parameter instead)
+  - `LegalCopyright` (**deprecated** and will be removed in a future major version, please use the top-level `app-copyright` parameter instead)
   - `FileDescription`
   - `OriginalFilename`
   - `FileVersion` (**deprecated** and will be removed in a future major version, please use the top-level `build-version` parameter instead)

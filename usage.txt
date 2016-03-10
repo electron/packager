@@ -41,17 +41,21 @@ app-category-type  the application category type
 extend-info        a plist file to append to the app plist
 extra-resource     a file to copy into the app's Contents/Resources
 helper-bundle-id   bundle identifier to use in the app helper plist
-sign               should contain the identity to be used when running `codesign` (OS X host platform only)
-sign-entitlements  the path to entitlements used in signing (OS X host platform only)
-sign-entitlements-inherit
-                   the path to the 'child' entitlements (OS X host platform only)
+osx-sign           (OSX host platform only) Whether to sign the OSX app packages. You can either
+                   pass --osx-sign to enable with the default configuration, or use dot notation
+                   to configure a list of sub-properties, e.g. --osx-sign.identity="My Name"
+
+                   Properties supported:
+                   - identity: should contain the identity to be used when running `codesign`
+                   - entitlements: the path to entitlements used in signing
+                   - entitlements-inherit: the path to the 'child' entitlements
 
 * win32 target platform only *
 
-version-string     should contain a hash of the application metadata to be embedded into the executable.
-                   These can be specified on the command line via dot notation,
+version-string     a list of sub-properties used to set the application metadata embedded into the executable.
+                   They are specified via dot notation,
                    e.g. --version-string.CompanyName="Company Inc." --version-string.ProductName="Product"
-                   Keys supported:
+                   Properties supported:
                    - CompanyName
                    - LegalCopyright (deprecated, use --app-copyright instead)
                    - FileDescription
