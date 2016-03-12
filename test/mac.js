@@ -424,7 +424,7 @@ module.exports = function (baseOpts) {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
-    opts.sign = true // Ad-hoc
+    opts['osx-sign'] = true // Ad-hoc
 
     var appPath
 
