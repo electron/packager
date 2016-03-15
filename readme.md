@@ -50,7 +50,7 @@ npm install electron-packager -g
 Running electron-packager from the command line has this basic form:
 
 ```
-electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<Electron version> [optional flags...]
+electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
 
 This will:
@@ -60,36 +60,44 @@ This will:
 
 For details on the optional flags, run `electron-packager --help` or see [usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt).
 
-If appname is omitted, this will use the name specified by "productName" or "name" in the nearest package.json. If version is omitted, it will use the version of the nearest installed electron-prebuilt dependency.
+If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 
 You should be able to launch the app on the platform you built for. If not, check your settings and try again.
 
-**Be careful** not to include `node_modules` you don't want into your final app. `electron-packager`, `electron-prebuilt` and `.git` will be ignored by default. You can use `--ignore` to ignore files and folders via a regular expression. For example, `--ignore=node_modules/electron-packager` or `--ignore="node_modules/(electron-packager|electron-prebuilt)"`.
+**Be careful** not to include `node_modules` you don't want into your final app. `electron-packager`, `electron-prebuilt` and `.git` will be ignored by default. You can use `--ignore` to ignore files and folders via a regular expression. For example, `--ignore=node_modules/package-to-ignore` or `--ignore="node_modules/(some-package[0-9]*|dev-dependency)"`.
 
 #### Example
 
-Given the app `FooBar` with the following file structure:
+Let's assume that you have made an app based on the [electron-quick-start](https://github.com/atom/electron-quick-start) repository on a OS X or Linux host platform with the following file structure:
 
 ```
 foobar
 ├─package.json
-└┬src
- ├─index.html
- ├─script.js
- └─style.css
+├─index.html
+├[…other files, like LICENSE…]
+└─script.js
 ```
+
+…and that the following is true:
+
+* `electron-packager` is installed globally
+* `name` in `package.json` has been set to `FooBar`
+* `npm install` for the `FooBar` app has been run at least once
 
 When one runs the following command for the first time in the `foobar` directory:
 
 ```
-electron-packager . FooBar --platform=darwin --arch=x64 --version=0.35.6
+electron-packager . --all
 ```
 
 `electron-packager` will do the following:
 
-* download Electron 0.35.6 for OS X on x64 (and cache the download in `~/.electron`)
-* build the OS X `FooBar.app`
-* place `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified)
+* Use the current directory for the `sourcedir`
+* Infer the `appname` from the `name` in `package.json`
+* download [all supported target platforms and arches](#supported-platforms) of Electron using the installed `electron-prebuilt` version (and cache the downloads in `~/.electron`)
+* For the `darwin` build, as an example:
+  * build the OS X `FooBar.app`
+  * place `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)
 
 The file structure now looks like:
 
@@ -101,13 +109,12 @@ foobar
 │├─LICENSE
 │└─version
 ├─package.json
-└┬src
- ├─index.html
- ├─script.js
- └─style.css
+├─index.html
+├[…other files, like LICENSE…]
+└─script.js
 ```
 
-The `FooBar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app.
+The `FooBar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system, and so on.
 
 ### Programmatic API
 ```javascript
