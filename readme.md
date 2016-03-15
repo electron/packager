@@ -116,6 +116,18 @@ foobar
 
 The `FooBar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system, and so on.
 
+To generate the same app but for Windows, you could run:
+
+```
+electron-packager . FooBar --platform=win32 --arch=x64 --version=0.35.6
+```
+
+And for linux:
+
+```
+electron-packager . FooBar --platform=linux --arch=x64 --version=0.35.6
+```
+
 ### Programmatic API
 ```javascript
 var packager = require('electron-packager')
