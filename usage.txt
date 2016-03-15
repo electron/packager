@@ -2,12 +2,15 @@ Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arc
 
 Required options
 
+sourcedir          the base directory of the application source
 platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple)
 arch               all, ia32, x64
 
-Example            electron-packager ./ FooBar --platform=darwin --arch=x64
+Example            electron-packager ./ --platform=darwin --arch=x64
 
 Optional options
+
+appname            the name of the app, if it needs to be different from the "productName" or "name" in the nearest package.json
 
 * All platforms *
 
