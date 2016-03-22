@@ -77,6 +77,7 @@ module.exports = {
       appPlist.CFBundleName = opts.name
       helperPlist.CFBundleDisplayName = opts.name + ' Helper'
       helperPlist.CFBundleIdentifier = helperBundleIdentifier
+      appPlist.CFBundleExecutable = opts.name
       helperPlist.CFBundleName = opts.name
       helperPlist.CFBundleExecutable = opts.name + ' Helper'
       helperEHPlist.CFBundleDisplayName = opts.name + ' Helper EH'
@@ -151,6 +152,12 @@ module.exports = {
         moveHelpers(frameworksPath, opts.name, cb)
       }, function (cb) {
         mv(path.dirname(contentsPath), finalAppPath, cb)
+      })
+
+      var sourceName = tempPath + '/' + opts.name + '.app/Contents/MacOS/Electron'
+      var destName = tempPath + '/' + opts.name + '.app/Contents/MacOS/' + appPlist.CFBundleExecutable
+      operations.push(function (cb) {
+        mv(sourceName, destName, cb)
       })
 
       if (opts.sign) {
