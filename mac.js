@@ -154,11 +154,11 @@ module.exports = {
         mv(path.dirname(contentsPath), finalAppPath, cb)
       })
 
-	    if (appPlist.CFBundleExecutable !== 'Electron') {
-	      operations.push(function (cb) {
-	        mv(tempPath + '/' + opts.name + '.app/Contents/MacOS/Electron', tempPath + '/' + opts.name + '.app/Contents/MacOS/' + appPlist.CFBundleExecutable, cb)
-	      })
-      }
+      var sourceName = tempPath + '/' + opts.name + '.app/Contents/MacOS/Electron'
+      var destName = tempPath + '/' + opts.name + '.app/Contents/MacOS/' + appPlist.CFBundleExecutable
+      operations.push(function (cb) {
+        mv(sourceName, destName, cb)
+      })
 
       if (opts.sign) {
         operations.push(function (cb) {

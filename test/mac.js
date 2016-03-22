@@ -450,6 +450,29 @@ module.exports = function (baseOpts) {
   util.teardown()
 
   util.setup()
+  test('binary naming test', function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var opts = Object.create(baseOpts)
+    var binaryPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        binaryPath = path.join(paths[0], opts.name + '.app', 'Contents', 'MacOS')
+        fs.stat(path.join(binaryPath, opts.name), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The binary should reflect opts.name')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  })
+  util.teardown()
+
+  util.setup()
   test('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
   util.teardown()
 
