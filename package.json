@@ -1,7 +1,7 @@
 {
   "name": "electron-packager",
   "version": "5.2.1",
-  "description": "package your electron app in OS executables (.app, .exe, etc) via JS or CLI",
+  "description": "Package and distribute your Electron app with OS-specific bundles (.app, .exe etc) via JS or CLI",
   "main": "index.js",
   "bin": {
     "electron-packager": "cli.js"
