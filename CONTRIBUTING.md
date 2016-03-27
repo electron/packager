@@ -75,6 +75,7 @@ Make sure to get a `:thumbsup:`, `+1` or `LGTM` from another collaborator before
 Release process:
 
 - if you aren't sure if a release should happen, open an issue
+- make sure that `NEWS.md` is up to date
 - make sure the tests pass
 - `npm version <major|minor|patch>`
 - `git push && git push --tags` (or `git push` with `git config --global push.followTags true` on latest git)
