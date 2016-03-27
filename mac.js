@@ -34,7 +34,7 @@ function filterCFBundleIdentifier (identifier) {
 }
 
 function signOptsWarning (name) {
-  console.warn(`WARNING: osx-sign.${name} will be inferred from main options`)
+  console.warn('WARNING: osx-sign.' + name + ' will be inferred from main options')
 }
 
 module.exports = {
