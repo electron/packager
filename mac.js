@@ -189,21 +189,17 @@ module.exports = {
           signOpts.platform = opts.platform
           signOpts.app = finalAppPath
 
-          // Take argument sign as signing identity:
-          // Provided in command line --sign, opts.sign will be recognized
-          // as boolean value true. Then fallback to null for auto discovery,
-          // otherwise provided signing certificate.
+          // Take argument osx-sign as signing identity:
+          // if opts['osx-sign'] is true (bool), fallback to identity=null for
+          // autodiscovery. Otherwise, provide signing certificate info.
           if (signOpts.identity === true) {
             signOpts.identity = null
           }
 
-          // console.log('signOpts', signOpts, signOpts.__proto__, process.cwd())
-
           sign(signOpts, function (err) {
             if (err) {
+              // Although not signed successfully, the application is packed.
               console.warn('Code sign failed; please retry manually.', err)
-            // Though not signed successfully, the application is packed.
-            // It might have to be signed for another time manually.
             }
             cb()
           })

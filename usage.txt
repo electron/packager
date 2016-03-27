@@ -42,7 +42,7 @@ extend-info        a plist file to append to the app plist
 extra-resource     a file to copy into the app's Contents/Resources
 helper-bundle-id   bundle identifier to use in the app helper plist
 osx-sign           (OSX host platform only) Whether to sign the OSX app packages. You can either
-                   pass --osx-sign to enable with the default configuration, or use dot notation
+                   pass --osx-sign by itself to use the default configuration, or use dot notation
                    to configure a list of sub-properties, e.g. --osx-sign.identity="My Name"
 
                    Properties supported:
