@@ -1,6 +1,7 @@
 var path = require('path')
 var fs = require('fs')
 
+var objectAssign = require('object-assign')
 var plist = require('plist')
 var mv = require('mv')
 var ncp = require('ncp').ncp
@@ -37,23 +38,9 @@ function signOptsWarning (name) {
   console.warn('WARNING: osx-sign.' + name + ' will be inferred from main options')
 }
 
-function copyObject (target, source) {
-  if (typeof Object.assign === 'function') {
-    return Object.assign(target, source)
-  } else {
-    // Necessary for Node 0.12
-    for (var key in source) {
-      if (source.hasOwnProperty(key)) {
-        target[key] = source[key]
-      }
-    }
-    return target
-  }
-}
-
 function createSignOpts (properties, platform, app) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  var signOpts = properties === true ? {identity: null} : copyObject({}, properties)
+  var signOpts = properties === true ? {identity: null} : objectAssign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from main options
