@@ -33,6 +33,55 @@ function filterCFBundleIdentifier (identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '')
 }
 
+function signOptsWarning (name) {
+  console.warn('WARNING: osx-sign.' + name + ' will be inferred from main options')
+}
+
+function copyObject (target, source) {
+  if (typeof Object.assign === 'function') {
+    return Object.assign(target, source)
+  } else {
+    // Necessary for Node 0.12
+    for (var key in source) {
+      if (source.hasOwnProperty(key)) {
+        target[key] = source[key]
+      }
+    }
+    return target
+  }
+}
+
+function createSignOpts (properties, platform, app) {
+  // use default sign opts if osx-sign is true, otherwise clone osx-sign object
+  var signOpts = properties === true ? {identity: null} : copyObject({}, properties)
+
+  // osx-sign options are handed off to sign module, but
+  // with a few additions from main options
+  // user may think they can pass platform or app, but they will be ignored
+  if (signOpts.platform) {
+    signOptsWarning('platform')
+  }
+  signOpts.platform = platform
+
+  if (signOpts.app) {
+    signOptsWarning('app')
+  }
+  signOpts.app = app
+
+  if (signOpts.binaries) {
+    console.warn('WARNING: osx-sign.binaries signing will fail. Sign manually, or with electron-osx-sign.')
+  }
+
+  // Take argument osx-sign as signing identity:
+  // if opts['osx-sign'] is true (bool), fallback to identity=null for
+  // autodiscovery. Otherwise, provide signing certificate info.
+  if (signOpts.identity === true) {
+    signOpts.identity = null
+  }
+
+  return signOpts
+}
+
 module.exports = {
   createApp: function createApp (opts, templatePath, callback) {
     var appRelativePath = path.join('Electron.app', 'Contents', 'Resources', 'app')
@@ -160,23 +209,16 @@ module.exports = {
         mv(sourceName, destName, cb)
       })
 
-      if (opts.sign) {
+      if ((opts.platform === 'all' || opts.platform === 'mas') && opts['osx-sign'] === undefined) {
+        console.warn('WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.')
+      }
+
+      if (opts['osx-sign']) {
         operations.push(function (cb) {
-          sign({
-            app: finalAppPath,
-            platform: opts.platform,
-            // Take argument sign as signing identity:
-            // Provided in command line --sign, opts.sign will be recognized
-            // as boolean value true. Then fallback to null for auto discovery,
-            // otherwise provided signing certificate.
-            identity: opts.sign === true ? null : opts.sign,
-            entitlements: opts['sign-entitlements'],
-            'entitlements-inherit': opts['sign-entitlements-inherit']
-          }, function (err) {
+          sign(createSignOpts(opts['osx-sign'], opts.platform, finalAppPath), function (err) {
             if (err) {
+              // Although not signed successfully, the application is packed.
               console.warn('Code sign failed; please retry manually.', err)
-              // Though not signed successfully, the application is packed.
-              // It might have to be signed for another time manually.
             }
             cb()
           })
@@ -189,5 +231,6 @@ module.exports = {
       })
     })
   },
+  createSignOpts: createSignOpts,
   filterCFBundleIdentifier: filterCFBundleIdentifier
 }

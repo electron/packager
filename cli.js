@@ -27,6 +27,11 @@ if (args.tmpdir === 'false') {
   args.tmpdir = false
 }
 
+// (in this case, `Object` or `true`)
+if (args['osx-sign'] === 'true') {
+  args['osx-sign'] = true
+}
+
 packager(args, function done (err, appPaths) {
   if (err) {
     if (err.message) console.error(err.message)

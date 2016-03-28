@@ -27,6 +27,9 @@
   files (#253)
 * Split out the code to sign OS X apps into a separate Node module,
   [electron-osx-sign](https://github.com/electron-userland/electron-osx-sign) (#223)
+* [darwin/mas] **BREAKING**: The `sign` parameter is now `osx-sign` (for better cross-platform
+  compatibility) and optionally takes several of the same sub-parameters as
+  electron-osx-sign (#286)
 
 ### Deprecated
 

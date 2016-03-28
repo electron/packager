@@ -9,7 +9,7 @@ var waterfall = require('run-waterfall')
 var config = require('./config.json')
 var util = require('./util')
 var plist = require('plist')
-var filterCFBundleIdentifier = require('../mac').filterCFBundleIdentifier
+var mac = require('../mac')
 
 function createIconTest (baseOpts, icon, iconPath) {
   return function (t) {
@@ -219,7 +219,7 @@ function createAppBundleTest (baseOpts, appBundleId) {
       opts['app-bundle-id'] = appBundleId
     }
     var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
-    var appBundleIdentifier = filterCFBundleIdentifier(opts['app-bundle-id'] || defaultBundleName)
+    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts['app-bundle-id'] || defaultBundleName)
 
     waterfall([
       function (cb) {
@@ -260,8 +260,8 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
       opts['app-bundle-id'] = appBundleId
     }
     var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
-    var appBundleIdentifier = filterCFBundleIdentifier(opts['app-bundle-id'] || defaultBundleName)
-    var helperBundleIdentifier = filterCFBundleIdentifier(opts['helper-bundle-id'] || appBundleIdentifier + '.helper')
+    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts['app-bundle-id'] || defaultBundleName)
+    var helperBundleIdentifier = mac.filterCFBundleIdentifier(opts['helper-bundle-id'] || appBundleIdentifier + '.helper')
 
     waterfall([
       function (cb) {
@@ -420,11 +420,56 @@ module.exports = function (baseOpts) {
   util.teardown()
 
   util.setup()
+  test('osx-sign argument test: default args', function (t) {
+    var args = true
+    var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
+    t.same(sign_opts, {identity: null, app: 'out', platform: 'darwin'})
+    t.end()
+  })
+  util.teardown()
+
+  util.setup()
+  test('osx-sign argument test: identity=true sets autodiscovery mode', function (t) {
+    var args = {identity: true}
+    var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
+    t.same(sign_opts, {identity: null, app: 'out', platform: 'darwin'})
+    t.end()
+  })
+  util.teardown()
+
+  util.setup()
+  test('osx-sign argument test: entitlements passed to electron-osx-sign', function (t) {
+    var args = {entitlements: 'path-to-entitlements'}
+    var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
+    t.same(sign_opts, {app: 'out', platform: 'darwin', entitlements: args.entitlements})
+    t.end()
+  })
+  util.teardown()
+
+  util.setup()
+  test('osx-sign argument test: app not overwritten', function (t) {
+    var args = {app: 'some-other-path'}
+    var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
+    t.same(sign_opts, {app: 'out', platform: 'darwin'})
+    t.end()
+  })
+  util.teardown()
+
+  util.setup()
+  test('osx-sign argument test: platform not overwritten', function (t) {
+    var args = {platform: 'mas'}
+    var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
+    t.same(sign_opts, {app: 'out', platform: 'darwin'})
+    t.end()
+  })
+  util.teardown()
+
+  util.setup()
   test('codesign test', function (t) {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
-    opts.sign = true // Ad-hoc
+    opts['osx-sign'] = true // Ad-hoc
 
     var appPath
 
