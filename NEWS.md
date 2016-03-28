@@ -3,7 +3,7 @@
 ## Unreleased
 
 
-## [6.0.0] - YYYY-MM-DD
+## [6.0.0] - 2016-03-28
 
 ### Added
 
