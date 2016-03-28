@@ -37,6 +37,37 @@ function signOptsWarning (name) {
   console.warn('WARNING: osx-sign.' + name + ' will be inferred from main options')
 }
 
+function createSignOpts (properties, platform, app) {
+  // use default sign opts if osx-sign is true, otherwise clone osx-sign object
+  var signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
+
+  // osx-sign options are handed off to sign module, but
+  // with a few additions from main options
+  // user may think they can pass platform or app, but they will be ignored
+  if (signOpts.platform) {
+    signOptsWarning('platform')
+  }
+  signOpts.platform = platform
+
+  if (signOpts.app) {
+    signOptsWarning('app')
+  }
+  signOpts.app = app
+
+  if (signOpts.binaries) {
+    console.warn('WARNING: osx-sign.binaries signing will fail. Sign manually, or with electron-osx-sign.')
+  }
+
+  // Take argument osx-sign as signing identity:
+  // if opts['osx-sign'] is true (bool), fallback to identity=null for
+  // autodiscovery. Otherwise, provide signing certificate info.
+  if (signOpts.identity === true) {
+    signOpts.identity = null
+  }
+
+  return signOpts
+}
+
 module.exports = {
   createApp: function createApp (opts, templatePath, callback) {
     var appRelativePath = path.join('Electron.app', 'Contents', 'Resources', 'app')
@@ -169,34 +200,8 @@ module.exports = {
       }
 
       if (opts['osx-sign']) {
-        // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-        var signOpts = opts['osx-sign'] === true ? {identity: null} : Object.assign({}, opts['osx-sign'])
-
         operations.push(function (cb) {
-          // user may think they can pass platform or app, but they will be ignored
-          if (signOpts.platform) {
-            signOptsWarning('platform')
-          }
-          if (signOpts.app) {
-            signOptsWarning('app')
-          }
-          if (signOpts.binaries) {
-            console.warn('WARNING: osx-sign.binaries signing will fail. Sign manually, or with electron-osx-sign.')
-          }
-
-          // osx-sign options are handed off to sign module, but
-          // with a few additions from main options
-          signOpts.platform = opts.platform
-          signOpts.app = finalAppPath
-
-          // Take argument osx-sign as signing identity:
-          // if opts['osx-sign'] is true (bool), fallback to identity=null for
-          // autodiscovery. Otherwise, provide signing certificate info.
-          if (signOpts.identity === true) {
-            signOpts.identity = null
-          }
-
-          sign(signOpts, function (err) {
+          sign(createSignOpts(opts['osx-sign'], opts.platform, finalAppPath), function (err) {
             if (err) {
               // Although not signed successfully, the application is packed.
               console.warn('Code sign failed; please retry manually.', err)
@@ -212,5 +217,6 @@ module.exports = {
       })
     })
   },
+  createSignOpts: createSignOpts,
   filterCFBundleIdentifier: filterCFBundleIdentifier
 }
