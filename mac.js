@@ -37,9 +37,23 @@ function signOptsWarning (name) {
   console.warn('WARNING: osx-sign.' + name + ' will be inferred from main options')
 }
 
+function copyObject (target, source) {
+  if (typeof Object.assign === 'function') {
+    return Object.assign(target, source)
+  } else {
+    // Necessary for Node 0.12
+    for (var key in source) {
+      if (source.hasOwnProperty(key)) {
+        target[key] = source[key]
+      }
+    }
+    return target
+  }
+}
+
 function createSignOpts (properties, platform, app) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  var signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
+  var signOpts = properties === true ? {identity: null} : copyObject({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from main options
