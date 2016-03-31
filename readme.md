@@ -33,6 +33,8 @@ It generates executables/bundles for the following **target** platforms:
 
 <sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
 
+## [Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
+
 ## Installation
 
 ```sh
