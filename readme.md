@@ -17,6 +17,8 @@ Individuals making significant and valuable contributions are given commit-acces
 
 See [CONTRIBUTING.md](https://github.com/electron-userland/electron-packager/blob/master/CONTRIBUTING.md) and [openopensource.org](http://openopensource.org/) for more details.
 
+### [Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
+
 ## Supported Platforms
 
 Electron Packager is known to run on the following **host** platforms:
@@ -32,8 +34,6 @@ It generates executables/bundles for the following **target** platforms:
 * Linux (for both x86/x86_64)
 
 <sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
-
-## [Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
 
 ## Installation
 
