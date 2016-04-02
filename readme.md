@@ -25,13 +25,13 @@ Electron Packager is known to run on the following **host** platforms:
 
 * Windows (32/64 bit)
 * OS X
-* Linux (x86/x86_64)
+* Linux (x86/x86_64/arm)
 
 It generates executables/bundles for the following **target** platforms:
 
 * Windows (also known as `win32`, for both 32/64 bit)
 * OS X (also known as `darwin`) / [Mac App Store](http://electron.atom.io/docs/v0.36.0/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
-* Linux (for both x86/x86_64)
+* Linux (for x86/x86_64/arm)
 
 <sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
 
@@ -131,7 +131,7 @@ packager(opts, function done (err, appPath) { })
 
 `arch` - *String*
 
-  Allowed values: *ia32, x64, all*
+  Allowed values: *ia32, x64, arm, all*
 
   The target system architecture(s) to build for.
   Not required if the `all` option is set.
