@@ -7,7 +7,7 @@ var asar = require('asar')
 var rimraf = require('rimraf')
 var series = require('run-series')
 
-var archs = ['ia32', 'x64']
+var archs = ['ia32', 'x64', 'arm']
 var platforms = ['darwin', 'linux', 'mas', 'win32']
 
 function asarApp (appPath, asarOptions, cb) {
