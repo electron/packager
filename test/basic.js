@@ -72,7 +72,12 @@ function createDefaultsTest (opts) {
         t.true(equal,
           'File under subdirectory of packaged app directory should match source file and not be ignored by default')
         fs.exists(path.join(resourcesPath, 'default_app'), function (exists) {
-          t.false(exists, 'The output directory should not contain the Electron default app')
+          t.false(exists, 'The output directory should not contain the Electron default app directory')
+          cb()
+        })
+      }, function (cb) {
+        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default app asar file')
           cb()
         })
       }
