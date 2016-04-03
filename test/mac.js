@@ -19,18 +19,26 @@ function createIconTest (baseOpts, icon, iconPath) {
     opts.icon = icon
 
     var resourcesPath
+    var plistPath
 
     waterfall([
       function (cb) {
         packager(opts, cb)
       }, function (paths, cb) {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         fs.stat(resourcesPath, cb)
       }, function (stats, cb) {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        util.areFilesEqual(iconPath, path.join(resourcesPath, 'atom.icns'), cb)
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        var obj = plist.parse(file)
+        util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile), cb)
       }, function (equal, cb) {
-        t.true(equal, 'atom.icns should be identical to the specified icon file')
+        t.true(equal, 'installed icon file should be identical to the specified icon file')
         cb()
       }
     ], function (err) {
@@ -396,6 +404,18 @@ module.exports = function (baseOpts) {
   var icnsPath = iconBase + '.icns'
   util.setup()
   test('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
+  util.teardown()
+
+  var el0374Opts = {
+    name: 'el0374Test',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'x64',
+    platform: 'darwin'
+  }
+  // use iconBase, icnsPath from previous test
+  util.setup()
+  test('icon test: el-0.37.4, .icns specified', createIconTest(el0374Opts, icnsPath, icnsPath))
   util.teardown()
 
   util.setup()
