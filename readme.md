@@ -52,7 +52,7 @@ npm install electron-packager -g
 Running electron-packager from the command line has this basic form:
 
 ```
-electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
+electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> --version=<Electron version> [optional flags...]
 ```
 
 This will:
