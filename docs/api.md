@@ -67,7 +67,7 @@ The release version of the application. Maps to the `ProductVersion` metadata pr
 
 *Boolean* (default: `false`)
 
-Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/atom/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
+Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
 
 ##### `asar-unpack`
 
@@ -152,7 +152,7 @@ The base directory to use as a temp directory. Set to `false` to disable use of 
 
 *String*
 
-The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/atom/electron/releases/tag/v0.33.9). See [Electron releases] for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
+The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/electron/electron/releases/tag/v0.33.9). See [Electron releases] for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
 
 
 #### OS X/Mac App Store targets only
@@ -230,4 +230,4 @@ Contains errors, if any.
 
 Paths to the newly created application bundles.
 
-[Electron releases]: https://github.com/atom/electron/releases
+[Electron releases]: https://github.com/electron/electron/releases

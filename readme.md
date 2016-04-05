@@ -70,7 +70,7 @@ You should be able to launch the app on the platform you built for. If not, chec
 
 #### Example
 
-Let's assume that you have made an app based on the [electron-quick-start](https://github.com/atom/electron-quick-start) repository on a OS X or Linux host platform with the following file structure:
+Let's assume that you have made an app based on the [electron-quick-start](https://github.com/electron/electron-quick-start) repository on a OS X or Linux host platform with the following file structure:
 
 ```
 foobar
