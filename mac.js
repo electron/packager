@@ -165,7 +165,7 @@ module.exports = {
               // Ignore error if icon doesn't exist, in case it's only available for other OS
               cb(null)
             } else {
-              ncp(icon, path.join(contentsPath, 'Resources', 'atom.icns'), cb)
+              ncp(icon, path.join(contentsPath, 'Resources', appPlist.CFBundleIconFile), cb)
             }
           })
         })
