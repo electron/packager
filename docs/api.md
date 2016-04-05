@@ -4,7 +4,7 @@ Short example:
 
 ```javascript
 var packager = require('electron-packager')
-packager(options, function done_callback (err, appPath) { /* … */ })
+packager(options, function done_callback (err, appPaths) { /* … */ })
 ```
 
 ## `options`
@@ -224,10 +224,10 @@ Object (also known as a "hash") of application metadata to embed into the execut
 
 Contains errors, if any.
 
-### `appPath`
+### `appPaths`
 
-*String*
+*Array* of *String*s
 
-Path to the newly created application.
+Paths to the newly created application bundles.
 
 [Electron releases]: https://github.com/atom/electron/releases
