@@ -55,7 +55,7 @@ function getNameAndVersion (opts, dir, cb) {
   getPackageInfo(props, dir, function (err, result) {
     if (err) return cb(err)
     if (result.values.productName) opts.name = result.values.productName
-    if (result.values['dependencies.electron-prebuilt']) {
+    if ('dependencies.electron-prebuilt' in result.values) {
       resolve('electron-prebuilt', {
         basedir: path.dirname(result.source['dependencies.electron-prebuilt'].src)
       }, function (err, res, pkg) {
