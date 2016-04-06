@@ -83,8 +83,8 @@ foobar
 …and that the following is true:
 
 * `electron-packager` is installed globally
-* `name` in `package.json` has been set to `FooBar`
-* `npm install` for the `FooBar` app has been run at least once
+* `productName` in `package.json` has been set to `Foo Bar`
+* `npm install` for the `Foo Bar` app has been run at least once
 
 When one runs the following command for the first time in the `foobar` directory:
 
@@ -95,28 +95,29 @@ electron-packager . --all
 `electron-packager` will do the following:
 
 * Use the current directory for the `sourcedir`
-* Infer the `appname` from the `name` in `package.json`
-* download [all supported target platforms and arches](#supported-platforms) of Electron using the installed `electron-prebuilt` version (and cache the downloads in `~/.electron`)
+* Infer the `appname` from the `productName` in `package.json`
+* Download [all supported target platforms and arches](#supported-platforms) of Electron using the installed `electron-prebuilt` version (and cache the downloads in `~/.electron`)
 * For the `darwin` build, as an example:
-  * build the OS X `FooBar.app`
-  * place `FooBar.app` in `foobar/FooBar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)
+  * build the OS X `Foo Bar.app`
+  * place `Foo Bar.app` in `foobar/Foo Bar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)
 
 The file structure now looks like:
 
 ```
 foobar
-├┬FooBar-darwin-x64
-│├┬FooBar.app
+├┬Foo Bar-darwin-x64
+│├┬Foo Bar.app
 ││└[…Mac app contents…]
 │├─LICENSE
 │└─version
+├[…other application bundles, like "Foo Bar-win32-x64" (sans quotes)…]
 ├─package.json
 ├─index.html
 ├[…other files, like LICENSE…]
 └─script.js
 ```
 
-The `FooBar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system, and so on.
+The `Foo Bar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
 
 ### [Programmatic API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
 
