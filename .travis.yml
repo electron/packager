@@ -1,16 +1,14 @@
+sudo: required
+dist: trusty
 language: node_js
 node_js:
 - '0.12'
 - '4'
 - '5'
 cache:
-- apt
 - directories:
   - "$HOME/.electron"
-addons:
-  apt:
-    packages:
-    - wine
+before_install: test/ci/before_install.sh
 after_success: npm run coveralls
 env:
   global:
