@@ -31,7 +31,7 @@ prune              runs `npm prune --production` on the app
 strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
                    It defaults to true, use --strict-ssl=false to disable checks.
 tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable use of a temporary directory.
-version            the version of Electron that is being packaged, see https://github.com/atom/electron/releases
+version            the version of Electron that is being packaged, see https://github.com/electron/electron/releases
 
 * darwin/mas target platforms only *
 
