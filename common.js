@@ -111,7 +111,11 @@ module.exports = {
         fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
       },
       function (cb) {
+        // Support removing old default_app folder that is now an asar archive
         rimraf(path.join(resourcesPath, 'default_app'), cb)
+      },
+      function (cb) {
+        rimraf(path.join(resourcesPath, 'default_app.asar'), cb)
       }
     ]
 

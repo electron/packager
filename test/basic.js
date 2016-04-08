@@ -72,7 +72,38 @@ function createDefaultsTest (opts) {
         t.true(equal,
           'File under subdirectory of packaged app directory should match source file and not be ignored by default')
         fs.exists(path.join(resourcesPath, 'default_app'), function (exists) {
-          t.false(exists, 'The output directory should not contain the Electron default app')
+          t.false(exists, 'The output directory should not contain the Electron default app directory')
+          cb()
+        })
+      }, function (cb) {
+        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default app asar file')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createDefaultAppAsarTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'el0374Test'
+    opts.dir = path.join(__dirname, 'fixtures', 'el-0374')
+    opts.version = '0.37.4'
+
+    var resourcesPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default_app.asar file')
           cb()
         })
       }
@@ -443,6 +474,7 @@ function createIgnoreImplicitOutDirTest (opts) {
 
 util.testAllPlatforms('infer test', createInferTest)
 util.testAllPlatforms('defaults test', createDefaultsTest)
+util.testAllPlatforms('default_app.asar removal test', createDefaultAppAsarTest)
 util.testAllPlatforms('out test', createOutTest)
 util.testAllPlatforms('asar test', createAsarTest)
 util.testAllPlatforms('prune test', createPruneTest)
