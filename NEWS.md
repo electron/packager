@@ -3,6 +3,19 @@
 ## Unreleased
 
 
+## [6.0.1] - 2016-04-08
+
+### Changed
+
+* [win32] `rcedit` dependency updated to 0.4.x
+* API documentation moved from readme.md to docs/api.md (#296)
+
+### Fixed
+
+* [darwin/mas] The OSX icon is properly replaced when Electron ≥ 0.37.4 is used (#301)
+* `default_app.asar` is deleted during packaging (necessary when Electron ≥ 0.37.4 is used).
+  The `default_app` folder is still deleted for older Electron versions (#298, #311)
+
 ## [6.0.0] - 2016-03-28
 
 ### Added
