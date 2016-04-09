@@ -26,6 +26,10 @@ feature. Known modules include:
 * `electron-download`
 * `extract-zip`
 
+## Contribution suggestions
+
+We use the label [`help wanted`](https://github.com/electron-userland/electron-packager/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) in the issue tracker to denote fairly-well-scoped-out bugs or feature requests that the community can pick up and work on. If any of those labeled issues do not have enough information, please feel free to ask constructive questions. (This applies to any open issue.)
+
 ## Filing Pull Requests
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
@@ -35,8 +39,8 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 * Unless it's impractical, please write tests for your changes. This will help us so that we can
   spot regressions much easier.
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
-  the package's documentation. Files that will likely need to be updated include `readme.md` and
-  `usage.txt`.
+  the package's documentation. Files that will likely need to be updated include `readme.md`,
+  `docs/api.md`, and `usage.txt`.
 * This project uses the [JavaScript Standard Style](https://www.npmjs.com/package/standard) as a
   coding convention. CI will fail if the PR does not conform to this standard.
 * One of the philosophies of the project is to keep the code base as small as possible. If you are
