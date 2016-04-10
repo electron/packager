@@ -1,6 +1,5 @@
-var fs = require('fs')
+var fs = require('fs-extra')
 var path = require('path')
-var mkdirp = require('mkdirp')
 var series = require('run-series')
 var ncp = require('ncp').ncp
 
@@ -406,7 +405,7 @@ function createIgnoreOutDirTest (opts, distPath) {
       },
       function (cb) {
         // create out dir before packager (real world issue - when second run includes uningnored out dir)
-        mkdirp(outDir, cb)
+        fs.mkdirp(outDir, cb)
       },
       function (cb) {
         // create file to ensure that directory will be not ignored because empty
@@ -448,7 +447,7 @@ function createIgnoreImplicitOutDirTest (opts) {
       },
       function (cb) {
         previousPackedResultDir = path.join(outDir, opts.name + '-linux-ia32')
-        mkdirp(previousPackedResultDir, cb)
+        fs.mkdirp(previousPackedResultDir, cb)
       },
       function (cb) {
         // create file to ensure that directory will be not ignored because empty

@@ -1,9 +1,8 @@
-var fs = require('fs')
+var fs = require('fs-extra')
 var path = require('path')
 var test = require('tape')
 
 var download = require('electron-download')
-var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var series = require('run-series')
 var objectAssign = require('object-assign')
@@ -84,7 +83,7 @@ exports.isPlatformMac = isPlatformMac
 
 exports.setup = function setup () {
   test('setup', function (t) {
-    mkdirp(WORK_CWD, function (err) {
+    fs.mkdirp(WORK_CWD, function (err) {
       if (err) t.end(err)
       process.chdir(WORK_CWD)
       t.end()
