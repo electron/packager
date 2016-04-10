@@ -208,7 +208,7 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.LSApplicationCategoryType, opts['app-category-type'], 'LSApplicationCategoryType should reflect opts.["app-category-type"]')
+        t.equal(obj.LSApplicationCategoryType, opts['app-category-type'], 'LSApplicationCategoryType should reflect opts["app-category-type"]')
         cb()
       }
     ], function (err) {
