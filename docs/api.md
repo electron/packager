@@ -220,7 +220,7 @@ Object (also known as a "hash") of application metadata to embed into the execut
 
 ### `err`
 
-*Error* (or *Array*, in the case of an `ncp` error)
+*Error* (or *Array*, in the case of an `copy` error)
 
 Contains errors, if any.
 

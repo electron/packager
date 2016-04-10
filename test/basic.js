@@ -398,7 +398,7 @@ function createIgnoreOutDirTest (opts, distPath) {
 
     series([
       function (cb) {
-        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
           return path.basename(file) !== 'node_modules'
         }}, cb)
       },
@@ -440,7 +440,7 @@ function createIgnoreImplicitOutDirTest (opts) {
 
     series([
       function (cb) {
-        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
           return path.basename(file) !== 'node_modules'
         }}, cb)
       },
