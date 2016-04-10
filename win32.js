@@ -1,8 +1,7 @@
-var path = require('path')
-
-var mv = require('mv')
-var series = require('run-series')
 var common = require('./common')
+var fs = require('fs-extra')
+var path = require('path')
+var series = require('run-series')
 
 module.exports = {
   createApp: function createApp (opts, templatePath, callback) {
@@ -12,7 +11,7 @@ module.exports = {
       var newExePath = path.join(tempPath, opts.name + '.exe')
       var operations = [
         function (cb) {
-          mv(path.join(tempPath, 'electron.exe'), newExePath, cb)
+          fs.move(path.join(tempPath, 'electron.exe'), newExePath, cb)
         }
       ]
 

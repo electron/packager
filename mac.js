@@ -1,16 +1,15 @@
 var path = require('path')
-var fs = require('fs')
+var fs = require('fs-extra')
 
 var objectAssign = require('object-assign')
 var plist = require('plist')
-var mv = require('mv')
 var ncp = require('ncp').ncp
 var series = require('run-series')
 var common = require('./common')
 var sign = require('electron-osx-sign')
 
 function rename (basePath, oldName, newName, cb) {
-  mv(path.join(basePath, oldName), path.join(basePath, newName), cb)
+  fs.move(path.join(basePath, oldName), path.join(basePath, newName), cb)
 }
 
 function moveHelpers (frameworksPath, appName, callback) {
@@ -192,7 +191,7 @@ module.exports = {
       operations.push(function (cb) {
         moveHelpers(frameworksPath, opts.name, cb)
       }, function (cb) {
-        mv(path.dirname(contentsPath), finalAppPath, cb)
+        fs.move(path.dirname(contentsPath), finalAppPath, cb)
       })
 
       if ((opts.platform === 'all' || opts.platform === 'mas') && opts['osx-sign'] === undefined) {

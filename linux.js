@@ -1,12 +1,12 @@
-var path = require('path')
-var mv = require('mv')
 var common = require('./common')
+var fs = require('fs-extra')
+var path = require('path')
 
 module.exports = {
   createApp: function createApp (opts, templatePath, callback) {
     common.initializeApp(opts, templatePath, path.join('resources', 'app'), function buildLinuxApp (err, tempPath) {
       if (err) return callback(err)
-      mv(path.join(tempPath, 'electron'), path.join(tempPath, opts.name), function (err) {
+      fs.move(path.join(tempPath, 'electron'), path.join(tempPath, opts.name), function (err) {
         if (err) return callback(err)
         common.moveApp(opts, tempPath, callback)
       })

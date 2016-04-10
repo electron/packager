@@ -24,7 +24,6 @@
     "fs-extra": "^0.26.5",
     "get-package-info": "0.0.2",
     "minimist": "^1.1.1",
-    "mv": "^2.0.3",
     "ncp": "^2.0.0",
     "object-assign": "^4.0.1",
     "plist": "^1.1.0",
