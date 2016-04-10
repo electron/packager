@@ -7,12 +7,9 @@ var ncp = require('ncp').ncp
 var packager = require('..')
 var waterfall = require('run-waterfall')
 
+var common = require('../common')
 var config = require('./config.json')
 var util = require('./util')
-
-function generateBasename (opts) {
-  return opts.name + '-' + opts.platform + '-' + opts.arch
-}
 
 function generateNamePath (opts) {
   // Generates path to verify reflects the name given in the options.
@@ -43,7 +40,7 @@ function createDefaultsTest (opts) {
         t.equal(paths.length, 1, 'Single-target run should resolve to a 1-item array')
 
         finalPath = paths[0]
-        t.equal(finalPath, path.join(util.getWorkCwd(), generateBasename(opts)),
+        t.equal(finalPath, path.join(util.getWorkCwd(), common.generateFinalBasename(opts)),
           'Path should follow the expected format and be in the cwd')
         fs.stat(finalPath, cb)
       }, function (stats, cb) {
@@ -128,7 +125,7 @@ function createOutTest (opts) {
         packager(opts, cb)
       }, function (paths, cb) {
         finalPath = paths[0]
-        t.equal(finalPath, path.join('dist', generateBasename(opts)),
+        t.equal(finalPath, path.join('dist', common.generateFinalBasename(opts)),
           'Path should follow the expected format and be under the folder specifed in `out`')
         fs.stat(finalPath, cb)
       }, function (stats, cb) {
@@ -419,7 +416,7 @@ function createIgnoreOutDirTest (opts, distPath) {
         packager(opts, cb)
       },
       function (cb) {
-        fs.exists(path.join(outDir, generateBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
+        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
           t.false(exists, 'Out dir must not exist in output app directory')
           cb()
         })
@@ -461,7 +458,7 @@ function createIgnoreImplicitOutDirTest (opts) {
         packager(opts, cb)
       },
       function (cb) {
-        fs.exists(path.join(outDir, generateBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
+        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
           t.false(exists, 'Out dir must not exist in output app directory')
           cb()
         })

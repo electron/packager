@@ -82,6 +82,7 @@ module.exports = {
   archs: archs,
   platforms: platforms,
 
+  generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
 
   initializeApp: function initializeApp (opts, templatePath, appRelativePath, callback) {
