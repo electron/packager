@@ -9,11 +9,11 @@ var series = require('run-series')
 var common = require('./common')
 var sign = require('electron-osx-sign')
 
-function moveHelpers (frameworksPath, appName, callback) {
-  function rename (basePath, oldName, newName, cb) {
-    mv(path.join(basePath, oldName), path.join(basePath, newName), cb)
-  }
+function rename (basePath, oldName, newName, cb) {
+  mv(path.join(basePath, oldName), path.join(basePath, newName), cb)
+}
 
+function moveHelpers (frameworksPath, appName, callback) {
   series([' Helper', ' Helper EH', ' Helper NP'].map(function (suffix) {
     return function (cb) {
       var executableBasePath = path.join(frameworksPath, 'Electron' + suffix + '.app', 'Contents', 'MacOS')
@@ -182,18 +182,17 @@ module.exports = {
         })
       }
 
+      // Rename the Contents/MacOS/Electron binary
+      operations.push(function (cb) {
+        rename(path.join(contentsPath, 'MacOS'), 'Electron', appPlist.CFBundleExecutable, cb)
+      })
+
       // Move Helper apps/executables, then top-level .app
       var finalAppPath = path.join(tempPath, opts.name + '.app')
       operations.push(function (cb) {
         moveHelpers(frameworksPath, opts.name, cb)
       }, function (cb) {
         mv(path.dirname(contentsPath), finalAppPath, cb)
-      })
-
-      var sourceName = tempPath + '/' + opts.name + '.app/Contents/MacOS/Electron'
-      var destName = tempPath + '/' + opts.name + '.app/Contents/MacOS/' + appPlist.CFBundleExecutable
-      operations.push(function (cb) {
-        mv(sourceName, destName, cb)
       })
 
       if ((opts.platform === 'all' || opts.platform === 'mas') && opts['osx-sign'] === undefined) {
