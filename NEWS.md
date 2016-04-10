@@ -2,9 +2,18 @@
 
 ## Unreleased
 
+### Added
+
+* Add `download` parameter (#320)
+
 ### Changed
 
 * **Dropped support for running on Node &lt; 4.0.** (#319)
+
+### Deprecated
+
+* `cache` is deprecated in favor of `download.cache` (#320)
+* `strict-ssl` is deprecated in favor of `download.strictSSL` (#320)
 
 ## [6.0.2] - 2016-04-09
 

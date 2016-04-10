@@ -91,13 +91,7 @@ function createSeries (opts, archs, platforms) {
     platforms.forEach(function (platform) {
       // Electron does not have 32-bit releases for Mac OS X, so skip that combination
       if (common.isPlatformMac(platform) && arch === 'ia32') return
-      combinations.push({
-        platform: platform,
-        arch: arch,
-        version: opts.version,
-        cache: opts.cache,
-        strictSSL: opts['strict-ssl']
-      })
+      combinations.push(common.createDownloadOpts(opts, platform, arch))
     })
   })
 

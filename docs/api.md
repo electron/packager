@@ -90,9 +90,22 @@ The build version of the application. Maps to the `FileVersion` metadata propert
 
 ##### `cache`
 
-*String* (default: `$HOME/.electron`)
+*String* (default: `$HOME/.electron`) (**deprecated** and will be removed in a future major version,
+please use the [`download.cache`](#download) parameter instead)
 
 The directory where prebuilt, pre-packaged Electron downloads are cached.
+
+##### `download`
+
+*Object*
+
+If present, passes custom options to [`electron-download`](https://www.npmjs.com/package/electron-download)
+(see the link for more detailed option descriptions and the defaults). Supported parameters include,
+but are not limited to:
+- `cache` (*String*): The directory where prebuilt, pre-packaged Electron downloads are cached.
+- `mirror` (*String*): The URL to override the default Electron download location.
+- `strictSSL` (*Boolean* - default: `true`): Whether SSL certificates are required to be valid when
+  downloading Electron.
 
 ##### `icon`
 
@@ -138,7 +151,8 @@ Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before startin
 
 ##### `strict-ssl`
 
-*Boolean* (**default: `true`**)
+*Boolean* (**default: `true`**) (**deprecated** and will be removed in a future major version,
+please use the [`download.strictSSL`](#download) parameter instead)
 
 Whether SSL certificates are required to be valid when downloading Electron.
 

@@ -466,6 +466,49 @@ function createIgnoreImplicitOutDirTest (opts) {
   }
 }
 
+test('download argument test: download.cache overwrites cache', function (t) {
+  var opts = {
+    cache: 'should not exist',
+    download: {
+      cache: 'should exist'
+    },
+    version: '0.36.0'
+  }
+
+  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  t.same(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0', cache: opts.download.cache, strictSSL: undefined})
+  t.end()
+})
+
+test('download argument test: download.strictSSL overwrites strict-ssl', function (t) {
+  var opts = {
+    download: {
+      strictSSL: false
+    },
+    'strict-ssl': true,
+    version: '0.36.0'
+  }
+
+  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  t.same(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0', cache: undefined, strictSSL: opts.download.strictSSL})
+  t.end()
+})
+
+test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', function (t) {
+  var opts = {
+    download: {
+      arch: 'ia32',
+      platform: 'win32',
+      version: '0.30.0'
+    },
+    version: '0.36.0'
+  }
+
+  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  t.same(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0', cache: undefined, strictSSL: undefined})
+  t.end()
+})
+
 util.testAllPlatforms('infer test', createInferTest)
 util.testAllPlatforms('defaults test', createDefaultsTest)
 util.testAllPlatforms('default_app.asar removal test', createDefaultAppAsarTest)

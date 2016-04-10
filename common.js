@@ -28,6 +28,13 @@ function generateFinalPath (opts) {
   return path.join(opts.out || process.cwd(), generateFinalBasename(opts))
 }
 
+function subOptionWarning (properties, option_name, parameter, value) {
+  if (properties.hasOwnProperty(parameter)) {
+    console.warn(`WARNING: ${option_name}.${parameter} will be inferred from the main options`)
+  }
+  properties[parameter] = value
+}
+
 function userIgnoreFilter (opts) {
   var ignore = opts.ignore || []
   var ignoreFunc = null
@@ -82,6 +89,29 @@ module.exports = {
 
   isPlatformMac: function isPlatformMac (platform) {
     return platform === 'darwin' || platform === 'mas'
+  },
+
+  subOptionWarning: subOptionWarning,
+
+  createDownloadOpts: function createDownloadOpts (opts, platform, arch) {
+    if (opts.hasOwnProperty('cache')) {
+      console.warn('The cache parameter is deprecated, use download.cache instead')
+    }
+
+    if (opts.hasOwnProperty('strict-ssl')) {
+      console.warn('The strict-ssl parameter is deprecated, use download.strictSSL instead')
+    }
+
+    var downloadOpts = Object.assign({
+      cache: opts.cache,
+      strictSSL: opts['strict-ssl']
+    }, opts.download)
+
+    subOptionWarning(downloadOpts, 'download', 'platform', platform)
+    subOptionWarning(downloadOpts, 'download', 'arch', arch)
+    subOptionWarning(downloadOpts, 'download', 'version', opts.version)
+
+    return downloadOpts
   },
 
   generateFinalBasename: generateFinalBasename,
