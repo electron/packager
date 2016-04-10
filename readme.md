@@ -37,6 +37,8 @@ It generates executables/bundles for the following **target** platforms:
 
 ## Installation
 
+This module requires Node.js 4.0 or higher to run.
+
 ```sh
 # for use in npm scripts
 npm install electron-packager --save-dev

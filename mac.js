@@ -1,6 +1,5 @@
 var common = require('./common')
 var fs = require('fs-extra')
-var objectAssign = require('object-assign')
 var path = require('path')
 var plist = require('plist')
 var series = require('run-series')
@@ -37,7 +36,7 @@ function signOptsWarning (name) {
 
 function createSignOpts (properties, platform, app) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  var signOpts = properties === true ? {identity: null} : objectAssign({}, properties)
+  var signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from main options

@@ -1,6 +1,5 @@
 var config = require('./config.json')
 var fs = require('fs')
-var objectAssign = require('object-assign')
 var packager = require('..')
 var path = require('path')
 var rcinfo = require('rcinfo')
@@ -21,7 +20,7 @@ function generateVersionStringTest (metadata_property, extra_opts, expected_valu
     t.timeoutAfter(config.timeout)
 
     var appExePath
-    var opts = objectAssign({}, baseOpts, extra_opts)
+    var opts = Object.assign({}, baseOpts, extra_opts)
 
     waterfall([
       function (cb) {
