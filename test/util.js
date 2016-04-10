@@ -44,9 +44,13 @@ exports.areFilesEqual = function areFilesEqual (file1, file2, callback) {
       fs.readFile(file2, cb)
     }
   ], function (err, buffers) {
-    callback(err, slice.call(buffers[0]).every(function (b, i) {
-      return b === buffers[1][i]
-    }))
+    if (typeof (buffers[1]) === 'undefined') {
+      callback(err, false)
+    } else {
+      callback(err, slice.call(buffers[0]).every(function (b, i) {
+        return b === buffers[1][i]
+      }))
+    }
   })
 }
 
