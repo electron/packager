@@ -12,7 +12,7 @@ function generateNamePath (opts) {
   // Generates path to verify reflects the name given in the options.
   // Returns the Helper.app location on darwin since the top-level .app is already tested for the resources path;
   // returns the executable for other OSes
-  if (util.isPlatformMac(opts.platform)) {
+  if (common.isPlatformMac(opts.platform)) {
     return path.join(opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper.app')
   }
 
@@ -45,7 +45,7 @@ function createDefaultsTest (opts) {
         resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
         fs.stat(path.join(finalPath, generateNamePath(opts)), cb)
       }, function (stats, cb) {
-        if (util.isPlatformMac(opts.platform)) {
+        if (common.isPlatformMac(opts.platform)) {
           t.true(stats.isDirectory(), 'The Helper.app should reflect opts.name')
         } else {
           t.true(stats.isFile(), 'The executable should reflect opts.name')
@@ -317,7 +317,7 @@ function createInferTest (opts) {
         opts.name = packageJSON.productName
         fs.stat(path.join(finalPath, generateNamePath(opts)), cb)
       }, function (stats, cb) {
-        if (util.isPlatformMac(opts.platform)) {
+        if (common.isPlatformMac(opts.platform)) {
           t.true(stats.isDirectory(), 'The Helper.app should reflect productName')
         } else {
           t.true(stats.isFile(), 'The executable should reflect productName')

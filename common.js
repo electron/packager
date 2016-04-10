@@ -80,6 +80,10 @@ module.exports = {
   archs: archs,
   platforms: platforms,
 
+  isPlatformMac: function isPlatformMac (platform) {
+    return platform === 'darwin' || platform === 'mas'
+  },
+
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
 

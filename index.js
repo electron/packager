@@ -21,10 +21,6 @@ var supportedPlatforms = {
   win32: './win32'
 }
 
-function isPlatformMac (platform) {
-  return platform === 'darwin' || platform === 'mas'
-}
-
 function validateList (list, supported, name) {
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or an error message string otherwise.
@@ -94,7 +90,7 @@ function createSeries (opts, archs, platforms) {
   archs.forEach(function (arch) {
     platforms.forEach(function (platform) {
       // Electron does not have 32-bit releases for Mac OS X, so skip that combination
-      if (isPlatformMac(platform) && arch === 'ia32') return
+      if (common.isPlatformMac(platform) && arch === 'ia32') return
       combinations.push({
         platform: platform,
         arch: arch,
@@ -171,7 +167,7 @@ function createSeries (opts, archs, platforms) {
           })
         }
 
-        if (isPlatformMac(combination.platform)) {
+        if (common.isPlatformMac(combination.platform)) {
           testSymlink(function (result) {
             if (result) return checkOverwrite()
 
