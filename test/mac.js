@@ -437,50 +437,40 @@ module.exports = function (baseOpts) {
   test('extra-resource test: two arg', createExtraResource2Test(baseOpts))
   util.teardown()
 
-  util.setup()
   test('osx-sign argument test: default args', function (t) {
     var args = true
     var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
     t.same(sign_opts, {identity: null, app: 'out', platform: 'darwin'})
     t.end()
   })
-  util.teardown()
 
-  util.setup()
   test('osx-sign argument test: identity=true sets autodiscovery mode', function (t) {
     var args = {identity: true}
     var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
     t.same(sign_opts, {identity: null, app: 'out', platform: 'darwin'})
     t.end()
   })
-  util.teardown()
 
-  util.setup()
   test('osx-sign argument test: entitlements passed to electron-osx-sign', function (t) {
     var args = {entitlements: 'path-to-entitlements'}
     var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
     t.same(sign_opts, {app: 'out', platform: 'darwin', entitlements: args.entitlements})
     t.end()
   })
-  util.teardown()
 
-  util.setup()
   test('osx-sign argument test: app not overwritten', function (t) {
     var args = {app: 'some-other-path'}
     var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
     t.same(sign_opts, {app: 'out', platform: 'darwin'})
     t.end()
   })
-  util.teardown()
 
-  util.setup()
   test('osx-sign argument test: platform not overwritten', function (t) {
     var args = {platform: 'mas'}
     var sign_opts = mac.createSignOpts(args, 'darwin', 'out')
     t.same(sign_opts, {app: 'out', platform: 'darwin'})
     t.end()
   })
-  util.teardown()
 
   util.setup()
   test('codesign test', function (t) {
