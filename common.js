@@ -130,14 +130,14 @@ module.exports = {
 
     if (opts.asar) {
       operations.push(function (cb) {
-        var options = {}
+        var asarOptions = {}
         if (opts['asar-unpack']) {
-          options['unpack'] = opts['asar-unpack']
+          asarOptions.unpack = opts['asar-unpack']
         }
         if (opts['asar-unpack-dir']) {
-          options['unpackDir'] = opts['asar-unpack-dir']
+          asarOptions.unpackDir = opts['asar-unpack-dir']
         }
-        asarApp(path.join(appPath), options, cb)
+        asarApp(path.join(appPath), asarOptions, cb)
       })
     }
 
