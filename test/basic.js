@@ -490,7 +490,7 @@ util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreImpl
 
 util.setup()
 test('fails with invalid arch', function (t) {
-  opts = {
+  var opts = {
     name: 'el0374Test',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
     version: '0.37.4',
@@ -507,7 +507,7 @@ util.teardown()
 
 util.setup()
 test('fails with invalid platform', function (t) {
-  opts = {
+  var opts = {
     name: 'el0374Test',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
     version: '0.37.4',
@@ -524,7 +524,7 @@ util.teardown()
 
 util.setup()
 test('fails with invalid version', function (t) {
-  opts = {
+  var opts = {
     name: 'invalidElectronTest',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
     version: '0.0.1',
