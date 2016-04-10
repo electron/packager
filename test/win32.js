@@ -1,15 +1,12 @@
-var fs = require('fs')
-var path = require('path')
-var objectAssign = require('object-assign')
-
-var packager = require('..')
-var test = require('tape')
-var waterfall = require('run-waterfall')
-
 var config = require('./config.json')
-var util = require('./util')
-
+var fs = require('fs')
+var objectAssign = require('object-assign')
+var packager = require('..')
+var path = require('path')
 var rcinfo = require('rcinfo')
+var test = require('tape')
+var util = require('./util')
+var waterfall = require('run-waterfall')
 
 var baseOpts = {
   name: 'basicTest',

@@ -1,6 +1,5 @@
-var path = require('path')
-
 var config = require('./config.json')
+var path = require('path')
 
 var baseOpts = {
   name: 'basicTest',

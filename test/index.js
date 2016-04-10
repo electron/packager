@@ -1,9 +1,7 @@
+var config = require('./config.json')
 var exec = require('child_process').exec
 var path = require('path')
-
 var series = require('run-series')
-
-var config = require('./config.json')
 var util = require('./util')
 
 // Download all Electron distributions before running tests to avoid timing out due to network speed.

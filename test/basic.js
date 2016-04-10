@@ -1,14 +1,12 @@
-var fs = require('fs-extra')
-var path = require('path')
-var series = require('run-series')
-var ncp = require('ncp').ncp
-
-var packager = require('..')
-var waterfall = require('run-waterfall')
-
 var common = require('../common')
 var config = require('./config.json')
+var fs = require('fs-extra')
+var ncp = require('ncp').ncp
+var packager = require('..')
+var path = require('path')
+var series = require('run-series')
 var util = require('./util')
+var waterfall = require('run-waterfall')
 
 function generateNamePath (opts) {
   // Generates path to verify reflects the name given in the options.

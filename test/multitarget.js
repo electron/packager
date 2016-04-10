@@ -1,13 +1,11 @@
+var config = require('./config.json')
 var fs = require('fs')
-var path = require('path')
-
 var packager = require('..')
+var path = require('path')
 var series = require('run-series')
 var test = require('tape')
-var waterfall = require('run-waterfall')
-
-var config = require('./config.json')
 var util = require('./util')
+var waterfall = require('run-waterfall')
 
 function verifyPackageExistence (finalPaths, callback) {
   series(finalPaths.map(function (finalPath) {

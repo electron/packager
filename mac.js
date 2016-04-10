@@ -1,11 +1,10 @@
-var path = require('path')
-var fs = require('fs-extra')
-
-var objectAssign = require('object-assign')
-var plist = require('plist')
-var ncp = require('ncp').ncp
-var series = require('run-series')
 var common = require('./common')
+var fs = require('fs-extra')
+var ncp = require('ncp').ncp
+var objectAssign = require('object-assign')
+var path = require('path')
+var plist = require('plist')
+var series = require('run-series')
 var sign = require('electron-osx-sign')
 
 function rename (basePath, oldName, newName, cb) {

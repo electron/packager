@@ -1,9 +1,8 @@
+var asar = require('asar')
 var child = require('child_process')
 var fs = require('fs-extra')
 var os = require('os')
 var path = require('path')
-
-var asar = require('asar')
 var series = require('run-series')
 
 var archs = ['ia32', 'x64']

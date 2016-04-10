@@ -1,15 +1,13 @@
+var config = require('./config.json')
 var exec = require('child_process').exec
 var fs = require('fs')
-var path = require('path')
-
-var packager = require('..')
-var test = require('tape')
-var waterfall = require('run-waterfall')
-
-var config = require('./config.json')
-var util = require('./util')
-var plist = require('plist')
 var mac = require('../mac')
+var packager = require('..')
+var path = require('path')
+var plist = require('plist')
+var test = require('tape')
+var util = require('./util')
+var waterfall = require('run-waterfall')
 
 function createIconTest (baseOpts, icon, iconPath) {
   return function (t) {

@@ -1,17 +1,15 @@
-var fs = require('fs-extra')
-var path = require('path')
-var test = require('tape')
-
+var common = require('../common')
 var download = require('electron-download')
-var series = require('run-series')
+var fs = require('fs-extra')
 var objectAssign = require('object-assign')
+var path = require('path')
+var series = require('run-series')
+var slice = Array.prototype.slice
+var test = require('tape')
+var version = require('./config.json').version
 
 var ORIGINAL_CWD = process.cwd()
 var WORK_CWD = path.join(__dirname, 'work')
-
-var slice = Array.prototype.slice
-var version = require('./config.json').version
-var common = require('../common')
 
 function isPlatformMac (platform) {
   return platform === 'darwin' || platform === 'mas'
