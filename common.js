@@ -4,7 +4,6 @@ var os = require('os')
 var path = require('path')
 
 var asar = require('asar')
-var rimraf = require('rimraf')
 var series = require('run-series')
 
 var archs = ['ia32', 'x64']
@@ -15,7 +14,7 @@ function asarApp (appPath, asarOptions, cb) {
   var dest = path.join(appPath, '..', 'app.asar')
   asar.createPackageWithOptions(src, dest, asarOptions, function (err) {
     if (err) return cb(err)
-    rimraf(src, function (err) {
+    fs.remove(src, function (err) {
       if (err) return cb(err)
       cb(null, dest)
     })
@@ -113,10 +112,10 @@ module.exports = {
       },
       function (cb) {
         // Support removing old default_app folder that is now an asar archive
-        rimraf(path.join(resourcesPath, 'default_app'), cb)
+        fs.remove(path.join(resourcesPath, 'default_app'), cb)
       },
       function (cb) {
-        rimraf(path.join(resourcesPath, 'default_app.asar'), cb)
+        fs.remove(path.join(resourcesPath, 'default_app.asar'), cb)
       }
     ]
 

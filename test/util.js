@@ -3,7 +3,6 @@ var path = require('path')
 var test = require('tape')
 
 var download = require('electron-download')
-var rimraf = require('rimraf')
 var series = require('run-series')
 var objectAssign = require('object-assign')
 
@@ -94,7 +93,7 @@ exports.setup = function setup () {
 exports.teardown = function teardown () {
   test('teardown', function (t) {
     process.chdir(ORIGINAL_CWD)
-    rimraf(WORK_CWD, function (err) {
+    fs.remove(WORK_CWD, function (err) {
       t.end(err)
     })
   })
