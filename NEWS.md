@@ -97,6 +97,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[6.0.2]: https://github.com/maxogden/electron-packager/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/maxogden/electron-packager/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/maxogden/electron-packager/compare/v5.2.1...v6.0.0
 [5.2.1]: https://github.com/maxogden/electron-packager/compare/v5.2.0...v5.2.1
