@@ -89,7 +89,7 @@ exports.testAllPlatforms = function testAllPlatforms (name, createTest /*, ...cr
   var args = slice.call(arguments, 2)
   exports.setup()
   exports.forEachCombination(function (combination) {
-    test(name + ': ' + combination.platform + '-' + combination.arch,
+    test(`${name}: ${combination.platform}-${combination.arch}`,
       createTest.apply(null, [Object.assign({}, combination)].concat(args)))
   })
   exports.teardown()

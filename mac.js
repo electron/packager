@@ -12,11 +12,11 @@ function rename (basePath, oldName, newName, cb) {
 function moveHelpers (frameworksPath, appName, callback) {
   series([' Helper', ' Helper EH', ' Helper NP'].map(function (suffix) {
     return function (cb) {
-      var executableBasePath = path.join(frameworksPath, 'Electron' + suffix + '.app', 'Contents', 'MacOS')
+      var executableBasePath = path.join(frameworksPath, `Electron${suffix}.app`, 'Contents', 'MacOS')
 
-      rename(executableBasePath, 'Electron' + suffix, appName + suffix, function (err) {
+      rename(executableBasePath, `Electron${suffix}`, appName + suffix, function (err) {
         if (err) return cb(err)
-        rename(frameworksPath, 'Electron' + suffix + '.app', appName + suffix + '.app', cb)
+        rename(frameworksPath, `Electron${suffix}.app`, appName + suffix + '.app', cb)
       })
     }
   }), function (err) {
@@ -31,7 +31,7 @@ function filterCFBundleIdentifier (identifier) {
 }
 
 function signOptsWarning (name) {
-  console.warn('WARNING: osx-sign.' + name + ' will be inferred from main options')
+  console.warn(`WARNING: osx-sign.${name} will be inferred from main options`)
 }
 
 function createSignOpts (properties, platform, app) {
@@ -184,7 +184,7 @@ module.exports = {
       })
 
       // Move Helper apps/executables, then top-level .app
-      var finalAppPath = path.join(tempPath, opts.name + '.app')
+      var finalAppPath = path.join(tempPath, `${opts.name}.app`)
       operations.push(function (cb) {
         moveHelpers(frameworksPath, opts.name, cb)
       }, function (cb) {
