@@ -3,6 +3,13 @@
 ## Unreleased
 
 
+## [6.0.2] - 2016-04-09
+
+### Changed
+
+* [win32] `rcedit` dependency updated to 0.5.x. **The DLL mentioned in the 6.0.1 release notes
+  is no longer required.**
+
 ## [6.0.1] - 2016-04-08
 
 ### Changed

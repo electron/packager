@@ -125,12 +125,6 @@ The `Foo Bar.app` folder generated can be executed by a system running OS X, whi
 
 Building an Electron app for the Windows platform with a custom icon requires editing the `Electron.exe` file. Currently, electron-packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish this. A Windows executable is bundled in that node package and needs to be run in order for this functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
 
-As of `node-rcedit` 0.4.0, an additional DLL is required, `MSVCP120.dll`. This is available in the [Microsoft Visual C++ 2013 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=40784), but the easiest way to install it is to use [winetricks](https://github.com/Winetricks/winetricks):
-
-```sh
-winetricks -q vcrun2013
-```
-
 ## Related
 
 - [electron-builder](https://www.npmjs.com/package/electron-builder) - for creating installer wizards
