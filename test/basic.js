@@ -5,6 +5,7 @@ var ncp = require('ncp').ncp
 var packager = require('..')
 var path = require('path')
 var series = require('run-series')
+var test = require('tape')
 var util = require('./util')
 var waterfall = require('run-waterfall')
 
@@ -486,3 +487,54 @@ util.testAllPlatforms('tmpdir test', createDisableTmpdirUsingTest)
 util.testAllPlatforms('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
 util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
 util.testAllPlatforms('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)
+
+util.setup()
+test('fails with invalid arch', function (t) {
+  opts = {
+    name: 'el0374Test',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'z80',
+    platform: 'linux'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(undefined, paths, 'no paths returned')
+    t.ok(err, 'error thrown')
+    t.end()
+  })
+})
+util.teardown()
+
+util.setup()
+test('fails with invalid platform', function (t) {
+  opts = {
+    name: 'el0374Test',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'ia32',
+    platform: 'dos'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(undefined, paths, 'no paths returned')
+    t.ok(err, 'error thrown')
+    t.end()
+  })
+})
+util.teardown()
+
+util.setup()
+test('fails with invalid version', function (t) {
+  opts = {
+    name: 'invalidElectronTest',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.0.1',
+    arch: 'x64',
+    platform: 'linux'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(undefined, paths, 'no paths returned')
+    t.ok(err, 'error thrown')
+    t.end()
+  })
+})
+util.teardown()
