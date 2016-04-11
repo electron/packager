@@ -1,6 +1,5 @@
 var common = require('./common')
 var fs = require('fs-extra')
-var ncp = require('ncp').ncp
 var objectAssign = require('object-assign')
 var path = require('path')
 var plist = require('plist')

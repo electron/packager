@@ -1,7 +1,6 @@
 var common = require('../common')
 var config = require('./config.json')
 var fs = require('fs-extra')
-var ncp = require('ncp').ncp
 var packager = require('..')
 var path = require('path')
 var series = require('run-series')
