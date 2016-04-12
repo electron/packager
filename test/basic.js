@@ -1,7 +1,6 @@
 var common = require('../common')
 var config = require('./config.json')
 var fs = require('fs-extra')
-var ncp = require('ncp').ncp
 var packager = require('..')
 var path = require('path')
 var series = require('run-series')
@@ -398,7 +397,7 @@ function createIgnoreOutDirTest (opts, distPath) {
 
     series([
       function (cb) {
-        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
           return path.basename(file) !== 'node_modules'
         }}, cb)
       },
@@ -440,7 +439,7 @@ function createIgnoreImplicitOutDirTest (opts) {
 
     series([
       function (cb) {
-        ncp(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
           return path.basename(file) !== 'node_modules'
         }}, cb)
       },

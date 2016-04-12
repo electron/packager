@@ -1,6 +1,5 @@
 var common = require('./common')
 var fs = require('fs-extra')
-var ncp = require('ncp').ncp
 var objectAssign = require('object-assign')
 var path = require('path')
 var plist = require('plist')
@@ -163,7 +162,7 @@ module.exports = {
               // Ignore error if icon doesn't exist, in case it's only available for other OS
               cb(null)
             } else {
-              ncp(icon, path.join(contentsPath, 'Resources', appPlist.CFBundleIconFile), cb)
+              fs.copy(icon, path.join(contentsPath, 'Resources', appPlist.CFBundleIconFile), cb)
             }
           })
         })
@@ -175,7 +174,7 @@ module.exports = {
         if (!Array.isArray(extras)) extras = [extras]
         extras.forEach(function (val) {
           operations.push(function (cb) {
-            ncp(val, path.join(contentsPath, 'Resources', path.basename(val)), cb)
+            fs.copy(val, path.join(contentsPath, 'Resources', path.basename(val)), cb)
           })
         })
       }
