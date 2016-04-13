@@ -1,5 +1,6 @@
 var config = require('./config.json')
 var fs = require('fs')
+var isAdmin = require('is-admin')
 var packager = require('..')
 var path = require('path')
 var series = require('run-series')
@@ -32,12 +33,24 @@ test('all test', function (t) {
     all: true
   }
 
+  var expectedAppCount = 6
+
   waterfall([
     function (cb) {
+      if (process.platform === 'win32') {
+        isAdmin(function (err, admin) {
+          if (err) return cb(err)
+          if (!admin) expectedAppCount = 4
+          cb()
+        })
+      } else {
+        cb()
+      }
+    }, function (cb) {
       packager(opts, cb)
     }, function (finalPaths, cb) {
-      // Windows skips packaging for OS X (darwin + mas), and OS X only has 64-bit releases
-      t.equal(finalPaths.length, process.platform === 'win32' ? 4 : 6,
+      // OS X only has 64-bit releases
+      t.equal(finalPaths.length, expectedAppCount,
         'packager call should resolve with expected number of paths')
       verifyPackageExistence(finalPaths, cb)
     }, function (exists, cb) {
