@@ -96,6 +96,7 @@ function createSeries (opts, archs, platforms) {
         arch: arch,
         version: opts.version,
         cache: opts.cache,
+        mirror: opts.mirror,
         strictSSL: opts['strict-ssl']
       })
     })
