@@ -21,7 +21,7 @@ function asarApp (appPath, asarOptions, cb) {
 }
 
 function generateFinalBasename (opts) {
-  return opts.name + '-' + opts.platform + '-' + opts.arch
+  return `${opts.name}-${opts.platform}-${opts.arch}`
 }
 
 function generateFinalPath (opts) {
@@ -53,7 +53,7 @@ function userIgnoreFilter (opts) {
   if (normalizedOut === null || normalizedOut === process.cwd()) {
     platforms.forEach(function (platform) {
       archs.forEach(function (arch) {
-        outIgnores.push(path.join(process.cwd(), opts.name + '-' + platform + '-' + arch))
+        outIgnores.push(path.join(process.cwd(), `${opts.name}-${platform}-${arch}`))
       })
     })
   } else {
@@ -99,7 +99,7 @@ module.exports = {
     if (opts.tmpdir === false) {
       tempPath = generateFinalPath(opts)
     } else {
-      tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', opts.platform + '-' + opts.arch, generateFinalBasename(opts))
+      tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
     }
 
     // Path to `app` directory

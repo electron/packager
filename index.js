@@ -25,13 +25,13 @@ function validateList (list, supported, name) {
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or an error message string otherwise.
 
-  if (!list) return 'Must specify ' + name
+  if (!list) return `Must specify ${name}`
   if (list === 'all') return Object.keys(supported)
 
   if (!Array.isArray(list)) list = list.split(',')
   for (var i = list.length; i--;) {
     if (!supported[list[i]]) {
-      return 'Unsupported ' + name + ' ' + list[i] + '; must be one of: ' + Object.keys(supported).join(', ')
+      return `Unsupported ${name} ${list[i]}; must be one of: ${Object.keys(supported).join(', ')}`
     }
   }
 
@@ -124,8 +124,8 @@ function createSeries (opts, archs, platforms) {
           } else {
             buildParentDir = opts.out || process.cwd()
           }
-          var buildDir = path.join(buildParentDir, platform + '-' + arch + '-template')
-          console.error('Packaging app for platform', platform + ' ' + arch, 'using electron v' + version)
+          var buildDir = path.join(buildParentDir, `${platform}-${arch}-template`)
+          console.error(`Packaging app for platform ${platform} ${arch} using electron v${version}`)
           series([
             function (cb) {
               fs.mkdirs(buildDir, cb)
@@ -157,8 +157,7 @@ function createSeries (opts, archs, platforms) {
                   createApp(comboOpts)
                 })
               } else {
-                console.error('Skipping ' + platform + ' ' + arch +
-                  ' (output dir already exists, use --overwrite to force)')
+                console.error(`Skipping ${platform} ${arch} (output dir already exists, use --overwrite to force)`)
                 callback()
               }
             } else {
@@ -171,7 +170,7 @@ function createSeries (opts, archs, platforms) {
           testSymlink(function (result) {
             if (result) return checkOverwrite()
 
-            console.error('Cannot create symlinks; skipping ' + combination.platform + ' platform')
+            console.error(`Cannot create symlinks; skipping ${combination.platform} platform`)
             callback()
           })
         } else {

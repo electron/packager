@@ -8,7 +8,7 @@ module.exports = {
     common.initializeApp(opts, templatePath, path.join('resources', 'app'), function buildWinApp (err, tempPath) {
       if (err) return callback(err)
 
-      var newExePath = path.join(tempPath, opts.name + '.exe')
+      var newExePath = path.join(tempPath, `${opts.name}.exe`)
       var operations = [
         function (cb) {
           fs.move(path.join(tempPath, 'electron.exe'), newExePath, cb)

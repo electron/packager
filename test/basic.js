@@ -13,7 +13,7 @@ function generateNamePath (opts) {
   // Returns the Helper.app location on darwin since the top-level .app is already tested for the resources path;
   // returns the executable for other OSes
   if (common.isPlatformMac(opts.platform)) {
-    return path.join(opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper.app')
+    return path.join(`${opts.name}.app`, 'Contents', 'Frameworks', `${opts.name} Helper.app`)
   }
 
   return opts.name + (opts.platform === 'win32' ? '.exe' : '')
@@ -324,7 +324,7 @@ function createInferTest (opts) {
         }
         fs.readFile(path.join(finalPath, 'version'), cb)
       }, function (version, cb) {
-        t.equal('v' + packageJSON.devDependencies['electron-prebuilt'], version.toString(), 'The version should be inferred from installed electron-prebuilt version')
+        t.equal(`v${packageJSON.devDependencies['electron-prebuilt']}`, version.toString(), 'The version should be inferred from installed electron-prebuilt version')
         cb()
       }
     ], function (err) {
@@ -444,7 +444,7 @@ function createIgnoreImplicitOutDirTest (opts) {
         }}, cb)
       },
       function (cb) {
-        previousPackedResultDir = path.join(outDir, opts.name + '-linux-ia32')
+        previousPackedResultDir = path.join(outDir, `${opts.name}-linux-ia32`)
         fs.mkdirp(previousPackedResultDir, cb)
       },
       function (cb) {

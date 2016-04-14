@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+
+* **Dropped support for running on Node &lt; 4.0.** (#319)
 
 ## [6.0.2] - 2016-04-09
 

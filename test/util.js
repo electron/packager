@@ -2,7 +2,6 @@ var bufferEqual = require('buffer-equal')
 var common = require('../common')
 var download = require('electron-download')
 var fs = require('fs-extra')
-var objectAssign = require('object-assign')
 var path = require('path')
 var series = require('run-series')
 var slice = Array.prototype.slice
@@ -90,8 +89,8 @@ exports.testAllPlatforms = function testAllPlatforms (name, createTest /*, ...cr
   var args = slice.call(arguments, 2)
   exports.setup()
   exports.forEachCombination(function (combination) {
-    test(name + ': ' + combination.platform + '-' + combination.arch,
-      createTest.apply(null, [objectAssign({}, combination)].concat(args)))
+    test(`${name}: ${combination.platform}-${combination.arch}`,
+      createTest.apply(null, [Object.assign({}, combination)].concat(args)))
   })
   exports.teardown()
 }
