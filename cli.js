@@ -1,6 +1,19 @@
 #!/usr/bin/env node
 var fs = require('fs')
-var args = require('minimist')(process.argv.slice(2), {boolean: ['prune', 'asar', 'all', 'overwrite', 'strict-ssl', 'download.strictSSL']})
+var args = require('minimist')(process.argv.slice(2), {
+  boolean: [
+    'prune',
+    'asar',
+    'all',
+    'overwrite',
+    'strict-ssl',
+    'download.strictSSL'
+  ],
+  default: {
+    'strict-ssl': true,
+    'download.strictSSL': true
+  }
+})
 var packager = require('./')
 var path = require('path')
 var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
