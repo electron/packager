@@ -6,6 +6,7 @@ node_js:
 - '5'
 cache:
 - directories:
+  - "$HOME/.npm"
   - "$HOME/.electron"
 before_install: test/ci/before_install.sh
 after_success: npm run coveralls
