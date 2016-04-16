@@ -30,26 +30,15 @@ function filterCFBundleIdentifier (identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '')
 }
 
-function signOptsWarning (name) {
-  console.warn(`WARNING: osx-sign.${name} will be inferred from main options`)
-}
-
 function createSignOpts (properties, platform, app) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
   var signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
-  // with a few additions from main options
+  // with a few additions from the main options
   // user may think they can pass platform or app, but they will be ignored
-  if (signOpts.platform) {
-    signOptsWarning('platform')
-  }
-  signOpts.platform = platform
-
-  if (signOpts.app) {
-    signOptsWarning('app')
-  }
-  signOpts.app = app
+  common.subOptionWarning(signOpts, 'osx-sign', 'platform', platform)
+  common.subOptionWarning(signOpts, 'osx-sign', 'app', app)
 
   if (signOpts.binaries) {
     console.warn('WARNING: osx-sign.binaries signing will fail. Sign manually, or with electron-osx-sign.')
