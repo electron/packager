@@ -85,12 +85,9 @@ exports.teardown = function teardown () {
   })
 }
 
-exports.testAllPlatforms = function testAllPlatforms (name, createTest /*, ...createTestArgs */) {
+exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, ...createTestArgs */) {
   var args = slice.call(arguments, 2)
   exports.setup()
-  exports.forEachCombination(function (combination) {
-    test(`${name}: ${combination.platform}-${combination.arch}`,
-      createTest.apply(null, [Object.assign({}, combination)].concat(args)))
-  })
+  test(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: version}].concat(args)))
   exports.teardown()
 }
