@@ -15,30 +15,23 @@ module.exports = {
         }
       ]
 
-      if (opts.icon || opts['version-string']) {
+      var rcOpts = {'version-string': opts['version-string'] || {}}
+
+      if (opts['build-version']) {
+        rcOpts['file-version'] = opts['build-version']
+      }
+
+      if (opts['app-version']) {
+        rcOpts['product-version'] = opts['app-version']
+      }
+
+      if (opts['app-copyright']) {
+        rcOpts['version-string'].LegalCopyright = opts['app-copyright']
+      }
+
+      if (opts.icon || opts['version-string'] || opts['app-copyright'] || opts['app-version'] || opts['build-version']) {
         operations.push(function (cb) {
           common.normalizeExt(opts.icon, '.ico', function (err, icon) {
-            var rcOpts = {}
-            if (opts['version-string']) {
-              rcOpts['version-string'] = opts['version-string']
-
-              if (opts['build-version']) {
-                rcOpts['file-version'] = opts['build-version']
-              } else if (opts['version-string'].FileVersion) {
-                rcOpts['file-version'] = opts['version-string'].FileVersion
-              }
-
-              if (opts['app-version']) {
-                rcOpts['product-version'] = opts['app-version']
-              } else if (opts['version-string'].ProductVersion) {
-                rcOpts['product-version'] = opts['version-string'].ProductVersion
-              }
-
-              if (opts['app-copyright']) {
-                rcOpts['version-string'].LegalCopyright = opts['app-copyright']
-              }
-            }
-
             // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
             if (!err) {
               rcOpts.icon = icon

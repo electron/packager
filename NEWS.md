@@ -19,6 +19,12 @@
 * `cache` is deprecated in favor of `download.cache` (#320)
 * `strict-ssl` is deprecated in favor of `download.strictSSL` (#320)
 
+### Removed
+
+* [win32] `version-string.FileVersion` and `version-string.ProductVersion` are replaced by
+  favor of `app-version` and `build-version`, respectively (#327)
+* [win32] `version-string.LegalCopyright` is replaced by `app-copyright` (#327)
+
 ## [6.0.2] - 2016-04-09
 
 ### Changed

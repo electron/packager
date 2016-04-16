@@ -15,7 +15,7 @@ var baseOpts = {
   platform: 'win32'
 }
 
-function generateVersionStringTest (metadata_property, extra_opts, expected_value, assertion_msg) {
+function generateVersionStringTest (metadata_properties, extra_opts, expected_values, assertion_msgs) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
@@ -34,7 +34,14 @@ function generateVersionStringTest (metadata_property, extra_opts, expected_valu
       }, function (cb) {
         rcinfo(appExePath, cb)
       }, function (info, cb) {
-        t.equal(info[metadata_property], expected_value, assertion_msg)
+        metadata_properties = [].concat(metadata_properties)
+        expected_values = [].concat(expected_values)
+        assertion_msgs = [].concat(assertion_msgs)
+        metadata_properties.forEach(function (property, i) {
+          var value = expected_values[i]
+          var msg = assertion_msgs[i]
+          t.equal(info[property], value, msg)
+        })
         cb()
       }
     ], function (err) {
@@ -43,89 +50,57 @@ function generateVersionStringTest (metadata_property, extra_opts, expected_valu
   }
 }
 
-function setFileVersionTest (fileVersion) {
+function setFileVersionTest (buildVersion) {
   var opts = {
-    'version-string': {
-      FileVersion: fileVersion
-    }
-  }
-
-  return generateVersionStringTest('FileVersion', opts, fileVersion, 'File version should match the value in version-string')
-}
-
-function setBuildAndFileVersionTest (buildVersion, fileVersion) {
-  var opts = {
-    'build-version': buildVersion,
-    'version-string': {
-      FileVersion: fileVersion
-    }
+    'build-version': buildVersion
   }
 
   return generateVersionStringTest('FileVersion', opts, buildVersion, 'File version should match build version')
 }
 
-function setProductVersionTest (productVersion) {
+function setProductVersionTest (appVersion) {
   var opts = {
-    'version-string': {
-      ProductVersion: productVersion
-    }
-  }
-
-  return generateVersionStringTest('ProductVersion', opts, productVersion, 'Product version should match the value in version-string')
-}
-
-function setAppAndProductVersionTest (appVersion, productVersion) {
-  var opts = {
-    'app-version': appVersion,
-    'version-string': {
-      ProductVersion: productVersion
-    }
+    'app-version': appVersion
   }
 
   return generateVersionStringTest('ProductVersion', opts, appVersion, 'Product version should match app version')
 }
 
-function setLegalCopyrightTest (legalCopyright) {
+function setCopyrightTest (appCopyright) {
   var opts = {
-    'version-string': {
-      LegalCopyright: legalCopyright
-    }
-  }
-
-  return generateVersionStringTest('LegalCopyright', opts, legalCopyright, 'Legal copyright should match the value in version-string')
-}
-
-function setCopyrightOverrideTest (legalCopyright, appCopyright) {
-  var opts = {
-    'app-copyright': appCopyright,
-    'version-string': {
-      LegalCopyright: legalCopyright
-    }
+    'app-copyright': appCopyright
   }
 
   return generateVersionStringTest('LegalCopyright', opts, appCopyright, 'Legal copyright should match app copyright')
 }
 
+function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
+  var opts = {
+    'app-copyright': appCopyright,
+    'version-string': {
+      CompanyName: companyName
+    }
+  }
+
+  return generateVersionStringTest(['LegalCopyright', 'CompanyName'],
+                                   opts,
+                                   [appCopyright, companyName],
+                                   ['Legal copyright should match app copyright',
+                                    'Company name should match version-string value'])
+}
+
 util.setup()
-test('win32 file version test', setFileVersionTest('1.2.3.4'))
+test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 util.teardown()
 
 util.setup()
-test('win32 build version overrides file version test', setBuildAndFileVersionTest('2.3.4.5', '1.2.3.4'))
+test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
 util.teardown()
 
 util.setup()
-test('win32 product version test', setProductVersionTest('4.3.2.1'))
+test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
 util.teardown()
 
 util.setup()
-test('win32 app version overrides product version test', setAppAndProductVersionTest('5.4.3.2', '4.3.2.1'))
-util.teardown()
-
-util.setup()
-test('win32 legal copyright test', setLegalCopyrightTest('Copyright Foo'))
-util.teardown()
-
-util.setup()
-test('win32 app copyright overrides LegalCopyright test', setCopyrightOverrideTest('Copyright Foo', 'Copyright Bar'))
+test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
 util.teardown()
