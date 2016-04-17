@@ -66,10 +66,7 @@ version-string     a list of sub-properties used to set the application metadata
                    e.g. --version-string.CompanyName="Company Inc." --version-string.ProductName="Product"
                    Properties supported:
                    - CompanyName
-                   - LegalCopyright (deprecated, use --app-copyright instead)
                    - FileDescription
                    - OriginalFilename
-                   - FileVersion (deprecated, use --build-version instead)
-                   - ProductVersion (deprecated, use --app-version instead)
                    - ProductName
                    - InternalName

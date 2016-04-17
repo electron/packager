@@ -222,11 +222,8 @@ If present, signs OS X target apps when the host platform is OS X and XCode is i
 
 Object (also known as a "hash") of application metadata to embed into the executable:
 - `CompanyName`
-- `LegalCopyright` (**deprecated** and will be removed in a future major version, please use the top-level [`app-copyright`](#app-copyright) parameter instead)
 - `FileDescription`
 - `OriginalFilename`
-- `FileVersion` (**deprecated** and will be removed in a future major version, please use the top-level [`build-version`](#build-version) parameter instead)
-- `ProductVersion` (**deprecated** and will be removed in a future major version, please use the top-level [`app-version`](#app-version) parameter instead)
 - `ProductName`
 - `InternalName`
 
