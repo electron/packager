@@ -1,12 +1,12 @@
 var bufferEqual = require('buffer-equal')
 var common = require('../common')
+var config = require('./config.json')
 var download = require('electron-download')
 var fs = require('fs-extra')
 var path = require('path')
 var series = require('run-series')
 var slice = Array.prototype.slice
 var test = require('tape')
-var version = require('./config.json').version
 
 var ORIGINAL_CWD = process.cwd()
 var WORK_CWD = path.join(__dirname, 'work')
@@ -22,7 +22,7 @@ common.archs.forEach(function (arch) {
     combinations.push({
       arch: arch,
       platform: platform,
-      version: version
+      version: config.version
     })
   })
 })
@@ -43,13 +43,11 @@ exports.areFilesEqual = function areFilesEqual (file1, file2, callback) {
 exports.downloadAll = function downloadAll (version, callback) {
   series(combinations.map(function (combination) {
     return function (cb) {
-      download(combination, cb)
+      var downloadOpts = Object.assign({}, combination)
+      downloadOpts.version = version
+      download(downloadOpts, cb)
     }
   }), callback)
-}
-
-exports.forEachCombination = function forEachCombination (cb) {
-  combinations.forEach(cb)
 }
 
 exports.generateResourcesPath = function generateResourcesPath (opts) {
@@ -88,6 +86,6 @@ exports.teardown = function teardown () {
 exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, ...createTestArgs */) {
   var args = slice.call(arguments, 2)
   exports.setup()
-  test(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: version}].concat(args)))
+  test(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: config.version}].concat(args)))
   exports.teardown()
 }
