@@ -477,7 +477,7 @@ module.exports = function (baseOpts) {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
-    opts['osx-sign'] = true // Ad-hoc
+    opts['osx-sign'] = {identity: 'Developer CodeCert'}
 
     var appPath
 

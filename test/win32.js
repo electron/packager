@@ -17,7 +17,7 @@ var baseOpts = {
 
 function generateVersionStringTest (metadata_properties, extra_opts, expected_values, assertion_msgs) {
   return function (t) {
-    t.timeoutAfter(config.timeout)
+    t.timeoutAfter(process.platform === 'darwin' ? config.macTimeout : config.timeout)
 
     var appExePath
     var opts = Object.assign({}, baseOpts, extra_opts)
