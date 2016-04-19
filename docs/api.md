@@ -63,7 +63,7 @@ The human-readable copyright line for the app. Maps to the `LegalCopyright` meta
 
 The release version of the application. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
 
-###### `asar`
+##### `asar`
 
 *Boolean* (default: `false`)
 
