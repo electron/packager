@@ -474,7 +474,7 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('codesign test', function (t) {
-    t.timeoutAfter(config.timeout)
+    t.timeoutAfter(config.macExecTimeout)
 
     var opts = Object.create(baseOpts)
     opts['osx-sign'] = {identity: 'Developer CodeCert'}

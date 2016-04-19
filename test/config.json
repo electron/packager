@@ -1,5 +1,5 @@
 {
   "timeout": 30000,
-  "macTimeout": 60000,
+  "macExecTimeout": 60000,
   "version": "0.35.6"
 }
