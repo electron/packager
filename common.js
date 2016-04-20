@@ -18,8 +18,10 @@ function parseCLIArgs (argv) {
       'overwrite',
       'download.strictSSL'
     ],
+    alias: {
+      'download.strictSSL': 'strict-ssl'
+    },
     default: {
-      'strict-ssl': true,
       'download.strictSSL': true
     }
   })
