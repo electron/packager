@@ -515,6 +515,30 @@ test('download argument test: download.{arch,platform,version} does not overwrit
   t.end()
 })
 
+test('CLI argument test: --strict-ssl default', function (t) {
+  var args = common.parseCLIArgs([])
+  t.true(args['strict-ssl'], 'default for --strict-ssl is true')
+  t.end()
+})
+
+test('CLI argument test: --download.strictSSL default', function (t) {
+  var args = common.parseCLIArgs([])
+  t.true(args.download.strictSSL, 'default for --download.strictSSL is true')
+  t.end()
+})
+
+test('CLI argument test: --tmpdir=false', function (t) {
+  var args = common.parseCLIArgs(['--tmpdir=false'])
+  t.equal(args.tmpdir, false)
+  t.end()
+})
+
+test('CLI argument test: --osx-sign=true', function (t) {
+  var args = common.parseCLIArgs(['--osx-sign=true'])
+  t.equal(args['osx-sign'], true)
+  t.end()
+})
+
 util.testSinglePlatform('infer test', createInferTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('default_app.asar removal test', createDefaultAppAsarTest)
