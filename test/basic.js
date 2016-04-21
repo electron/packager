@@ -407,7 +407,10 @@ function createIgnoreOutDirTest (opts, distPath) {
       },
       function (cb) {
         // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(outDir, 'ignoreMe'), 'w', cb)
+        fs.open(path.join(outDir, 'ignoreMe'), 'w', function (err, fd) {
+          if (err) return cb(err)
+          fs.close(fd, cb)
+        })
       },
       function (cb) {
         packager(opts, cb)
@@ -449,7 +452,10 @@ function createIgnoreImplicitOutDirTest (opts) {
       },
       function (cb) {
         // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(previousPackedResultDir, testFilename), 'w', cb)
+        fs.open(path.join(previousPackedResultDir, testFilename), 'w', function (err, fd) {
+          if (err) return cb(err)
+          fs.close(fd, cb)
+        })
       },
       function (cb) {
         packager(opts, cb)
