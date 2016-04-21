@@ -79,43 +79,8 @@ A [glob expression](https://github.com/isaacs/minimatch#features), when specifie
 
 *String*
 
-Unpacks the dir to `app.asar.unpacked` directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`.
-For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
-
-###### Unpacking multiple directories to `app.asar.unpacked`
-
-Given:
-```
-    app
-(a) ├── x1
-(b) ├── x2
-(c) ├── y3
-(d) │   ├── x1
-(e) │   └── z1
-(f) │       └── x2
-(g) └── z4
-(h)     └── w1
-```
-
-Unpack: a, b
-```javascript
-asar-unpack-dir="{x1,x2}"
-```
-
-Unpack: a, b, d, f
-```javascript
-asar-unpack-dir="**/{x1,x2}"
-```
-
-Unpack: a, b, d, f, h
-```javascript
-asar-unpack-dir="{**/x1,**/x2,z4/w1}"
-```
-
-Unpack: c (with all content and without subdirs), g  (with all content and subdirs)
-```javascript
-asar-unpack-dir="{y3,z4/*}"
-```
+Unpacks the dir to `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar-unpack-dir` is relative to `dir`.
+For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir` and `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/*` will unpack the directory `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
 
 ##### `build-version`
 
