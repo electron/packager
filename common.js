@@ -1,12 +1,55 @@
 var asar = require('asar')
 var child = require('child_process')
 var fs = require('fs-extra')
+var minimist = require('minimist')
 var os = require('os')
 var path = require('path')
 var series = require('run-series')
 
 var archs = ['ia32', 'x64']
 var platforms = ['darwin', 'linux', 'mas', 'win32']
+
+function parseCLIArgs (argv) {
+  var args = minimist(argv, {
+    boolean: [
+      'prune',
+      'asar',
+      'all',
+      'overwrite',
+      'download.strictSSL'
+    ],
+    alias: {
+      'download.strictSSL': 'strict-ssl'
+    },
+    default: {
+      'download.strictSSL': true
+    }
+  })
+
+  args.dir = args._[0]
+  args.name = args._[1]
+
+  var protocolSchemes = [].concat(args.protocol || [])
+  var protocolNames = [].concat(args['protocol-name'] || [])
+
+  if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
+    args.protocols = protocolSchemes.map(function (scheme, i) {
+      return {schemes: [scheme], name: protocolNames[i]}
+    })
+  }
+
+  // minimist doesn't support multiple types for a single argument (in this case, `String` or `false`)
+  if (args.tmpdir === 'false') {
+    args.tmpdir = false
+  }
+
+  // (in this case, `Object` or `true`)
+  if (args['osx-sign'] === 'true') {
+    args['osx-sign'] = true
+  }
+
+  return args
+}
 
 function asarApp (appPath, asarOptions, cb) {
   var src = path.join(appPath)
@@ -86,6 +129,8 @@ function userIgnoreFilter (opts) {
 module.exports = {
   archs: archs,
   platforms: platforms,
+
+  parseCLIArgs: parseCLIArgs,
 
   isPlatformMac: function isPlatformMac (platform) {
     return platform === 'darwin' || platform === 'mas'

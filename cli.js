@@ -1,48 +1,15 @@
 #!/usr/bin/env node
+var common = require('./common')
 var fs = require('fs')
-var args = require('minimist')(process.argv.slice(2), {
-  boolean: [
-    'prune',
-    'asar',
-    'all',
-    'overwrite',
-    'strict-ssl',
-    'download.strictSSL'
-  ],
-  default: {
-    'strict-ssl': true,
-    'download.strictSSL': true
-  }
-})
 var packager = require('./')
 var path = require('path')
 var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
 
-args.dir = args._[0]
-args.name = args._[1]
-
-var protocolSchemes = [].concat(args.protocol || [])
-var protocolNames = [].concat(args['protocol-name'] || [])
-
-if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
-  args.protocols = protocolSchemes.map(function (scheme, i) {
-    return {schemes: [scheme], name: protocolNames[i]}
-  })
-}
+var args = common.parseCLIArgs(process.argv.slice(2))
 
 if (!args.dir || (!args.all && (!args.platform || !args.arch))) {
   console.error(usage)
   process.exit(1)
-}
-
-// minimist doesn't support multiple types for a single argument (in this case, `String` or `false`)
-if (args.tmpdir === 'false') {
-  args.tmpdir = false
-}
-
-// (in this case, `Object` or `true`)
-if (args['osx-sign'] === 'true') {
-  args['osx-sign'] = true
 }
 
 packager(args, function done (err, appPaths) {

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+
+## [7.0.1] - 2016-04-20
+
+### Fixed
+
+* Not specifying `strict-ssl` CLI parameter no longer triggers a deprecation warning (#335)
+
 ## [7.0.0] - 2016-04-17
 
 ### Added
@@ -121,6 +128,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.0.1]: https://github.com/electron-userland/electron-packager/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/electron-userland/electron-packager/compare/v6.0.2...v7.0.0
 [6.0.2]: https://github.com/electron-userland/electron-packager/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/electron-userland/electron-packager/compare/v6.0.0...v6.0.1
