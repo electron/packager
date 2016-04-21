@@ -82,6 +82,40 @@ A [glob expression](https://github.com/isaacs/minimatch#features), when specifie
 Unpacks the dir to `app.asar.unpacked` directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`.
 For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
 
+###### Unpacking multiple directories to `app.asar.unpacked`
+
+Given:
+```
+    app
+(a) ├── x1
+(b) ├── x2
+(c) ├── y3
+(d) │   ├── x1
+(e) │   └── z1
+(f) │       └── x2
+(g) └── z4
+(h)     └── w1
+```
+
+Unpack: a, b
+```bash
+$ asar pack app app.asar --unpack-dir "{x1,x2}"
+```
+
+Unpack: a, b, d, f
+```bash
+$ asar pack app app.asar --unpack-dir "**/{x1,x2}"
+```
+
+Unpack: a, b, d, f, h
+```bash
+$ asar pack app app.asar --unpack-dir "{**/x1,**/x2,z4/w1}"
+```
+Unpack: c (with all content and without subdirs), g  (with all content and subdirs)
+```bash
+$ asar pack app app.asar --unpack-dir "{y3,z4/*}"
+```
+
 ##### `build-version`
 
 *String*
