@@ -98,22 +98,23 @@ Given:
 ```
 
 Unpack: a, b
-```bash
-$ asar pack app app.asar --unpack-dir "{x1,x2}"
+```javascript
+asar-unpack-dir="{x1,x2}"
 ```
 
 Unpack: a, b, d, f
-```bash
-$ asar pack app app.asar --unpack-dir "**/{x1,x2}"
+```javascript
+asar-unpack-dir="**/{x1,x2}"
 ```
 
 Unpack: a, b, d, f, h
-```bash
-$ asar pack app app.asar --unpack-dir "{**/x1,**/x2,z4/w1}"
+```javascript
+asar-unpack-dir="{**/x1,**/x2,z4/w1}"
 ```
+
 Unpack: c (with all content and without subdirs), g  (with all content and subdirs)
-```bash
-$ asar pack app app.asar --unpack-dir "{y3,z4/*}"
+```javascript
+asar-unpack-dir="{y3,z4/*}"
 ```
 
 ##### `build-version`
