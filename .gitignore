@@ -1,2 +1,8 @@
+*.cer
+*.csr
+*.key
+*.pem
 node_modules
+test/work
 .DS_Store
+.nyc_output

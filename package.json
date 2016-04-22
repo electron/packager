@@ -1,47 +1,61 @@
 {
-	"name" : "electron-packager",
-	"version" : "5.2.1",
-	"description" : "package your electron app in OS executables (.app, .exe, etc) via JS or CLI",
-	"main" : "index.js",
-	"bin" : {
-		"electron-packager" : "cli.js"
-	},
-	"repository" : {
-		"type" : "git",
-		"url" : "git+https://github.com/maxogden/electron-packager.git"
-	},
-	"author" : "max ogden",
-	"license" : "BSD-2-Clause",
-	"bugs" : {
-		"url" : "https://github.com/maxogden/electron-packager/issues"
-	},
-	"homepage" : "https://github.com/maxogden/electron-packager",
-	"dependencies" : {
-		"asar" : "^0.8.2",
-		"electron-download" : "^1.0.0",
-		"electron-rebuild" : "^1.0.2",
-		"extract-zip" : "^1.0.3",
-		"minimist" : "^1.1.1",
-		"mkdirp" : "^0.5.0",
-		"mv" : "^2.0.3",
-		"ncp" : "^2.0.0",
-		"plist" : "^1.1.0",
-		"rcedit" : "^0.3.0",
-		"rimraf" : "^2.3.2",
-		"run-series" : "^1.1.1"
-	},
-	"devDependencies" : {
-		"run-waterfall" : "^1.1.1",
-		"standard" : "^3.3.2",
-		"tape" : "^4.0.0",
-		"rcinfo" : "^0.1.3"
-	},
-	"scripts" : {
-		"test" : "standard && tape test"
-	},
-	"standard" : {
-		"ignore" : [
-			"test/fixtures/**/node_modules"
-		]
-	}
+  "name": "electron-packager",
+  "version": "7.0.0",
+  "description": "Package and distribute your Electron app with OS-specific bundles (.app, .exe etc) via JS or CLI",
+  "main": "index.js",
+  "bin": {
+    "electron-packager": "cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron-userland/electron-packager.git"
+  },
+  "author": "max ogden",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/electron-userland/electron-packager/issues"
+  },
+  "homepage": "https://github.com/electron-userland/electron-packager",
+  "dependencies": {
+    "asar": "^0.11.0",
+    "electron-download": "^2.0.0",
+    "electron-osx-sign": "^0.3.0",
+    "extract-zip": "^1.0.3",
+    "fs-extra": "^0.26.5",
+    "get-package-info": "0.0.2",
+    "minimist": "^1.1.1",
+    "plist": "^1.1.0",
+    "rcedit": "^0.5.0",
+    "resolve": "^1.1.6",
+    "run-series": "^1.1.1"
+  },
+  "devDependencies": {
+    "buffer-equal": "^1.0.0",
+    "coveralls": "^2.11.6",
+    "is-admin": "^1.0.2",
+    "nyc": "^6.0.0",
+    "rcinfo": "^0.1.3",
+    "rimraf": "^2.3.2",
+    "run-waterfall": "^1.1.1",
+    "standard": "^6.0.0",
+    "tape": "^4.0.0"
+  },
+  "engines": {
+    "node": ">= 4.0"
+  },
+  "scripts": {
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "pretest": "rimraf test/work",
+    "test": "standard && nyc --cache tape test"
+  },
+  "standard": {
+    "ignore": [
+      "test/fixtures/**/node_modules",
+      "test/work"
+    ]
+  },
+  "directories": {
+    "test": "test"
+  },
+  "keywords": []
 }

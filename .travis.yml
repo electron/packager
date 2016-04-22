@@ -1,13 +1,27 @@
+sudo: false
+os:
+- linux
+- osx
+osx_image: xcode7.3
 language: node_js
 node_js:
-  - '0.12'
-  - '4.0'
-  - '4.1'
-  - '5.0'
+- '4'
+- '5'
+# Does not yet work on OSX/GCE
+# See: https://github.com/travis-ci/travis-ci/issues/4011
 cache:
-  directories:
-    - $HOME/.electron
+- apt: true
+- directories:
+  - "$HOME/.npm"
+  - "$HOME/.electron"
+  - /Library/Caches/Homebrew
 addons:
   apt:
     packages:
     - wine
+before_install: test/ci/before_install.sh
+after_success: npm run coveralls
+env:
+  global:
+    # coveralls token
+    secure: hG3cs8/tOGTa8IPewVuahcp1f8gwsk/rX7ReUBPag6cdZdJpkbjzxp8R97mhhCrFOP/fvX8zAbCelXvvhME/mjZTFgzSNHLBL/SJreHP5m2B1yxXkroiQFu1qwewvzzKmfcs5W1CD8J8WbJuBk9zozDQG9c1OxTaK87tBGh1xik=

@@ -1,20 +1,19 @@
+var asar = require('asar')
 var child = require('child_process')
-var fs = require('fs')
+var fs = require('fs-extra')
 var os = require('os')
 var path = require('path')
-
-var asar = require('asar')
-var mkdirp = require('mkdirp')
-var ncp = require('ncp').ncp
-var rimraf = require('rimraf')
 var series = require('run-series')
+
+var archs = ['ia32', 'x64']
+var platforms = ['darwin', 'linux', 'mas', 'win32']
 
 function asarApp (appPath, asarOptions, cb) {
   var src = path.join(appPath)
   var dest = path.join(appPath, '..', 'app.asar')
   asar.createPackageWithOptions(src, dest, asarOptions, function (err) {
     if (err) return cb(err)
-    rimraf(src, function (err) {
+    fs.remove(src, function (err) {
       if (err) return cb(err)
       cb(null, dest)
     })
@@ -22,34 +21,100 @@ function asarApp (appPath, asarOptions, cb) {
 }
 
 function generateFinalBasename (opts) {
-  return opts.name + '-' + opts.platform + '-' + opts.arch
+  return `${opts.name}-${opts.platform}-${opts.arch}`
 }
 
 function generateFinalPath (opts) {
   return path.join(opts.out || process.cwd(), generateFinalBasename(opts))
 }
 
+function subOptionWarning (properties, option_name, parameter, value) {
+  if (properties.hasOwnProperty(parameter)) {
+    console.warn(`WARNING: ${option_name}.${parameter} will be inferred from the main options`)
+  }
+  properties[parameter] = value
+}
+
 function userIgnoreFilter (opts) {
+  var ignore = opts.ignore || []
+  var ignoreFunc = null
+
+  if (typeof (ignore) === 'function') {
+    ignoreFunc = function (file) { return !ignore(file) }
+  } else {
+    if (!Array.isArray(ignore)) ignore = [ignore]
+
+    ignoreFunc = function filterByRegexes (file) {
+      for (var i = 0; i < ignore.length; i++) {
+        if (file.match(ignore[i])) {
+          return false
+        }
+      }
+
+      return true
+    }
+  }
+
+  var normalizedOut = opts.out ? path.resolve(opts.out) : null
+  var outIgnores = []
+  if (normalizedOut === null || normalizedOut === process.cwd()) {
+    platforms.forEach(function (platform) {
+      archs.forEach(function (arch) {
+        outIgnores.push(path.join(process.cwd(), `${opts.name}-${platform}-${arch}`))
+      })
+    })
+  } else {
+    outIgnores.push(normalizedOut)
+  }
+
   return function filter (file) {
-    file = file.split(path.resolve(opts.dir))[1]
+    if (outIgnores.indexOf(file) !== -1) {
+      return false
+    }
+
+    var name = file.split(path.resolve(opts.dir))[1]
 
     if (path.sep === '\\') {
       // convert slashes so unix-format ignores work
-      file = file.replace(/\\/g, '/')
+      name = name.replace(/\\/g, '/')
     }
 
-    var ignore = opts.ignore || []
-    if (!Array.isArray(ignore)) ignore = [ignore]
-    for (var i = 0; i < ignore.length; i++) {
-      if (file.match(ignore[i])) {
-        return false
-      }
-    }
-    return true
+    return ignoreFunc(name)
   }
 }
 
 module.exports = {
+  archs: archs,
+  platforms: platforms,
+
+  isPlatformMac: function isPlatformMac (platform) {
+    return platform === 'darwin' || platform === 'mas'
+  },
+
+  subOptionWarning: subOptionWarning,
+
+  createDownloadOpts: function createDownloadOpts (opts, platform, arch) {
+    if (opts.hasOwnProperty('cache')) {
+      console.warn('The cache parameter is deprecated, use download.cache instead')
+    }
+
+    if (opts.hasOwnProperty('strict-ssl')) {
+      console.warn('The strict-ssl parameter is deprecated, use download.strictSSL instead')
+    }
+
+    var downloadOpts = Object.assign({
+      cache: opts.cache,
+      strictSSL: opts['strict-ssl']
+    }, opts.download)
+
+    subOptionWarning(downloadOpts, 'download', 'platform', platform)
+    subOptionWarning(downloadOpts, 'download', 'arch', arch)
+    subOptionWarning(downloadOpts, 'download', 'version', opts.version)
+
+    return downloadOpts
+  },
+
+  generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
 
   initializeApp: function initializeApp (opts, templatePath, appRelativePath, callback) {
@@ -60,26 +125,30 @@ module.exports = {
     // * Prunes non-production node_modules (if opts.prune is set)
     // * Creates an asar (if opts.asar is set)
 
-    var tempParent = path.join(os.tmpdir(), 'electron-packager', opts.platform + '-' + opts.arch)
-    var tempPath = path.join(tempParent, generateFinalBasename(opts))
+    var tempPath
+    if (opts.tmpdir === false) {
+      tempPath = generateFinalPath(opts)
+    } else {
+      tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
+    }
+
     // Path to `app` directory
     var appPath = path.join(tempPath, appRelativePath)
+    var resourcesPath = path.resolve(appPath, '..')
 
     var operations = [
       function (cb) {
-        rimraf(tempParent, function () {
-          // Ignore errors (e.g. directory didn't exist anyway)
-          cb()
-        })
+        fs.move(templatePath, tempPath, {clobber: true}, cb)
       },
       function (cb) {
-        mkdirp(tempPath, cb)
+        fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
       },
       function (cb) {
-        ncp(templatePath, tempPath, cb)
+        // Support removing old default_app folder that is now an asar archive
+        fs.remove(path.join(resourcesPath, 'default_app'), cb)
       },
       function (cb) {
-        ncp(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+        fs.remove(path.join(resourcesPath, 'default_app.asar'), cb)
       }
     ]
 
@@ -93,14 +162,14 @@ module.exports = {
 
     if (opts.asar) {
       operations.push(function (cb) {
-        var options = {}
+        var asarOptions = {}
         if (opts['asar-unpack']) {
-          options['unpack'] = opts['asar-unpack']
+          asarOptions.unpack = opts['asar-unpack']
         }
         if (opts['asar-unpack-dir']) {
-          options['unpackDir'] = opts['asar-unpack-dir']
+          asarOptions.unpackDir = opts['asar-unpack-dir']
         }
-        asarApp(path.join(appPath), options, cb)
+        asarApp(path.join(appPath), asarOptions, cb)
       })
     }
 
@@ -113,15 +182,13 @@ module.exports = {
 
   moveApp: function finalizeApp (opts, tempPath, callback) {
     var finalPath = generateFinalPath(opts)
-    // Prefer ncp over mv (which seems to cause issues on Win8)
-    series([
-      function (cb) {
-        mkdirp(finalPath, cb)
-      },
-      function (cb) {
-        ncp(tempPath, finalPath, cb)
-      }
-    ], function (err) {
+
+    if (opts.tmpdir === false) {
+      callback(null, finalPath)
+      return
+    }
+
+    fs.move(tempPath, finalPath, function (err) {
       callback(err, finalPath)
     })
   },

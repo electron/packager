@@ -1,32 +1,28 @@
-var fs = require('fs')
-var path = require('path')
-
-var packager = require('..')
-var waterfall = require('run-waterfall')
-
+var common = require('../common')
 var config = require('./config.json')
+var fs = require('fs-extra')
+var packager = require('..')
+var path = require('path')
+var series = require('run-series')
+var test = require('tape')
 var util = require('./util')
-
-function generateBasename (opts) {
-  return opts.name + '-' + opts.platform + '-' + opts.arch
-}
+var waterfall = require('run-waterfall')
 
 function generateNamePath (opts) {
   // Generates path to verify reflects the name given in the options.
   // Returns the Helper.app location on darwin since the top-level .app is already tested for the resources path;
   // returns the executable for other OSes
-  if (opts.platform === 'darwin') {
-    return path.join(opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper.app')
+  if (common.isPlatformMac(opts.platform)) {
+    return path.join(`${opts.name}.app`, 'Contents', 'Frameworks', `${opts.name} Helper.app`)
   }
 
   return opts.name + (opts.platform === 'win32' ? '.exe' : '')
 }
 
-function createDefaultsTest (combination) {
+function createDefaultsTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
@@ -41,7 +37,7 @@ function createDefaultsTest (combination) {
         t.equal(paths.length, 1, 'Single-target run should resolve to a 1-item array')
 
         finalPath = paths[0]
-        t.equal(finalPath, path.join(util.getWorkCwd(), generateBasename(opts)),
+        t.equal(finalPath, path.join(util.getWorkCwd(), common.generateFinalBasename(opts)),
           'Path should follow the expected format and be in the cwd')
         fs.stat(finalPath, cb)
       }, function (stats, cb) {
@@ -49,7 +45,7 @@ function createDefaultsTest (combination) {
         resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
         fs.stat(path.join(finalPath, generateNamePath(opts)), cb)
       }, function (stats, cb) {
-        if (opts.platform === 'darwin') {
+        if (common.isPlatformMac(opts.platform)) {
           t.true(stats.isDirectory(), 'The Helper.app should reflect opts.name')
         } else {
           t.true(stats.isFile(), 'The executable should reflect opts.name')
@@ -69,7 +65,15 @@ function createDefaultsTest (combination) {
       }, function (equal, cb) {
         t.true(equal,
           'File under subdirectory of packaged app directory should match source file and not be ignored by default')
-        cb()
+        fs.exists(path.join(resourcesPath, 'default_app'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default app directory')
+          cb()
+        })
+      }, function (cb) {
+        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default app asar file')
+          cb()
+        })
       }
     ], function (err) {
       t.end(err)
@@ -77,11 +81,36 @@ function createDefaultsTest (combination) {
   }
 }
 
-function createOutTest (combination) {
+function createDefaultAppAsarTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
+    opts.name = 'el0374Test'
+    opts.dir = path.join(__dirname, 'fixtures', 'el-0374')
+    opts.version = '0.37.4'
+
+    var resourcesPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
+          t.false(exists, 'The output directory should not contain the Electron default_app.asar file')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createOutTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
@@ -93,7 +122,7 @@ function createOutTest (combination) {
         packager(opts, cb)
       }, function (paths, cb) {
         finalPath = paths[0]
-        t.equal(finalPath, path.join('dist', generateBasename(opts)),
+        t.equal(finalPath, path.join('dist', common.generateFinalBasename(opts)),
           'Path should follow the expected format and be under the folder specifed in `out`')
         fs.stat(finalPath, cb)
       }, function (stats, cb) {
@@ -109,11 +138,10 @@ function createOutTest (combination) {
   }
 }
 
-function createAsarTest (combination) {
+function createAsarTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.asar = true
@@ -154,11 +182,10 @@ function createAsarTest (combination) {
   }
 }
 
-function createPruneTest (combination) {
+function createPruneTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.prune = true
@@ -192,11 +219,10 @@ function createPruneTest (combination) {
   }
 }
 
-function createIgnoreTest (combination, ignorePattern, ignoredFile) {
+function createIgnoreTest (opts, ignorePattern, ignoredFile) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.ignore = ignorePattern
@@ -222,11 +248,10 @@ function createIgnoreTest (combination, ignorePattern, ignoredFile) {
   }
 }
 
-function createOverwriteTest (combination) {
+function createOverwriteTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
 
-    var opts = Object.create(combination)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
@@ -266,15 +291,298 @@ function createOverwriteTest (combination) {
   }
 }
 
-util.testAllPlatforms('defaults test', createDefaultsTest)
-util.testAllPlatforms('out test', createOutTest)
-util.testAllPlatforms('asar test', createAsarTest)
-util.testAllPlatforms('prune test', createPruneTest)
-util.testAllPlatforms('ignore test: string in array', createIgnoreTest, ['ignorethis'], 'ignorethis.txt')
-util.testAllPlatforms('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
-util.testAllPlatforms('ignore test: RegExp', createIgnoreTest, /ignorethis/, 'ignorethis.txt')
-util.testAllPlatforms('ignore test: string with slash', createIgnoreTest, 'ignore/this',
+function createInferTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    // Don't specify name or version
+    delete opts.version
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+
+    var finalPath
+    var packageJSON
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        finalPath = paths[0]
+        fs.stat(finalPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The expected output directory should exist')
+        fs.readFile(path.join(opts.dir, 'package.json'), cb)
+      }, function (pkg, cb) {
+        packageJSON = JSON.parse(pkg)
+        // Set opts name to use generateNamePath
+        opts.name = packageJSON.productName
+        fs.stat(path.join(finalPath, generateNamePath(opts)), cb)
+      }, function (stats, cb) {
+        if (common.isPlatformMac(opts.platform)) {
+          t.true(stats.isDirectory(), 'The Helper.app should reflect productName')
+        } else {
+          t.true(stats.isFile(), 'The executable should reflect productName')
+        }
+        fs.readFile(path.join(finalPath, 'version'), cb)
+      }, function (version, cb) {
+        t.equal(`v${packageJSON.devDependencies['electron-prebuilt']}`, version.toString(), 'The version should be inferred from installed electron-prebuilt version')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createTmpdirTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.out = 'dist'
+    opts.tmpdir = path.join(util.getWorkCwd(), 'tmp')
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        fs.stat(path.join(opts.tmpdir, 'electron-packager'), cb)
+      },
+      function (stats, cb) {
+        t.true(stats.isDirectory(), 'The expected temp directory should exist')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createDisableTmpdirUsingTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.out = 'dist'
+    opts.tmpdir = false
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        fs.stat(paths[0], cb)
+      },
+      function (stats, cb) {
+        t.true(stats.isDirectory(), 'The expected out directory should exist')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createIgnoreOutDirTest (opts, distPath) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+
+    var appDir = util.getWorkCwd()
+    opts.dir = appDir
+    // we don't use path.join here to avoid normalizing
+    var outDir = opts.dir + path.sep + distPath
+    opts.out = outDir
+
+    series([
+      function (cb) {
+        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+          return path.basename(file) !== 'node_modules'
+        }}, cb)
+      },
+      function (cb) {
+        // create out dir before packager (real world issue - when second run includes uningnored out dir)
+        fs.mkdirp(outDir, cb)
+      },
+      function (cb) {
+        // create file to ensure that directory will be not ignored because empty
+        fs.open(path.join(outDir, 'ignoreMe'), 'w', function (err, fd) {
+          if (err) return cb(err)
+          fs.close(fd, cb)
+        })
+      },
+      function (cb) {
+        packager(opts, cb)
+      },
+      function (cb) {
+        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
+          t.false(exists, 'Out dir must not exist in output app directory')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createIgnoreImplicitOutDirTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+
+    var appDir = util.getWorkCwd()
+    opts.dir = appDir
+    var outDir = opts.dir
+
+    var testFilename = 'ignoreMe'
+    var previousPackedResultDir
+
+    series([
+      function (cb) {
+        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+          return path.basename(file) !== 'node_modules'
+        }}, cb)
+      },
+      function (cb) {
+        previousPackedResultDir = path.join(outDir, `${opts.name}-linux-ia32`)
+        fs.mkdirp(previousPackedResultDir, cb)
+      },
+      function (cb) {
+        // create file to ensure that directory will be not ignored because empty
+        fs.open(path.join(previousPackedResultDir, testFilename), 'w', function (err, fd) {
+          if (err) return cb(err)
+          fs.close(fd, cb)
+        })
+      },
+      function (cb) {
+        packager(opts, cb)
+      },
+      function (cb) {
+        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
+          t.false(exists, 'Out dir must not exist in output app directory')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+test('download argument test: download.cache overwrites cache', function (t) {
+  var opts = {
+    cache: 'should not exist',
+    download: {
+      cache: 'should exist'
+    },
+    version: '0.36.0'
+  }
+
+  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  t.same(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0', cache: opts.download.cache, strictSSL: undefined})
+  t.end()
+})
+
+test('download argument test: download.strictSSL overwrites strict-ssl', function (t) {
+  var opts = {
+    download: {
+      strictSSL: false
+    },
+    'strict-ssl': true,
+    version: '0.36.0'
+  }
+
+  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  t.same(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0', cache: undefined, strictSSL: opts.download.strictSSL})
+  t.end()
+})
+
+test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', function (t) {
+  var opts = {
+    download: {
+      arch: 'ia32',
+      platform: 'win32',
+      version: '0.30.0'
+    },
+    version: '0.36.0'
+  }
+
+  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  t.same(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0', cache: undefined, strictSSL: undefined})
+  t.end()
+})
+
+util.testSinglePlatform('infer test', createInferTest)
+util.testSinglePlatform('defaults test', createDefaultsTest)
+util.testSinglePlatform('default_app.asar removal test', createDefaultAppAsarTest)
+util.testSinglePlatform('out test', createOutTest)
+util.testSinglePlatform('asar test', createAsarTest)
+util.testSinglePlatform('prune test', createPruneTest)
+util.testSinglePlatform('ignore test: string in array', createIgnoreTest, ['ignorethis'], 'ignorethis.txt')
+util.testSinglePlatform('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
+util.testSinglePlatform('ignore test: RegExp', createIgnoreTest, /ignorethis/, 'ignorethis.txt')
+util.testSinglePlatform('ignore test: Function', createIgnoreTest, function (file) { return file.match(/ignorethis/) }, 'ignorethis.txt')
+util.testSinglePlatform('ignore test: string with slash', createIgnoreTest, 'ignore/this',
   path.join('ignore', 'this.txt'))
-util.testAllPlatforms('ignore test: only match subfolder of app', createIgnoreTest, 'electron-packager',
+util.testSinglePlatform('ignore test: only match subfolder of app', createIgnoreTest, 'electron-packager',
   path.join('electron-packager', 'readme.txt'))
-util.testAllPlatforms('overwrite test', createOverwriteTest)
+util.testSinglePlatform('overwrite test', createOverwriteTest)
+util.testSinglePlatform('tmpdir test', createTmpdirTest)
+util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)
+util.testSinglePlatform('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
+util.testSinglePlatform('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
+util.testSinglePlatform('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)
+
+util.setup()
+test('fails with invalid arch', function (t) {
+  var opts = {
+    name: 'el0374Test',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'z80',
+    platform: 'linux'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(undefined, paths, 'no paths returned')
+    t.ok(err, 'error thrown')
+    t.end()
+  })
+})
+util.teardown()
+
+util.setup()
+test('fails with invalid platform', function (t) {
+  var opts = {
+    name: 'el0374Test',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'ia32',
+    platform: 'dos'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(undefined, paths, 'no paths returned')
+    t.ok(err, 'error thrown')
+    t.end()
+  })
+})
+util.teardown()
+
+util.setup()
+test('fails with invalid version', function (t) {
+  var opts = {
+    name: 'invalidElectronTest',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.0.1',
+    arch: 'x64',
+    platform: 'linux'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(undefined, paths, 'no paths returned')
+    t.ok(err, 'error thrown')
+    t.end()
+  })
+})
+util.teardown()

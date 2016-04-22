@@ -1,0 +1,23 @@
+platform:
+- x86
+- x64
+environment:
+  matrix:
+  - nodejs_version: "4"
+  - nodejs_version: "5"
+cache:
+- '%APPDATA%\npm-cache'
+- '%USERPROFILE%\.electron'
+
+install:
+- ps: Install-Product node $env:nodejs_version $env:platform
+- npm install -g npm@3
+- set PATH=%APPDATA%\npm;%PATH%
+- npm install
+
+test_script:
+- node --version
+- npm --version
+- npm test
+
+build: off
