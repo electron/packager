@@ -21,7 +21,7 @@
     "electron-download": "^2.0.0",
     "electron-osx-sign": "^0.3.0",
     "extract-zip": "^1.0.3",
-    "fs-extra": "^0.26.5",
+    "fs-extra": "^0.28.0",
     "get-package-info": "0.0.2",
     "minimist": "^1.1.1",
     "plist": "^1.1.0",
