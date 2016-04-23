@@ -1,3 +1,5 @@
+'use strict'
+
 var common = require('./common')
 var fs = require('fs-extra')
 var path = require('path')
@@ -98,7 +100,7 @@ module.exports = {
       appPlist.CFBundleName = opts.name
       helperPlist.CFBundleDisplayName = opts.name + ' Helper'
       helperPlist.CFBundleIdentifier = helperBundleIdentifier
-      appPlist.CFBundleExecutable = opts.name
+      appPlist.CFBundleExecutable = common.sanitizeExeFilename(opts.name)
       helperPlist.CFBundleName = opts.name
       helperPlist.CFBundleExecutable = opts.name + ' Helper'
       helperEHPlist.CFBundleDisplayName = opts.name + ' Helper EH'
