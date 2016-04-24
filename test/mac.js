@@ -261,9 +261,7 @@ function createAppBundleFrameworkTest (baseOpts) {
 
     waterfall([
       function (cb) {
-        var opts = Object.create(baseOpts)
-        opts.version = '0.37.6'
-        packager(opts, cb)
+        packager(baseOpts, cb)
       }, function (paths, cb) {
         frameworkPath = path.join(paths[0], `${baseOpts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
         fs.stat(frameworkPath, cb)
