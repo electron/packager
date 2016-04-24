@@ -253,6 +253,36 @@ function createAppBundleTest (baseOpts, appBundleId) {
   }
 }
 
+function createAppBundleFrameworkTest (baseOpts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var frameworkPath
+
+    waterfall([
+      function (cb) {
+        var opts = Object.create(baseOpts)
+        opts.version = '0.37.6'
+        packager(opts, cb)
+      }, function (paths, cb) {
+        frameworkPath = path.join(paths[0], `${baseOpts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
+        fs.stat(frameworkPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'Expected Electron Framework.framework to be a directory')
+        fs.lstat(path.join(frameworkPath, 'Electron Framework'), cb)
+      }, function (stats, cb) {
+        t.true(stats.isSymbolicLink(), 'Expected Electron Framework.framework/Electron Framework to be a symlink')
+        fs.lstat(path.join(frameworkPath, 'Versions', 'Current'), cb)
+      }, function (stats, cb) {
+        t.true(stats.isSymbolicLink(), 'Expected Electron Framework.framework/Versions/Current to be a symlink')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -551,6 +581,10 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('app bundle app-bundle-id fallback test', createAppBundleTest(baseOpts))
+  util.teardown()
+
+  util.setup()
+  test('app bundle framework symlink test', createAppBundleFrameworkTest(baseOpts))
   util.teardown()
 
   util.setup()
