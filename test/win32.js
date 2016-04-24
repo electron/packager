@@ -15,12 +15,12 @@ var baseOpts = {
   platform: 'win32'
 }
 
-function generateVersionStringTest (metadata_properties, extra_opts, expected_values, assertion_msgs) {
+function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return function (t) {
     t.timeoutAfter(process.platform === 'darwin' ? config.macExecTimeout : config.timeout)
 
     var appExePath
-    var opts = Object.assign({}, baseOpts, extra_opts)
+    var opts = Object.assign({}, baseOpts, extraOpts)
 
     waterfall([
       function (cb) {
@@ -34,12 +34,12 @@ function generateVersionStringTest (metadata_properties, extra_opts, expected_va
       }, function (cb) {
         rcinfo(appExePath, cb)
       }, function (info, cb) {
-        metadata_properties = [].concat(metadata_properties)
-        expected_values = [].concat(expected_values)
-        assertion_msgs = [].concat(assertion_msgs)
-        metadata_properties.forEach(function (property, i) {
-          var value = expected_values[i]
-          var msg = assertion_msgs[i]
+        metadataProperties = [].concat(metadataProperties)
+        expectedValues = [].concat(expectedValues)
+        assertionMsgs = [].concat(assertionMsgs)
+        metadataProperties.forEach(function (property, i) {
+          var value = expectedValues[i]
+          var msg = assertionMsgs[i]
           t.equal(info[property], value, msg)
         })
         cb()

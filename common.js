@@ -71,9 +71,9 @@ function generateFinalPath (opts) {
   return path.join(opts.out || process.cwd(), generateFinalBasename(opts))
 }
 
-function subOptionWarning (properties, option_name, parameter, value) {
+function subOptionWarning (properties, optionName, parameter, value) {
   if (properties.hasOwnProperty(parameter)) {
-    console.warn(`WARNING: ${option_name}.${parameter} will be inferred from the main options`)
+    console.warn(`WARNING: ${optionName}.${parameter} will be inferred from the main options`)
   }
   properties[parameter] = value
 }
