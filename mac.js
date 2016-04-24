@@ -16,7 +16,7 @@ function moveHelpers (frameworksPath, appName, callback) {
 
       rename(executableBasePath, `Electron${suffix}`, appName + suffix, function (err) {
         if (err) return cb(err)
-        rename(frameworksPath, `Electron${suffix}.app`, appName + suffix + '.app', cb)
+        rename(frameworksPath, `Electron${suffix}.app`, `${appName}${suffix}.app`, cb)
       })
     }
   }), function (err) {
