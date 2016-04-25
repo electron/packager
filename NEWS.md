@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Fixed
+
+* The default `.git` ignore only ignores that directory (#344)
 
 ## [7.0.1] - 2016-04-21
 
