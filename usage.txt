@@ -20,7 +20,11 @@ app-version        release version to set for the app
 asar               packages the source code within your app into an archive
 asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match this string
 asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names match this string. It's relative to the <sourcedir>.
-                   For example, `--asar-unpack-dir=sub_dir` will unpack the directory `/<sourcedir>/sub_dir`.
+                   Some examples:
+                       asar-unpack-dir=sub_dir will unpack the directory /<sourcedir>/sub_dir
+                       asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/* will unpack the directories /<sourcedir>/sub_dir1/sub_sub_dir and /<sourcedir>/sub_dir2, but it will note include their subdirectories.
+                       asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/** will unpack the subdirectories of the directories /<sourcedir>/sub_dir1/sub_sub_dir and /<sourcedir>/sub_dir2.
+                       asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**/* will unpack the directories /<sourcedir>/sub_dir1/sub_sub_dir and /<sourcedir>/sub_dir2 and their subdirectories.
 build-version      build version to set for the app
 cache              directory of cached Electron downloads. Defaults to '$HOME/.electron'
                    (Deprecated, use --download.cache instead)
