@@ -54,5 +54,16 @@
   "directories": {
     "test": "test"
   },
-  "keywords": []
+  "keywords": [],
+  "eslintConfig": {
+    "extends": "standard",
+    "parserOptions": {
+      "sourceType": "script"
+    },
+    "rules": {
+      "strict": [
+        "error"
+      ]
+    }
+  }
 }
