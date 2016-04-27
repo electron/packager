@@ -1,3 +1,5 @@
+'use strict'
+
 var config = require('./config.json')
 var exec = require('child_process').exec
 var fs = require('fs')
@@ -7,6 +9,7 @@ var path = require('path')
 var plist = require('plist')
 var test = require('tape')
 var util = require('./util')
+const common = require('../common')
 var waterfall = require('run-waterfall')
 
 function createIconTest (baseOpts, icon, iconPath) {
@@ -534,7 +537,9 @@ module.exports = function (baseOpts) {
   test('binary naming test', function (t) {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(baseOpts)
+    const opts = Object.assign({}, baseOpts)
+    // test space in name
+    opts.name = 'Test App'
     var binaryPath
 
     waterfall([
@@ -542,7 +547,7 @@ module.exports = function (baseOpts) {
         packager(opts, cb)
       }, function (paths, cb) {
         binaryPath = path.join(paths[0], opts.name + '.app', 'Contents', 'MacOS')
-        fs.stat(path.join(binaryPath, opts.name), cb)
+        fs.stat(path.join(binaryPath, common.sanitizeExeFilename(opts.name)), cb)
       }, function (stats, cb) {
         t.true(stats.isFile(), 'The binary should reflect opts.name')
         cb()

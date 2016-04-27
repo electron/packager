@@ -1,3 +1,5 @@
+'use strict'
+
 var asar = require('asar')
 var child = require('child_process')
 var fs = require('fs-extra')
@@ -5,6 +7,7 @@ var minimist = require('minimist')
 var os = require('os')
 var path = require('path')
 var series = require('run-series')
+const sanitize = require('sanitize-filename')
 
 var archs = ['ia32', 'x64']
 var platforms = ['darwin', 'linux', 'mas', 'win32']
@@ -254,5 +257,9 @@ module.exports = {
     fs.stat(filename, function (err) {
       cb(err, err ? null : filename)
     })
+  },
+
+  sanitizeExeFilename: function (name) {
+    return sanitize(name.replace(/\s+/g, '_'))
   }
 }
