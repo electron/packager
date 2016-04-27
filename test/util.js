@@ -1,15 +1,17 @@
-var bufferEqual = require('buffer-equal')
-var common = require('../common')
-var config = require('./config.json')
-var download = require('electron-download')
-var fs = require('fs-extra')
-var path = require('path')
-var series = require('run-series')
-var slice = Array.prototype.slice
-var test = require('tape')
+'use strict'
 
-var ORIGINAL_CWD = process.cwd()
-var WORK_CWD = path.join(__dirname, 'work')
+const bufferEqual = require('buffer-equal')
+const common = require('../common')
+const config = require('./config.json')
+const download = require('electron-download')
+const fs = require('fs-extra')
+const path = require('path')
+const series = require('run-series')
+const slice = Array.prototype.slice
+const test = require('tape')
+
+const ORIGINAL_CWD = process.cwd()
+const WORK_CWD = path.join(__dirname, 'work')
 
 var combinations = []
 common.archs.forEach(function (arch) {

@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+'use strict'
+
 var common = require('./common')
 var fs = require('fs')
 var packager = require('./')

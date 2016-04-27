@@ -1,8 +1,10 @@
-var config = require('./config.json')
-var exec = require('child_process').exec
-var path = require('path')
-var series = require('run-series')
-var util = require('./util')
+'use strict'
+
+const config = require('./config.json')
+const exec = require('child_process').exec
+const path = require('path')
+const series = require('run-series')
+const util = require('./util')
 
 // Download all Electron distributions before running tests to avoid timing out due to network speed.
 // Most tests run with the config.json version, but we have a special test (in mac.js) for 0.37.4.

@@ -1,13 +1,15 @@
-var config = require('./config.json')
-var fs = require('fs')
-var packager = require('..')
-var path = require('path')
-var rcinfo = require('rcinfo')
-var test = require('tape')
-var util = require('./util')
-var waterfall = require('run-waterfall')
+'use strict'
 
-var baseOpts = {
+const config = require('./config.json')
+const fs = require('fs')
+const packager = require('..')
+const path = require('path')
+const rcinfo = require('rcinfo')
+const test = require('tape')
+const util = require('./util')
+const waterfall = require('run-waterfall')
+
+const baseOpts = {
   name: 'basicTest',
   dir: path.join(__dirname, 'fixtures', 'basic'),
   version: config.version,

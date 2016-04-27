@@ -1,3 +1,11 @@
 {
-  "extends": "standard"
+  "extends": "standard",
+  "parserOptions": {
+    "sourceType": "script"
+  },
+  "rules": {
+    "strict": [
+      "error"
+    ]
+  }
 }

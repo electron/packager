@@ -1,5 +1,7 @@
-var config = require('./config.json')
-var path = require('path')
+'use strict'
+
+const config = require('./config.json')
+const path = require('path')
 
 var baseOpts = {
   name: 'basicTest',

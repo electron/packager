@@ -1,6 +1,8 @@
-var app = require('app')
-var BrowserWindow = require('browser-window')
-var mainWindow
+'use strict'
+
+const app = require('app')
+const BrowserWindow = require('browser-window')
+let mainWindow
 
 app.on('window-all-closed', function () {
   app.quit()

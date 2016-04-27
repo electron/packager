@@ -32,12 +32,15 @@
   "devDependencies": {
     "buffer-equal": "^1.0.0",
     "coveralls": "^2.11.6",
+    "eslint": "^2.8.0",
+    "eslint-config-standard": "^5.2.0",
+    "eslint-plugin-promise": "^1.1.0",
+    "eslint-plugin-standard": "^1.3.2",
     "is-admin": "^1.0.2",
     "nyc": "^6.0.0",
     "rcinfo": "^0.1.3",
     "rimraf": "^2.3.2",
     "run-waterfall": "^1.1.1",
-    "standard": "^6.0.0",
     "tape": "^4.0.0"
   },
   "engines": {
@@ -46,13 +49,7 @@
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "pretest": "rimraf test/work",
-    "test": "standard && nyc --cache tape test"
-  },
-  "standard": {
-    "ignore": [
-      "test/fixtures/**/node_modules",
-      "test/work"
-    ]
+    "test": "eslint . && nyc --cache tape test"
   },
   "directories": {
     "test": "test"

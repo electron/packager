@@ -1,10 +1,12 @@
-var asar = require('asar')
-var child = require('child_process')
-var fs = require('fs-extra')
-var minimist = require('minimist')
-var os = require('os')
-var path = require('path')
-var series = require('run-series')
+'use strict'
+
+const asar = require('asar')
+const child = require('child_process')
+const fs = require('fs-extra')
+const minimist = require('minimist')
+const os = require('os')
+const path = require('path')
+const series = require('run-series')
 
 var archs = ['ia32', 'x64']
 var platforms = ['darwin', 'linux', 'mas', 'win32']
