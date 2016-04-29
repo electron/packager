@@ -214,6 +214,9 @@ module.exports = {
         if (opts['asar-unpack-dir']) {
           asarOptions.unpackDir = opts['asar-unpack-dir']
         }
+        if (opts['asar-ordering']) {
+          asarOptions.ordering = opts['asar-ordering']
+        }
         asarApp(path.join(appPath), asarOptions, cb)
       })
     }
