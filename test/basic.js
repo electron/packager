@@ -147,8 +147,10 @@ function createAsarTest (opts) {
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.asar = true
-    opts['asar-unpack'] = '*.pac'
-    opts['asar-unpack-dir'] = 'dir_to_unpack'
+    opts['asar-options'] = {
+      'unpack': '*.pac',
+      'unpackDir': 'dir_to_unpack'
+    }
     var finalPath
     var resourcesPath
 

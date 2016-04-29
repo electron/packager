@@ -26,10 +26,13 @@ appname            the name of the app, if it needs to be different from the "pr
 app-copyright      human-readable copyright line for the app
 app-version        release version to set for the app
 asar               packages the source code within your app into an archive
-asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match
-                   this string
-asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names glob pattern or
-                   exactly match this string. It's relative to the <sourcedir>.
+asar-options       a list of sub-options to pass to asar. They are specified via dot notation, e.g.,
+                   --asar-options.unpackDir=sub_dir
+                   Properties supported:
+                   - unpack: unpacks the files to app.asar.unpacked directory whose filenames regex
+                     match this string
+                  - unpackDir: unpacks the dir to app.asar.unpacked directory whose names glob
+                     pattern or exactly match this string. It's relative to the <sourcedir>.
 build-version      build version to set for the app
 cache              directory of cached Electron downloads. Defaults to `$HOME/.electron`
                    (Deprecated, use --download.cache instead)

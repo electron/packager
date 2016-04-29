@@ -81,24 +81,22 @@ The release version of the application. Maps to the `ProductVersion` metadata pr
 
 Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
 
-##### `asar-unpack`
+##### `asar-options`
 
-*String*
+*Object*
 
-A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
+If present, passes custom options to [`asar`](https://www.npmjs.com/package/asar) when packaging.
+Supported parameters include, but are not limited to:
+- `unpack` (*String*): A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
+- `unpack-dir` (*String*): Unpacks the dir to `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar-unpack-dir` is relative to `dir`.
 
-##### `asar-unpack-dir`
+  Some examples:
 
-*String*
-
-Unpacks the dir to `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar-unpack-dir` is relative to `dir`.
-
-Some examples:
-
-- `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`
-- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will note include their subdirectories.
-- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
-- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
+  - `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`
+  - `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will note include their subdirectories.
+  - `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
+  - `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
+- `ordering` (*String*): A path to an ordering file for packing files. See an explanation [here](https://github.com/atom/atom/issues/10163)
 
 ##### `build-version`
 

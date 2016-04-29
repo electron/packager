@@ -217,13 +217,19 @@ module.exports = {
 
     if (opts.asar) {
       operations.push(function (cb) {
-        var asarOptions = {}
-        if (opts['asar-unpack']) {
-          asarOptions.unpack = opts['asar-unpack']
+        if (opts.hasOwnProperty('asar-unpack')) {
+          console.warn('The asar-unpack parameter is deprecated, use asar-options.unpack instead')
         }
-        if (opts['asar-unpack-dir']) {
-          asarOptions.unpackDir = opts['asar-unpack-dir']
+
+        if (opts.hasOwnProperty('asar-unpack-dir')) {
+          console.warn('The asar-unpack-dir parameter is deprecated, use asar-options.unpackDir instead')
         }
+
+        var asarOptions = Object.assign({
+          unpack: opts['asar-unpack'],
+          unpackDir: opts['asar-unpack-dir']
+        }, opts['asar-options'])
+
         asarApp(path.join(appPath), asarOptions, cb)
       })
     }
