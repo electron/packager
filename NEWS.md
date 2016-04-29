@@ -96,6 +96,7 @@
 * [darwin/mas] Ensure `CFBundleVersion` and `CFBundleShortVersionString` are strings (#250)
 * [darwin/mas] Correctly set the helper bundle ID in all relevant plist files (#223)
 * [darwin/mas] OSX-specific binaries are correctly renamed to the application name (#244, #293)
+  **If you are upgrading from &lt; 5.2.1, you may experience problems. See #323 for details.**
 
 ## [5.2.1] - 2016-01-17
 
