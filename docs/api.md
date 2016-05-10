@@ -76,7 +76,7 @@ Whether to package the application's source code into an archive, using [Electro
 If present, passes custom options to [`asar`](https://www.npmjs.com/package/asar) when packaging.
 Supported parameters include, but are not limited to:
 - `unpack` (*String*): A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
-- `unpack-dir` (*String*): Unpacks the dir to `app.asar.unpacked` directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`. For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
+- `unpack-dir` (*String*): Unpacks the dir to `app.asar.unpacked` directory whose names exactly match this string. The `unpack-dir` is relative to `dir`. For example, `unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
 - `ordering` (*String*): A path to an ordering file for packing files. See an explanation [here](https://github.com/atom/atom/issues/10163)
 
 ##### `build-version`

@@ -147,7 +147,7 @@ function createAsarTest (opts) {
     opts.asar = true
     opts['asar-options'] = {
       'unpack': '*.pac',
-      'unpack-dir': 'dir_to_unpack'
+      'unpackDir': 'dir_to_unpack'
     }
     var finalPath
     var resourcesPath
