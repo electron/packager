@@ -12,7 +12,8 @@ var baseOpts = {
   dir: path.join(__dirname, 'fixtures', 'basic'),
   version: config.version,
   arch: 'x64',
-  platform: 'win32'
+  platform: 'win32',
+  asar: false
 }
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {

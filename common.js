@@ -167,8 +167,8 @@ module.exports = {
     // * Creates temporary directory
     // * Copies template into temporary directory
     // * Copies user's app into temporary directory
-    // * Prunes non-production node_modules (if opts.prune is set)
-    // * Creates an asar (if opts.asar is set)
+    // * Prunes non-production node_modules
+    // * Creates an asar
 
     var tempPath
     if (opts.tmpdir === false) {
@@ -199,13 +199,13 @@ module.exports = {
 
     // Prune and asar are now performed before platform-specific logic, primarily so that
     // appPath is predictable (e.g. before .app is renamed for mac)
-    if (opts.prune) {
+    if (opts.prune !== false) {
       operations.push(function (cb) {
         child.exec('npm prune --production', {cwd: appPath}, cb)
       })
     }
 
-    if (opts.asar) {
+    if (opts.asar !== false) {
       operations.push(function (cb) {
         var asarOptions = {}
         if (opts['asar-unpack']) {

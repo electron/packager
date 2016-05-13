@@ -65,9 +65,9 @@ The release version of the application. Maps to the `ProductVersion` metadata pr
 
 ##### `asar`
 
-*Boolean* (default: `false`)
+*Boolean* (default: `true`)
 
-Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
+Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you want this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
 
 ##### `asar-unpack`
 
@@ -147,7 +147,7 @@ Whether to replace an already existing output directory for a given platform (`t
 
 ##### `prune`
 
-*Boolean*
+*Boolean* (default: `true`)
 
 Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before starting to package the app.
 

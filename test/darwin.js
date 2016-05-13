@@ -6,7 +6,8 @@ var baseOpts = {
   dir: path.join(__dirname, 'fixtures', 'basic'),
   version: config.version,
   arch: 'x64',
-  platform: 'darwin'
+  platform: 'darwin',
+  asar: false
 }
 
 require('./mac')(baseOpts)
