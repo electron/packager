@@ -2,9 +2,14 @@
 
 ## Unreleased
 
+
+## [7.0.2] - 2016-05-18
+
 ### Fixed
 
 * The default `.git` ignore only ignores that directory (#344)
+* Specifying the `download.strictSSL` CLI parameter no longer triggers a deprecation warning for
+  `strict-ssl` (#349)
 
 ## [7.0.1] - 2016-04-21
 
@@ -133,6 +138,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.0.2]: https://github.com/electron-userland/electron-packager/compare/v7.0.1...v7.0.2
 [7.0.1]: https://github.com/electron-userland/electron-packager/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/electron-userland/electron-packager/compare/v6.0.2...v7.0.0
 [6.0.2]: https://github.com/electron-userland/electron-packager/compare/v6.0.1...v6.0.2
