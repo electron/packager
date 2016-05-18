@@ -79,8 +79,14 @@ A [glob expression](https://github.com/isaacs/minimatch#features), when specifie
 
 *String*
 
-Unpacks the dir to `app.asar.unpacked` directory whose names exactly match this string. The `asar-unpack-dir` is relative to `dir`.
-For example, `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`.
+Unpacks the dir to `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar-unpack-dir` is relative to `dir`.
+
+Some examples:
+
+- `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`
+- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will note include their subdirectories.
+- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
+- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
 
 ##### `build-version`
 
