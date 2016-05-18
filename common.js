@@ -16,12 +16,11 @@ function parseCLIArgs (argv) {
       'asar',
       'all',
       'overwrite',
+      'strict-ssl',
       'download.strictSSL'
     ],
-    alias: {
-      'download.strictSSL': 'strict-ssl'
-    },
     default: {
+      'strict-ssl': true,
       'download.strictSSL': true
     }
   })
@@ -143,7 +142,7 @@ module.exports = {
       console.warn('The cache parameter is deprecated, use download.cache instead')
     }
 
-    if (opts.hasOwnProperty('strict-ssl')) {
+    if (opts.hasOwnProperty('strict-ssl') && opts['strict-ssl'] === false) {
       console.warn('The strict-ssl parameter is deprecated, use download.strictSSL instead')
     }
 
