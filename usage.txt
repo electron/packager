@@ -3,56 +3,69 @@ Usage: electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arc
 Required options
 
 sourcedir          the base directory of the application source
-platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple)
-arch               all, ia32, x64
 
-Example            electron-packager ./ --platform=darwin --arch=x64
+  Either both of:
+
+platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple)
+arch               all, or one or more of: ia32, x64 (comma-delimited if multiple)
+
+  Or:
+
+all                equivalent to --platform=all --arch=all
+
+  Examples:        electron-packager ./ --platform=darwin --arch=x64
+                   electron-packager ./ --all
 
 Optional options
 
-appname            the name of the app, if it needs to be different from the "productName" or "name" in the nearest package.json
+appname            the name of the app, if it needs to be different from the "productName" or "name"
+                   in the nearest package.json
 
 * All platforms *
 
-all                equivalent to --platform=all --arch=all
 app-copyright      human-readable copyright line for the app
 app-version        release version to set for the app
 asar               packages the source code within your app into an archive
-asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match this string
-asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names glob pattern or exactly match this string. It's relative to the <sourcedir>.
+asar-unpack        unpacks the files to app.asar.unpacked directory whose filenames regex .match
+                   this string
+asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names glob pattern or
+                   exactly match this string. It's relative to the <sourcedir>.
 build-version      build version to set for the app
-cache              directory of cached Electron downloads. Defaults to '$HOME/.electron'
+cache              directory of cached Electron downloads. Defaults to `$HOME/.electron`
                    (Deprecated, use --download.cache instead)
 download           a list of sub-options to pass to electron-download. They are specified via dot
                    notation, e.g., --download.cache=/tmp/cache
                    Properties supported:
-                   - cache: directory of cached Electron downloads. Defaults to '$HOME/.electron'
+                   - cache: directory of cached Electron downloads. Defaults to `$HOME/.electron`
                    - mirror: alternate URL to download Electron zips
                    - strictSSL: whether SSL certs are required to be valid when downloading
                      Electron. Defaults to true, use --download.strictSSL=false to disable checks.
 icon               the icon file to use as the icon for the app. Note: Format depends on platform.
 ignore             do not copy files into app whose filenames regex .match this string
 out                the dir to put the app into at the end. defaults to current working dir
-overwrite          if output directory for a platform already exists, replaces it rather than skipping it
+overwrite          if output directory for a platform already exists, replaces it rather than
+                   skipping it
 prune              runs `npm prune --production` on the app
 strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
                    It defaults to true, use --strict-ssl=false to disable checks.
                    (Deprecated, use --download.strictSSL instead)
-tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable use of a temporary directory.
-version            the version of Electron that is being packaged, see https://github.com/electron/electron/releases
+tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable
+                   use of a temporary directory.
+version            the version of Electron that is being packaged, see
+                   https://github.com/electron/electron/releases
 
 * darwin/mas target platforms only *
 
 app-bundle-id      bundle identifier to use in the app plist
 app-category-type  the application category type
-                   For example, `app-category-type=public.app-category.developer-tools` will set the application category to 'Developer Tools'.
+                   For example, `app-category-type=public.app-category.developer-tools` will set the
+                   application category to 'Developer Tools'.
 extend-info        a plist file to append to the app plist
 extra-resource     a file to copy into the app's Contents/Resources
 helper-bundle-id   bundle identifier to use in the app helper plist
 osx-sign           (OSX host platform only) Whether to sign the OSX app packages. You can either
                    pass --osx-sign by itself to use the default configuration, or use dot notation
                    to configure a list of sub-properties, e.g. --osx-sign.identity="My Name"
-
                    Properties supported:
                    - identity: should contain the identity to be used when running `codesign`
                    - entitlements: the path to entitlements used in signing
@@ -60,9 +73,10 @@ osx-sign           (OSX host platform only) Whether to sign the OSX app packages
 
 * win32 target platform only *
 
-version-string     a list of sub-properties used to set the application metadata embedded into the executable.
-                   They are specified via dot notation,
-                   e.g. --version-string.CompanyName="Company Inc." --version-string.ProductName="Product"
+version-string     a list of sub-properties used to set the application metadata embedded into
+                   the executable. They are specified via dot notation,
+                   e.g. --version-string.CompanyName="Company Inc."
+                   or --version-string.ProductName="Product"
                    Properties supported:
                    - CompanyName
                    - FileDescription
