@@ -69,7 +69,11 @@ If `appname` is omitted, this will use the name specified by "productName" or "n
 
 You should be able to launch the app on the platform you built for. If not, check your settings and try again.
 
+#### Ignoring files
+
 **Be careful** not to include `node_modules` you don't want into your final app. `electron-packager`, `electron-prebuilt` and `.git` will be ignored by default. You can use `--ignore` to ignore files and folders via a regular expression. For example, `--ignore=node_modules/package-to-ignore` or `--ignore="node_modules/(some-package[0-9]*|dev-dependency)"`.
+
+You can also ignore via `.electronignore` and `.electron_{platform}` files, similar to how you would create a `.gitignore` file. These files will automatically be processed and appended to the ignore rules sent as `--ignore`. In addition, the standard `.electronignore` file will be combined with the platform specific ignore file allowing more options for configuration.
 
 #### Example
 
