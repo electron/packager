@@ -1,9 +1,11 @@
-var common = require('./common')
-var fs = require('fs-extra')
-var path = require('path')
-var plist = require('plist')
-var series = require('run-series')
-var sign = require('electron-osx-sign')
+'use strict'
+
+const common = require('./common')
+const fs = require('fs-extra')
+const path = require('path')
+const plist = require('plist')
+const series = require('run-series')
+const sign = require('electron-osx-sign')
 
 function rename (basePath, oldName, newName, cb) {
   fs.move(path.join(basePath, oldName), path.join(basePath, newName), cb)

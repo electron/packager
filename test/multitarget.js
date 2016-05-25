@@ -1,12 +1,14 @@
-var config = require('./config.json')
-var fs = require('fs')
-var isAdmin = require('is-admin')
-var packager = require('..')
-var path = require('path')
-var series = require('run-series')
-var test = require('tape')
-var util = require('./util')
-var waterfall = require('run-waterfall')
+'use strict'
+
+const config = require('./config.json')
+const fs = require('fs')
+const isAdmin = require('is-admin')
+const packager = require('..')
+const path = require('path')
+const series = require('run-series')
+const test = require('tape')
+const util = require('./util')
+const waterfall = require('run-waterfall')
 
 function verifyPackageExistence (finalPaths, callback) {
   series(finalPaths.map(function (finalPath) {
@@ -121,7 +123,8 @@ util.teardown()
 
 function createMultiTest (arch, platform) {
   return function (t) {
-    t.timeoutAfter(config.timeout * 4) // 4 packages will be built during this test
+    // 4 packages will be built during this test
+    t.timeoutAfter(config.timeout * 4)
 
     var opts = {
       name: 'basicTest',

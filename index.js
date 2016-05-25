@@ -1,12 +1,14 @@
-var common = require('./common')
-var download = require('electron-download')
-var extract = require('extract-zip')
-var fs = require('fs-extra')
-var getPackageInfo = require('get-package-info')
-var os = require('os')
-var path = require('path')
-var resolve = require('resolve')
-var series = require('run-series')
+'use strict'
+
+const common = require('./common')
+const download = require('electron-download')
+const extract = require('extract-zip')
+const fs = require('fs-extra')
+const getPackageInfo = require('get-package-info')
+const os = require('os')
+const path = require('path')
+const resolve = require('resolve')
+const series = require('run-series')
 
 var supportedArchs = common.archs.reduce(function (result, arch) {
   result[arch] = 1

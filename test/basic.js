@@ -1,12 +1,14 @@
-var common = require('../common')
-var config = require('./config.json')
-var fs = require('fs-extra')
-var packager = require('..')
-var path = require('path')
-var series = require('run-series')
-var test = require('tape')
-var util = require('./util')
-var waterfall = require('run-waterfall')
+'use strict'
+
+const common = require('../common')
+const config = require('./config.json')
+const fs = require('fs-extra')
+const packager = require('..')
+const path = require('path')
+const series = require('run-series')
+const test = require('tape')
+const util = require('./util')
+const waterfall = require('run-waterfall')
 
 function generateNamePath (opts) {
   // Generates path to verify reflects the name given in the options.

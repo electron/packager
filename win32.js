@@ -1,7 +1,9 @@
-var common = require('./common')
-var fs = require('fs-extra')
-var path = require('path')
-var series = require('run-series')
+'use strict'
+
+const common = require('./common')
+const fs = require('fs-extra')
+const path = require('path')
+const series = require('run-series')
 
 module.exports = {
   createApp: function createApp (opts, templatePath, callback) {
