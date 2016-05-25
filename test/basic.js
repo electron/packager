@@ -248,6 +248,34 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
   }
 }
 
+function createIgnoreFromGlobalFileTest (opts, ignoredFile) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+
+    var appPath
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        appPath = path.join(paths[0], util.generateResourcesPath(opts), 'app')
+        fs.stat(path.join(appPath, 'package.json'), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected output directory should exist and contain files')
+        fs.exists(path.join(appPath, ignoredFile), function (exists) {
+          t.false(exists, 'Ignored file should not exist in output app directory')
+          cb()
+        })
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createOverwriteTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
@@ -549,6 +577,8 @@ util.testSinglePlatform('ignore test: string in array', createIgnoreTest, ['igno
 util.testSinglePlatform('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
 util.testSinglePlatform('ignore test: RegExp', createIgnoreTest, /ignorethis/, 'ignorethis.txt')
 util.testSinglePlatform('ignore test: Function', createIgnoreTest, function (file) { return file.match(/ignorethis/) }, 'ignorethis.txt')
+util.testSinglePlatform('ignore test: Function', createIgnoreFromGlobalFileTest, 'ignorethis.txt')
+
 util.testSinglePlatform('ignore test: string with slash', createIgnoreTest, 'ignore/this',
   path.join('ignore', 'this.txt'))
 util.testSinglePlatform('ignore test: only match subfolder of app', createIgnoreTest, 'electron-packager',
