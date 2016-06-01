@@ -182,6 +182,9 @@ module.exports = function packager (opts, cb) {
   var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
   if (!Array.isArray(archs)) return cb(new Error(archs))
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
+  if (opts.out) {
+    if (typeof opts.out !== 'string') return cb(new Error('Output dir must be a string'))
+  }
 
   getNameAndVersion(opts, opts.dir || process.cwd(), function (err) {
     if (err) {
