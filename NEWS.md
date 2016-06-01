@@ -3,6 +3,16 @@
 ## Unreleased
 
 
+## [7.0.3] - 2016-05-31
+
+### Changed
+
+* [contributors] Code contributions need to be validated in "strict" mode (#342, #351)
+
+### Fixed
+
+* CLI output truncated when using Node 6 (and possibly earlier) (#381)
+
 ## [7.0.2] - 2016-05-18
 
 ### Fixed
@@ -138,6 +148,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.0.3]: https://github.com/electron-userland/electron-packager/compare/v7.0.2...v7.0.3
 [7.0.2]: https://github.com/electron-userland/electron-packager/compare/v7.0.1...v7.0.2
 [7.0.1]: https://github.com/electron-userland/electron-packager/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/electron-userland/electron-packager/compare/v6.0.2...v7.0.0
