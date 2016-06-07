@@ -195,6 +195,7 @@ class MacApp {
   enqueueAppSigningIfSpecified () {
     let osxSignOpt = this.opts['osx-sign']
     let platform = this.opts.platform
+    let version = this.opts.version
 
     if ((platform === 'all' || platform === 'mas') &&
         osxSignOpt === undefined) {
@@ -204,7 +205,7 @@ class MacApp {
 
     if (osxSignOpt) {
       this.operations.push((cb) => {
-        let signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath)
+        let signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version)
         debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
         sign(signOpts, (err) => {
           if (err) {
@@ -232,15 +233,16 @@ function filterCFBundleIdentifier (identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '')
 }
 
-function createSignOpts (properties, platform, app) {
+function createSignOpts (properties, platform, app, version) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
   let signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options
-  // user may think they can pass platform or app, but they will be ignored
+  // user may think they can pass platform, app, or version, but they will be ignored
   common.subOptionWarning(signOpts, 'osx-sign', 'platform', platform)
   common.subOptionWarning(signOpts, 'osx-sign', 'app', app)
+  common.subOptionWarning(signOpts, 'osx-sign', 'version', version)
 
   if (signOpts.binaries) {
     console.warn('WARNING: osx-sign.binaries is not an allowed sub-option. Not passing to electron-osx-sign.')
