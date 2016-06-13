@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [7.0.3] - 2016-05-25
+
+### Added
+
+* Add support to use `.electronignore` and `.electronignore_{platform}` files.
 
 ## [7.0.3] - 2016-05-31
 

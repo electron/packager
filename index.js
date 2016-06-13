@@ -66,6 +66,19 @@ function getNameAndVersion (opts, dir, cb) {
   })
 }
 
+function getIgnoresFromFile (platform) {
+  var ignores = []
+  // check the global file ignores
+  if (fs.existsSync('./.electronignore')) {
+    ignores = fs.readFileSync('./.electronignore', 'utf8').split('\n')
+  }
+  // check the OS specific file ignores
+  if (fs.existsSync(`./.electronignore_${platform}`)) {
+    ignores = ignores.concat(fs.readFileSync(`./.electronignore_${platform}`, 'utf8').split('\n'))
+  }
+  return ignores
+}
+
 function createSeries (opts, archs, platforms) {
   var tempBase = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager')
 
@@ -195,6 +208,8 @@ module.exports = function packager (opts, cb) {
     if (typeof (opts.ignore) !== 'function') {
       if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
       opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+      // check for the .electronignore files.
+      opts.ignore = (opts.ignore) ? opts.ignore.concat(getIgnoresFromFile(opts.platform)) : defaultIgnores
     }
 
     series(createSeries(opts, archs, platforms), function (err, appPaths) {
