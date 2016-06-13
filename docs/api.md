@@ -127,9 +127,11 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 ##### `ignore`
 
-*RegExp* or *Function*
+*RegExp* or *Function* or *Array containing RegExps*
 
 A pattern which specifies which files to ignore when copying files to create the package(s). The [`out`](#out) directory is ignored by default, along with the `electron-prebuilt` and `electron-packager` Node modules, the `.git` directory, and `node_modules/.bin`.
+
+You can also specify an array of patterns which will be matched against. If any match is found then the file will be ignored.
 
 Alternatively, this can be a predicate function that, given the file path, returns `true` if the file should be ignored, or `false` if the file should be kept. This does not use any of the default ignored directories.
 
