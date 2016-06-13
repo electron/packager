@@ -127,9 +127,14 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 ##### `ignore`
 
-*RegExp* or *Function*
+*RegExp*, *Array* of *RegExp*s, or *Function*
 
-A pattern which specifies which files to ignore when copying files to create the package(s). The [`out`](#out) directory is ignored by default, along with the `electron-prebuilt` and `electron-packager` Node modules, the `.git` directory, and `node_modules/.bin`.
+One or more additional [regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
+patterns which specify which files to ignore when copying files to create the app bundle(s). The
+[`out`](#out) directory is ignored by default, along with the `electron-prebuilt` and
+`electron-packager` Node modules, the `.git` directory, and `node_modules/.bin`.
+
+**Please note that [glob patterns](https://en.wikipedia.org/wiki/Glob_%28programming%29) will not work.**
 
 Alternatively, this can be a predicate function that, given the file path, returns `true` if the file should be ignored, or `false` if the file should be kept. This does not use any of the default ignored directories.
 
