@@ -128,6 +128,16 @@ function createSeries (opts, archs, platforms) {
             },
             function (cb) {
               extract(zipPath, {dir: buildDir}, cb)
+            },
+            function (cb) {
+              if (!opts.afterExtract || !Array.isArray(opts.afterExtract)) {
+                cb()
+              } else {
+                var newFunctions = opts.afterExtract.map(function (fn) {
+                  return fn.bind(this, buildDir, version, platform, arch)
+                })
+                series(newFunctions, cb)
+              }
             }
           ], function () {
             require(supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
