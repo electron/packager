@@ -8,6 +8,7 @@ const rcinfo = require('rcinfo')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
+const win32 = require('../win32')
 
 const baseOpts = {
   name: 'basicTest',
@@ -90,6 +91,38 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
                                    ['Legal copyright should match app copyright',
                                     'Company name should match version-string value'])
 }
+
+test('better error message when wine is not found', function (t) {
+  let err = Error('spawn wine ENOENT')
+  err.code = 'ENOENT'
+  err.syscall = 'spawn wine'
+
+  t.equal(err.message, 'spawn wine ENOENT')
+  err = win32.updateWineMissingException(err)
+  t.notEqual(err.message, 'spawn wine ENOENT')
+
+  t.end()
+})
+
+test('error message unchanged when error not about wine', function (t) {
+  let errNotEnoent = Error('unchanged')
+  errNotEnoent.code = 'ESOMETHINGELSE'
+  errNotEnoent.syscall = 'spawn wine'
+
+  t.equal(errNotEnoent.message, 'unchanged')
+  errNotEnoent = win32.updateWineMissingException(errNotEnoent)
+  t.equal(errNotEnoent.message, 'unchanged')
+
+  let errNotSpawnWine = Error('unchanged')
+  errNotSpawnWine.code = 'ENOENT'
+  errNotSpawnWine.syscall = 'spawn foo'
+
+  t.equal(errNotSpawnWine.message, 'unchanged')
+  errNotSpawnWine = win32.updateWineMissingException(errNotSpawnWine)
+  t.equal(errNotSpawnWine.message, 'unchanged')
+
+  t.end()
+})
 
 util.setup()
 test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))

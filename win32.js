@@ -5,6 +5,18 @@ const fs = require('fs-extra')
 const path = require('path')
 const series = require('run-series')
 
+function updateWineMissingException (err) {
+  if (err && err.code === 'ENOENT' && err.syscall === 'spawn wine') {
+    err.message = 'Could not find "wine" on your system.\n\n' +
+      'Wine is required to use the app-copyright, app-version, build-version, icon, and \n' +
+      'version-string parameters for Windows targets.\n\n' +
+      'Make sure that the "wine" executable is in your PATH.\n\n' +
+      'See https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms for details.'
+  }
+
+  return err
+}
+
 module.exports = {
   createApp: function createApp (opts, templatePath, callback) {
     common.initializeApp(opts, templatePath, path.join('resources', 'app'), function buildWinApp (err, tempPath) {
@@ -39,7 +51,9 @@ module.exports = {
               rcOpts.icon = icon
             }
 
-            require('rcedit')(newExePath, rcOpts, cb)
+            require('rcedit')(newExePath, rcOpts, function (err) {
+              cb(updateWineMissingException(err))
+            })
           })
         })
       }
@@ -49,5 +63,6 @@ module.exports = {
         common.moveApp(opts, tempPath, callback)
       })
     })
-  }
+  },
+  updateWineMissingException: updateWineMissingException
 }

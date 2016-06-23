@@ -6,6 +6,10 @@
 
 * `derefSymlinks` option (#410)
 
+### Fixed
+
+* Clarified message when `wine` is not found (#357)
+
 ## [7.1.0] - 2016-06-22
 
 ### Added
