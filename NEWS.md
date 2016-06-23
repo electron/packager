@@ -3,6 +3,12 @@
 ## Unreleased
 
 
+## [7.1.0] - 2016-06-22
+
+### Added
+
+* Add `afterExtract` hook (#354, #403)
+
 ## [7.0.4] - 2016-06-14
 
 ### Fixed
@@ -154,6 +160,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.1.0]: https://github.com/electron-userland/electron-packager/compare/v7.0.4...v7.1.0
 [7.0.4]: https://github.com/electron-userland/electron-packager/compare/v7.0.3...v7.0.4
 [7.0.3]: https://github.com/electron-userland/electron-packager/compare/v7.0.2...v7.0.3
 [7.0.2]: https://github.com/electron-userland/electron-packager/compare/v7.0.1...v7.0.2
