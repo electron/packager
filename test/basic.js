@@ -541,6 +541,18 @@ test('CLI argument test: --osx-sign=true', function (t) {
   t.end()
 })
 
+test('CLI argument test: --deref-symlinks=false', function (t) {
+  var args = common.parseCLIArgs(['--deref-symlinks=false'])
+  t.equal(args['deref-symlinks'], false)
+  t.end()
+})
+
+test('CLI argument test: --deref-symlinks default', function (t) {
+  var args = common.parseCLIArgs([])
+  t.equal(args['deref-symlinks'], true)
+  t.end()
+})
+
 util.testSinglePlatform('infer test', createInferTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('default_app.asar removal test', createDefaultAppAsarTest)
