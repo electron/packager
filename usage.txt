@@ -33,6 +33,7 @@ asar-unpack-dir    unpacks the dir to app.asar.unpacked directory whose names gl
 build-version      build version to set for the app
 cache              directory of cached Electron downloads. Defaults to `$HOME/.electron`
                    (Deprecated, use --download.cache instead)
+deref-symlinks     whether symlinks should be dereferenced. Defaults to true.
 download           a list of sub-options to pass to electron-download. They are specified via dot
                    notation, e.g., --download.cache=/tmp/cache
                    Properties supported:

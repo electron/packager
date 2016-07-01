@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+
+* `derefSymlinks` option (#410)
 
 ## [7.1.0] - 2016-06-22
 

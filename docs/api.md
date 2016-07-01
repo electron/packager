@@ -113,6 +113,12 @@ please use the [`download.cache`](#download) parameter instead)
 
 The directory where prebuilt, pre-packaged Electron downloads are cached.
 
+##### `derefSymlinks`
+
+*Boolean* (default: `true`)
+
+Whether symlinks should be dereferenced during copying.
+
 ##### `download`
 
 *Object*

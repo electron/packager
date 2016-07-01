@@ -474,6 +474,41 @@ function createIgnoreImplicitOutDirTest (opts) {
   }
 }
 
+function createDisableSymlinkDereferencingTest (opts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    opts.name = 'basicTest'
+    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.out = 'dist'
+    opts.derefSymlinks = false
+    opts.asar = false
+
+    var dst = path.join(opts.dir, 'main-link.js')
+
+    waterfall([
+      function (cb) {
+        var src = path.join(opts.dir, 'main.js')
+        fs.ensureSymlink(src, dst, cb)
+      }, function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        var dstLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
+        fs.lstat(dstLink, cb)
+      },
+      function (stats, cb) {
+        t.true(stats.isSymbolicLink(), 'The expected file should still be a symlink.')
+        cb()
+      },
+      function (cb) {
+        fs.remove(dst, cb)
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 test('download argument test: download.cache overwrites cache', function (t) {
   var opts = {
     cache: 'should not exist',
@@ -541,6 +576,18 @@ test('CLI argument test: --osx-sign=true', function (t) {
   t.end()
 })
 
+test('CLI argument test: --deref-symlinks=false', function (t) {
+  var args = common.parseCLIArgs(['--deref-symlinks=false'])
+  t.equal(args['deref-symlinks'], false)
+  t.end()
+})
+
+test('CLI argument test: --deref-symlinks default', function (t) {
+  var args = common.parseCLIArgs([])
+  t.equal(args['deref-symlinks'], true)
+  t.end()
+})
+
 util.testSinglePlatform('infer test', createInferTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('default_app.asar removal test', createDefaultAppAsarTest)
@@ -561,6 +608,7 @@ util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)
 util.testSinglePlatform('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
 util.testSinglePlatform('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
 util.testSinglePlatform('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)
+util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
 
 util.setup()
 test('fails with invalid arch', function (t) {
