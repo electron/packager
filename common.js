@@ -23,7 +23,8 @@ function parseCLIArgs (argv) {
     ],
     default: {
       'strict-ssl': true,
-      'download.strictSSL': true
+      'download.strictSSL': true,
+      'deref-symlinks': true
     }
   })
 
@@ -187,10 +188,7 @@ module.exports = {
         fs.move(templatePath, tempPath, {clobber: true}, cb)
       },
       function (cb) {
-        var shouldDeref = opts.derefSymlinks
-        if (shouldDeref == null) {
-          shouldDeref = true
-        }
+        var shouldDeref = opts['deref-symlinks']
         fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: shouldDeref}, cb)
       },
       function (cb) {
