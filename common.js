@@ -187,7 +187,11 @@ module.exports = {
         fs.move(templatePath, tempPath, {clobber: true}, cb)
       },
       function (cb) {
-        fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: true}, cb)
+        var shouldDeref = opts.derefSymlinks
+        if (shouldDeref == null) {
+          shouldDeref = true
+        }
+        fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: shouldDeref}, cb)
       },
       function (cb) {
         // Support removing old default_app folder that is now an asar archive
