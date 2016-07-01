@@ -3,12 +3,6 @@
 
 case "$TRAVIS_OS_NAME" in
   "osx")
-    # Install Wine
-    BREW_INSTALL="brew install --ignore-dependencies --force-bottle"
-    brew update
-    $BREW_INSTALL freetype
-    brew deps --skip-optional wine | grep -v -e freetype -e libtiff -e libpng -e gmp | xargs $BREW_INSTALL
-    $BREW_INSTALL wine
     # Create CA
     openssl req -newkey rsa:4096 -days 1 -x509 -nodes -subj \
       "/C=CI/ST=Travis/L=Developer/O=Developer/CN=Developer CA" \

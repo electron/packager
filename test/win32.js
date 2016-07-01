@@ -124,18 +124,20 @@ test('error message unchanged when error not about wine', function (t) {
   t.end()
 })
 
-util.setup()
-test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
-util.teardown()
+if (process.env['TRAVIS_OS_NAME'] !== 'osx') {
+  util.setup()
+  test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
+  util.teardown()
 
-util.setup()
-test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
-util.teardown()
+  util.setup()
+  test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
+  util.teardown()
 
-util.setup()
-test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
-util.teardown()
+  util.setup()
+  test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
+  util.teardown()
 
-util.setup()
-test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
-util.teardown()
+  util.setup()
+  test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
+  util.teardown()
+}
