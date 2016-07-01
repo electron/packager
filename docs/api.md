@@ -125,6 +125,12 @@ but are not limited to:
 - `strictSSL` (*Boolean* - default: `true`): Whether SSL certificates are required to be valid when
   downloading Electron.
 
+##### `derefSymlinks`
+
+*Boolean* (default: `true`)
+
+Whether symlinks should be dereferenced during copying.
+
 ##### `icon`
 
 *String*
