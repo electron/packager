@@ -19,7 +19,8 @@ function parseCLIArgs (argv) {
       'all',
       'overwrite',
       'strict-ssl',
-      'download.strictSSL'
+      'download.strictSSL',
+      'deref-symlinks'
     ],
     default: {
       'strict-ssl': true,
