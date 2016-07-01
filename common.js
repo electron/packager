@@ -189,7 +189,13 @@ module.exports = {
         fs.move(templatePath, tempPath, {clobber: true}, cb)
       },
       function (cb) {
+        // `deref-symlinks` is the default value so we'll use it unless
+        // `derefSymlinks` is defined.
         var shouldDeref = opts['deref-symlinks']
+        if (opts.derefSymlinks !== undefined) {
+          shouldDeref = opts.derefSymlinks
+        }
+
         fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: shouldDeref}, cb)
       },
       function (cb) {
