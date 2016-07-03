@@ -1,7 +1,8 @@
-sudo: false
+sudo: required
 os:
 - linux
 - osx
+dist: trusty
 osx_image: xcode8
 language: node_js
 node_js:
@@ -13,11 +14,6 @@ cache:
 - directories:
   - "$HOME/.npm"
   - "$HOME/.electron"
-  - /Library/Caches/Homebrew
-addons:
-  apt:
-    packages:
-    - wine
 before_install: test/ci/before_install.sh
 after_success: npm run coveralls
 env:

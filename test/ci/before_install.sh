@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 
 case "$TRAVIS_OS_NAME" in
+  "linux")
+    sudo rm /etc/apt/sources.list.d/google-chrome.list
+    sudo dpkg --add-architecture i386
+    sudo apt-get update
+    sudo apt-get install -y wine1.6
+    ;;
   "osx")
     # Create CA
     openssl req -newkey rsa:4096 -days 1 -x509 -nodes -subj \
