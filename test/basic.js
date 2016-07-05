@@ -27,6 +27,8 @@ function createDefaultsTest (opts) {
 
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.asar = false
+    opts.prune = false
 
     var finalPath
     var resourcesPath
@@ -90,6 +92,7 @@ function createDefaultAppAsarTest (opts) {
     opts.name = 'el0374Test'
     opts.dir = path.join(__dirname, 'fixtures', 'el-0374')
     opts.version = '0.37.4'
+    opts.asar = false
 
     var resourcesPath
 
@@ -116,6 +119,7 @@ function createOutTest (opts) {
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
+    opts.asar = false
 
     var finalPath
 
@@ -191,6 +195,7 @@ function createPruneTest (opts) {
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.prune = true
+    opts.asar = false
 
     var finalPath
     var resourcesPath
@@ -228,6 +233,7 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.ignore = ignorePattern
+    opts.asar = false
 
     var appPath
 
@@ -256,6 +262,7 @@ function createOverwriteTest (opts) {
 
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.asar = false
 
     var finalPath
     var testPath
