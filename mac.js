@@ -179,7 +179,7 @@ module.exports = {
       operations.push(function (cb) {
         moveHelpers(frameworksPath, opts.name, cb)
       }, function (cb) {
-        fs.move(path.dirname(contentsPath), finalAppPath, cb)
+        fs.rename(path.dirname(contentsPath), finalAppPath, cb)
       })
 
       if ((opts.platform === 'all' || opts.platform === 'mas') && opts['osx-sign'] === undefined) {
