@@ -179,14 +179,7 @@ module.exports = {
       operations.push(function (cb) {
         moveHelpers(frameworksPath, opts.name, cb)
       }, function (cb) {
-        var electronAppPath = path.dirname(contentsPath)
-        // If we're not using a temp dir then we know it's safe (and faster!) to
-        // simply rename.
-        if (opts.tmpdir === false) {
-          fs.rename(electronAppPath, finalAppPath, cb)
-        } else {
-          fs.move(electronAppPath, finalAppPath, cb)
-        }
+        fs.rename(path.dirname(contentsPath), finalAppPath, cb)
       })
 
       if ((opts.platform === 'all' || opts.platform === 'mas') && opts['osx-sign'] === undefined) {
