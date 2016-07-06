@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+* `asar` options can be specified as an `Object` (via the API) or with dot notation (via the CLI) -
+  see the respective docs for details (#353, #417)
+
+### Deprecated
+
+* `asar-unpack` is deprecated in favor of `asar.unpack` (#417)
+* `asar-unpack-dir` is deprecated in favor of `asar.unpackDir` (#417)
+
 ## [7.2.0] - 2016-07-03
 
 ### Added

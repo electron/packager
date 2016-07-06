@@ -146,8 +146,7 @@ function createAsarTest (opts) {
 
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
-    opts.asar = true
-    opts['asar-options'] = {
+    opts.asar = {
       'unpack': '*.pac',
       'unpackDir': 'dir_to_unpack'
     }
@@ -511,6 +510,82 @@ function createDisableSymlinkDereferencingTest (opts) {
   }
 }
 
+test('asar argument test: asar is not set', function (t) {
+  var opts = {}
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.false(asarOpts, 'createAsarOpts returns false')
+  t.end()
+})
+
+test('asar argument test: asar is true', function (t) {
+  var opts = {
+    asar: true
+  }
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.same(asarOpts, {unpack: undefined, unpackDir: undefined})
+  t.end()
+})
+
+test('asar argument test: asar is not an Object or a bool', function (t) {
+  var opts = {
+    asar: 'string'
+  }
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.false(asarOpts, 'createAsarOpts returns false')
+  t.end()
+})
+
+test('asar argument test: asar-unpack still works albeit deprecated', function (t) {
+  var opts = {
+    asar: true,
+    'asar-unpack': 'deprecated'
+  }
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.same(asarOpts, {unpack: 'deprecated', unpackDir: undefined})
+  t.end()
+})
+
+test('asar argument test: asar.unpack overwrites asar-unpack', function (t) {
+  var opts = {
+    asar: {
+      unpack: 'should exist'
+    },
+    'asar-unpack': 'should not exist'
+  }
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.same(asarOpts, {unpack: 'should exist', unpackDir: undefined})
+  t.end()
+})
+
+test('asar argument test: asar-unpack-dir still works albeit deprecated', function (t) {
+  var opts = {
+    asar: true,
+    'asar-unpack-dir': 'deprecated'
+  }
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.same(asarOpts, {unpack: undefined, unpackDir: 'deprecated'})
+  t.end()
+})
+
+test('asar argument test: asar.unpackDir overwrites asar-unpack-dir', function (t) {
+  var opts = {
+    asar: {
+      unpackDir: 'should exist'
+    },
+    'asar-unpack-dir': 'should not exist'
+  }
+
+  var asarOpts = common.createAsarOpts(opts)
+  t.same(asarOpts, {unpack: undefined, unpackDir: 'should exist'})
+  t.end()
+})
+
 test('download argument test: download.cache overwrites cache', function (t) {
   var opts = {
     cache: 'should not exist',
@@ -566,15 +641,21 @@ test('CLI argument test: --download.strictSSL default', function (t) {
   t.end()
 })
 
-test('CLI argument test: --tmpdir=false', function (t) {
-  var args = common.parseCLIArgs(['--tmpdir=false'])
-  t.equal(args.tmpdir, false)
+test('CLI argument test: --asar=true', function (t) {
+  var args = common.parseCLIArgs(['--asar=true'])
+  t.equal(args.asar, true)
   t.end()
 })
 
 test('CLI argument test: --osx-sign=true', function (t) {
   var args = common.parseCLIArgs(['--osx-sign=true'])
   t.equal(args['osx-sign'], true)
+  t.end()
+})
+
+test('CLI argument test: --tmpdir=false', function (t) {
+  var args = common.parseCLIArgs(['--tmpdir=false'])
+  t.equal(args.tmpdir, false)
   t.end()
 })
 

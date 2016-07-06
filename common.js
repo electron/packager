@@ -15,7 +15,6 @@ function parseCLIArgs (argv) {
   var args = minimist(argv, {
     boolean: [
       'prune',
-      'asar',
       'all',
       'overwrite',
       'strict-ssl',
@@ -41,14 +40,21 @@ function parseCLIArgs (argv) {
     })
   }
 
-  // minimist doesn't support multiple types for a single argument (in this case, `String` or `false`)
-  if (args.tmpdir === 'false') {
-    args.tmpdir = false
+  // Overrides for multi-typed arguments, because minimist doesn't support it
+
+  // asar: `Object` or `true`
+  if (args.asar === 'true') {
+    args.asar = true
   }
 
-  // (in this case, `Object` or `true`)
+  // osx-sign: `Object` or `true`
   if (args['osx-sign'] === 'true') {
     args['osx-sign'] = true
+  }
+
+  // tmpdir: `String` or `false`
+  if (args.tmpdir === 'false') {
+    args.tmpdir = false
   }
 
   return args
@@ -79,6 +85,15 @@ function subOptionWarning (properties, optionName, parameter, value) {
     console.warn(`WARNING: ${optionName}.${parameter} will be inferred from the main options`)
   }
   properties[parameter] = value
+}
+
+function deprecatedParameter (properties, oldName, newName, extraCondition/* optional */) {
+  if (extraCondition === undefined) {
+    extraCondition = true
+  }
+  if (properties.hasOwnProperty(oldName) && extraCondition) {
+    console.warn(`The ${oldName} parameter is deprecated, use ${newName} instead`)
+  }
 }
 
 function userIgnoreFilter (opts) {
@@ -129,6 +144,28 @@ function userIgnoreFilter (opts) {
   }
 }
 
+function createAsarOpts (opts) {
+  deprecatedParameter(opts, 'asar-unpack', 'asar.unpack')
+  deprecatedParameter(opts, 'asar-unpack-dir', 'asar.unpackDir')
+
+  let asarOptions
+  if (opts.asar === true) {
+    asarOptions = {}
+  } else if (typeof opts.asar === 'object') {
+    asarOptions = opts.asar
+  } else if (opts.asar === false || opts.asar === undefined) {
+    return false
+  } else {
+    console.warn(`asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`)
+    return false
+  }
+
+  return Object.assign({
+    unpack: opts['asar-unpack'],
+    unpackDir: opts['asar-unpack-dir']
+  }, asarOptions)
+}
+
 module.exports = {
   archs: archs,
   platforms: platforms,
@@ -141,14 +178,11 @@ module.exports = {
 
   subOptionWarning: subOptionWarning,
 
-  createDownloadOpts: function createDownloadOpts (opts, platform, arch) {
-    if (opts.hasOwnProperty('cache')) {
-      console.warn('The cache parameter is deprecated, use download.cache instead')
-    }
+  createAsarOpts: createAsarOpts,
 
-    if (opts.hasOwnProperty('strict-ssl') && opts['strict-ssl'] === false) {
-      console.warn('The strict-ssl parameter is deprecated, use download.strictSSL instead')
-    }
+  createDownloadOpts: function createDownloadOpts (opts, platform, arch) {
+    deprecatedParameter(opts, 'cache', 'download.cache')
+    deprecatedParameter(opts, 'strict-ssl', 'download.strictSSL', opts['strict-ssl'] === false)
 
     var downloadOpts = Object.assign({
       cache: opts.cache,
@@ -215,21 +249,9 @@ module.exports = {
       })
     }
 
-    if (opts.asar) {
+    let asarOptions = createAsarOpts(opts)
+    if (asarOptions) {
       operations.push(function (cb) {
-        if (opts.hasOwnProperty('asar-unpack')) {
-          console.warn('The asar-unpack parameter is deprecated, use asar-options.unpack instead')
-        }
-
-        if (opts.hasOwnProperty('asar-unpack-dir')) {
-          console.warn('The asar-unpack-dir parameter is deprecated, use asar-options.unpackDir instead')
-        }
-
-        var asarOptions = Object.assign({
-          unpack: opts['asar-unpack'],
-          unpackDir: opts['asar-unpack-dir']
-        }, opts['asar-options'])
-
         asarApp(path.join(appPath), asarOptions, cb)
       })
     }
