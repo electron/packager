@@ -8,7 +8,8 @@ Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`
 
 ## About
 
-Electron Packager is a command line tool that packages electron app source code into executables like `.app` or `.exe` along with a copy of Electron.
+Electron Packager is a command line tool and Node.js library that bundles Electron-based application
+source code with a renamed Electron executable and supporting files into folders ready for distribution.
 
 Note that packaged Electron applications can be relatively large. A zipped barebones OS X Electron application is around 40MB.
 
