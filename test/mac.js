@@ -290,7 +290,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
     var tempPath, plistPath
     var opts = Object.create(baseOpts)
     if (helperBundleId) {
-      opts['helper-bundle-id'] = appBundleId
+      opts['helper-bundle-id'] = helperBundleId
     }
     if (appBundleId) {
       opts['app-bundle-id'] = appBundleId
@@ -312,7 +312,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
       }, function (file, cb) {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name in helper app')
-        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleName should reflect opts["helper-bundle-id"], opts["app-bundle-id"] or fallback to default in helper app')
+        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts["helper-bundle-id"], opts["app-bundle-id"] or fallback to default in helper app')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper app')
         t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string in helper app')
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
