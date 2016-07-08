@@ -43,7 +43,7 @@ download           a list of sub-options to pass to electron-download. They are 
                      Electron. Defaults to true, use --download.strictSSL=false to disable checks.
 icon               the icon file to use as the icon for the app. Note: Format depends on platform.
 ignore             do not copy files into app whose filenames regex .match this string. See also:
-                   https://github.com/electron-userland/electron-packager/blob/master/docs/api.md
+                   https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#ignore
                    and --prune.
 out                the dir to put the app into at the end. defaults to current working dir
 overwrite          if output directory for a platform already exists, replaces it rather than
