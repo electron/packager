@@ -152,12 +152,25 @@ If the file extension is omitted, it is auto-completed to the correct extension 
 
 One or more additional [regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
 patterns which specify which files to ignore when copying files to create the app bundle(s). The
-[`out`](#out) directory is ignored by default, along with the `electron-prebuilt` and
-`electron-packager` Node modules, the `.git` directory, and `node_modules/.bin`.
+regular expressions are matched against the absolute path of a given file/directory to be copied.
+
+The following paths are always ignored (*when you aren't using the predicate function that is
+described after the list*):
+
+* the directory specified by the [`out`](#out) parameter
+* `node_modules/.bin`
+* `node_modules/electron-prebuilt`
+* `node_modules/electron-packager`
+* `.git`
 
 **Please note that [glob patterns](https://en.wikipedia.org/wiki/Glob_%28programming%29) will not work.**
 
-Alternatively, this can be a predicate function that, given the file path, returns `true` if the file should be ignored, or `false` if the file should be kept. This does not use any of the default ignored directories.
+**Note**: If you're trying to ignore Node modules specified in `devDependencies`, you may want to
+use [`prune`](#prune) instead.
+
+Alternatively, this can be a predicate function that, given an absolute file path, returns `true` if
+the file should be ignored, or `false` if the file should be kept. *This does not use any of the
+default ignored directories listed above.*
 
 ##### `name`
 
