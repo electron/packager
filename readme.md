@@ -64,7 +64,9 @@ This will:
 - Find or download the correct release of Electron
 - Use that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
 
-For details on the optional flags, run `electron-packager --help` or see [usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt).
+For an overview of the optional flags, run `electron-packager --help` or see
+[usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt). For
+detailed descriptions, see the [API documentation](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 
