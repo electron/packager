@@ -77,19 +77,31 @@ The release version of the application. Maps to the `ProductVersion` metadata pr
 
 ##### `asar`
 
-*Boolean* (default: `false`)
+*Boolean* or *Object* (default: `false`)
 
-Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/).
+Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/). When the value is `true`, pass default configuration to the `asar` module. The configuration values listed below can be customized when the value is an `Object`. Supported parameters include, but are not limited to:
+- `ordering` (*String*): A path to an ordering file for packing files. An explanation can be found on the [Atom issue tracker](https://github.com/atom/atom/issues/10163).
+- `unpack` (*String*): A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
+- `unpackDir` (*String*): Unpacks the dir to the `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar.unpackDir` is relative to `dir`.
+
+  Some examples:
+
+  - `asar.unpackDir = 'sub_dir'` will unpack the directory `/<dir>/sub_dir`
+  - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will not include their subdirectories.
+  - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
+  - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
 
 ##### `asar-unpack`
 
-*String*
+*String* (**deprecated** and will be removed in a future major version,
+please use the [`asar.unpack`](#asar) parameter instead)
 
 A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
 
 ##### `asar-unpack-dir`
 
-*String*
+*String* (**deprecated** and will be removed in a future major version,
+please use the [`asar.unpackDir`](#asar) parameter instead)
 
 Unpacks the dir to `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar-unpack-dir` is relative to `dir`.
 
