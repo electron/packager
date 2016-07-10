@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [7.3.0] - 2016-07-10
+
 ### Added
 
 * `asar` options can be specified as an `Object` (via the API) or with dot notation (via the CLI) -
@@ -179,6 +181,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.3.0]: https://github.com/electron-userland/electron-packager/compare/v7.2.0...v7.3.0
 [7.2.0]: https://github.com/electron-userland/electron-packager/compare/v7.1.0...v7.2.0
 [7.1.0]: https://github.com/electron-userland/electron-packager/compare/v7.0.4...v7.1.0
 [7.0.4]: https://github.com/electron-userland/electron-packager/compare/v7.0.3...v7.0.4
