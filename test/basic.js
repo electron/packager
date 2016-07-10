@@ -9,10 +9,10 @@ const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
 
+// Generates a path to the generated app that reflects the name given in the options.
+// Returns the Helper.app location on darwin since the top-level .app is already tested for the
+// resources path; on other OSes, returns the executable.
 function generateNamePath (opts) {
-  // Generates path to verify reflects the name given in the options.
-  // Returns the Helper.app location on darwin since the top-level .app is already tested for the resources path;
-  // returns the executable for other OSes
   if (common.isPlatformMac(opts.platform)) {
     return path.join(`${opts.name}.app`, 'Contents', 'Frameworks', `${opts.name} Helper.app`)
   }
