@@ -24,6 +24,7 @@ value of the environment variable is a comma-separated list of modules which sup
 feature. Known modules include:
 
 * `electron-download`
+* `electron-osx-sign`
 * `extract-zip`
 
 ## Contribution suggestions
