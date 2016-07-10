@@ -25,6 +25,9 @@ series([
 ], function () {
   console.log('Running tests...')
   require('./basic')
+  require('./asar')
+  require('./cli')
+  require('./ignore')
   require('./hooks')
   require('./multitarget')
   require('./win32')

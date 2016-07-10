@@ -5,7 +5,6 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const series = require('run-series')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
@@ -83,32 +82,6 @@ function createDefaultsTest (opts) {
   }
 }
 
-function createDefaultAppAsarTest (opts) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    opts.name = 'el0374Test'
-    opts.dir = path.join(__dirname, 'fixtures', 'el-0374')
-    opts.version = '0.37.4'
-
-    var resourcesPath
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
-          t.false(exists, 'The output directory should not contain the Electron default_app.asar file')
-          cb()
-        })
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  }
-}
-
 function createOutTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -132,51 +105,6 @@ function createOutTest (opts) {
         fs.stat(path.join(finalPath, util.generateResourcesPath(opts)), cb)
       }, function (stats, cb) {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  }
-}
-
-function createAsarTest (opts) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    opts.name = 'basicTest'
-    opts.dir = path.join(__dirname, 'fixtures', 'basic')
-    opts.asar = {
-      'unpack': '*.pac',
-      'unpackDir': 'dir_to_unpack'
-    }
-    var finalPath
-    var resourcesPath
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        finalPath = paths[0]
-        fs.stat(finalPath, cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'The expected output directory should exist')
-        resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
-        fs.stat(resourcesPath, cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        fs.stat(path.join(resourcesPath, 'app.asar'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'app.asar should exist under the resources subdirectory when opts.asar is true')
-        fs.exists(path.join(resourcesPath, 'app'), function (exists) {
-          t.false(exists, 'app subdirectory should NOT exist when app.asar is built')
-        })
-        fs.stat(path.join(resourcesPath, 'app.asar.unpacked'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'app.asar.unpacked should exist under the resources subdirectory when opts.asar_unpack is set some expression')
-        fs.stat(path.join(resourcesPath, 'app.asar.unpacked', 'dir_to_unpack'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'dir_to_unpack should exist under app.asar.unpacked subdirectory when opts.asar-unpack-dir is set dir_to_unpack')
         cb()
       }
     ], function (err) {
@@ -213,35 +141,6 @@ function createPruneTest (opts) {
         t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
         fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), function (exists) {
           t.false(exists, 'npm devDependency should NOT exist under app/node_modules')
-          cb()
-        })
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  }
-}
-
-function createIgnoreTest (opts, ignorePattern, ignoredFile) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    opts.name = 'basicTest'
-    opts.dir = path.join(__dirname, 'fixtures', 'basic')
-    opts.ignore = ignorePattern
-
-    var appPath
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        appPath = path.join(paths[0], util.generateResourcesPath(opts), 'app')
-        fs.stat(path.join(appPath, 'package.json'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'The expected output directory should exist and contain files')
-        fs.exists(path.join(appPath, ignoredFile), function (exists) {
-          t.false(exists, 'Ignored file should not exist in output app directory')
           cb()
         })
       }
@@ -386,95 +285,6 @@ function createDisableTmpdirUsingTest (opts) {
   }
 }
 
-function createIgnoreOutDirTest (opts, distPath) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    opts.name = 'basicTest'
-
-    var appDir = util.getWorkCwd()
-    opts.dir = appDir
-    // we don't use path.join here to avoid normalizing
-    var outDir = opts.dir + path.sep + distPath
-    opts.out = outDir
-
-    series([
-      function (cb) {
-        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
-          return path.basename(file) !== 'node_modules'
-        }}, cb)
-      },
-      function (cb) {
-        // create out dir before packager (real world issue - when second run includes uningnored out dir)
-        fs.mkdirp(outDir, cb)
-      },
-      function (cb) {
-        // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(outDir, 'ignoreMe'), 'w', function (err, fd) {
-          if (err) return cb(err)
-          fs.close(fd, cb)
-        })
-      },
-      function (cb) {
-        packager(opts, cb)
-      },
-      function (cb) {
-        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
-          t.false(exists, 'Out dir must not exist in output app directory')
-          cb()
-        })
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  }
-}
-
-function createIgnoreImplicitOutDirTest (opts) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    opts.name = 'basicTest'
-
-    var appDir = util.getWorkCwd()
-    opts.dir = appDir
-    var outDir = opts.dir
-
-    var testFilename = 'ignoreMe'
-    var previousPackedResultDir
-
-    series([
-      function (cb) {
-        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
-          return path.basename(file) !== 'node_modules'
-        }}, cb)
-      },
-      function (cb) {
-        previousPackedResultDir = path.join(outDir, `${opts.name}-linux-ia32`)
-        fs.mkdirp(previousPackedResultDir, cb)
-      },
-      function (cb) {
-        // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(previousPackedResultDir, testFilename), 'w', function (err, fd) {
-          if (err) return cb(err)
-          fs.close(fd, cb)
-        })
-      },
-      function (cb) {
-        packager(opts, cb)
-      },
-      function (cb) {
-        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
-          t.false(exists, 'Out dir must not exist in output app directory')
-          cb()
-        })
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  }
-}
-
 function createDisableSymlinkDereferencingTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -509,82 +319,6 @@ function createDisableSymlinkDereferencingTest (opts) {
     })
   }
 }
-
-test('asar argument test: asar is not set', function (t) {
-  var opts = {}
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.false(asarOpts, 'createAsarOpts returns false')
-  t.end()
-})
-
-test('asar argument test: asar is true', function (t) {
-  var opts = {
-    asar: true
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: undefined, unpackDir: undefined})
-  t.end()
-})
-
-test('asar argument test: asar is not an Object or a bool', function (t) {
-  var opts = {
-    asar: 'string'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.false(asarOpts, 'createAsarOpts returns false')
-  t.end()
-})
-
-test('asar argument test: asar-unpack still works albeit deprecated', function (t) {
-  var opts = {
-    asar: true,
-    'asar-unpack': 'deprecated'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: 'deprecated', unpackDir: undefined})
-  t.end()
-})
-
-test('asar argument test: asar.unpack overwrites asar-unpack', function (t) {
-  var opts = {
-    asar: {
-      unpack: 'should exist'
-    },
-    'asar-unpack': 'should not exist'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: 'should exist', unpackDir: undefined})
-  t.end()
-})
-
-test('asar argument test: asar-unpack-dir still works albeit deprecated', function (t) {
-  var opts = {
-    asar: true,
-    'asar-unpack-dir': 'deprecated'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: undefined, unpackDir: 'deprecated'})
-  t.end()
-})
-
-test('asar argument test: asar.unpackDir overwrites asar-unpack-dir', function (t) {
-  var opts = {
-    asar: {
-      unpackDir: 'should exist'
-    },
-    'asar-unpack-dir': 'should not exist'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: undefined, unpackDir: 'should exist'})
-  t.end()
-})
 
 test('download argument test: download.cache overwrites cache', function (t) {
   var opts = {
@@ -629,62 +363,13 @@ test('download argument test: download.{arch,platform,version} does not overwrit
   t.end()
 })
 
-test('CLI argument test: --strict-ssl default', function (t) {
-  var args = common.parseCLIArgs([])
-  t.true(args['strict-ssl'], 'default for --strict-ssl is true')
-  t.end()
-})
-
-test('CLI argument test: --download.strictSSL default', function (t) {
-  var args = common.parseCLIArgs([])
-  t.true(args.download.strictSSL, 'default for --download.strictSSL is true')
-  t.end()
-})
-
-test('CLI argument test: --asar=true', function (t) {
-  var args = common.parseCLIArgs(['--asar=true'])
-  t.equal(args.asar, true)
-  t.end()
-})
-
-test('CLI argument test: --osx-sign=true', function (t) {
-  var args = common.parseCLIArgs(['--osx-sign=true'])
-  t.equal(args['osx-sign'], true)
-  t.end()
-})
-
-test('CLI argument test: --tmpdir=false', function (t) {
-  var args = common.parseCLIArgs(['--tmpdir=false'])
-  t.equal(args.tmpdir, false)
-  t.end()
-})
-
-test('CLI argument test: --deref-symlinks default', function (t) {
-  var args = common.parseCLIArgs([])
-  t.equal(args['deref-symlinks'], true)
-  t.end()
-})
-
 util.testSinglePlatform('infer test', createInferTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
-util.testSinglePlatform('default_app.asar removal test', createDefaultAppAsarTest)
 util.testSinglePlatform('out test', createOutTest)
-util.testSinglePlatform('asar test', createAsarTest)
 util.testSinglePlatform('prune test', createPruneTest)
-util.testSinglePlatform('ignore test: string in array', createIgnoreTest, ['ignorethis'], 'ignorethis.txt')
-util.testSinglePlatform('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
-util.testSinglePlatform('ignore test: RegExp', createIgnoreTest, /ignorethis/, 'ignorethis.txt')
-util.testSinglePlatform('ignore test: Function', createIgnoreTest, function (file) { return file.match(/ignorethis/) }, 'ignorethis.txt')
-util.testSinglePlatform('ignore test: string with slash', createIgnoreTest, 'ignore/this',
-  path.join('ignore', 'this.txt'))
-util.testSinglePlatform('ignore test: only match subfolder of app', createIgnoreTest, 'electron-packager',
-  path.join('electron-packager', 'readme.txt'))
 util.testSinglePlatform('overwrite test', createOverwriteTest)
 util.testSinglePlatform('tmpdir test', createTmpdirTest)
 util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)
-util.testSinglePlatform('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')
-util.testSinglePlatform('ignore out dir test: unnormalized path', createIgnoreOutDirTest, './ignoredOutDir')
-util.testSinglePlatform('ignore out dir test: unnormalized path', createIgnoreImplicitOutDirTest)
 util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
 
 util.setup()
