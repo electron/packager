@@ -8,6 +8,7 @@ const series = require('run-series')
 const sign = require('electron-osx-sign')
 
 function rename (basePath, oldName, newName, cb) {
+  if (oldName === newName) return cb(null)
   fs.move(path.join(basePath, oldName), path.join(basePath, newName), cb)
 }
 
