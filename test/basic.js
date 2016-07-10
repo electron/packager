@@ -659,12 +659,6 @@ test('CLI argument test: --tmpdir=false', function (t) {
   t.end()
 })
 
-test('CLI argument test: --deref-symlinks=false', function (t) {
-  var args = common.parseCLIArgs(['--deref-symlinks=false'])
-  t.equal(args['deref-symlinks'], false)
-  t.end()
-})
-
 test('CLI argument test: --deref-symlinks default', function (t) {
   var args = common.parseCLIArgs([])
   t.equal(args['deref-symlinks'], true)
