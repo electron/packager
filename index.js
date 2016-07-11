@@ -43,7 +43,7 @@ function validateList (list, supported, name) {
 function getNameAndVersion (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
-  if (!opts.version) props.push(['dependencies.electron-prebuilt', 'devDependencies.electron-prebuilt'])
+  if (!opts.version) props.push(['dependencies.electron-prebuilt', 'devDependencies.electron-prebuilt'], 'config.electron-version')
 
   // Name and version provided, no need to infer
   if (props.length === 0) return cb(null)
@@ -52,6 +52,10 @@ function getNameAndVersion (opts, dir, cb) {
   getPackageInfo(props, dir, function (err, result) {
     if (err) return cb(err)
     if (result.values.productName) opts.name = result.values.productName
+    if (result.values['config.electron-version']) {
+      opts.version = result.values['config.electron-version']
+      return cb(null)
+    }
     if (result.values['dependencies.electron-prebuilt']) {
       resolve('electron-prebuilt', {
         basedir: path.dirname(result.source['dependencies.electron-prebuilt'].src)
