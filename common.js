@@ -8,7 +8,7 @@ const os = require('os')
 const path = require('path')
 const series = require('run-series')
 
-var archs = ['ia32', 'x64']
+var archs = ['ia32', 'x64', 'arm']
 var platforms = ['darwin', 'linux', 'mas', 'win32']
 
 function parseCLIArgs (argv) {
