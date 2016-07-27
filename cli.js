@@ -2,11 +2,11 @@
 
 'use strict'
 
-var common = require('./common')
-var fs = require('fs')
-var packager = require('./')
-var path = require('path')
-var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
+const common = require('./common')
+const fs = require('fs')
+const packager = require('./')
+const path = require('path')
+const usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
 
 var args = common.parseCLIArgs(process.argv.slice(2))
 

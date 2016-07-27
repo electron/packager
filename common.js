@@ -8,8 +8,8 @@ const os = require('os')
 const path = require('path')
 const series = require('run-series')
 
-var archs = ['ia32', 'x64']
-var platforms = ['darwin', 'linux', 'mas', 'win32']
+const archs = ['ia32', 'x64']
+const platforms = ['darwin', 'linux', 'mas', 'win32']
 
 function parseCLIArgs (argv) {
   var args = minimist(argv, {
