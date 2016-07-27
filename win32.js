@@ -1,7 +1,6 @@
 'use strict'
 
 const common = require('./common')
-const fs = require('fs-extra')
 const path = require('path')
 const series = require('run-series')
 
@@ -22,10 +21,10 @@ module.exports = {
     common.initializeApp(opts, templatePath, path.join('resources', 'app'), function buildWinApp (err, tempPath) {
       if (err) return callback(err)
 
-      var newExePath = path.join(tempPath, `${opts.name}.exe`)
+      let newExeName = `${opts.name}.exe`
       var operations = [
         function (cb) {
-          fs.move(path.join(tempPath, 'electron.exe'), newExePath, cb)
+          common.rename(tempPath, 'electron.exe', newExeName, cb)
         }
       ]
 
@@ -51,7 +50,7 @@ module.exports = {
               rcOpts.icon = icon
             }
 
-            require('rcedit')(newExePath, rcOpts, function (err) {
+            require('rcedit')(path.join(tempPath, newExeName), rcOpts, function (err) {
               cb(updateWineMissingException(err))
             })
           })

@@ -131,18 +131,14 @@ class MacApp {
     fs.writeFileSync(helperNPPlistFilename, plist.build(helperNPPlist))
   }
 
-  rename (basePath, oldName, newName, cb) {
-    fs.rename(path.join(basePath, oldName), path.join(basePath, newName), cb)
-  }
-
   moveHelpers (callback) {
     series([' Helper', ' Helper EH', ' Helper NP'].map((suffix) => {
       return (cb) => {
         let executableBasePath = path.join(this.frameworksPath, `Electron${suffix}.app`, 'Contents', 'MacOS')
 
-        this.rename(executableBasePath, `Electron${suffix}`, `${this.appName}${suffix}`, (err) => {
+        common.rename(executableBasePath, `Electron${suffix}`, `${this.appName}${suffix}`, (err) => {
           if (err) return cb(err)
-          this.rename(this.frameworksPath, `Electron${suffix}.app`, `${this.appName}${suffix}.app`, cb)
+          common.rename(this.frameworksPath, `Electron${suffix}.app`, `${this.appName}${suffix}.app`, cb)
         })
       }
     }), (err) => {
@@ -174,10 +170,10 @@ class MacApp {
 
   enqueueRenamingElectronBinary () {
     this.operations.push((cb) => {
-      this.rename(path.join(this.contentsPath, 'MacOS'),
-                  'Electron',
-                  this.appPlist.CFBundleExecutable,
-                  cb)
+      common.rename(path.join(this.contentsPath, 'MacOS'),
+                    'Electron',
+                    this.appPlist.CFBundleExecutable,
+                    cb)
     })
   }
 

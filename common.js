@@ -292,5 +292,9 @@ module.exports = {
     fs.stat(filename, function (err) {
       cb(err, err ? null : filename)
     })
+  },
+
+  rename: function rename (basePath, oldName, newName, cb) {
+    fs.rename(path.join(basePath, oldName), path.join(basePath, newName), cb)
   }
 }
