@@ -235,6 +235,28 @@ function createInferTest (opts) {
   }
 }
 
+function createInferFailureTest (opts, fixtureSubdir) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    delete opts.version
+    opts.dir = path.join(__dirname, 'fixtures', fixtureSubdir)
+
+    packager(opts, function (err, paths) {
+      t.ok(err, 'error thrown')
+      t.end()
+    })
+  }
+}
+
+function createInferMissingFieldsTest (opts) {
+  return createInferFailureTest(opts, 'infer-missing-fields')
+}
+
+function createInferWithBadFieldsTest (opts) {
+  return createInferFailureTest(opts, 'infer-bad-fields')
+}
+
 function createTmpdirTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -364,6 +386,8 @@ test('download argument test: download.{arch,platform,version} does not overwrit
 })
 
 util.testSinglePlatform('infer test', createInferTest)
+util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
+util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
 util.testSinglePlatform('prune test', createPruneTest)

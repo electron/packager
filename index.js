@@ -195,7 +195,12 @@ module.exports = function packager (opts, cb) {
 
   getNameAndVersion(opts, opts.dir || process.cwd(), function (err) {
     if (err) {
-      err.message = 'Unable to determine application name or Electron version. Please specify an application name and Electron version.\n' + err.message
+      err.message = 'Unable to determine application name or Electron version. ' +
+        'Please specify an application name and Electron version.\n\n' +
+        'For more infomation, please see \n' +
+        'https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#name or \n' +
+        'https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#version\n\n' +
+        err.message
       return cb(err)
     }
 

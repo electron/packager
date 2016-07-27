@@ -188,7 +188,7 @@ default ignored directories listed above.*
 
 *String*
 
-The application name. If omitted, it will use the `productName` or `name` value of the nearest `package.json`.
+The application name. If omitted, it will use the `productName` or `name` value from the nearest `package.json`.
 
 ##### `out`
 
@@ -225,7 +225,10 @@ The base directory to use as a temp directory. Set to `false` to disable use of 
 
 *String*
 
-The Electron version with which the app is built (without the leading 'v') - for example, [`0.33.9`](https://github.com/electron/electron/releases/tag/v0.33.9). See [Electron releases] for valid versions. If omitted, it will use the version of the nearest local installation of electron-prebuilt.
+The Electron version with which the app is built (without the leading 'v') - for example,
+[`0.33.9`](https://github.com/electron/electron/releases/tag/v0.33.9). See [Electron releases] for
+valid versions. If omitted, it will use the version of the nearest local installation of
+`electron-prebuilt`, defined in `package.json` in either `dependencies` or `devDependencies`.
 
 
 #### OS X/Mac App Store targets only
