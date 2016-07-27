@@ -14,17 +14,17 @@ var platforms = ['darwin', 'linux', 'mas', 'win32']
 function parseCLIArgs (argv) {
   var args = minimist(argv, {
     boolean: [
-      'prune',
       'all',
-      'overwrite',
-      'strict-ssl',
+      'deref-symlinks',
       'download.strictSSL',
-      'deref-symlinks'
+      'overwrite',
+      'prune',
+      'strict-ssl'
     ],
     default: {
-      'strict-ssl': true,
+      'deref-symlinks': true,
       'download.strictSSL': true,
-      'deref-symlinks': true
+      'strict-ssl': true
     }
   })
 
