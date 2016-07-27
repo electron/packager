@@ -98,7 +98,7 @@ function createOutTest (opts) {
       }, function (paths, cb) {
         finalPath = paths[0]
         t.equal(finalPath, path.join('dist', common.generateFinalBasename(opts)),
-          'Path should follow the expected format and be under the folder specifed in `out`')
+          'Path should follow the expected format and be under the folder specified in `out`')
         fs.stat(finalPath, cb)
       }, function (stats, cb) {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
