@@ -1,6 +1,7 @@
 'use strict'
 
 const common = require('./common')
+const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
@@ -197,7 +198,9 @@ class MacApp {
 
     if (osxSignOpt) {
       this.operations.push((cb) => {
-        sign(createSignOpts(osxSignOpt, platform, this.renamedAppPath), (err) => {
+        let signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath)
+        debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
+        sign(signOpts, (err) => {
           if (err) {
             // Although not signed successfully, the application is packed.
             console.warn('Code sign failed; please retry manually.', err)
@@ -225,7 +228,7 @@ function filterCFBundleIdentifier (identifier) {
 
 function createSignOpts (properties, platform, app) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  var signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
+  let signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options

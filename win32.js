@@ -1,6 +1,7 @@
 'use strict'
 
 const common = require('./common')
+const debug = require('debug')('electron-packager')
 const path = require('path')
 const series = require('run-series')
 
@@ -50,6 +51,7 @@ module.exports = {
               rcOpts.icon = icon
             }
 
+            debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
             require('rcedit')(path.join(tempPath, newExeName), rcOpts, function (err) {
               cb(updateWineMissingException(err))
             })

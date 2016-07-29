@@ -1,10 +1,12 @@
 'use strict'
 
 const common = require('./common')
+const debug = require('debug')('electron-packager')
 const download = require('electron-download')
 const extract = require('extract-zip')
 const fs = require('fs-extra')
 const getPackageInfo = require('get-package-info')
+const metadata = require('./package.json')
 const os = require('os')
 const path = require('path')
 const resolve = require('resolve')
@@ -21,6 +23,12 @@ var supportedPlatforms = {
   linux: './linux',
   mas: './mac', // map to darwin
   win32: './win32'
+}
+
+function debugHostInfo () {
+  debug(`Electron Packager ${metadata.version}`)
+  debug(`Node ${process.version}`)
+  debug(`Host Operating system: ${process.platform} (${process.arch})`)
 }
 
 function validateList (list, supported, name) {
@@ -51,12 +59,16 @@ function getNameAndVersion (opts, dir, cb) {
   // Search package.json files to infer name and version from
   getPackageInfo(props, dir, function (err, result) {
     if (err) return cb(err)
-    if (result.values.productName) opts.name = result.values.productName
+    if (result.values.productName) {
+      debug('Inferring application name from productName or name in package.json')
+      opts.name = result.values.productName
+    }
     if (result.values['dependencies.electron-prebuilt']) {
       resolve('electron-prebuilt', {
         basedir: path.dirname(result.source['dependencies.electron-prebuilt'].src)
       }, function (err, res, pkg) {
         if (err) return cb(err)
+        debug('Inferring target Electron version from electron-prebuilt dependency or devDependency in package.json')
         opts.version = pkg.version
         return cb(null)
       })
@@ -188,10 +200,13 @@ function createSeries (opts, archs, platforms) {
 }
 
 module.exports = function packager (opts, cb) {
+  debugHostInfo()
   var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
   var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
   if (!Array.isArray(archs)) return cb(new Error(archs))
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
+  debug(`Target Platforms: ${platforms.join(', ')}`)
+  debug(`Target Architectures: ${archs.join(', ')}`)
 
   getNameAndVersion(opts, opts.dir || process.cwd(), function (err) {
     if (err) {
@@ -204,12 +219,17 @@ module.exports = function packager (opts, cb) {
       return cb(err)
     }
 
+    debug(`Application name: ${opts.name}`)
+    debug(`Target Electron version: ${opts.version}`)
+
     // Ignore this and related modules by default
     var defaultIgnores = ['/node_modules/electron-prebuilt($|/)', '/node_modules/electron-packager($|/)', '/\\.git($|/)', '/node_modules/\\.bin($|/)']
 
     if (typeof (opts.ignore) !== 'function') {
       if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
       opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
+
+      debug(`Ignored path regular expressions:\n${opts.ignore.map(function (ignore) { return `* ${ignore}` }).join('\n')}`)
     }
 
     series(createSeries(opts, archs, platforms), function (err, appPaths) {

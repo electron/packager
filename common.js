@@ -2,6 +2,7 @@
 
 const asar = require('asar')
 const child = require('child_process')
+const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const minimist = require('minimist')
 const os = require('os')
@@ -63,6 +64,7 @@ function parseCLIArgs (argv) {
 function asarApp (appPath, asarOptions, cb) {
   var src = path.join(appPath)
   var dest = path.join(appPath, '..', 'app.asar')
+  debug(`Running asar with the options ${JSON.stringify(asarOptions)}`)
   asar.createPackageWithOptions(src, dest, asarOptions, function (err) {
     if (err) return cb(err)
     fs.remove(src, function (err) {
