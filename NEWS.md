@@ -2,9 +2,19 @@
 
 ## Unreleased
 
+## [7.4.0] - 2016-07-31
+
 ### Added
 
 * Basic debugging messages via the `debug` module - see CONTRIBUTING.md for usage (#433)
+
+### Changed
+
+* Clearer error message when inferring the app name and/or Electron version fails
+
+### Fixed
+
+* (Test) apps named "Electron" can be packaged successfully (#415)
 
 ## [7.3.0] - 2016-07-10
 
