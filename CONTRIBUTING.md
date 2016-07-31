@@ -78,6 +78,17 @@ commit 2: add bar option
 If you are continuing the work of another person's PR and need to rebase/squash, please retain the
 attribution of the original author(s) and continue the work in subsequent commits.
 
+### Creating test fixtures
+
+For some unit tests, a test fixture Electron project is required. Sometimes it's OK to use an
+existing fixture, such as `basic`. If you need to add a new fixture:
+
+1. Create a new subdirectory in `test/fixtures/`.
+2. Add a `package.json` with only the minimal configuration necessary for your test(s).
+3. If necessary, add supporting files, such as the JS file specified in the `main` key in the
+   `package.json` file.
+4. Use `fixtureSubdir` from `test/util.js` to reference the fixture subdirectory in your test.
+
 ## For Collaborators
 
 Make sure to get a `:thumbsup:`, `+1` or `LGTM` from another collaborator before merging a PR.

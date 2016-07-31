@@ -14,7 +14,7 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'basicTest'
-    opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    opts.dir = util.fixtureSubdir('basic')
     opts.ignore = ignorePattern
 
     var appPath
@@ -52,7 +52,7 @@ function createIgnoreOutDirTest (opts, distPath) {
 
     series([
       function (cb) {
-        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+        fs.copy(util.fixtureSubdir('basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
           return path.basename(file) !== 'node_modules'
         }}, cb)
       },
@@ -97,7 +97,7 @@ function createIgnoreImplicitOutDirTest (opts) {
 
     series([
       function (cb) {
-        fs.copy(path.join(__dirname, 'fixtures', 'basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
+        fs.copy(util.fixtureSubdir('basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
           return path.basename(file) !== 'node_modules'
         }}, cb)
       },

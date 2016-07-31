@@ -52,6 +52,10 @@ exports.downloadAll = function downloadAll (version, callback) {
   }), callback)
 }
 
+exports.fixtureSubdir = function fixtureSubdir (subdir) {
+  return path.join(__dirname, 'fixtures', subdir)
+}
+
 exports.generateResourcesPath = function generateResourcesPath (opts) {
   return common.isPlatformMac(opts.platform)
     ? path.join(opts.name + '.app', 'Contents', 'Resources')

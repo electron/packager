@@ -1,11 +1,11 @@
 'use strict'
 
 const config = require('./config.json')
-const path = require('path')
+const util = require('./util')
 
 var baseOpts = {
   name: 'basicTest',
-  dir: path.join(__dirname, 'fixtures', 'basic'),
+  dir: util.fixtureSubdir('basic'),
   version: config.version,
   arch: 'x64',
   platform: 'mas'

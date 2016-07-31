@@ -2,7 +2,6 @@
 
 const config = require('./config.json')
 const exec = require('child_process').exec
-const path = require('path')
 const series = require('run-series')
 const util = require('./util')
 
@@ -17,10 +16,10 @@ series([
     util.downloadAll('0.37.4', cb)
   }, function (cb) {
     console.log('Running npm install in fixtures/basic...')
-    exec('npm install', {cwd: path.join(__dirname, 'fixtures', 'basic')}, cb)
+    exec('npm install', {cwd: util.fixtureSubdir('basic')}, cb)
   }, function (cb) {
     console.log('Running npm install in fixtures/el-0374...')
-    exec('npm install', {cwd: path.join(__dirname, 'fixtures', 'el-0374')}, cb)
+    exec('npm install', {cwd: util.fixtureSubdir('el-0374')}, cb)
   }
 ], function () {
   console.log('Running tests...')

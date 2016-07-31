@@ -4,7 +4,6 @@ const config = require('./config.json')
 const fs = require('fs')
 const isAdmin = require('is-admin')
 const packager = require('..')
-const path = require('path')
 const series = require('run-series')
 const test = require('tape')
 const util = require('./util')
@@ -30,7 +29,7 @@ test('all test', function (t) {
 
   var opts = {
     name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
+    dir: util.fixtureSubdir('basic'),
     version: config.version,
     all: true
   }
@@ -70,7 +69,7 @@ test('platform=all test (one arch)', function (t) {
 
   var opts = {
     name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
+    dir: util.fixtureSubdir('basic'),
     version: config.version,
     arch: 'ia32',
     platform: 'all'
@@ -98,7 +97,7 @@ test('arch=all test (one platform)', function (t) {
 
   var opts = {
     name: 'basicTest',
-    dir: path.join(__dirname, 'fixtures', 'basic'),
+    dir: util.fixtureSubdir('basic'),
     version: config.version,
     arch: 'all',
     platform: 'linux'
@@ -127,7 +126,7 @@ function createMultiTest (arch, platform) {
 
     var opts = {
       name: 'basicTest',
-      dir: path.join(__dirname, 'fixtures', 'basic'),
+      dir: util.fixtureSubdir('basic'),
       version: config.version,
       arch: arch,
       platform: platform

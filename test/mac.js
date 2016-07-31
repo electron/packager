@@ -436,7 +436,7 @@ module.exports = function (baseOpts) {
 
   var el0374Opts = {
     name: 'el0374Test',
-    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    dir: util.fixtureSubdir('el-0374'),
     version: '0.37.4',
     arch: 'x64',
     platform: 'darwin'

@@ -12,7 +12,7 @@ const win32 = require('../win32')
 
 const baseOpts = {
   name: 'basicTest',
-  dir: path.join(__dirname, 'fixtures', 'basic'),
+  dir: util.fixtureSubdir('basic'),
   version: config.version,
   arch: 'x64',
   platform: 'win32'
