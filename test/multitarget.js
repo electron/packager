@@ -40,8 +40,7 @@ test('all test', function (t) {
   waterfall([
     function (cb) {
       if (process.platform === 'win32') {
-        isAdmin(function (err, admin) {
-          if (err) return cb(err)
+        isAdmin().then((admin) => {
           if (!admin) expectedAppCount = 4
           cb()
         })
