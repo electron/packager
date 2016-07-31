@@ -62,12 +62,11 @@ function parseCLIArgs (argv) {
 }
 
 function asarApp (appPath, asarOptions, cb) {
-  var src = path.join(appPath)
   var dest = path.join(appPath, '..', 'app.asar')
   debug(`Running asar with the options ${JSON.stringify(asarOptions)}`)
-  asar.createPackageWithOptions(src, dest, asarOptions, function (err) {
+  asar.createPackageWithOptions(appPath, dest, asarOptions, function (err) {
     if (err) return cb(err)
-    fs.remove(src, function (err) {
+    fs.remove(appPath, function (err) {
       if (err) return cb(err)
       cb(null, dest)
     })
@@ -254,7 +253,7 @@ module.exports = {
     let asarOptions = createAsarOpts(opts)
     if (asarOptions) {
       operations.push(function (cb) {
-        asarApp(path.join(appPath), asarOptions, cb)
+        asarApp(appPath, asarOptions, cb)
       })
     }
 
