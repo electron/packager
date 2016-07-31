@@ -610,4 +610,29 @@ module.exports = function (baseOpts) {
   util.setup()
   test('app humanReadableCopyright test', createAppHumanReadableCopyrightTest(baseOpts, 'Copyright © 2003–2015 Organization. All rights reserved.'))
   util.teardown()
+
+  util.setup()
+  test('app named Electron packaged successfully', (t) => {
+    let opts = Object.create(baseOpts)
+    opts.name = 'Electron'
+    let appPath
+
+    waterfall([
+      (cb) => {
+        packager(opts, cb)
+      }, (paths, cb) => {
+        appPath = path.join(paths[0], 'Electron.app')
+        fs.stat(appPath, cb)
+      }, (stats, cb) => {
+        t.true(stats.isDirectory(), 'The Electron.app folder exists')
+        fs.stat(path.join(appPath, 'Contents', 'MacOS', 'Electron'), cb)
+      }, (stats, cb) => {
+        t.true(stats.isFile(), 'The Electron.app/Contents/MacOS/Electron binary exists')
+        cb()
+      }
+    ], (err) => {
+      t.end(err)
+    })
+  })
+  util.teardown()
 }
