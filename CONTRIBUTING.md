@@ -25,6 +25,7 @@ feature. Known modules include:
 
 * `electron-download`
 * `electron-osx-sign`
+* `electron-packager` (always use this one before filing an issue)
 * `extract-zip`
 
 **If you are using `npm run` to execute `electron-packager`, run the `electron-packager` command

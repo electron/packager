@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* Basic debugging messages via the `debug` module - see CONTRIBUTING.md for usage (#433)
+
 ## [7.3.0] - 2016-07-10
 
 ### Added
