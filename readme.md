@@ -141,3 +141,4 @@ Building an Electron app for the Windows platform with a custom icon requires ed
 - [electron-builder](https://www.npmjs.com/package/electron-builder) - for creating installer wizards
 - [grunt-electron](https://github.com/sindresorhus/grunt-electron) - grunt plugin for electron-packager
 - [electron-packager-interactive](https://github.com/Urucas/electron-packager-interactive) - an interactive CLI for electron-packager
+- [electron-packager-plugin-non-proprietary-codecs-ffmpeg](https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg) - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs
