@@ -239,10 +239,6 @@ valid versions. If omitted, it will use the version of the nearest local install
 
 The bundle identifier to use in the application's plist.
 
-##### `CFBundleDisplayName`
-
-*String*
-
 ##### `app-category-type`
 
 *String*
