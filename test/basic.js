@@ -193,7 +193,7 @@ function createOverwriteTest (opts) {
   }
 }
 
-function createInferTest (opts) {
+function createInferElectronPrebuiltTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
@@ -230,6 +230,25 @@ function createInferTest (opts) {
         cb()
       }
     ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
+function createInferElectronTest (opts) {
+  return function (t) {
+    console.error('start createInferElectronTest')
+    t.timeoutAfter(config.timeout)
+
+    // Don't specify name or version
+    delete opts.version
+    opts.dir = path.join(__dirname, 'fixtures', 'basic-renamed-to-electron')
+
+    var packageJSON = require(path.join(opts.dir, 'package.json'))
+
+    packager(opts, function (err, paths) {
+      var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
+      t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
       t.end(err)
     })
   }
@@ -385,7 +404,8 @@ test('download argument test: download.{arch,platform,version} does not overwrit
   t.end()
 })
 
-util.testSinglePlatform('infer test', createInferTest)
+util.testSinglePlatform('infer test using `electron-prebuilt` package', createInferElectronPrebuiltTest)
+util.testSinglePlatform('infer test using `electron` package', createInferElectronTest)
 util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
 util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
