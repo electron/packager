@@ -44,7 +44,7 @@ function parseCLIArgs (argv) {
   // Overrides for multi-typed arguments, because minimist doesn't support it
 
   // asar: `Object` or `true`
-  if (args.asar === 'true') {
+  if (args.asar === 'true' || args.asar instanceof Array) {
     args.asar = true
   }
 

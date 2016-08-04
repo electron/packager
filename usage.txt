@@ -26,8 +26,9 @@ appname            the name of the app, if it needs to be different from the "pr
 app-copyright      human-readable copyright line for the app
 app-version        release version to set for the app
 asar               whether to package the source code within your app into an archive. You can either
-                   pass --asar by itself to use the default configuration, or use dot notation to
-                   configure a list of sub-properties, e.g. --asar.unpackDir=sub_dir
+                   pass --asar by itself to use the default configuration, OR use dot notation to
+                   configure a list of sub-properties, e.g. --asar.unpackDir=sub_dir - do not use
+                   --asar and its sub-properties simultaneously.
 
                    Properties supported:
                    - ordering: path to an ordering file for file packing

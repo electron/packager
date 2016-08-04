@@ -21,6 +21,14 @@ test('CLI argument test: --asar=true', function (t) {
   t.end()
 })
 
+test('CLI argument test: using --asar overrides other --asar.options', (t) => {
+  let args = common.parseCLIArgs(['--asar', '--asar.unpack=*.node'])
+  t.equal(args.asar, true)
+  args = common.parseCLIArgs(['--asar.unpack=*.node', '--asar'])
+  t.equal(args.asar, true)
+  t.end()
+})
+
 test('CLI argument test: --osx-sign=true', function (t) {
   var args = common.parseCLIArgs(['--osx-sign=true'])
   t.equal(args['osx-sign'], true)
