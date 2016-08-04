@@ -107,7 +107,8 @@ electron-packager . --all
 
 * Use the current directory for the `sourcedir`
 * Infer the `appname` from the `productName` in `package.json`
-* Download [all supported target platforms and arches](#supported-platforms) of Electron using the installed `electron-prebuilt` version (and cache the downloads in `~/.electron`)
+* Download [all supported target platforms and arches](#supported-platforms) of Electron
+using the installed `electron` or `electron-prebuilt` version (and cache the downloads in `~/.electron`)
 * For the `darwin` build, as an example:
   * build the OS X `Foo Bar.app`
   * place `Foo Bar.app` in `foobar/Foo Bar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [7.5.0] - 2016-08-04
+
+### Added
+
+* Support the new `electron` package name (#435)
+
 ## [7.4.0] - 2016-07-31
 
 ### Added

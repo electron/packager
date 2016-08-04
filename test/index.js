@@ -18,6 +18,9 @@ series([
     console.log('Running npm install in fixtures/basic...')
     exec('npm install', {cwd: util.fixtureSubdir('basic')}, cb)
   }, function (cb) {
+    console.log('Running npm install in fixtures/basic-renamed-to-electron...')
+    exec('npm install', {cwd: util.fixtureSubdir('basic-renamed-to-electron')}, cb)
+  }, function (cb) {
     console.log('Running npm install in fixtures/el-0374...')
     exec('npm install', {cwd: util.fixtureSubdir('el-0374')}, cb)
   }

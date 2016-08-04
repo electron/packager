@@ -78,6 +78,31 @@ commit 2: add bar option
 If you are continuing the work of another person's PR and need to rebase/squash, please retain the
 attribution of the original author(s) and continue the work in subsequent commits.
 
+### Running tests
+
+To run the test suite on your local machine, you'll first need to do a little
+setup.
+
+If you're using macOS:
+
+```sh
+TRAVIS_OS_NAME=osx ./test/ci/before_install.sh
+```
+
+If you're using a Debian/Ubuntu-derived distribution of Linux with x86_64
+architecture:
+
+```sh
+TRAVIS_OS_NAME=linux ./test/ci/before_install.sh
+```
+
+Then you can install dependencies and run the suite:
+
+```sh
+npm install
+npm test
+```
+
 ### Creating test fixtures
 
 For some unit tests, a test fixture Electron project is required. Sometimes it's OK to use an
