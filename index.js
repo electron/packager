@@ -50,7 +50,6 @@ function validateList (list, supported, name) {
 
 function getNameAndVersion (opts, dir, cb) {
   var pkg = require(path.join(dir, 'package.json'))
-  if (!pkg) return cb(Error(`no package.json file found in ${dir}`))
 
   // Name and version provided, no need to infer
   if (opts.name && opts.version) return cb(null)
@@ -204,7 +203,7 @@ module.exports = function packager (opts, cb) {
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 
-  getNameAndVersion(opts, opts.dir || process.cwd(), function (err) {
+  getNameAndVersion(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) {
       err.message = 'Unable to determine application name or Electron version. ' +
         'Please specify an application name and Electron version.\n\n' +
