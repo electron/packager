@@ -466,3 +466,19 @@ test('fails with invalid version', function (t) {
   })
 })
 util.teardown()
+
+util.setup()
+test('dir argument test: should work with relative path', function (t) {
+  var opts = {
+    name: 'ElectronTest',
+    dir: path.join('..', 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'x64',
+    platform: 'linux'
+  }
+  packager(opts, function (err, paths) {
+    t.equal(path.join(__dirname, 'work', 'ElectronTest-linux-x64'), paths[0], 'paths returned')
+    t.end(err)
+  })
+})
+util.teardown()
