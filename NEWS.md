@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [7.5.1] - 2016-08-06
+
+### Fixed
+
+* Resolve to absolute path when inferring app name/Electron version (#440)
+
 ## [7.5.0] - 2016-08-04
 
 ### Added
@@ -201,6 +207,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.5.1]: https://github.com/electron-userland/electron-packager/compare/v7.5.0...v7.5.1
 [7.5.0]: https://github.com/electron-userland/electron-packager/compare/v7.4.0...v7.5.0
 [7.4.0]: https://github.com/electron-userland/electron-packager/compare/v7.3.0...v7.4.0
 [7.3.0]: https://github.com/electron-userland/electron-packager/compare/v7.2.0...v7.3.0
