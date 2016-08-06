@@ -22,18 +22,23 @@ function preDownloadElectron () {
   })
 }
 
-series(preDownloadElectron().concat([
-  function (cb) {
-    console.log('Running npm install in fixtures/basic...')
-    exec('npm install', {cwd: util.fixtureSubdir('basic')}, cb)
-  }, function (cb) {
-    console.log('Running npm install in fixtures/basic-renamed-to-electron...')
-    exec('npm install', {cwd: util.fixtureSubdir('basic-renamed-to-electron')}, cb)
-  }, function (cb) {
-    console.log('Running npm install in fixtures/el-0374...')
-    exec('npm install', {cwd: util.fixtureSubdir('el-0374')}, cb)
-  }
-]), function () {
+function npmInstallforFixtures () {
+  const fixtures = [
+    'basic',
+    'basic-renamed-to-electron',
+    'el-0374'
+  ]
+  return fixtures.map((fixture) => {
+    return (cb) => {
+      console.log(`Running npm install in fixtures/${fixture}...`)
+      exec('npm install', {cwd: util.fixtureSubdir(fixture)}, cb)
+    }
+  })
+}
+
+let setupFuncs = preDownloadElectron().concat(npmInstallforFixtures())
+
+series(setupFuncs, () => {
   console.log('Running tests...')
   require('./basic')
   require('./asar')
