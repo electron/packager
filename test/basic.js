@@ -247,8 +247,11 @@ function createInferElectronTest (opts) {
     var packageJSON = require(path.join(opts.dir, 'package.json'))
 
     packager(opts, function (err, paths) {
-      var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
-      t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
+      if (!err) {
+        var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
+        t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
+      }
+
       t.end(err)
     })
   }
