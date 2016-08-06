@@ -46,3 +46,15 @@ test('CLI argument test: --deref-symlinks default', function (t) {
   t.equal(args['deref-symlinks'], true)
   t.end()
 })
+
+test('CLI argument test: --out always resolves to a string', (t) => {
+  var args = common.parseCLIArgs(['--out=1'])
+  t.equal(args.out, '1')
+  t.end()
+})
+
+test('CLI argument test: --out without a value is the same as not passing --out', (t) => {
+  var args = common.parseCLIArgs(['--out'])
+  t.equal(args.out, null)
+  t.end()
+})

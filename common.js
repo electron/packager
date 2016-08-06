@@ -26,7 +26,10 @@ function parseCLIArgs (argv) {
       'deref-symlinks': true,
       'download.strictSSL': true,
       'strict-ssl': true
-    }
+    },
+    string: [
+      'out'
+    ]
   })
 
   args.dir = args._[0]
@@ -39,6 +42,10 @@ function parseCLIArgs (argv) {
     args.protocols = protocolSchemes.map(function (scheme, i) {
       return {schemes: [scheme], name: protocolNames[i]}
     })
+  }
+
+  if (args.out === '') {
+    args.out = null
   }
 
   // Overrides for multi-typed arguments, because minimist doesn't support it
