@@ -14,6 +14,6 @@
 
 
 
-**Did the testsuite pass successfully on your local machine?**
+**Does the testsuite pass successfully on your local machine?**
 
 
