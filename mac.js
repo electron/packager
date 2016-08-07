@@ -154,6 +154,7 @@ class MacApp {
           // Ignore error if icon doesn't exist, in case it's only available for other OS
           cb(null)
         } else {
+          debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
           fs.copy(icon, path.join(this.resourcesPath, this.appPlist.CFBundleIconFile), cb)
         }
       })
