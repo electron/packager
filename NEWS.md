@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* [CLI] ensure --out has either a string or null value (#442)
+
 ## [7.5.1] - 2016-08-06
 
 ### Fixed
