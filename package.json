@@ -24,7 +24,6 @@
     "extract-zip": "^1.0.3",
     "fs-extra": "^0.30.0",
     "get-package-info": "0.0.3",
-    "lodash.get": "^4.4.1",
     "minimist": "^1.1.1",
     "plist": "^1.1.0",
     "rcedit": "^0.5.1",
