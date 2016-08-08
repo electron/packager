@@ -77,7 +77,7 @@ function inferNameAndVersionFromInstalled (packageName, opts, result, cb) {
     debug('Inferring application name from productName or name in package.json')
     opts.name = result.values.productName
   }
-  if (result.values[`dependencies.${packageName}`) {
+  if (result.values[`dependencies.${packageName}`]) {
     resolve(packageName, {
       basedir: path.dirname(result.source[`dependencies.${packageName}`].src)
     }, function (err, res, pkg) {
