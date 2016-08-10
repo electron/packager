@@ -5,6 +5,7 @@
 ### Fixed
 
 * [CLI] ensure --out has either a string or null value (#442)
+* Use `get-package-info` (again) to support finding prebuilt in parent directories (#445)
 
 ## [7.5.1] - 2016-08-06
 
