@@ -48,10 +48,11 @@ function validateList (list, supported, name) {
   return list
 }
 
-function getNameAndVersion (opts, dir, cb) {
+function getMetadata (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts.version) props.push(['dependencies.electron', 'devDependencies.electron'])
+  if (!opts['app-version'] || !opts['build-version']) props.push('version')
 
   // Name and version provided, no need to infer
   if (props.length === 0) return cb(null)
@@ -77,6 +78,12 @@ function inferNameAndVersionFromInstalled (packageName, opts, result, cb) {
     debug('Inferring application name from productName or name in package.json')
     opts.name = result.values.productName
   }
+
+  if (result.values.version) {
+    debug('Inferring packageVersion from version in package.json')
+    opts.packageVersion = result.values.version
+  }
+
   if (result.values[`dependencies.${packageName}`]) {
     resolve(packageName, {
       basedir: path.dirname(result.source[`dependencies.${packageName}`].src)
@@ -223,7 +230,7 @@ module.exports = function packager (opts, cb) {
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 
-  getNameAndVersion(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
+  getMetadata(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) {
       err.message = 'Unable to determine application name or Electron version. ' +
         'Please specify an application name and Electron version.\n\n' +

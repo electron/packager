@@ -30,7 +30,7 @@ class MacApp {
   }
 
   get appVersion () {
-    return this.opts['app-version']
+    return this.opts['app-version'] || this.opts.packageVersion
   }
 
   get buildVersion () {

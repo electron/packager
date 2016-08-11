@@ -189,6 +189,33 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
   }
 }
 
+function createAppVersionInferenceTest (baseOpts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var plistPath
+
+    waterfall([
+      function (cb) {
+        packager(baseOpts, cb)
+      }, function (paths, cb) {
+        plistPath = path.join(paths[0], baseOpts.name + '.app', 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        var obj = plist.parse(file)
+        t.equal(obj.CFBundleVersion, '4.99.101', 'CFBundleVersion should reflect package.json version')
+        t.equal(obj.CFBundleShortVersionString, '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createAppCategoryTypeTest (baseOpts, appCategoryType) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -600,6 +627,10 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
+  util.teardown()
+
+  util.setup()
+  test('infer app version from package.json test', createAppVersionInferenceTest(baseOpts))
   util.teardown()
 
   util.setup()
