@@ -51,7 +51,7 @@ function validateList (list, supported, name) {
 function getMetadata (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
-  if (!opts['app-version'] || !opts['build-version']) props.push('version')
+  if (!opts['app-version']) props.push('version')
   if (!opts.version) props.push(['dependencies.electron', 'devDependencies.electron'])
 
   // Name and version provided, no need to infer
@@ -80,8 +80,8 @@ function inferNameAndVersionFromInstalled (packageName, opts, result, cb) {
   }
 
   if (result.values.version) {
-    debug('Inferring packageVersion from version in package.json')
-    opts.packageVersion = result.values.version
+    debug('Inferring app-version from version in package.json')
+    opts['app-version'] = result.values.version
   }
 
   if (result.values[`dependencies.${packageName}`]) {
