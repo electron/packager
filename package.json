@@ -23,7 +23,7 @@
     "electron-osx-sign": "^0.3.0",
     "extract-zip": "^1.0.3",
     "fs-extra": "^0.30.0",
-    "lodash.get": "^4.4.1",
+    "get-package-info": "^0.1.0",
     "minimist": "^1.1.1",
     "plist": "^1.1.0",
     "rcedit": "^0.5.1",
