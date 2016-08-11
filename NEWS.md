@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* The `package.json` `version` property is the default app version if `--app-version` is unspecified.
+
 ### Fixed
 
 * [CLI] ensure --out has either a string or null value (#442)
