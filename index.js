@@ -51,8 +51,8 @@ function validateList (list, supported, name) {
 function getMetadata (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
-  if (!opts.version) props.push(['dependencies.electron', 'devDependencies.electron'])
   if (!opts['app-version'] || !opts['build-version']) props.push('version')
+  if (!opts.version) props.push(['dependencies.electron', 'devDependencies.electron'])
 
   // Name and version provided, no need to infer
   if (props.length === 0) return cb(null)
