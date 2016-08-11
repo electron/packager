@@ -45,6 +45,18 @@ The non-`all` values correspond to the platform names used by [Electron releases
 
 #### All Platforms
 
+##### `afterCopy`
+
+*Array of Functions*
+
+An array of functions to be called after your app directory has been copied to a temporary directory.  Each function is called with five parameters:
+
+- `buildPath` (*String*): The path to the temporary folder where your app has been copied to
+- `electronVersion` (*String*): The version of electron you are packaging for
+- `platform` (*String*): The target platform you are packaging for
+- `arch` (*String*): The target architecture you are packaging for
+- `callback` (*Function*): Must be called once you have completed your actions
+
 ##### `afterExtract`
 
 *Array of Functions*

@@ -155,6 +155,8 @@ function createSeries (opts, archs, platforms) {
         var comboOpts = Object.create(opts)
         comboOpts.arch = arch
         comboOpts.platform = platform
+        comboOpts.version = version
+        comboOpts.afterCopy = opts.afterCopy
 
         if (!useTempDir) {
           createApp(comboOpts)
