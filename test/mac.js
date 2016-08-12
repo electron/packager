@@ -386,6 +386,45 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
   }
 }
 
+function createProtocolTest (baseOpts) {
+  return function (t) {
+    t.timeoutAfter(config.timeout)
+
+    var plistPath
+    var opts = Object.create(baseOpts)
+    opts.protocols = [{
+      name: 'Foo',
+      schemes: ['foo']
+    }, {
+      name: 'Bar',
+      schemes: ['bar', 'baz']
+    }]
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, function (file, cb) {
+        t.deepEqual(plist.parse(file).CFBundleURLTypes, [{
+          CFBundleURLName: 'Foo',
+          CFBundleURLSchemes: ['foo']
+        }, {
+          CFBundleURLName: 'Bar',
+          CFBundleURLSchemes: ['bar', 'baz']
+        }], 'CFBundleURLTypes did not contain specified protocol schemes and names')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 // Share testing script with platform darwin and mas
 module.exports = function (baseOpts) {
   util.setup()
@@ -465,6 +504,10 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('extra-resource test: two arg', createExtraResource2Test(baseOpts))
+  util.teardown()
+
+  util.setup()
+  test('protocol/protocol-name argument test', createProtocolTest(baseOpts))
   util.teardown()
 
   test('osx-sign argument test: default args', function (t) {
