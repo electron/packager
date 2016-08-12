@@ -9,6 +9,9 @@ environment:
 cache:
 - '%APPDATA%\npm-cache'
 - '%USERPROFILE%\.electron'
+branches:
+  only:
+  - master
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform

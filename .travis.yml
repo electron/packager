@@ -16,6 +16,10 @@ cache:
   - "$HOME/.electron"
 before_install: test/ci/before_install.sh
 after_success: npm run coveralls
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+\.\d+/
 env:
   global:
     # coveralls token
