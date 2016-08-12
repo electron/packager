@@ -31,14 +31,19 @@ function npmInstallforFixtures () {
   return fixtures.map((fixture) => {
     return (cb) => {
       console.log(`Running npm install in fixtures/${fixture}...`)
-      exec('npm install', {cwd: util.fixtureSubdir(fixture)}, cb)
+      exec('npm install --no-bin-links', {cwd: util.fixtureSubdir(fixture)}, cb)
     }
   })
 }
 
 let setupFuncs = preDownloadElectron().concat(npmInstallforFixtures())
 
-series(setupFuncs, () => {
+series(setupFuncs, (error) => {
+  if (error) {
+    console.error(error.stack || error)
+    return process.exit(1)
+  }
+
   console.log('Running tests...')
   require('./basic')
   require('./asar')
