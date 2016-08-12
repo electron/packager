@@ -292,10 +292,10 @@ If present, signs OS X target apps when the host platform is OS X and XCode is i
 
 *Array* of *String*s
 
-The URL protocol scheme(s) to associate the app with. Specifying `myapp` would
-cause URLs such as `myapp://path` to be opened with the app. Maps to the
-`CFBundleURLSchemes` metadata property. This option requires a corresponding
-`protocol-name` option to be specified.
+The URL protocol scheme(s) to associate the app with. For example, specifying
+`myapp` would cause URLs such as `myapp://path` to be opened with the app. Maps
+to the `CFBundleURLSchemes` metadata property. This option requires a
+corresponding `protocol-name` option to be specified.
 
 ##### `protocol-name`
 
