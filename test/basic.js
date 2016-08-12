@@ -237,7 +237,6 @@ function createInferElectronPrebuiltTest (opts) {
 
 function createInferElectronTest (opts) {
   return function (t) {
-    console.error('start createInferElectronTest')
     t.timeoutAfter(config.timeout)
 
     // Don't specify name or version
