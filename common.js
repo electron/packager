@@ -241,6 +241,14 @@ module.exports = {
         fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: shouldDeref}, cb)
       },
       function (cb) {
+        var afterCopyHooks = (opts.afterCopy || []).map(function (afterCopyFn) {
+          return function (cb) {
+            afterCopyFn(appPath, opts.version, opts.platform, opts.arch, cb)
+          }
+        })
+        series(afterCopyHooks, cb)
+      },
+      function (cb) {
         // Support removing old default_app folder that is now an asar archive
         fs.remove(path.join(resourcesPath, 'default_app'), cb)
       },
