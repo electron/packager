@@ -31,7 +31,7 @@ function npmInstallforFixtures () {
   return fixtures.map((fixture) => {
     return (cb) => {
       console.log(`Running npm install in fixtures/${fixture}...`)
-      exec('npm install', {cwd: util.fixtureSubdir(fixture)}, cb)
+      exec('npm install --no-bin-links', {cwd: util.fixtureSubdir(fixture)}, cb)
     }
   })
 }
