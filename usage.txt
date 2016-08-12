@@ -85,6 +85,11 @@ osx-sign           (OSX host platform only) Whether to sign the OSX app packages
                    - identity: should contain the identity to be used when running `codesign`
                    - entitlements: the path to entitlements used in signing
                    - entitlements-inherit: the path to the 'child' entitlements
+protocol           URL protocol scheme to register the app as an opener of.
+                   For example, `--protocol=myapp` would register the app to open
+                   URLs such as `myapp://path`. This argument requires a `--protocol-name`
+                   argument to also be specified.
+protocol-name      Descriptive name of URL protocol scheme specified via `--protocol`
 
 * win32 target platform only *
 

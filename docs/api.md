@@ -288,6 +288,22 @@ If present, signs OS X target apps when the host platform is OS X and XCode is i
 - `entitlements` (*String*): The path to the 'parent' entitlements.
 - `entitlements-inherit` (*String*): The path to the 'child' entitlements.
 
+##### `protocol`
+
+*Array* of *String*s
+
+The URL protocol scheme(s) to associate the app with. For example, specifying
+`myapp` would cause URLs such as `myapp://path` to be opened with the app. Maps
+to the `CFBundleURLSchemes` metadata property. This option requires a
+corresponding `protocol-name` option to be specified.
+
+##### `protocol-name`
+
+*Array* of *String*s
+
+The descriptive name(s) of the URL protocol scheme(s) specified via the `protocol`
+option. Maps to the `CFBundleURLName` metadata property.
+
 #### Windows targets only
 
 ##### `version-string`

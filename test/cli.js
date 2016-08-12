@@ -58,3 +58,21 @@ test('CLI argument test: --out without a value is the same as not passing --out'
   t.equal(args.out, null)
   t.end()
 })
+
+test('CLI argument test: --protocol with a corresponding --protocol-name', (t) => {
+  var args = common.parseCLIArgs(['--protocol=foo', '--protocol-name=Foo'])
+  t.deepEqual(args.protocols, [{schemes: ['foo'], name: 'Foo'}])
+  t.end()
+})
+
+test('CLI argument test: --protocol without a corresponding --protocol-name', (t) => {
+  var args = common.parseCLIArgs(['--protocol=foo'])
+  t.deepEqual(args.protocols, undefined)
+  t.end()
+})
+
+test('CLI argument test: multiple --protocol/--protocol-name argument pairs', (t) => {
+  var args = common.parseCLIArgs(['--protocol=foo', '--protocol-name=Foo', '--protocol=bar', '--protocol-name=Bar'])
+  t.deepEqual(args.protocols, [{schemes: ['foo'], name: 'Foo'}, {schemes: ['bar'], name: 'Bar'}])
+  t.end()
+})
