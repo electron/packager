@@ -42,7 +42,6 @@
     "rcinfo": "^0.1.3",
     "rimraf": "^2.3.2",
     "run-waterfall": "^1.1.1",
-    "tap-spec": "^4.1.1",
     "tape": "^4.0.0"
   },
   "engines": {
@@ -51,7 +50,7 @@
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "pretest": "rimraf test/work",
-    "test": "eslint . && nyc --cache tape test | tap-spec"
+    "test": "eslint . && nyc --cache tape test"
   },
   "directories": {
     "test": "test"
