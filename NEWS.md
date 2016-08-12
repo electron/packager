@@ -4,7 +4,7 @@
 
 ### Added
 
-* The `package.json` `version` property is the default app version if `--app-version` is unspecified.
+* The `package.json` `version` property is the default app version if `--app-version` is unspecified (#449)
 
 ### Fixed
 
