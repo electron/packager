@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+* [CLI] Minimum Node version is enforced
+
 ### Fixed
 
 * [CLI] ensure --out has either a string or null value (#442)

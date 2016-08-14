@@ -2,11 +2,19 @@
 
 'use strict'
 
-const common = require('./common')
-const fs = require('fs')
-const packager = require('./')
-const path = require('path')
-const usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
+var nodeVersionInfo = process.versions.node.split('.').map(function (n) { return Number(n) })
+if (nodeVersionInfo < [4, 0, 0]) {
+  console.error('CANNOT RUN WITH NODE ' + process.versions.node)
+  console.error('Electron Packager requires Node 4.0 or above.')
+  process.exit(1)
+}
+
+// Not consts so that this file can load in Node < 4.0
+var common = require('./common')
+var fs = require('fs')
+var packager = require('./')
+var path = require('path')
+var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
 
 var args = common.parseCLIArgs(process.argv.slice(2))
 
