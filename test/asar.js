@@ -94,7 +94,7 @@ test('asar argument test: asar is true', function (t) {
   }
 
   var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: undefined, unpackDir: undefined})
+  t.same(asarOpts, {})
   t.end()
 })
 
@@ -105,54 +105,6 @@ test('asar argument test: asar is not an Object or a bool', function (t) {
 
   var asarOpts = common.createAsarOpts(opts)
   t.false(asarOpts, 'createAsarOpts returns false')
-  t.end()
-})
-
-test('asar argument test: asar-unpack still works albeit deprecated', function (t) {
-  var opts = {
-    asar: true,
-    'asar-unpack': 'deprecated'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: 'deprecated', unpackDir: undefined})
-  t.end()
-})
-
-test('asar argument test: asar.unpack overwrites asar-unpack', function (t) {
-  var opts = {
-    asar: {
-      unpack: 'should exist'
-    },
-    'asar-unpack': 'should not exist'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: 'should exist', unpackDir: undefined})
-  t.end()
-})
-
-test('asar argument test: asar-unpack-dir still works albeit deprecated', function (t) {
-  var opts = {
-    asar: true,
-    'asar-unpack-dir': 'deprecated'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: undefined, unpackDir: 'deprecated'})
-  t.end()
-})
-
-test('asar argument test: asar.unpackDir overwrites asar-unpack-dir', function (t) {
-  var opts = {
-    asar: {
-      unpackDir: 'should exist'
-    },
-    'asar-unpack-dir': 'should not exist'
-  }
-
-  var asarOpts = common.createAsarOpts(opts)
-  t.same(asarOpts, {unpack: undefined, unpackDir: 'should exist'})
   t.end()
 })
 

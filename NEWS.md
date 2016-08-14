@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Removed
+
+* `asar-unpack` is removed in favor of `asar.unpack`
+* `asar-unpack-dir` is removed in favor of `asar.unpackDir`
+* `cache` is removed in favor of `download.cache`
+* `strict-ssl` is removed in favor of `download.strictSSL`
+
 ## [7.7.0] - 2016-08-20
 
 ### Added

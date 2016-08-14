@@ -3,12 +3,6 @@
 const common = require('../common')
 const test = require('tape')
 
-test('CLI argument test: --strict-ssl default', function (t) {
-  var args = common.parseCLIArgs([])
-  t.true(args['strict-ssl'], 'default for --strict-ssl is true')
-  t.end()
-})
-
 test('CLI argument test: --download.strictSSL default', function (t) {
   var args = common.parseCLIArgs([])
   t.true(args.download.strictSSL, 'default for --download.strictSSL is true')
