@@ -4,7 +4,7 @@
 
 ### Changed
 
-* [CLI] Minimum Node version is enforced
+* [CLI] Minimum Node version is enforced (#454)
 
 ### Fixed
 
