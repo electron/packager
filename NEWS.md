@@ -9,7 +9,7 @@
 ### Fixed
 
 * Allow scoped package names as Electron app names - invalid characters are replaced with
-  hyphens (#308)
+  hyphens (#308, #455)
 
 ### Deprecated
 
