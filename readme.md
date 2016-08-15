@@ -78,8 +78,8 @@ detailed descriptions, see the [API documentation](https://github.com/electron-u
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 
-**Characters in the Electron app name which are not allowed in all target platforms (e.g., `/`),
-will be replaced by hyphens (`-`).**
+**Characters in the Electron app name which are not allowed in all target platforms' filenames
+(e.g., `/`), will be replaced by hyphens (`-`).**
 
 You should be able to launch the app on the platform you built for. If not, check your settings and try again.
 

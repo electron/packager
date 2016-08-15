@@ -176,7 +176,7 @@ default ignored directories listed above.*
 The application name. If omitted, it will use the `productName` or `name` value from the nearest `package.json`.
 
 **Regardless of source, characters in the Electron app name which are not allowed in all target
-platforms (e.g., `/`), will be replaced by hyphens (`-`).**
+platforms' filenames (e.g., `/`), will be replaced by hyphens (`-`).**
 
 ##### `out`
 
