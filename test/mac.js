@@ -154,6 +154,30 @@ function createExtendInfoTest (baseOpts, extraPath) {
   }
 }
 
+function createBinaryNameTest (baseOpts, expectedAppName) {
+  return (t) => {
+    t.timeoutAfter(config.timeout)
+
+    let opts = Object.create(baseOpts)
+    let binaryPath
+    let appName = expectedAppName || opts.name
+
+    waterfall([
+      function (cb) {
+        packager(opts, cb)
+      }, function (paths, cb) {
+        binaryPath = path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS')
+        fs.stat(path.join(binaryPath, appName), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The binary should reflect a sanitized opts.name')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createAppVersionTest (baseOpts, appVersion, buildVersion) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -610,26 +634,11 @@ module.exports = function (baseOpts) {
   util.teardown()
 
   util.setup()
-  test('binary naming test', function (t) {
-    t.timeoutAfter(config.timeout)
+  test('binary naming test', createBinaryNameTest(baseOpts))
+  util.teardown()
 
-    var opts = Object.create(baseOpts)
-    var binaryPath
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        binaryPath = path.join(paths[0], opts.name + '.app', 'Contents', 'MacOS')
-        fs.stat(path.join(binaryPath, opts.name), cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'The binary should reflect opts.name')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  })
+  util.setup()
+  test('sanitized binary naming test', createBinaryNameTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
   util.teardown()
 
   util.setup()

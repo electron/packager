@@ -135,6 +135,27 @@ test('error message unchanged when error not about wine', (t) => {
 })
 
 util.setup()
+test('win32 executable name is based on sanitized app name', (t) => {
+  let opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
+
+  waterfall([
+    (cb) => {
+      packager(opts, cb)
+    }, (paths, cb) => {
+      t.equal(1, paths.length, '1 bundle created')
+      let appExePath = path.join(paths[0], '@username-package-name.exe')
+      fs.stat(appExePath, cb)
+    }, (stats, cb) => {
+      t.true(stats.isFile(), 'The sanitized EXE filename should exist')
+      cb()
+    }
+  ], (err) => {
+    t.end(err)
+  })
+})
+util.teardown()
+
+util.setup()
 test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 util.teardown()
 

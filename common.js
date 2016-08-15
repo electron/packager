@@ -7,6 +7,7 @@ const fs = require('fs-extra')
 const minimist = require('minimist')
 const os = require('os')
 const path = require('path')
+const sanitize = require('sanitize-filename')
 const series = require('run-series')
 
 const archs = ['ia32', 'x64']
@@ -78,8 +79,12 @@ function asarApp (appPath, asarOptions, cb) {
   })
 }
 
+function sanitizeAppName (name) {
+  return sanitize(name, {replacement: '-'})
+}
+
 function generateFinalBasename (opts) {
-  return `${opts.name}-${opts.platform}-${opts.arch}`
+  return `${sanitizeAppName(opts.name)}-${opts.platform}-${opts.arch}`
 }
 
 function generateFinalPath (opts) {
@@ -292,5 +297,6 @@ module.exports = {
 
   rename: function rename (basePath, oldName, newName, cb) {
     fs.rename(path.join(basePath, oldName), path.join(basePath, newName), cb)
-  }
+  },
+  sanitizeAppName: sanitizeAppName
 }

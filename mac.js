@@ -12,7 +12,7 @@ class MacApp {
   constructor (opts, stagingPath) {
     this.opts = opts
     this.stagingPath = stagingPath
-    this.appName = opts.name
+    this.appName = common.sanitizeAppName(opts.name)
     this.operations = []
     this.renamedAppPath = path.join(this.stagingPath, `${this.appName}.app`)
     this.electronAppPath = path.join(this.stagingPath, 'Electron.app')
