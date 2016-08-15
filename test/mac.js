@@ -11,6 +11,50 @@ const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
 
+function getHelperExecutablePath (helperName) {
+  return path.join(`${helperName}.app`, 'Contents', 'MacOS', helperName)
+}
+
+function createHelperAppPathsTest (baseOpts, expectedName) {
+  return (t) => {
+    t.timeoutAfter(config.timeout)
+
+    let opts = Object.create(baseOpts)
+    let frameworksPath
+
+    if (!expectedName) {
+      expectedName = opts.name
+    }
+
+    waterfall([
+      (cb) => {
+        packager(opts, cb)
+      }, (paths, cb) => {
+        frameworksPath = path.join(paths[0], `${expectedName}.app`, 'Contents', 'Frameworks')
+        // main Helper.app is already tested in basic test suite; test its executable and the other helpers
+        fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper`)), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The Helper.app executable should reflect sanitized opts.name')
+        fs.stat(path.join(frameworksPath, `${expectedName} Helper EH.app`), cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The Helper EH.app should reflect sanitized opts.name')
+        fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper EH`)), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The Helper EH.app executable should reflect sanitized opts.name')
+        fs.stat(path.join(frameworksPath, `${expectedName} Helper NP.app`), cb)
+      }, function (stats, cb) {
+        t.true(stats.isDirectory(), 'The Helper NP.app should reflect sanitized opts.name')
+        fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper NP`)), cb)
+      }, function (stats, cb) {
+        t.true(stats.isFile(), 'The Helper NP.app executable should reflect sanitized opts.name')
+        cb()
+      }
+    ], function (err) {
+      t.end(err)
+    })
+  }
+}
+
 function createIconTest (baseOpts, icon, iconPath) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -479,43 +523,11 @@ function createProtocolTest (baseOpts) {
 // Share testing script with platform darwin and mas
 module.exports = function (baseOpts) {
   util.setup()
-  test('helper app paths test', function (t) {
-    t.timeoutAfter(config.timeout)
+  test('helper app paths test', createHelperAppPathsTest(baseOpts))
+  util.teardown()
 
-    function getHelperExecutablePath (helperName) {
-      return path.join(helperName + '.app', 'Contents', 'MacOS', helperName)
-    }
-
-    var opts = Object.create(baseOpts)
-    var frameworksPath
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        frameworksPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Frameworks')
-        // main Helper.app is already tested in basic test suite; test its executable and the other helpers
-        fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper')), cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'The Helper.app executable should reflect opts.name')
-        fs.stat(path.join(frameworksPath, opts.name + ' Helper EH.app'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'The Helper EH.app should reflect opts.name')
-        fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper EH')), cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'The Helper EH.app executable should reflect opts.name')
-        fs.stat(path.join(frameworksPath, opts.name + ' Helper NP.app'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'The Helper NP.app should reflect opts.name')
-        fs.stat(path.join(frameworksPath, getHelperExecutablePath(opts.name + ' Helper NP')), cb)
-      }, function (stats, cb) {
-        t.true(stats.isFile(), 'The Helper NP.app executable should reflect opts.name')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  })
+  util.setup()
+  test('helper app paths test with app name needing sanitization', createHelperAppPathsTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
   util.teardown()
 
   var iconBase = path.join(__dirname, 'fixtures', 'monochrome')
@@ -639,6 +651,41 @@ module.exports = function (baseOpts) {
 
   util.setup()
   test('sanitized binary naming test', createBinaryNameTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
+  util.teardown()
+
+  util.setup()
+  test('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', (t) => {
+    t.timeoutAfter(config.timeout)
+
+    let plistPath
+    let opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
+    let appBundleIdentifier = 'com.electron.username-package-name'
+    let expectedSanitizedName = '@username-package-name'
+
+    waterfall([
+      (cb) => {
+        packager(opts, cb)
+      }, (paths, cb) => {
+        plistPath = path.join(paths[0], `${expectedSanitizedName}.app`, 'Contents', 'Info.plist')
+        fs.stat(plistPath, cb)
+      }, (stats, cb) => {
+        t.true(stats.isFile(), 'The expected Info.plist file should exist')
+        fs.readFile(plistPath, 'utf8', cb)
+      }, (file, cb) => {
+        let obj = plist.parse(file)
+        t.equal(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string')
+        t.equal(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
+        t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string')
+        t.equal(obj.CFBundleName, expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
+        t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string')
+        t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+        t.equal(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
+        cb()
+      }
+    ], (err) => {
+      t.end(err)
+    })
+  })
   util.teardown()
 
   util.setup()
