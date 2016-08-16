@@ -24,6 +24,6 @@ case "$TRAVIS_OS_NAME" in
       -in codesign.csr -out codesign.cer
     openssl pkcs12 -export -in codesign.cer -inkey codesign.key -out codesign.p12 -password pass:12345
     security import codesign.p12 -k ~/Library/Keychains/login.keychain -P 12345 -T /usr/bin/codesign
-    npm install wine-darwin@1.9.16
+    npm install wine-darwin@1.9.17-0
     ;;
 esac
