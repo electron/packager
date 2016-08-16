@@ -85,10 +85,10 @@ Let's assume that you have made an app based on the [electron-quick-start](https
 
 ```
 foobar
-├─package.json
-├─index.html
-├[…other files, like LICENSE…]
-└─script.js
+├── package.json
+├── index.html
+├── […other files, like LICENSE…]
+└── script.js
 ```
 
 …and that the following is true:
@@ -117,16 +117,16 @@ The file structure now looks like:
 
 ```
 foobar
-├┬Foo Bar-darwin-x64
-│├┬Foo Bar.app
-││└[…Mac app contents…]
-│├─LICENSE
-│└─version
-├[…other application bundles, like "Foo Bar-win32-x64" (sans quotes)…]
-├─package.json
-├─index.html
-├[…other files, like LICENSE…]
-└─script.js
+├── Foo Bar-darwin-x64
+│   ├── Foo Bar.app
+│   │   └── […Mac app contents…]
+│   ├── LICENSE
+│   └── version
+├── […other application bundles, like "Foo Bar-win32-x64" (sans quotes)…]
+├── package.json
+├── index.html
+├── […other files, like LICENSE…]
+└── script.js
 ```
 
 The `Foo Bar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
