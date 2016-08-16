@@ -6,6 +6,17 @@
 
 * The `package.json` `version` property is the default app version if `--app-version` is unspecified (#449)
 
+## [7.6.0] - 2016-08-14
+
+### Added
+
+* [API] hook for afterCopy (#448)
+* [darwin/mas] Documentation for `protocol` and `protocol-name` options (#121, #450)
+
+### Changed
+
+* [CLI] Minimum Node version is enforced (#454)
+
 ### Fixed
 
 * [CLI] ensure --out has either a string or null value (#442)
@@ -216,6 +227,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.6.0]: https://github.com/electron-userland/electron-packager/compare/v7.5.1...v7.6.0
 [7.5.1]: https://github.com/electron-userland/electron-packager/compare/v7.5.0...v7.5.1
 [7.5.0]: https://github.com/electron-userland/electron-packager/compare/v7.4.0...v7.5.0
 [7.4.0]: https://github.com/electron-userland/electron-packager/compare/v7.3.0...v7.4.0

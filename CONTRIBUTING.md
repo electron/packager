@@ -28,6 +28,9 @@ feature. Known modules include:
 * `electron-packager` (always use this one before filing an issue)
 * `extract-zip`
 
+We use the [`debug`](https://www.npmjs.com/package/debug#usage) module for this functionality. It
+has examples on how to set environment variables if you don't know how.
+
 **If you are using `npm run` to execute `electron-packager`, run the `electron-packager` command
 without using `npm run` and make a note of the output, because `npm run` does not print out error
 messages when a script errors.**
