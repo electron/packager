@@ -26,6 +26,6 @@ case "$TRAVIS_OS_NAME" in
     security import codesign.p12 -k ~/Library/Keychains/login.keychain -P 12345 -T /usr/bin/codesign
     npm install wine-darwin@1.9.17-1
     # Setup ~/.wine by running a command
-    wine hostname
+    ./node_modules/.bin/wine hostname
     ;;
 esac
