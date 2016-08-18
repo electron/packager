@@ -57,8 +57,9 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   and then be integrated into this project.
 * If you are contributing a nontrivial change, please add an entry to `NEWS.md`. The format is
   similar to the one described at [Keep a Changelog](http://keepachangelog.com/).
-* Please make sure your commits are rebased onto the latest commit in the master branch, and that
-  you limit/squash the number of commits created to a "feature"-level. For instance:
+* Once your pull request is approved, please make sure your commits are rebased onto the latest
+  commit in the master branch, and that you limit/squash the number of commits created to a
+  "feature"-level. For instance:
 
 bad:
 
@@ -77,6 +78,10 @@ good:
 commit 1: add foo option
 commit 2: add bar option
 ```
+
+Squashing commits during discussion of the pull request is almost always unnecessary, and makes it
+more difficult for both the submitters and reviewers to understand what changed in between comments.
+However, rebasing is encouraged when practical, particularly when there's a merge conflict.
 
 If you are continuing the work of another person's PR and need to rebase/squash, please retain the
 attribution of the original author(s) and continue the work in subsequent commits.
