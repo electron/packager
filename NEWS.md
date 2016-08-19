@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* The `package.json` `version` property is the default app version if `--app-version` is unspecified (#449)
+
 ## [7.6.0] - 2016-08-14
 
 ### Added

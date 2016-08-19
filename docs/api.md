@@ -85,7 +85,7 @@ The human-readable copyright line for the app. Maps to the `LegalCopyright` meta
 
 *String*
 
-The release version of the application. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
+The release version of the application. By default the `version` property in the `package.json` is used but it can be overridden with this argument. If neither are provided, the version of Electron will be used. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
 
 ##### `asar`
 
