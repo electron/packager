@@ -13,6 +13,7 @@ class MacApp {
     this.opts = opts
     this.stagingPath = stagingPath
     this.appName = opts.name
+    this.displayName = opts.CFBundleDisplayName || opts.name
     this.operations = []
     this.renamedAppPath = path.join(this.stagingPath, `${this.appName}.app`)
     this.electronAppPath = path.join(this.stagingPath, 'Electron.app')
@@ -49,7 +50,7 @@ class MacApp {
   updatePlist (base, displayName, identifier, name) {
     return Object.assign(base, {
       CFBundleDisplayName: displayName,
-      CFBundleExecutable: displayName,
+      CFBundleExecutable: name,
       CFBundleIdentifier: identifier,
       CFBundleName: name
     })
@@ -66,7 +67,7 @@ class MacApp {
       identifier = this.helperBundleIdentifier
       name = this.appName
     }
-    return this.updatePlist(base, `${this.appName} ${helperSuffix}`, identifier, name)
+    return this.updatePlist(base, `${this.displayName} ${helperSuffix}`, identifier, name)
   }
 
   extendAppPlist (filename) {
@@ -101,7 +102,7 @@ class MacApp {
       this.appPlis = this.extendAppPlist(this.opts['extend-info'])
     }
 
-    this.appPlist = this.updatePlist(this.appPlist, this.appName, appBundleIdentifier, this.appName)
+    this.appPlist = this.updatePlist(this.appPlist, this.displayName, appBundleIdentifier, this.appName)
     helperPlist = this.updateHelperPlist(helperPlist)
     helperEHPlist = this.updateHelperPlist(helperEHPlist, 'EH')
     helperNPPlist = this.updateHelperPlist(helperNPPlist, 'NP')
