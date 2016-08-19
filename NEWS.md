@@ -6,6 +6,10 @@
 
 * The `package.json` `version` property is the default app version if `--app-version` is unspecified (#449)
 
+### Changed
+
+* [darwin/mas] Explicitly disallow `osx-sign.binaries` (#459)
+
 ## [7.6.0] - 2016-08-14
 
 ### Added

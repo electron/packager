@@ -572,6 +572,13 @@ module.exports = function (baseOpts) {
     t.end()
   })
 
+  test('osx-sign argument test: binaries not set', (t) => {
+    let args = {binaries: ['binary1', 'binary2']}
+    let signOpts = mac.createSignOpts(args, 'darwin', 'out')
+    t.same(signOpts, {app: 'out', platform: 'darwin'})
+    t.end()
+  })
+
   util.setup()
   test('codesign test', function (t) {
     t.timeoutAfter(config.macExecTimeout)

@@ -238,8 +238,8 @@ function createSignOpts (properties, platform, app) {
   common.subOptionWarning(signOpts, 'osx-sign', 'app', app)
 
   if (signOpts.binaries) {
-    console.warn('WARNING: osx-sign.binaries signing will fail. Sign manually, ' +
-                 'or with electron-osx-sign.')
+    console.warn('WARNING: osx-sign.binaries is not an allowed sub-option. Not passing to electron-osx-sign.')
+    delete signOpts.binaries
   }
 
   // Take argument osx-sign as signing identity:
