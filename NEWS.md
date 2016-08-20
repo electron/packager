@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [7.7.0] - 2016-08-20
+
 ### Added
 
 * The `package.json` `version` property is the default app version if `--app-version` is unspecified (#449)
@@ -231,6 +233,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[7.7.0]: https://github.com/electron-userland/electron-packager/compare/v7.6.0...v7.7.0
 [7.6.0]: https://github.com/electron-userland/electron-packager/compare/v7.5.1...v7.6.0
 [7.5.1]: https://github.com/electron-userland/electron-packager/compare/v7.5.0...v7.5.1
 [7.5.0]: https://github.com/electron-userland/electron-packager/compare/v7.4.0...v7.5.0
