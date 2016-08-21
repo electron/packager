@@ -36,15 +36,7 @@ asar               whether to package the source code within your app into an ar
                      regex .match this string
                    - unpackDir: unpacks the dir to the app.asar.unpacked directory whose names glob
                      pattern or exactly match this string. It's relative to the <sourcedir>.
-asar-unpack        unpacks the files to the app.asar.unpacked directory whose filenames regex .match
-                   this string
-                   (Deprecated, use asar.unpack instead)
-asar-unpack-dir    unpacks the dir to the app.asar.unpacked directory whose names glob pattern or
-                   exactly match this string. It's relative to the <sourcedir>.
-                   (Deprecated, use asar.unpackDir instead)
 build-version      build version to set for the app
-cache              directory of cached Electron downloads. Defaults to `$HOME/.electron`
-                   (Deprecated, use --download.cache instead)
 deref-symlinks     whether symlinks should be dereferenced. Defaults to true.
 download           a list of sub-options to pass to electron-download. They are specified via dot
                    notation, e.g., --download.cache=/tmp/cache
@@ -61,9 +53,6 @@ out                the dir to put the app into at the end. defaults to current w
 overwrite          if output directory for a platform already exists, replaces it rather than
                    skipping it
 prune              runs `npm prune --production` on the app
-strict-ssl         whether SSL certificates are required to be valid when downloading Electron.
-                   It defaults to true, use --strict-ssl=false to disable checks.
-                   (Deprecated, use --download.strictSSL instead)
 tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable
                    use of a temporary directory.
 version            the version of Electron that is being packaged, see

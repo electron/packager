@@ -103,39 +103,11 @@ Whether to package the application's source code into an archive, using [Electro
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
 
-##### `asar-unpack`
-
-*String* (**deprecated** and will be removed in a future major version,
-please use the [`asar.unpack`](#asar) parameter instead)
-
-A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
-
-##### `asar-unpack-dir`
-
-*String* (**deprecated** and will be removed in a future major version,
-please use the [`asar.unpackDir`](#asar) parameter instead)
-
-Unpacks the dir to `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar-unpack-dir` is relative to `dir`.
-
-Some examples:
-
-- `asar-unpack-dir=sub_dir` will unpack the directory `/<dir>/sub_dir`
-- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will note include their subdirectories.
-- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
-- `asar-unpack-dir=**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
-
 ##### `build-version`
 
 *String*
 
 The build version of the application. Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
-
-##### `cache`
-
-*String* (default: `$HOME/.electron`) (**deprecated** and will be removed in a future major version,
-please use the [`download.cache`](#download) parameter instead)
-
-The directory where prebuilt, pre-packaged Electron downloads are cached.
 
 ##### `derefSymlinks`
 
@@ -220,13 +192,6 @@ Whether to replace an already existing output directory for a given platform (`t
 *Boolean*
 
 Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before starting to package the app.
-
-##### `strict-ssl`
-
-*Boolean* (**default: `true`**) (**deprecated** and will be removed in a future major version,
-please use the [`download.strictSSL`](#download) parameter instead)
-
-Whether SSL certificates are required to be valid when downloading Electron.
 
 ##### `tmpdir`
 

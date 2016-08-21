@@ -19,13 +19,11 @@ function parseCLIArgs (argv) {
       'deref-symlinks',
       'download.strictSSL',
       'overwrite',
-      'prune',
-      'strict-ssl'
+      'prune'
     ],
     default: {
       'deref-symlinks': true,
-      'download.strictSSL': true,
-      'strict-ssl': true
+      'download.strictSSL': true
     },
     string: [
       'out'
@@ -95,15 +93,6 @@ function subOptionWarning (properties, optionName, parameter, value) {
   properties[parameter] = value
 }
 
-function deprecatedParameter (properties, oldName, newName, extraCondition/* optional */) {
-  if (extraCondition === undefined) {
-    extraCondition = true
-  }
-  if (properties.hasOwnProperty(oldName) && extraCondition) {
-    console.warn(`The ${oldName} parameter is deprecated, use ${newName} instead`)
-  }
-}
-
 function userIgnoreFilter (opts) {
   var ignore = opts.ignore || []
   var ignoreFunc = null
@@ -153,9 +142,6 @@ function userIgnoreFilter (opts) {
 }
 
 function createAsarOpts (opts) {
-  deprecatedParameter(opts, 'asar-unpack', 'asar.unpack')
-  deprecatedParameter(opts, 'asar-unpack-dir', 'asar.unpackDir')
-
   let asarOptions
   if (opts.asar === true) {
     asarOptions = {}
@@ -168,10 +154,7 @@ function createAsarOpts (opts) {
     return false
   }
 
-  return Object.assign({
-    unpack: opts['asar-unpack'],
-    unpackDir: opts['asar-unpack-dir']
-  }, asarOptions)
+  return asarOptions
 }
 
 module.exports = {
@@ -189,13 +172,7 @@ module.exports = {
   createAsarOpts: createAsarOpts,
 
   createDownloadOpts: function createDownloadOpts (opts, platform, arch) {
-    deprecatedParameter(opts, 'cache', 'download.cache')
-    deprecatedParameter(opts, 'strict-ssl', 'download.strictSSL', opts['strict-ssl'] === false)
-
-    var downloadOpts = Object.assign({
-      cache: opts.cache,
-      strictSSL: opts['strict-ssl']
-    }, opts.download)
+    let downloadOpts = opts.download || {}
 
     subOptionWarning(downloadOpts, 'download', 'platform', platform)
     subOptionWarning(downloadOpts, 'download', 'arch', arch)
