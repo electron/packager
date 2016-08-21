@@ -26,6 +26,14 @@ function createDefaultsTest (opts) {
 
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
+    delete opts.platform
+    delete opts.arch
+
+    let defaultOpts = {
+      arch: process.arch,
+      name: opts.name,
+      platform: process.platform
+    }
 
     var finalPath
     var resourcesPath
@@ -38,15 +46,15 @@ function createDefaultsTest (opts) {
         t.equal(paths.length, 1, 'Single-target run should resolve to a 1-item array')
 
         finalPath = paths[0]
-        t.equal(finalPath, path.join(util.getWorkCwd(), common.generateFinalBasename(opts)),
+        t.equal(finalPath, path.join(util.getWorkCwd(), common.generateFinalBasename(defaultOpts)),
           'Path should follow the expected format and be in the cwd')
         fs.stat(finalPath, cb)
       }, function (stats, cb) {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
-        resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
-        fs.stat(path.join(finalPath, generateNamePath(opts)), cb)
+        resourcesPath = path.join(finalPath, util.generateResourcesPath(defaultOpts))
+        fs.stat(path.join(finalPath, generateNamePath(defaultOpts)), cb)
       }, function (stats, cb) {
-        if (common.isPlatformMac(opts.platform)) {
+        if (common.isPlatformMac(defaultOpts.platform)) {
           t.true(stats.isDirectory(), 'The Helper.app should reflect opts.name')
         } else {
           t.true(stats.isFile(), 'The executable should reflect opts.name')

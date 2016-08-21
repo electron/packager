@@ -18,7 +18,7 @@ var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
 
 var args = common.parseCLIArgs(process.argv.slice(2))
 
-if (!args.dir || (!args.all && (!args.platform || !args.arch))) {
+if (!args.dir) {
   // temporary fix for https://github.com/nodejs/node/issues/6456
   if (process.stderr._handle && process.stderr._handle.setBlocking) {
     process.stderr._handle.setBlocking(true)
