@@ -19,35 +19,33 @@ const baseOpts = {
 }
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(process.platform === 'darwin' ? config.macExecTimeout : config.timeout)
 
-    var appExePath
-    var opts = Object.assign({}, baseOpts, extraOpts)
+    let appExePath
+    let opts = Object.assign({}, baseOpts, extraOpts)
 
     waterfall([
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
-      }, function (paths, cb) {
+      }, (paths, cb) => {
         appExePath = path.join(paths[0], opts.name + '.exe')
         fs.stat(appExePath, cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The expected EXE file should exist')
-        cb()
-      }, function (cb) {
         rcinfo(appExePath, cb)
-      }, function (info, cb) {
+      }, (info, cb) => {
         metadataProperties = [].concat(metadataProperties)
         expectedValues = [].concat(expectedValues)
         assertionMsgs = [].concat(assertionMsgs)
-        metadataProperties.forEach(function (property, i) {
+        metadataProperties.forEach((property, i) => {
           var value = expectedValues[i]
           var msg = assertionMsgs[i]
           t.equal(info[property], value, msg)
         })
         cb()
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
@@ -92,7 +90,7 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
                                     'Company name should match version-string value'])
 }
 
-test('better error message when wine is not found', function (t) {
+test('better error message when wine is not found', (t) => {
   let err = Error('spawn wine ENOENT')
   err.code = 'ENOENT'
   err.syscall = 'spawn wine'
@@ -104,7 +102,7 @@ test('better error message when wine is not found', function (t) {
   t.end()
 })
 
-test('error message unchanged when error not about wine', function (t) {
+test('error message unchanged when error not about wine', (t) => {
   let errNotEnoent = Error('unchanged')
   errNotEnoent.code = 'ESOMETHINGELSE'
   errNotEnoent.syscall = 'spawn wine'
