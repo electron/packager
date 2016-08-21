@@ -9,7 +9,7 @@ function updateWineMissingException (err) {
   if (err && err.code === 'ENOENT' && err.syscall === 'spawn wine') {
     err.message = 'Could not find "wine" on your system.\n\n' +
       'Wine is required to use the app-copyright, app-version, build-version, icon, and \n' +
-      'version-string parameters for Windows targets.\n\n' +
+      'win32metadata parameters for Windows targets.\n\n' +
       'Make sure that the "wine" executable is in your PATH.\n\n' +
       'See https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms for details.'
   }
@@ -29,7 +29,9 @@ module.exports = {
         }
       ]
 
-      var rcOpts = {'version-string': opts['version-string'] || {}}
+      let win32metadata = Object.assign({}, opts['version-string'], opts.win32metadata)
+
+      var rcOpts = {'version-string': win32metadata}
 
       if (opts['build-version']) {
         rcOpts['file-version'] = opts['build-version']
@@ -43,7 +45,7 @@ module.exports = {
         rcOpts['version-string'].LegalCopyright = opts['app-copyright']
       }
 
-      if (opts.icon || opts['version-string'] || opts['app-copyright'] || opts['app-version'] || opts['build-version']) {
+      if (opts.icon || opts.win32metadata || opts['version-string'] || opts['app-copyright'] || opts['app-version'] || opts['build-version']) {
         operations.push(function (cb) {
           common.normalizeExt(opts.icon, '.ico', function (err, icon) {
             // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error

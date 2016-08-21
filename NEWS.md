@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+* `win32metadata` option (#331, #463)
+
+### Deprecated
+
+* `version-string` is deprecated in favor of `win32metadata` (#331, #463)
+
 ### Removed
 
 * `asar-unpack` is removed in favor of `asar.unpack`

@@ -78,7 +78,7 @@ function setCopyrightTest (appCopyright) {
 function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
   var opts = {
     'app-copyright': appCopyright,
-    'version-string': {
+    'win32metadata': {
       CompanyName: companyName
     }
   }
@@ -87,7 +87,19 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
                                    opts,
                                    [appCopyright, companyName],
                                    ['Legal copyright should match app copyright',
-                                    'Company name should match version-string value'])
+                                    'Company name should match win32metadata value'])
+}
+
+function setCompanyNameTest (companyName, optName) {
+  let opts = {}
+  opts[optName] = {
+    CompanyName: companyName
+  }
+
+  return generateVersionStringTest('CompanyName',
+                                   opts,
+                                   companyName,
+                                   `Company name should match ${optName} value`)
 }
 
 test('better error message when wine is not found', (t) => {
@@ -136,4 +148,12 @@ util.teardown()
 
 util.setup()
 test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
+util.teardown()
+
+util.setup()
+test('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
+util.teardown()
+
+util.setup()
+test('win32 set CompanyName test (version-string)', setCompanyNameTest('MyCompany LLC', 'version-string'))
 util.teardown()
