@@ -156,9 +156,11 @@ function createSeries (opts, archs, platforms) {
           console.error(`Packaging app for platform ${platform} ${arch} using electron v${version}`)
           series([
             function (cb) {
+              debug(`Creating ${buildDir}`)
               fs.mkdirs(buildDir, cb)
             },
             function (cb) {
+              debug(`Extracting ${zipPath} to ${buildDir}`)
               extract(zipPath, {dir: buildDir}, cb)
             },
             function (cb) {
@@ -171,7 +173,8 @@ function createSeries (opts, archs, platforms) {
                 series(newFunctions, cb)
               }
             }
-          ], function () {
+          ], function (err) {
+            if (err) return callback(err)
             require(supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
           })
         }
