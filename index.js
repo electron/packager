@@ -174,8 +174,7 @@ function createSeries (opts, archs, platforms) {
                 series(newFunctions, cb)
               }
             }
-          ], function (err) {
-            if (err) return callback(err)
+          ], function () {
             require(supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
           })
         }
