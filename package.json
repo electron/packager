@@ -26,7 +26,7 @@
     "get-package-info": "^0.1.0",
     "minimist": "^1.1.1",
     "plist": "^1.1.0",
-    "rcedit": "^0.5.1",
+    "rcedit": "^0.7.0",
     "resolve": "^1.1.6",
     "run-series": "^1.1.1"
   },
