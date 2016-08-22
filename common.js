@@ -199,6 +199,8 @@ module.exports = {
       tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
     }
 
+    debug(`Initializing app in ${tempPath} from ${templatePath} template`)
+
     // Path to `app` directory
     var appPath = path.join(tempPath, appRelativePath)
     var resourcesPath = path.resolve(appPath, '..')
@@ -237,6 +239,7 @@ module.exports = {
     // Prune and asar are now performed before platform-specific logic, primarily so that
     // appPath is predictable (e.g. before .app is renamed for mac)
     if (opts.prune) {
+      debug('Running npm prune --production')
       operations.push(function (cb) {
         child.exec('npm prune --production', {cwd: appPath}, cb)
       })
