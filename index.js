@@ -142,6 +142,7 @@ function createSeries (opts, archs, platforms) {
     var version = combination.version
 
     return function (callback) {
+      debug(`Downloading Electron with options ${JSON.stringify(combination)}`)
       download(combination, function (err, zipPath) {
         if (err) return callback(err)
 
