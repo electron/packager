@@ -239,8 +239,8 @@ module.exports = {
     // Prune and asar are now performed before platform-specific logic, primarily so that
     // appPath is predictable (e.g. before .app is renamed for mac)
     if (opts.prune) {
-      debug('Running npm prune --production')
       operations.push(function (cb) {
+        debug('Running npm prune --production')
         child.exec('npm prune --production', {cwd: appPath}, cb)
       })
     }
