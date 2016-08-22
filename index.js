@@ -226,10 +226,13 @@ function createSeries (opts, archs, platforms) {
 
 module.exports = function packager (opts, cb) {
   debugHostInfo()
+  if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
+
   var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
   var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
   if (!Array.isArray(archs)) return cb(new Error(archs))
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
+
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 
