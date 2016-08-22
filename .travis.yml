@@ -27,3 +27,4 @@ env:
     # prevent wine popup dialogs about installing additional packages
     - WINEDLLOVERRIDES="mscoree,mshtml="
     - WINEDEBUG="-all"
+    - DEBUG=electron-packager
