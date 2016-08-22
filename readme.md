@@ -49,6 +49,14 @@ npm install electron-packager --save-dev
 npm install electron-packager -g
 ```
 
+### Building Windows apps from non-Windows platforms
+
+Building an Electron app for the Windows target platform requires editing the `Electron.exe` file.
+Currently, Electron Packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish
+this. A Windows executable is bundled in that Node package and needs to be run in order for this
+functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) 1.6 or
+later needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
+
 ## Usage
 
 ### From the Command Line
@@ -107,6 +115,7 @@ electron-packager . --all
 
 * Use the current directory for the `sourcedir`
 * Infer the `appname` from the `productName` in `package.json`
+* Infer the `app-version` from the `version` in `package.json`
 * Download [all supported target platforms and arches](#supported-platforms) of Electron
 using the installed `electron` or `electron-prebuilt` version (and cache the downloads in `~/.electron`)
 * For the `darwin` build, as an example:
@@ -132,10 +141,6 @@ foobar
 The `Foo Bar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
 
 ### [Programmatic API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
-
-## Building Windows apps from non-Windows platforms
-
-Building an Electron app for the Windows platform with a custom icon requires editing the `Electron.exe` file. Currently, electron-packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish this. A Windows executable is bundled in that node package and needs to be run in order for this functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) 1.6 or later needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
 
 ## Related
 
