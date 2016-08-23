@@ -267,6 +267,7 @@ module.exports = {
       return
     }
 
+    debug(`Moving ${tempPath} to ${finalPath}`)
     fs.move(tempPath, finalPath, function (err) {
       callback(err, finalPath)
     })
@@ -291,6 +292,7 @@ module.exports = {
   },
 
   rename: function rename (basePath, oldName, newName, cb) {
+    debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
     fs.rename(path.join(basePath, oldName), path.join(basePath, newName), cb)
   }
 }
