@@ -33,23 +33,23 @@ function createHelperAppPathsTest (baseOpts, expectedName) {
         frameworksPath = path.join(paths[0], `${expectedName}.app`, 'Contents', 'Frameworks')
         // main Helper.app is already tested in basic test suite; test its executable and the other helpers
         fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper`)), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The Helper.app executable should reflect sanitized opts.name')
         fs.stat(path.join(frameworksPath, `${expectedName} Helper EH.app`), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isDirectory(), 'The Helper EH.app should reflect sanitized opts.name')
         fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper EH`)), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The Helper EH.app executable should reflect sanitized opts.name')
         fs.stat(path.join(frameworksPath, `${expectedName} Helper NP.app`), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isDirectory(), 'The Helper NP.app should reflect sanitized opts.name')
         fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper NP`)), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The Helper NP.app executable should reflect sanitized opts.name')
         cb()
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
@@ -207,16 +207,16 @@ function createBinaryNameTest (baseOpts, expectedAppName) {
     let appName = expectedAppName || opts.name
 
     waterfall([
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
-      }, function (paths, cb) {
+      }, (paths, cb) => {
         binaryPath = path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS')
         fs.stat(path.join(binaryPath, appName), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The binary should reflect a sanitized opts.name')
         cb()
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
