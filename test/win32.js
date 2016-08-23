@@ -19,35 +19,33 @@ const baseOpts = {
 }
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(process.platform === 'darwin' ? config.macExecTimeout : config.timeout)
 
-    var appExePath
-    var opts = Object.assign({}, baseOpts, extraOpts)
+    let appExePath
+    let opts = Object.assign({}, baseOpts, extraOpts)
 
     waterfall([
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
-      }, function (paths, cb) {
+      }, (paths, cb) => {
         appExePath = path.join(paths[0], opts.name + '.exe')
         fs.stat(appExePath, cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The expected EXE file should exist')
-        cb()
-      }, function (cb) {
         rcinfo(appExePath, cb)
-      }, function (info, cb) {
+      }, (info, cb) => {
         metadataProperties = [].concat(metadataProperties)
         expectedValues = [].concat(expectedValues)
         assertionMsgs = [].concat(assertionMsgs)
-        metadataProperties.forEach(function (property, i) {
+        metadataProperties.forEach((property, i) => {
           var value = expectedValues[i]
           var msg = assertionMsgs[i]
           t.equal(info[property], value, msg)
         })
         cb()
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
@@ -80,7 +78,7 @@ function setCopyrightTest (appCopyright) {
 function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
   var opts = {
     'app-copyright': appCopyright,
-    'version-string': {
+    'win32metadata': {
       CompanyName: companyName
     }
   }
@@ -89,10 +87,22 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
                                    opts,
                                    [appCopyright, companyName],
                                    ['Legal copyright should match app copyright',
-                                    'Company name should match version-string value'])
+                                    'Company name should match win32metadata value'])
 }
 
-test('better error message when wine is not found', function (t) {
+function setCompanyNameTest (companyName, optName) {
+  let opts = {}
+  opts[optName] = {
+    CompanyName: companyName
+  }
+
+  return generateVersionStringTest('CompanyName',
+                                   opts,
+                                   companyName,
+                                   `Company name should match ${optName} value`)
+}
+
+test('better error message when wine is not found', (t) => {
   let err = Error('spawn wine ENOENT')
   err.code = 'ENOENT'
   err.syscall = 'spawn wine'
@@ -104,7 +114,7 @@ test('better error message when wine is not found', function (t) {
   t.end()
 })
 
-test('error message unchanged when error not about wine', function (t) {
+test('error message unchanged when error not about wine', (t) => {
   let errNotEnoent = Error('unchanged')
   errNotEnoent.code = 'ESOMETHINGELSE'
   errNotEnoent.syscall = 'spawn wine'
@@ -124,20 +134,26 @@ test('error message unchanged when error not about wine', function (t) {
   t.end()
 })
 
-if (process.env['TRAVIS_OS_NAME'] !== 'osx') {
-  util.setup()
-  test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
-  util.teardown()
+util.setup()
+test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
+util.teardown()
 
-  util.setup()
-  test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
-  util.teardown()
+util.setup()
+test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
+util.teardown()
 
-  util.setup()
-  test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
-  util.teardown()
+util.setup()
+test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
+util.teardown()
 
-  util.setup()
-  test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
-  util.teardown()
-}
+util.setup()
+test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
+util.teardown()
+
+util.setup()
+test('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
+util.teardown()
+
+util.setup()
+test('win32 set CompanyName test (version-string)', setCompanyNameTest('MyCompany LLC', 'version-string'))
+util.teardown()

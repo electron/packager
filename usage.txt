@@ -82,10 +82,11 @@ protocol-name      Descriptive name of URL protocol scheme specified via `--prot
 
 * win32 target platform only *
 
-version-string     a list of sub-properties used to set the application metadata embedded into
+version-string     an alias for win32metadata (deprecated)
+win32metadata      a list of sub-properties used to set the application metadata embedded into
                    the executable. They are specified via dot notation,
-                   e.g. --version-string.CompanyName="Company Inc."
-                   or --version-string.ProductName="Product"
+                   e.g. --win32metadata.CompanyName="Company Inc."
+                   or --win32metadata.ProductName="Product"
                    Properties supported:
                    - CompanyName
                    - FileDescription
