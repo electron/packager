@@ -142,6 +142,7 @@ function createSeries (opts, archs, platforms) {
     var version = combination.version
 
     return function (callback) {
+      debug(`Downloading Electron with options ${JSON.stringify(combination)}`)
       download(combination, function (err, zipPath) {
         if (err) return callback(err)
 
@@ -156,9 +157,11 @@ function createSeries (opts, archs, platforms) {
           console.error(`Packaging app for platform ${platform} ${arch} using electron v${version}`)
           series([
             function (cb) {
+              debug(`Creating ${buildDir}`)
               fs.mkdirs(buildDir, cb)
             },
             function (cb) {
+              debug(`Extracting ${zipPath} to ${buildDir}`)
               extract(zipPath, {dir: buildDir}, cb)
             },
             function (cb) {
@@ -223,10 +226,13 @@ function createSeries (opts, archs, platforms) {
 
 module.exports = function packager (opts, cb) {
   debugHostInfo()
+  if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
+
   var archs = validateList(opts.all ? 'all' : opts.arch, supportedArchs, 'arch')
   var platforms = validateList(opts.all ? 'all' : opts.platform, supportedPlatforms, 'platform')
   if (!Array.isArray(archs)) return cb(new Error(archs))
   if (!Array.isArray(platforms)) return cb(new Error(platforms))
+
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 

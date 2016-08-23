@@ -199,6 +199,8 @@ module.exports = {
       tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
     }
 
+    debug(`Initializing app in ${tempPath} from ${templatePath} template`)
+
     // Path to `app` directory
     var appPath = path.join(tempPath, appRelativePath)
     var resourcesPath = path.resolve(appPath, '..')
@@ -238,6 +240,7 @@ module.exports = {
     // appPath is predictable (e.g. before .app is renamed for mac)
     if (opts.prune) {
       operations.push(function (cb) {
+        debug('Running npm prune --production')
         child.exec('npm prune --production', {cwd: appPath}, cb)
       })
     }
