@@ -378,6 +378,21 @@ test('download argument test: download.{arch,platform,version} does not overwrit
   t.end()
 })
 
+test('sanitize app name for use in file/directory names', (t) => {
+  t.equal('@username-package', common.sanitizeAppName('@username/package'), 'slash should be replaced')
+  t.end()
+})
+
+test('sanitize app name for use in the out directory name', (t) => {
+  let opts = {
+    arch: 'x64',
+    name: '@username/package-name',
+    platform: 'linux'
+  }
+  t.equal('@username-package-name-linux-x64', common.generateFinalBasename(opts), 'generateFinalBasename output should be sanitized')
+  t.end()
+})
+
 util.testSinglePlatform('infer test using `electron-prebuilt` package', createInferElectronPrebuiltTest)
 util.testSinglePlatform('infer test using `electron` package', createInferElectronTest)
 util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
@@ -389,6 +404,32 @@ util.testSinglePlatform('overwrite test', createOverwriteTest)
 util.testSinglePlatform('tmpdir test', createTmpdirTest)
 util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)
 util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
+
+util.setup()
+test('building for Linux target sanitizes binary name', (t) => {
+  let opts = {
+    name: '@username/package-name',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    version: '0.37.4',
+    arch: 'ia32',
+    platform: 'linux'
+  }
+
+  waterfall([
+    (cb) => {
+      packager(opts, cb)
+    }, (paths, cb) => {
+      t.equal(1, paths.length, '1 bundle created')
+      fs.stat(path.join(paths[0], '@username-package-name'), cb)
+    }, (stats, cb) => {
+      t.true(stats.isFile(), 'The sanitized binary filename should exist')
+      cb()
+    }
+  ], (err) => {
+    t.end(err)
+  })
+})
+util.teardown()
 
 util.setup()
 test('fails with invalid arch', function (t) {

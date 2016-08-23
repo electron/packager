@@ -6,6 +6,11 @@
 
 * `win32metadata` option (#331, #463)
 
+### Fixed
+
+* Allow scoped package names as Electron app names - invalid characters are replaced with
+  hyphens (#308, #455)
+
 ### Deprecated
 
 * `version-string` is deprecated in favor of `win32metadata` (#331, #463)

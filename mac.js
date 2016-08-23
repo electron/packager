@@ -14,7 +14,7 @@ class MacApp {
     this.stagingPath = stagingPath
     this.appName = opts.name
     this.operations = []
-    this.renamedAppPath = path.join(this.stagingPath, `${this.appName}.app`)
+    this.renamedAppPath = path.join(this.stagingPath, `${common.sanitizeAppName(this.appName)}.app`)
     this.electronAppPath = path.join(this.stagingPath, 'Electron.app')
     this.contentsPath = path.join(this.electronAppPath, 'Contents')
     this.frameworksPath = path.join(this.contentsPath, 'Frameworks')
@@ -49,9 +49,9 @@ class MacApp {
   updatePlist (base, displayName, identifier, name) {
     return Object.assign(base, {
       CFBundleDisplayName: displayName,
-      CFBundleExecutable: displayName,
+      CFBundleExecutable: common.sanitizeAppName(displayName),
       CFBundleIdentifier: identifier,
-      CFBundleName: name
+      CFBundleName: common.sanitizeAppName(name)
     })
   }
 
@@ -92,7 +92,7 @@ class MacApp {
     let helperEHPlist = this.loadPlist(helperEHPlistFilename)
     let helperNPPlist = this.loadPlist(helperNPPlistFilename)
 
-    let defaultBundleName = `com.electron.${this.appName.toLowerCase()}`
+    let defaultBundleName = `com.electron.${common.sanitizeAppName(this.appName).toLowerCase()}`
 
     let appBundleIdentifier = filterCFBundleIdentifier(this.opts['app-bundle-id'] || defaultBundleName)
     this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts['helper-bundle-id'] || `${appBundleIdentifier}.helper`)
@@ -137,9 +137,9 @@ class MacApp {
       return (cb) => {
         let executableBasePath = path.join(this.frameworksPath, `Electron${suffix}.app`, 'Contents', 'MacOS')
 
-        common.rename(executableBasePath, `Electron${suffix}`, `${this.appName}${suffix}`, (err) => {
+        common.rename(executableBasePath, `Electron${suffix}`, `${common.sanitizeAppName(this.appName)}${suffix}`, (err) => {
           if (err) return cb(err)
-          common.rename(this.frameworksPath, `Electron${suffix}.app`, `${this.appName}${suffix}.app`, cb)
+          common.rename(this.frameworksPath, `Electron${suffix}.app`, `${common.sanitizeAppName(this.appName)}${suffix}.app`, cb)
         })
       }
     }), (err) => {

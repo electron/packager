@@ -22,7 +22,7 @@ module.exports = {
     common.initializeApp(opts, templatePath, path.join('resources', 'app'), function buildWinApp (err, tempPath) {
       if (err) return callback(err)
 
-      let newExeName = `${opts.name}.exe`
+      let newExeName = `${common.sanitizeAppName(opts.name)}.exe`
       var operations = [
         function (cb) {
           common.rename(tempPath, 'electron.exe', newExeName, cb)

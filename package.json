@@ -28,7 +28,8 @@
     "plist": "^1.1.0",
     "rcedit": "^0.5.1",
     "resolve": "^1.1.6",
-    "run-series": "^1.1.1"
+    "run-series": "^1.1.1",
+    "sanitize-filename": "^1.6.0"
   },
   "devDependencies": {
     "buffer-equal": "^1.0.0",
