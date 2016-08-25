@@ -24,7 +24,8 @@ function parseCLIArgs (argv) {
     ],
     default: {
       'deref-symlinks': true,
-      'download.strictSSL': true
+      'download.strictSSL': true,
+      prune: true
     },
     string: [
       'out'
@@ -194,7 +195,7 @@ module.exports = {
     // * Creates temporary directory
     // * Copies template into temporary directory
     // * Copies user's app into temporary directory
-    // * Prunes non-production node_modules (if opts.prune is set)
+    // * Prunes non-production node_modules (if opts.prune is not false)
     // * Creates an asar (if opts.asar is set)
 
     var tempPath
@@ -243,7 +244,7 @@ module.exports = {
 
     // Prune and asar are now performed before platform-specific logic, primarily so that
     // appPath is predictable (e.g. before .app is renamed for mac)
-    if (opts.prune) {
+    if (opts.prune || opts.prune === undefined) {
       operations.push(function (cb) {
         debug('Running npm prune --production')
         child.exec('npm prune --production', {cwd: appPath}, cb)

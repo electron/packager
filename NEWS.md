@@ -10,6 +10,7 @@
 
 * Default the `platform` option to the host platform (#464)
 * Default the `arch` option to the host arch (#36, #464)
+* Default the `prune` option to `true`
 
 ### Fixed
 
