@@ -6,6 +6,11 @@
 
 * `win32metadata` option (#331, #463)
 
+### Changed
+
+* Default the `platform` option to the host platform (#464)
+* Default the `arch` option to the host arch (#36, #464)
+
 ### Fixed
 
 * Allow scoped package names as Electron app names - invalid characters are replaced with

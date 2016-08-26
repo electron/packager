@@ -11,35 +11,11 @@ packager(options, function done_callback (err, appPaths) { /* … */ })
 
 ### Required
 
-#### `arch`
-
-*String*
-
-Allowed values: `ia32`, `x64`, `all`
-
-The target system architecture(s) to build for.
-Not required if the [`all`](#all) option is set.
-If `arch` is set to `all`, all supported architectures for the target platforms specified by [`platform`](#platform) will be built.
-Arbitrary combinations of individual architectures are also supported via a comma-delimited string or array of strings.
-The non-`all` values correspond to the architecture names used by [Electron releases].
-
 #### `dir`
 
 *String*
 
 The source directory.
-
-#### `platform`
-
-*String*
-
-Allowed values: `linux`, `win32`, `darwin`, `mas`, `all`
-
-The target platform(s) to build for.
-Not required if the [`all`](#all) option is set.
-If `platform` is set to `all`, all [supported target platforms](#supported-platforms) for the target architectures specified by [`arch`](#arch) will be built.
-Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
-The non-`all` values correspond to the platform names used by [Electron releases].
 
 ### Optional
 
@@ -86,6 +62,18 @@ The human-readable copyright line for the app. Maps to the `LegalCopyright` meta
 *String*
 
 The release version of the application. By default the `version` property in the `package.json` is used but it can be overridden with this argument. If neither are provided, the version of Electron will be used. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
+
+#### `arch`
+
+*String* (default: the arch of the host computer running Node)
+
+Allowed values: `ia32`, `x64`, `all`
+
+The target system architecture(s) to build for.
+Not required if the [`all`](#all) option is set.
+If `arch` is set to `all`, all supported architectures for the target platforms specified by [`platform`](#platform) will be built.
+Arbitrary combinations of individual architectures are also supported via a comma-delimited string or array of strings.
+The non-`all` values correspond to the architecture names used by [Electron releases].
 
 ##### `asar`
 
@@ -189,6 +177,18 @@ The base directory where the finished package(s) are created.
 *Boolean* (default: `false`)
 
 Whether to replace an already existing output directory for a given platform (`true`) or skip recreating it (`false`).
+
+#### `platform`
+
+*String* (default: the arch of the host computer running Node)
+
+Allowed values: `linux`, `win32`, `darwin`, `mas`, `all`
+
+The target platform(s) to build for.
+Not required if the [`all`](#all) option is set.
+If `platform` is set to `all`, all [supported target platforms](#supported-platforms) for the target architectures specified by [`arch`](#arch) will be built.
+Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
+The non-`all` values correspond to the platform names used by [Electron releases].
 
 ##### `prune`
 

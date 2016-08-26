@@ -72,7 +72,13 @@ This will:
 - Find or download the correct release of Electron
 - Use that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
 
-For an overview of the optional flags, run `electron-packager --help` or see
+`--platform` and `--arch` can be omitted, in two cases:
+
+* If you specify `--all` instead, bundles for all valid combinations of target
+  platforms/architectures will be created.
+* Otherwise, a single bundle for the host platform/architecture will be created.
+
+For an overview of the other optional flags, run `electron-packager --help` or see
 [usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt). For
 detailed descriptions, see the [API documentation](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
 
