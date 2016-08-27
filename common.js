@@ -195,7 +195,7 @@ module.exports = {
     // * Creates temporary directory
     // * Copies template into temporary directory
     // * Copies user's app into temporary directory
-    // * Prunes non-production node_modules (if opts.prune is not false)
+    // * Prunes non-production node_modules (if opts.prune is either truthy or undefined)
     // * Creates an asar (if opts.asar is set)
 
     var tempPath
