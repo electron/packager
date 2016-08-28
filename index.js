@@ -12,41 +12,12 @@ const os = require('os')
 const path = require('path')
 const resolve = require('resolve')
 const series = require('run-series')
-
-var supportedArchs = common.archs.reduce(function (result, arch) {
-  result[arch] = 1
-  return result
-}, {})
-
-var supportedPlatforms = {
-  // Maps to module ID for each platform (lazy-required if used)
-  darwin: './mac',
-  linux: './linux',
-  mas: './mac', // map to darwin
-  win32: './win32'
-}
+const targets = require('./targets')
 
 function debugHostInfo () {
   debug(`Electron Packager ${metadata.version}`)
   debug(`Node ${process.version}`)
   debug(`Host Operating system: ${process.platform} (${process.arch})`)
-}
-
-function validateList (list, supported, name) {
-  // Validates list of architectures or platforms.
-  // Returns a normalized array if successful, or an error message string otherwise.
-
-  if (!list) return `Must specify ${name}`
-  if (list === 'all') return Object.keys(supported)
-
-  if (!Array.isArray(list)) list = list.split(',')
-  for (var i = list.length; i--;) {
-    if (!supported[list[i]]) {
-      return `Unsupported ${name} ${list[i]}; must be one of: ${Object.keys(supported).join(', ')}`
-    }
-  }
-
-  return list
 }
 
 function getMetadata (opts, dir, cb) {
@@ -176,7 +147,7 @@ function createSeries (opts, archs, platforms) {
               }
             }
           ], function () {
-            require(supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
+            require(targets.supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
           })
         }
 
@@ -229,10 +200,10 @@ module.exports = function packager (opts, cb) {
   debugHostInfo()
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
 
-  var archs = validateList(opts.all ? 'all' : opts.arch || process.arch, supportedArchs, 'arch')
-  var platforms = validateList(opts.all ? 'all' : opts.platform || process.platform, supportedPlatforms, 'platform')
-  if (!Array.isArray(archs)) return cb(new Error(archs))
-  if (!Array.isArray(platforms)) return cb(new Error(platforms))
+  let archs = targets.validateListFromOptions(opts, targets.supportedArchs, 'arch')
+  let platforms = targets.validateListFromOptions(opts, targets.supportedPlatforms, 'platform')
+  if (!Array.isArray(archs)) return cb(archs)
+  if (!Array.isArray(platforms)) return cb(platforms)
 
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
