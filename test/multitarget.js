@@ -25,7 +25,7 @@ function verifyPackageExistence (finalPaths, callback) {
 
 util.setup()
 test('all test', function (t) {
-  t.timeoutAfter(config.timeout * 5) // 4-5 packages will be built during this test
+  t.timeoutAfter(config.timeout * 7) // 5-7 packages will be built during this test
 
   var opts = {
     name: 'basicTest',
@@ -34,13 +34,13 @@ test('all test', function (t) {
     all: true
   }
 
-  var expectedAppCount = 6
+  var expectedAppCount = 7
 
   waterfall([
     function (cb) {
       if (process.platform === 'win32') {
         isAdmin().then((admin) => {
-          if (!admin) expectedAppCount = 4
+          if (!admin) expectedAppCount = 5
           cb()
         })
       } else {
@@ -92,8 +92,9 @@ test('platform=all test (one arch)', function (t) {
 util.teardown()
 
 util.setup()
-test('arch=all test (one platform)', function (t) {
-  t.timeoutAfter(config.timeout * 2) // 2 packages will be built during this test
+test('arch=all test (one platform)', (t) => {
+  const LINUX_ARCH_COUNT = 3
+  t.timeoutAfter(config.timeout * LINUX_ARCH_COUNT)
 
   var opts = {
     name: 'basicTest',
@@ -107,10 +108,10 @@ test('arch=all test (one platform)', function (t) {
     function (cb) {
       packager(opts, cb)
     }, function (finalPaths, cb) {
-      t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
+      t.equal(finalPaths.length, LINUX_ARCH_COUNT, 'packager call should resolve with expected number of paths')
       verifyPackageExistence(finalPaths, cb)
     }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for both architectures')
+      t.true(exists, 'Packages should be generated for all expected architectures')
       cb()
     }
   ], function (err) {

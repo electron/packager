@@ -10,9 +10,10 @@ const minimist = require('minimist')
 const os = require('os')
 const path = require('path')
 const sanitize = require('sanitize-filename')
+const semver = require('semver')
 const series = require('run-series')
 
-const archs = ['ia32', 'x64']
+const archs = ['ia32', 'x64', 'armv7l']
 const platforms = ['darwin', 'linux', 'mas', 'win32']
 
 function parseCLIArgs (argv) {
@@ -122,7 +123,7 @@ function createAsarOpts (opts) {
 }
 
 function createDownloadOpts (opts, platform, arch) {
-  let downloadOpts = opts.download || {}
+  let downloadOpts = Object.assign({}, opts.download)
 
   subOptionWarning(downloadOpts, 'download', 'platform', platform)
   subOptionWarning(downloadOpts, 'download', 'arch', arch)
@@ -149,6 +150,8 @@ module.exports = {
       for (let platform of selectedPlatforms) {
         // Electron does not have 32-bit releases for Mac OS X, so skip that combination
         if (isPlatformMac(platform) && arch === 'ia32') continue
+        // Electron only has armv7l releases for Linux
+        if (arch === 'armv7l' && platform !== 'linux') continue
         if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
         combinations.push(createDownloadOpts(opts, platform, arch))
       }
@@ -158,6 +161,11 @@ module.exports = {
   },
 
   downloadElectronZip: function downloadElectronZip (downloadOpts, cb) {
+    // armv7l builds have only been backfilled for Electron >= 1.0.0.
+    // See: https://github.com/electron/electron/pull/6986
+    if (downloadOpts.arch === 'armv7l' && semver.lt(downloadOpts.version, '1.0.0')) {
+      downloadOpts.arch = 'arm'
+    }
     debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`)
     download(downloadOpts, cb)
   },
