@@ -2,7 +2,6 @@
 
 const common = require('./common')
 const debug = require('debug')('electron-packager')
-const download = require('electron-download')
 const extract = require('extract-zip')
 const fs = require('fs-extra')
 const getPackageInfo = require('get-package-info')
@@ -92,15 +91,6 @@ function createSeries (opts, archs, platforms) {
     })
   }
 
-  var combinations = []
-  archs.forEach(function (arch) {
-    platforms.forEach(function (platform) {
-      // Electron does not have 32-bit releases for Mac OS X, so skip that combination
-      if (common.isPlatformMac(platform) && arch === 'ia32') return
-      combinations.push(common.createDownloadOpts(opts, platform, arch))
-    })
-  })
-
   var tasks = []
   var useTempDir = opts.tmpdir !== false
   if (useTempDir) {
@@ -108,14 +98,13 @@ function createSeries (opts, archs, platforms) {
       fs.remove(tempBase, cb)
     })
   }
-  return tasks.concat(combinations.map(function (combination) {
+  return tasks.concat(common.createDownloadCombos(opts, platforms, archs).map(combination => {
     var arch = combination.arch
     var platform = combination.platform
     var version = combination.version
 
-    return function (callback) {
-      debug(`Downloading Electron with options ${JSON.stringify(combination)}`)
-      download(combination, function (err, zipPath) {
+    return (callback) => {
+      common.downloadElectronZip(combination, (err, zipPath) => {
         if (err) return callback(err)
 
         function createApp (comboOpts) {

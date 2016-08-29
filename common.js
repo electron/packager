@@ -3,6 +3,7 @@
 const asar = require('asar')
 const child = require('child_process')
 const debug = require('debug')('electron-packager')
+const download = require('electron-download')
 const fs = require('fs-extra')
 const ignore = require('./ignore')
 const minimist = require('minimist')
@@ -81,6 +82,10 @@ function asarApp (appPath, asarOptions, cb) {
   })
 }
 
+function isPlatformMac (platform) {
+  return platform === 'darwin' || platform === 'mas'
+}
+
 function sanitizeAppName (name) {
   return sanitize(name, {replacement: '-'})
 }
@@ -116,28 +121,45 @@ function createAsarOpts (opts) {
   return asarOptions
 }
 
+function createDownloadOpts (opts, platform, arch) {
+  let downloadOpts = opts.download || {}
+
+  subOptionWarning(downloadOpts, 'download', 'platform', platform)
+  subOptionWarning(downloadOpts, 'download', 'arch', arch)
+  subOptionWarning(downloadOpts, 'download', 'version', opts.version)
+
+  return downloadOpts
+}
+
 module.exports = {
   archs: archs,
   platforms: platforms,
 
   parseCLIArgs: parseCLIArgs,
 
-  isPlatformMac: function isPlatformMac (platform) {
-    return platform === 'darwin' || platform === 'mas'
-  },
+  isPlatformMac: isPlatformMac,
 
   subOptionWarning: subOptionWarning,
 
   createAsarOpts: createAsarOpts,
+  createDownloadOpts: createDownloadOpts,
+  createDownloadCombos: function createDownloadCombos (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
+    let combinations = []
+    for (let arch of selectedArchs) {
+      for (let platform of selectedPlatforms) {
+        // Electron does not have 32-bit releases for Mac OS X, so skip that combination
+        if (isPlatformMac(platform) && arch === 'ia32') continue
+        if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
+        combinations.push(createDownloadOpts(opts, platform, arch))
+      }
+    }
 
-  createDownloadOpts: function createDownloadOpts (opts, platform, arch) {
-    let downloadOpts = opts.download || {}
+    return combinations
+  },
 
-    subOptionWarning(downloadOpts, 'download', 'platform', platform)
-    subOptionWarning(downloadOpts, 'download', 'arch', arch)
-    subOptionWarning(downloadOpts, 'download', 'version', opts.version)
-
-    return downloadOpts
+  downloadElectronZip: function downloadElectronZip (downloadOpts, cb) {
+    debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`)
+    download(downloadOpts, cb)
   },
 
   generateFinalBasename: generateFinalBasename,
