@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const packager = require('..')
 const series = require('run-series')
+const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
 
@@ -126,6 +127,12 @@ function createIgnoreImplicitOutDirTest (opts) {
     })
   }
 }
+
+test('generateOutIgnores ignores all possible platform/arch permutations', (t) => {
+  let ignores = common.generateOutIgnores({name: 'test'})
+  t.equal(ignores.length, common.platforms.length * common.archs.length)
+  t.end()
+})
 
 util.testSinglePlatform('ignore test: string in array', createIgnoreTest, ['ignorethis'],
                         'ignorethis.txt')

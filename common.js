@@ -99,6 +99,27 @@ function subOptionWarning (properties, optionName, parameter, value) {
   properties[parameter] = value
 }
 
+function generateOutIgnores (opts) {
+  let normalizedOut = opts.out ? path.resolve(opts.out) : null
+  let outIgnores = []
+  if (normalizedOut === null || normalizedOut === process.cwd()) {
+    for (let platform in platforms) {
+      for (let arch in archs) {
+        let basenameOpts = {
+          arch: arch,
+          name: opts.name,
+          platform: platform
+        }
+        outIgnores.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)))
+      }
+    }
+  } else {
+    outIgnores.push(normalizedOut)
+  }
+
+  return outIgnores
+}
+
 function userIgnoreFilter (opts) {
   var ignore = opts.ignore || []
   var ignoreFunc = null
@@ -119,22 +140,7 @@ function userIgnoreFilter (opts) {
     }
   }
 
-  var normalizedOut = opts.out ? path.resolve(opts.out) : null
-  var outIgnores = []
-  if (normalizedOut === null || normalizedOut === process.cwd()) {
-    platforms.forEach(function (platform) {
-      archs.forEach(function (arch) {
-        let basenameOpts = {
-          arch: arch,
-          name: opts.name,
-          platform: platform
-        }
-        outIgnores.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)))
-      })
-    })
-  } else {
-    outIgnores.push(normalizedOut)
-  }
+  let outIgnores = generateOutIgnores(opts)
 
   debug('Ignored paths based on the out param:', outIgnores)
 
@@ -194,6 +200,7 @@ module.exports = {
     return downloadOpts
   },
 
+  generateOutIgnores: generateOutIgnores,
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
 
