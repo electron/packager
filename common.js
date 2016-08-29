@@ -124,12 +124,19 @@ function userIgnoreFilter (opts) {
   if (normalizedOut === null || normalizedOut === process.cwd()) {
     platforms.forEach(function (platform) {
       archs.forEach(function (arch) {
-        outIgnores.push(path.join(process.cwd(), `${opts.name}-${platform}-${arch}`))
+        let basenameOpts = {
+          arch: arch,
+          name: opts.name,
+          platform: platform
+        }
+        outIgnores.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)))
       })
     })
   } else {
     outIgnores.push(normalizedOut)
   }
+
+  debug('Ignored paths based on the out param:', outIgnores)
 
   return function filter (file) {
     if (outIgnores.indexOf(file) !== -1) {

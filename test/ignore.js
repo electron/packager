@@ -102,7 +102,7 @@ function createIgnoreImplicitOutDirTest (opts) {
         }}, cb)
       },
       function (cb) {
-        previousPackedResultDir = path.join(outDir, `${opts.name}-linux-ia32`)
+        previousPackedResultDir = path.join(outDir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
         fs.mkdirp(previousPackedResultDir, cb)
       },
       function (cb) {
