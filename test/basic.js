@@ -62,10 +62,10 @@ function createDefaultsTest (opts) {
         fs.stat(resourcesPath, cb)
       }, function (stats, cb) {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'The output directory should contain devDependencies by default (no prune)')
-        util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), cb)
+        fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), (exists) => {
+          t.false(exists, 'The output directory should NOT contain devDependencies by default (prune=true)')
+          util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), cb)
+        })
       }, function (equal, cb) {
         t.true(equal, 'File under packaged app directory should match source file')
         util.areFilesEqual(path.join(opts.dir, 'ignore', 'this.txt'),
@@ -121,38 +121,39 @@ function createOutTest (opts) {
   }
 }
 
-function createPruneTest (opts) {
-  return function (t) {
+function createPruneOptionTest (baseOpts, prune, testMessage) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
+    let opts = Object.create(baseOpts)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
-    opts.prune = true
+    opts.prune = prune
 
-    var finalPath
-    var resourcesPath
+    let finalPath
+    let resourcesPath
 
     waterfall([
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
-      }, function (paths, cb) {
+      }, (paths, cb) => {
         finalPath = paths[0]
         fs.stat(finalPath, cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
         resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
         fs.stat(resourcesPath, cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
         fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
-        fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), function (exists) {
-          t.false(exists, 'npm devDependency should NOT exist under app/node_modules')
+        fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), (exists) => {
+          t.equal(!prune, exists, testMessage)
           cb()
         })
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
@@ -407,7 +408,12 @@ util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTes
 util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
-util.testSinglePlatform('prune test', createPruneTest)
+util.testSinglePlatform('prune test', (baseOpts) => {
+  return createPruneOptionTest(baseOpts, true, 'npm devDependency should NOT exist under app/node_modules')
+})
+util.testSinglePlatform('prune=false test', (baseOpts) => {
+  return createPruneOptionTest(baseOpts, false, 'npm devDependency should exist under app/node_modules')
+})
 util.testSinglePlatform('overwrite test', createOverwriteTest)
 util.testSinglePlatform('tmpdir test', createTmpdirTest)
 util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)

@@ -192,7 +192,7 @@ The non-`all` values correspond to the platform names used by [Electron releases
 
 ##### `prune`
 
-*Boolean*
+*Boolean* (default: `true`)
 
 Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before starting to package the app.
 
