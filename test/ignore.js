@@ -12,7 +12,7 @@ const util = require('./util')
 const waterfall = require('run-waterfall')
 
 function createIgnoreTest (opts, ignorePattern, ignoredFile) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'basicTest'
@@ -22,26 +22,26 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
     var appPath
 
     waterfall([
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
-      }, function (paths, cb) {
+      }, (paths, cb) => {
         appPath = path.join(paths[0], util.generateResourcesPath(opts), 'app')
         fs.stat(path.join(appPath, 'package.json'), cb)
-      }, function (stats, cb) {
+      }, (stats, cb) => {
         t.true(stats.isFile(), 'The expected output directory should exist and contain files')
-        fs.exists(path.join(appPath, ignoredFile), function (exists) {
+        fs.exists(path.join(appPath, ignoredFile), exists => {
           t.false(exists, 'Ignored file should not exist in output app directory')
           cb()
         })
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
 }
 
 function createIgnoreOutDirTest (opts, distPath) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'basicTest'
@@ -53,39 +53,41 @@ function createIgnoreOutDirTest (opts, distPath) {
     opts.out = outDir
 
     series([
-      function (cb) {
-        fs.copy(util.fixtureSubdir('basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
-          return path.basename(file) !== 'node_modules'
-        }}, cb)
+      (cb) => {
+        fs.copy(util.fixtureSubdir('basic'), appDir, {
+          dereference: true,
+          stopOnErr: true,
+          filter: file => { return path.basename(file) !== 'node_modules' }
+        }, cb)
       },
-      function (cb) {
+      (cb) => {
         // create out dir before packager (real world issue - when second run includes uningnored out dir)
         fs.mkdirp(outDir, cb)
       },
-      function (cb) {
+      (cb) => {
         // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(outDir, 'ignoreMe'), 'w', function (err, fd) {
+        fs.open(path.join(outDir, 'ignoreMe'), 'w', (err, fd) => {
           if (err) return cb(err)
           fs.close(fd, cb)
         })
       },
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
       },
-      function (cb) {
-        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), function (exists) {
+      (cb) => {
+        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), (exists) => {
           t.false(exists, 'Out dir must not exist in output app directory')
           cb()
         })
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
 }
 
 function createIgnoreImplicitOutDirTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'basicTest'
@@ -98,32 +100,34 @@ function createIgnoreImplicitOutDirTest (opts) {
     var previousPackedResultDir
 
     series([
-      function (cb) {
-        fs.copy(util.fixtureSubdir('basic'), appDir, {dereference: true, stopOnErr: true, filter: function (file) {
-          return path.basename(file) !== 'node_modules'
-        }}, cb)
+      (cb) => {
+        fs.copy(util.fixtureSubdir('basic'), appDir, {
+          dereference: true,
+          stopOnErr: true,
+          filter: file => { return path.basename(file) !== 'node_modules' }
+        }, cb)
       },
-      function (cb) {
+      (cb) => {
         previousPackedResultDir = path.join(outDir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
         fs.mkdirp(previousPackedResultDir, cb)
       },
-      function (cb) {
+      (cb) => {
         // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(previousPackedResultDir, testFilename), 'w', function (err, fd) {
+        fs.open(path.join(previousPackedResultDir, testFilename), 'w', (err, fd) => {
           if (err) return cb(err)
           fs.close(fd, cb)
         })
       },
-      function (cb) {
+      (cb) => {
         packager(opts, cb)
       },
-      function (cb) {
-        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), function (exists) {
+      (cb) => {
+        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), (exists) => {
           t.false(exists, 'Out dir must not exist in output app directory')
           cb()
         })
       }
-    ], function (err) {
+    ], (err) => {
       t.end(err)
     })
   }
@@ -140,7 +144,7 @@ util.testSinglePlatform('ignore test: string in array', createIgnoreTest, ['igno
 util.testSinglePlatform('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
 util.testSinglePlatform('ignore test: RegExp', createIgnoreTest, /ignorethis/, 'ignorethis.txt')
 util.testSinglePlatform('ignore test: Function', createIgnoreTest,
-                        function (file) { return file.match(/ignorethis/) }, 'ignorethis.txt')
+                        file => { return file.match(/ignorethis/) }, 'ignorethis.txt')
 util.testSinglePlatform('ignore test: string with slash', createIgnoreTest, 'ignore/this',
   path.join('ignore', 'this.txt'))
 util.testSinglePlatform('ignore test: only match subfolder of app', createIgnoreTest,
