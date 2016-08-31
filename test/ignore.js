@@ -3,6 +3,7 @@
 const common = require('../common')
 const config = require('./config.json')
 const fs = require('fs-extra')
+const ignore = require('../ignore')
 const path = require('path')
 const packager = require('..')
 const series = require('run-series')
@@ -129,7 +130,7 @@ function createIgnoreImplicitOutDirTest (opts) {
 }
 
 test('generateOutIgnores ignores all possible platform/arch permutations', (t) => {
-  let ignores = common.generateOutIgnores({name: 'test'})
+  let ignores = ignore.generateOutIgnores({name: 'test'})
   t.equal(ignores.length, common.platforms.length * common.archs.length)
   t.end()
 })

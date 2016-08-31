@@ -4,6 +4,7 @@ const asar = require('asar')
 const child = require('child_process')
 const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
+const ignore = require('./ignore')
 const minimist = require('minimist')
 const os = require('os')
 const path = require('path')
@@ -99,67 +100,6 @@ function subOptionWarning (properties, optionName, parameter, value) {
   properties[parameter] = value
 }
 
-function generateOutIgnores (opts) {
-  let normalizedOut = opts.out ? path.resolve(opts.out) : null
-  let outIgnores = []
-  if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (let platform in platforms) {
-      for (let arch in archs) {
-        let basenameOpts = {
-          arch: arch,
-          name: opts.name,
-          platform: platform
-        }
-        outIgnores.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)))
-      }
-    }
-  } else {
-    outIgnores.push(normalizedOut)
-  }
-
-  return outIgnores
-}
-
-function userIgnoreFilter (opts) {
-  var ignore = opts.ignore || []
-  var ignoreFunc = null
-
-  if (typeof (ignore) === 'function') {
-    ignoreFunc = function (file) { return !ignore(file) }
-  } else {
-    if (!Array.isArray(ignore)) ignore = [ignore]
-
-    ignoreFunc = function filterByRegexes (file) {
-      for (var i = 0; i < ignore.length; i++) {
-        if (file.match(ignore[i])) {
-          return false
-        }
-      }
-
-      return true
-    }
-  }
-
-  let outIgnores = generateOutIgnores(opts)
-
-  debug('Ignored paths based on the out param:', outIgnores)
-
-  return function filter (file) {
-    if (outIgnores.indexOf(file) !== -1) {
-      return false
-    }
-
-    var name = file.split(path.resolve(opts.dir))[1]
-
-    if (path.sep === '\\') {
-      // convert slashes so unix-format ignores work
-      name = name.replace(/\\/g, '/')
-    }
-
-    return ignoreFunc(name)
-  }
-}
-
 function createAsarOpts (opts) {
   let asarOptions
   if (opts.asar === true) {
@@ -200,7 +140,6 @@ module.exports = {
     return downloadOpts
   },
 
-  generateOutIgnores: generateOutIgnores,
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
 
@@ -237,7 +176,7 @@ module.exports = {
           shouldDeref = opts.derefSymlinks
         }
 
-        fs.copy(opts.dir, appPath, {filter: userIgnoreFilter(opts), dereference: shouldDeref}, cb)
+        fs.copy(opts.dir, appPath, {filter: ignore.userIgnoreFilter(opts), dereference: shouldDeref}, cb)
       },
       function (cb) {
         var afterCopyHooks = (opts.afterCopy || []).map(function (afterCopyFn) {
