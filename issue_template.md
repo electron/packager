@@ -9,15 +9,12 @@
 Put the console output here
 ```
 
-**What command line arguments are you passing? Alternatively, if you are using the API, what
-parameters are you passing to the `packager()` function?**
+**What command line arguments are you passing? Alternatively, if you are using the API, what parameters are you passing to the `packager()` function?**
 
 ```
 Put the arguments or parameters here
 ```
 
-**Please provide either a failing minimal testcase (with a link to the code) or detailed steps to
-reproduce your problem. Using [electron-quick-start](https://github.com/electron/electron-quick-start)
-is a good starting point.**
+**Please provide either a failing minimal testcase (with a link to the code) or detailed steps to reproduce your problem. Using [electron-quick-start](https://github.com/electron/electron-quick-start) is a good starting point.**
 
 
