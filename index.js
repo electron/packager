@@ -6,6 +6,7 @@ const download = require('electron-download')
 const extract = require('extract-zip')
 const fs = require('fs-extra')
 const getPackageInfo = require('get-package-info')
+const ignore = require('./ignore')
 const metadata = require('./package.json')
 const os = require('os')
 const path = require('path')
@@ -250,21 +251,7 @@ module.exports = function packager (opts, cb) {
     debug(`Application name: ${opts.name}`)
     debug(`Target Electron version: ${opts.version}`)
 
-    // Ignore this and related modules by default
-    var defaultIgnores = [
-      '/node_modules/electron($|/)',
-      '/node_modules/electron-prebuilt($|/)',
-      '/node_modules/electron-packager($|/)',
-      '/\\.git($|/)',
-      '/node_modules/\\.bin($|/)'
-    ]
-
-    if (typeof (opts.ignore) !== 'function') {
-      if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-      opts.ignore = (opts.ignore) ? opts.ignore.concat(defaultIgnores) : defaultIgnores
-
-      debug(`Ignored path regular expressions:\n${opts.ignore.map(function (ignore) { return `* ${ignore}` }).join('\n')}`)
-    }
+    ignore.generateIgnores(opts)
 
     series(createSeries(opts, archs, platforms), function (err, appPaths) {
       if (err) return cb(err)
