@@ -63,7 +63,7 @@ function getMetadata (opts, dir, cb) {
     if (err) {
       // `get-package-info` exploded looking for `electron`. Try `electron-prebuilt` instead
       props.pop()
-      props.push(['dependencies.electron-prebuilt', 'devDependencies.electron-prebuilt'])
+      props.push(['dependencies.electron', 'devDependencies.electron', 'dependencies.electron-prebuilt', 'devDependencies.electron-prebuilt'])
       getPackageInfo(props, dir, function (err, result) {
         if (err) return cb(err)
         return inferNameAndVersionFromInstalled('electron-prebuilt', opts, result, cb)
