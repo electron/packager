@@ -446,11 +446,8 @@ test('building for Linux target sanitizes binary name', (t) => {
 util.teardown()
 
 util.setup()
-test('fails with invalid arch', function (t) {
+test('fails with invalid arch', (t) => {
   var opts = {
-    name: 'el0374Test',
-    dir: path.join(__dirname, 'fixtures', 'el-0374'),
-    version: '0.37.4',
     arch: 'z80',
     platform: 'linux'
   }
@@ -463,11 +460,8 @@ test('fails with invalid arch', function (t) {
 util.teardown()
 
 util.setup()
-test('fails with invalid platform', function (t) {
+test('fails with invalid platform', (t) => {
   var opts = {
-    name: 'el0374Test',
-    dir: path.join(__dirname, 'fixtures', 'el-0374'),
-    version: '0.37.4',
     arch: 'ia32',
     platform: 'dos'
   }

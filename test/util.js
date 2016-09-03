@@ -3,7 +3,6 @@
 const bufferEqual = require('buffer-equal')
 const common = require('../common')
 const config = require('./config.json')
-const download = require('electron-download')
 const fs = require('fs-extra')
 const path = require('path')
 const series = require('run-series')
@@ -12,22 +11,6 @@ const test = require('tape')
 
 const ORIGINAL_CWD = process.cwd()
 const WORK_CWD = path.join(__dirname, 'work')
-
-var combinations = []
-common.archs.forEach(function (arch) {
-  common.platforms.forEach(function (platform) {
-    // Electron does not have 32-bit releases for Mac OS X, so skip that combination
-    // Also skip testing darwin/mas target on Windows since electron-packager itself skips it
-    // (see https://github.com/electron-userland/electron-packager/issues/71)
-    if (common.isPlatformMac(platform) && (arch === 'ia32' || require('os').platform() === 'win32')) return
-
-    combinations.push({
-      arch: arch,
-      platform: platform,
-      version: config.version
-    })
-  })
-})
 
 exports.areFilesEqual = function areFilesEqual (file1, file2, callback) {
   series([
@@ -43,11 +26,17 @@ exports.areFilesEqual = function areFilesEqual (file1, file2, callback) {
 }
 
 exports.downloadAll = function downloadAll (version, callback) {
-  series(combinations.map(function (combination) {
-    return function (cb) {
+  let combinations = common.createDownloadCombos({version: config.version}, common.platforms, common.archs, (platform, arch) => {
+    // Skip testing darwin/mas target on Windows since electron-packager itself skips it
+    // (see https://github.com/electron-userland/electron-packager/issues/71)
+    return common.isPlatformMac(platform) && process.platform === 'win32'
+  })
+
+  series(combinations.map(combination => {
+    return (cb) => {
       var downloadOpts = Object.assign({}, combination)
       downloadOpts.version = version
-      download(downloadOpts, cb)
+      common.downloadElectronZip(downloadOpts, cb)
     }
   }), callback)
 }
