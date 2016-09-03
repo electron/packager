@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [8.0.0] - 2016-09-03
+
 ### Added
 
 * `win32metadata` option (#331, #463)
@@ -34,7 +36,8 @@
 
 ### Added
 
-* The `package.json` `version` property is the default app version if `--app-version` is unspecified (#449)
+* The `package.json` `version` property is the default app version if `--app-version` is
+  unspecified (#449)
 
 ### Changed
 
@@ -261,6 +264,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.0.0]: https://github.com/electron-userland/electron-packager/compare/v7.7.0...v8.0.0
 [7.7.0]: https://github.com/electron-userland/electron-packager/compare/v7.6.0...v7.7.0
 [7.6.0]: https://github.com/electron-userland/electron-packager/compare/v7.5.1...v7.6.0
 [7.5.1]: https://github.com/electron-userland/electron-packager/compare/v7.5.0...v7.5.1
