@@ -54,10 +54,15 @@ function inferNameAndVersionFromInstalled (packageName, opts, result, cb) {
     debug('Inferring app-version from version in package.json')
     opts['app-version'] = result.values.version
   }
-
-  if (result.values[`dependencies.${packageName}`]) {
+  var resolvePath = false;
+  if (result.values[`dependencies.${packageName}`]){
+	  resolvePath = result.source[`dependencies.${packageName}`].src;
+  } else if (result.values[`devDependencies.${packageName}`]) {
+	  resolvePath = result.source[`devDependencies.${packageName}`].src;
+  }
+  if (resolvePath) {
     resolve(packageName, {
-      basedir: path.dirname(result.source[`dependencies.${packageName}`].src)
+      basedir: path.dirname(resolvePath)
     }, function (err, res, pkg) {
       if (err) return cb(err)
       debug(`Inferring target Electron version from ${packageName} dependency or devDependency in package.json`)
