@@ -521,57 +521,32 @@ function createProtocolTest (baseOpts) {
 }
 
 // Share testing script with platform darwin and mas
-module.exports = function (baseOpts) {
-  util.setup()
-  test('helper app paths test', createHelperAppPathsTest(baseOpts))
-  util.teardown()
-
-  util.setup()
-  test('helper app paths test with app name needing sanitization', createHelperAppPathsTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
-  util.teardown()
-
-  var iconBase = path.join(__dirname, 'fixtures', 'monochrome')
-  var icnsPath = iconBase + '.icns'
-  util.setup()
-  test('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
-  util.teardown()
-
-  var el0374Opts = {
+module.exports = (baseOpts) => {
+  let iconBase = path.join(__dirname, 'fixtures', 'monochrome')
+  let icnsPath = iconBase + '.icns'
+  let el0374Opts = {
     name: 'el0374Test',
     dir: util.fixtureSubdir('el-0374'),
     version: '0.37.4',
     arch: 'x64',
     platform: 'darwin'
   }
-  // use iconBase, icnsPath from previous test
-  util.setup()
-  test('icon test: el-0.37.4, .icns specified', createIconTest(el0374Opts, icnsPath, icnsPath))
-  util.teardown()
+  let extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
 
-  util.setup()
-  test('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
-  util.teardown()
+  util.packagerTest('helper app paths test', createHelperAppPathsTest(baseOpts))
+  util.packagerTest('helper app paths test with app name needing sanitization', createHelperAppPathsTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
 
-  util.setup()
-  test('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
-  util.teardown()
+  util.packagerTest('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
+  util.packagerTest('icon test: el-0.37.4, .icns specified', createIconTest(el0374Opts, icnsPath, icnsPath))
+  util.packagerTest('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
+  util.packagerTest('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
 
-  var extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
-  util.setup()
-  test('extend-info test', createExtendInfoTest(baseOpts, extraInfoPath))
-  util.teardown()
+  util.packagerTest('extend-info test', createExtendInfoTest(baseOpts, extraInfoPath))
 
-  util.setup()
-  test('extra-resource test: one arg', createExtraResourceTest(baseOpts))
-  util.teardown()
+  util.packagerTest('extra-resource test: one arg', createExtraResourceTest(baseOpts))
+  util.packagerTest('extra-resource test: two arg', createExtraResource2Test(baseOpts))
 
-  util.setup()
-  test('extra-resource test: two arg', createExtraResource2Test(baseOpts))
-  util.teardown()
-
-  util.setup()
-  test('protocol/protocol-name argument test', createProtocolTest(baseOpts))
-  util.teardown()
+  util.packagerTest('protocol/protocol-name argument test', createProtocolTest(baseOpts))
 
   test('osx-sign argument test: default args', function (t) {
     var args = true
@@ -615,8 +590,7 @@ module.exports = function (baseOpts) {
     t.end()
   })
 
-  util.setup()
-  test('codesign test', function (t) {
+  util.packagerTest('codesign test', (t) => {
     t.timeoutAfter(config.macExecTimeout)
 
     var opts = Object.create(baseOpts)
@@ -643,18 +617,11 @@ module.exports = function (baseOpts) {
       t.end(notFound ? null : err)
     })
   })
-  util.teardown()
 
-  util.setup()
-  test('binary naming test', createBinaryNameTest(baseOpts))
-  util.teardown()
+  util.packagerTest('binary naming test', createBinaryNameTest(baseOpts))
+  util.packagerTest('sanitized binary naming test', createBinaryNameTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
 
-  util.setup()
-  test('sanitized binary naming test', createBinaryNameTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
-  util.teardown()
-
-  util.setup()
-  test('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', (t) => {
+  util.packagerTest('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', (t) => {
     t.timeoutAfter(config.timeout)
 
     let plistPath
@@ -686,70 +653,28 @@ module.exports = function (baseOpts) {
       t.end(err)
     })
   })
-  util.teardown()
 
-  util.setup()
-  test('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
-  util.teardown()
+  util.packagerTest('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
+  util.packagerTest('infer app version from package.json test', createAppVersionInferenceTest(baseOpts))
+  util.packagerTest('app version test', createAppVersionTest(baseOpts, '1.1.0'))
+  util.packagerTest('app and build version integer test', createAppVersionTest(baseOpts, 12, 1234))
 
-  util.setup()
-  test('infer app version from package.json test', createAppVersionInferenceTest(baseOpts))
-  util.teardown()
+  util.packagerTest('app categoryType test', createAppCategoryTypeTest(baseOpts, 'public.app-category.developer-tools'))
 
-  util.setup()
-  test('app version test', createAppVersionTest(baseOpts, '1.1.0'))
-  util.teardown()
+  util.packagerTest('app bundle test', createAppBundleTest(baseOpts, 'com.electron.basetest'))
+  util.packagerTest('app bundle (w/ special characters) test', createAppBundleTest(baseOpts, 'com.electron."bãśè tëßt!@#$%^&*()?\''))
+  util.packagerTest('app bundle app-bundle-id fallback test', createAppBundleTest(baseOpts))
+  util.packagerTest('app bundle framework symlink test', createAppBundleFrameworkTest(baseOpts))
 
-  util.setup()
-  test('app and build version integer test', createAppVersionTest(baseOpts, 12, 1234))
-  util.teardown()
+  util.packagerTest('app helpers bundle test', createAppHelpersBundleTest(baseOpts, 'com.electron.basetest.helper'))
+  util.packagerTest('app helpers bundle (w/ special characters) test', createAppHelpersBundleTest(baseOpts, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
+  util.packagerTest('app helpers bundle helper-bundle-id fallback to app-bundle-id test', createAppHelpersBundleTest(baseOpts, null, 'com.electron.basetest'))
+  util.packagerTest('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters) test', createAppHelpersBundleTest(baseOpts, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
+  util.packagerTest('app helpers bundle helper-bundle-id & app-bundle-id fallback test', createAppHelpersBundleTest(baseOpts))
 
-  util.setup()
-  test('app categoryType test', createAppCategoryTypeTest(baseOpts, 'public.app-category.developer-tools'))
-  util.teardown()
+  util.packagerTest('app humanReadableCopyright test', createAppHumanReadableCopyrightTest(baseOpts, 'Copyright © 2003–2015 Organization. All rights reserved.'))
 
-  util.setup()
-  test('app bundle test', createAppBundleTest(baseOpts, 'com.electron.basetest'))
-  util.teardown()
-
-  util.setup()
-  test('app bundle (w/ special characters) test', createAppBundleTest(baseOpts, 'com.electron."bãśè tëßt!@#$%^&*()?\''))
-  util.teardown()
-
-  util.setup()
-  test('app bundle app-bundle-id fallback test', createAppBundleTest(baseOpts))
-  util.teardown()
-
-  util.setup()
-  test('app bundle framework symlink test', createAppBundleFrameworkTest(baseOpts))
-  util.teardown()
-
-  util.setup()
-  test('app helpers bundle test', createAppHelpersBundleTest(baseOpts, 'com.electron.basetest.helper'))
-  util.teardown()
-
-  util.setup()
-  test('app helpers bundle (w/ special characters) test', createAppHelpersBundleTest(baseOpts, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
-  util.teardown()
-
-  util.setup()
-  test('app helpers bundle helper-bundle-id fallback to app-bundle-id test', createAppHelpersBundleTest(baseOpts, null, 'com.electron.basetest'))
-  util.teardown()
-
-  util.setup()
-  test('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters) test', createAppHelpersBundleTest(baseOpts, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
-  util.teardown()
-
-  util.setup()
-  test('app helpers bundle helper-bundle-id & app-bundle-id fallback test', createAppHelpersBundleTest(baseOpts))
-  util.teardown()
-
-  util.setup()
-  test('app humanReadableCopyright test', createAppHumanReadableCopyrightTest(baseOpts, 'Copyright © 2003–2015 Organization. All rights reserved.'))
-  util.teardown()
-
-  util.setup()
-  test('app named Electron packaged successfully', (t) => {
+  util.packagerTest('app named Electron packaged successfully', (t) => {
     let opts = Object.create(baseOpts)
     opts.name = 'Electron'
     let appPath
@@ -771,5 +696,4 @@ module.exports = function (baseOpts) {
       t.end(err)
     })
   })
-  util.teardown()
 }

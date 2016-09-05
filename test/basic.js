@@ -419,8 +419,7 @@ util.testSinglePlatform('tmpdir test', createTmpdirTest)
 util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)
 util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
 
-util.setup()
-test('building for Linux target sanitizes binary name', (t) => {
+util.packagerTest('building for Linux target sanitizes binary name', (t) => {
   let opts = {
     name: '@username/package-name',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
@@ -443,65 +442,56 @@ test('building for Linux target sanitizes binary name', (t) => {
     t.end(err)
   })
 })
-util.teardown()
 
-util.setup()
-test('fails with invalid arch', (t) => {
-  var opts = {
+util.packagerTest('fails with invalid arch', (t) => {
+  let opts = {
     arch: 'z80',
     platform: 'linux'
   }
-  packager(opts, function (err, paths) {
+  packager(opts, (err, paths) => {
     t.equal(undefined, paths, 'no paths returned')
     t.ok(err, 'error thrown')
     t.end()
   })
 })
-util.teardown()
 
-util.setup()
-test('fails with invalid platform', (t) => {
-  var opts = {
+util.packagerTest('fails with invalid platform', (t) => {
+  let opts = {
     arch: 'ia32',
     platform: 'dos'
   }
-  packager(opts, function (err, paths) {
+  packager(opts, (err, paths) => {
     t.equal(undefined, paths, 'no paths returned')
     t.ok(err, 'error thrown')
     t.end()
   })
 })
-util.teardown()
 
-util.setup()
-test('fails with invalid version', function (t) {
-  var opts = {
+util.packagerTest('fails with invalid version', (t) => {
+  let opts = {
     name: 'invalidElectronTest',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
     version: '0.0.1',
     arch: 'x64',
     platform: 'linux'
   }
-  packager(opts, function (err, paths) {
+  packager(opts, (err, paths) => {
     t.equal(undefined, paths, 'no paths returned')
     t.ok(err, 'error thrown')
     t.end()
   })
 })
-util.teardown()
 
-util.setup()
-test('dir argument test: should work with relative path', function (t) {
-  var opts = {
+util.packagerTest('dir argument test: should work with relative path', (t) => {
+  let opts = {
     name: 'ElectronTest',
     dir: path.join('..', 'fixtures', 'el-0374'),
     version: '0.37.4',
     arch: 'x64',
     platform: 'linux'
   }
-  packager(opts, function (err, paths) {
+  packager(opts, (err, paths) => {
     t.equal(path.join(__dirname, 'work', 'ElectronTest-linux-x64'), paths[0], 'paths returned')
     t.end(err)
   })
 })
-util.teardown()

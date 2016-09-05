@@ -4,7 +4,6 @@ const config = require('./config.json')
 const fs = require('fs')
 const packager = require('..')
 const series = require('run-series')
-const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
 
@@ -23,8 +22,7 @@ function verifyPackageExistence (finalPaths, callback) {
 }
 
 function createHookTest (hookName) {
-  util.setup()
-  test('platform=all test (one arch) (' + hookName + ' hook)', function (t) {
+  util.packagerTest('platform=all test (one arch) (' + hookName + ' hook)', (t) => {
     t.timeoutAfter(config.timeout * 2) // 2 packages will be built during this test
 
     var hookCalled = false
@@ -58,7 +56,6 @@ function createHookTest (hookName) {
       t.end(err)
     })
   })
-  util.teardown()
 }
 
 createHookTest('afterCopy')

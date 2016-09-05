@@ -78,9 +78,13 @@ exports.teardown = function teardown () {
   })
 }
 
+exports.packagerTest = function packagerTest (name, testFunction) {
+  exports.setup()
+  test(name, testFunction)
+  exports.teardown()
+}
+
 exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, ...createTestArgs */) {
   var args = slice.call(arguments, 2)
-  exports.setup()
-  test(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: config.version}].concat(args)))
-  exports.teardown()
+  exports.packagerTest(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: config.version}].concat(args)))
 }
