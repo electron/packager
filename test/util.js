@@ -88,3 +88,17 @@ exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, .
   var args = slice.call(arguments, 2)
   exports.packagerTest(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: config.version}].concat(args)))
 }
+
+exports.verifyPackageExistence = function verifyPackageExistence (finalPaths, callback) {
+  series(finalPaths.map((finalPath) => {
+    return (cb) => {
+      fs.stat(finalPath, cb)
+    }
+  }), (err, statsResults) => {
+    if (err) return callback(null, false)
+
+    callback(null, statsResults.every((stats) => {
+      return stats.isDirectory()
+    }))
+  })
+}
