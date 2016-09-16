@@ -61,7 +61,7 @@ function createIgnoreOutDirTest (opts, distPath) {
         }, cb)
       },
       (cb) => {
-        // create out dir before packager (real world issue - when second run includes uningnored out dir)
+        // create out dir before packager (real world issue - when second run includes unignored out dir)
         fs.mkdirp(outDir, cb)
       },
       (cb) => {
