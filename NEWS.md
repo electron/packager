@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## Added
+
+* `.o` and `.obj` files are ignored by default
+
 ## [8.0.0] - 2016-09-03
 
 ### Added
