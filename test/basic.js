@@ -473,7 +473,8 @@ util.packagerTest('fails with invalid version', (t) => {
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
     version: '0.0.1',
     arch: 'x64',
-    platform: 'linux'
+    platform: 'linux',
+    quiet: !!process.env.CI
   }
   packager(opts, (err, paths) => {
     t.equal(undefined, paths, 'no paths returned')
