@@ -36,6 +36,7 @@ exports.downloadAll = function downloadAll (version, callback) {
     return (cb) => {
       var downloadOpts = Object.assign({}, combination)
       downloadOpts.version = version
+      downloadOpts.quiet = !!process.env.CI
       common.downloadElectronZip(downloadOpts, cb)
     }
   }), callback)

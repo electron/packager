@@ -4,7 +4,9 @@
 
 ## Added
 
-* `.o` and `.obj` files are ignored by default
+* `.o` and `.obj` files are ignored by default (#491)
+* Electron downloads are now checked against their published checksums (#493)
+* Documentation for `download.quiet` option to enable/disable progress bar (#494)
 
 ## [8.0.0] - 2016-09-03
 

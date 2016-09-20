@@ -112,6 +112,7 @@ If present, passes custom options to [`electron-download`](https://www.npmjs.com
 but are not limited to:
 - `cache` (*String*): The directory where prebuilt, pre-packaged Electron downloads are cached.
 - `mirror` (*String*): The URL to override the default Electron download location.
+- `quiet` (*Boolean* - default: `false`): Whether to show a progress bar when downloading Electron.
 - `strictSSL` (*Boolean* - default: `true`): Whether SSL certificates are required to be valid when
   downloading Electron.
 
