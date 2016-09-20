@@ -8,7 +8,8 @@ const DEFAULT_IGNORES = [
   '/node_modules/electron-prebuilt($|/)',
   '/node_modules/electron-packager($|/)',
   '/\\.git($|/)',
-  '/node_modules/\\.bin($|/)'
+  '/node_modules/\\.bin($|/)',
+  '\\.o(bj)?$'
 ]
 
 function generateIgnores (opts) {

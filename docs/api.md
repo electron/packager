@@ -147,6 +147,7 @@ described after the list*):
 * `node_modules/electron-prebuilt`
 * `node_modules/electron-packager`
 * `.git`
+* files and folders ending in `.o` and `.obj`
 
 **Please note that [glob patterns](https://en.wikipedia.org/wiki/Glob_%28programming%29) will not work.**
 

@@ -17,7 +17,9 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
 
     opts.name = 'basicTest'
     opts.dir = util.fixtureSubdir('basic')
-    opts.ignore = ignorePattern
+    if (ignorePattern) {
+      opts.ignore = ignorePattern
+    }
 
     var appPath
 
@@ -61,7 +63,7 @@ function createIgnoreOutDirTest (opts, distPath) {
         }, cb)
       },
       (cb) => {
-        // create out dir before packager (real world issue - when second run includes uningnored out dir)
+        // create out dir before packager (real world issue - when second run includes unignored out dir)
         fs.mkdirp(outDir, cb)
       },
       (cb) => {
@@ -139,6 +141,8 @@ test('generateOutIgnores ignores all possible platform/arch permutations', (t) =
   t.end()
 })
 
+util.testSinglePlatform('ignore default test: .o files', createIgnoreTest, null, 'ignore.o')
+util.testSinglePlatform('ignore default test: .obj files', createIgnoreTest, null, 'ignore.obj')
 util.testSinglePlatform('ignore test: string in array', createIgnoreTest, ['ignorethis'],
                         'ignorethis.txt')
 util.testSinglePlatform('ignore test: string', createIgnoreTest, 'ignorethis', 'ignorethis.txt')
