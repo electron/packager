@@ -5,6 +5,7 @@
 ## Added
 
 * `.o` and `.obj` files are ignored by default
+* Documentation for `download.quiet` option to enable/disable progress bar (#494)
 
 ## [8.0.0] - 2016-09-03
 
