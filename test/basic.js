@@ -474,7 +474,9 @@ util.packagerTest('fails with invalid version', (t) => {
     version: '0.0.1',
     arch: 'x64',
     platform: 'linux',
-    quiet: !!process.env.CI
+    download: {
+      quiet: !!process.env.CI
+    }
   }
   packager(opts, (err, paths) => {
     t.equal(undefined, paths, 'no paths returned')
