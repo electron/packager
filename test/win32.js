@@ -171,7 +171,7 @@ util.packagerTest('win32 executable name is based on sanitized app name', (t) =>
 
 util.packagerTest('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 util.packagerTest('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
-util.packagerTest('win32 app/build version default to package.json test', defaultProductAndFileVersionToPackageVersionTest())
+util.packagerTest('win32 app/build versions default to package.json version test', defaultProductAndFileVersionToPackageVersionTest())
 util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
 util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
 util.packagerTest('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))

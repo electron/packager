@@ -8,7 +8,7 @@
 * Electron downloads are now checked against their published checksums (#493)
 * Documentation for `download.quiet` option to enable/disable progress bar (#494)
 * The `build-version` property, when unspecified, now defaults to the
-  `app-version` property value on Windows (#501).
+  `app-version` property value on Windows (#501)
 
 ## [8.0.0] - 2016-09-03
 
