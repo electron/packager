@@ -33,12 +33,12 @@ module.exports = {
 
       var rcOpts = {'version-string': win32metadata}
 
-      if (opts['build-version']) {
-        rcOpts['file-version'] = opts['build-version']
+      if (opts['app-version']) {
+        rcOpts['product-version'] = rcOpts['file-version'] = opts['app-version']
       }
 
-      if (opts['app-version']) {
-        rcOpts['product-version'] = opts['app-version']
+      if (opts['build-version']) {
+        rcOpts['file-version'] = opts['build-version']
       }
 
       if (opts['app-copyright']) {
