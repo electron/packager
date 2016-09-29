@@ -56,11 +56,11 @@ function setFileVersionTest (buildVersion) {
     'build-version': buildVersion
   }
 
-  return generateVersionStringTest(['FileVersion', 'ProductVersion'],
+  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
                                    opts,
-                                   [buildVersion, '4.99.101.0'],
-                                   ['File version should match build version',
-                                    'Product version should match package.json version'])
+                                   ['4.99.101.0', buildVersion],
+                                   ['Product version should match package.json version',
+                                    'File version should match build version'])
 }
 
 function setProductVersionTest (appVersion) {
