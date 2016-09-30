@@ -56,7 +56,11 @@ function setFileVersionTest (buildVersion) {
     'build-version': buildVersion
   }
 
-  return generateVersionStringTest('FileVersion', opts, buildVersion, 'File version should match build version')
+  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
+                                   opts,
+                                   ['4.99.101.0', buildVersion],
+                                   ['Product version should match package.json version',
+                                    'File version should match build version'])
 }
 
 function setProductVersionTest (appVersion) {
@@ -64,7 +68,19 @@ function setProductVersionTest (appVersion) {
     'app-version': appVersion
   }
 
-  return generateVersionStringTest('ProductVersion', opts, appVersion, 'Product version should match app version')
+  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
+                                   opts,
+                                   [appVersion, appVersion],
+                                   ['Product version should match app version',
+                                    'File version should match app version'])
+}
+
+function defaultProductAndFileVersionToPackageVersionTest () {
+  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
+                                   {},
+                                   ['4.99.101.0', '4.99.101.0'],
+                                   ['Product version should match package.json version',
+                                    'File version should match package.json version'])
 }
 
 function setCopyrightTest (appCopyright) {
@@ -155,6 +171,7 @@ util.packagerTest('win32 executable name is based on sanitized app name', (t) =>
 
 util.packagerTest('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 util.packagerTest('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
+util.packagerTest('win32 app/build versions default to package.json version test', defaultProductAndFileVersionToPackageVersionTest())
 util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
 util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
 util.packagerTest('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
