@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-## Added
+## [8.1.0] - 2016-09-30
+
+### Added
 
 * `.o` and `.obj` files are ignored by default (#491)
 * Electron downloads are now checked against their published checksums (#493)
@@ -272,6 +274,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.1.0]: https://github.com/electron-userland/electron-packager/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/electron-userland/electron-packager/compare/v7.7.0...v8.0.0
 [7.7.0]: https://github.com/electron-userland/electron-packager/compare/v7.6.0...v7.7.0
 [7.6.0]: https://github.com/electron-userland/electron-packager/compare/v7.5.1...v7.6.0
