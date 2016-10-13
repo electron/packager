@@ -38,29 +38,32 @@ function getMetadata (opts, dir, cb) {
   // Search package.json files to infer name and version from
   getPackageInfo(props, dir, (err, result) => {
     if (err && err.missingProps) {
-      var requiredProps = ['productName', 'dependencies.electron']
-      var missingProps = err.missingProps.map(prop => {
+      let requiredProps = ['productName', 'dependencies.electron']
+      let missingProps = err.missingProps.map(prop => {
         return Array.isArray(prop) ? prop[0] : prop
       })
 
       // Callback w/ error if there are required props that are missing
       if (missingProps.filter(prop => requiredProps.find(reqProp => prop === reqProp)).length !== 0) {
-        var messages = missingProps.map(function (missingProp) {
-          missingProp = Array.isArray(missingProp) ? missingProp[0] : missingProp
+        let messages = missingProps.map(missingProp => {
+          let hash, propName
           if (missingProp === 'productName') {
-            return 'Unable to determine application name. Please specify an application name\n\n' +
-              'For more information, please see\n' +
-              'https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#name\n'
+            hash = 'name'
+            propName = 'application name'
           }
 
           if (missingProp === 'dependencies.electron') {
-            return 'Unable to determine Electron version. Please specify an Electron version\n\n' +
-              'For more information, please see\n' +
-              'https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#version\n'
+            hash = 'version'
+            propName = 'Electron version'
           }
+
+          return `Unable to determine ${propName}. Please specify an ${propName}\n\n` +
+            'For more information, please see\n' +
+            `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
         })
 
-        err.message = messages.join('\n') + '\n' + err.message
+        debug(err.message)
+        err.message = messages.join('\n') + '\n'
         return cb(err)
       } else {
         // Missing props not required, can continue w/ partial result
@@ -71,12 +74,12 @@ function getMetadata (opts, dir, cb) {
     }
 
     if (result.values.productName) {
-      debug('Inferring application name from productName or name in package.json')
+      debug(`Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`)
       opts.name = result.values.productName
     }
 
     if (result.values.version) {
-      debug('Inferring app-version from version in package.json')
+      debug(`Inferring app-version from version in ${result.source.version.src}`)
       opts['app-version'] = result.values.version
     }
 
@@ -86,7 +89,7 @@ function getMetadata (opts, dir, cb) {
         basedir: path.dirname(result.source[`dependencies.electron`].src)
       }, function (err, res, pkg) {
         if (err) return cb(err)
-        debug(`Inferring target Electron version from ${packageName} dependency or devDependency in package.json`)
+        debug(`Inferring target Electron version from ${result.source['dependencies.electron'].prop} in ${result.source['dependencies.electron'].src}`)
         opts.version = pkg.version
         return cb(null)
       })
