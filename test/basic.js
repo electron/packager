@@ -3,6 +3,7 @@
 const common = require('../common')
 const config = require('./config.json')
 const fs = require('fs-extra')
+const os = require('os')
 const packager = require('..')
 const path = require('path')
 const test = require('tape')
@@ -265,16 +266,30 @@ function createInferElectronTest (opts) {
   }
 }
 
+function copyFixtureToTempDir (fixtureSubdir, cb) {
+  let tmpdir = path.join(os.tmpdir(), fixtureSubdir)
+  let fixtureDir = path.join(__dirname, 'fixtures', fixtureSubdir)
+  waterfall([
+    cb => fs.emptyDir(tmpdir, cb),
+    cb => fs.copy(fixtureDir, tmpdir, cb),
+    cb => cb(null, tmpdir)
+  ], cb)
+}
+
 function createInferFailureTest (opts, fixtureSubdir) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    delete opts.version
-    opts.dir = path.join(__dirname, 'fixtures', fixtureSubdir)
+    copyFixtureToTempDir(fixtureSubdir, (err, dir) => {
+      if (err) return t.end(err)
 
-    packager(opts, function (err, paths) {
-      t.ok(err, 'error thrown')
-      t.end()
+      delete opts.version
+      opts.dir = dir
+
+      packager(opts, function (err, paths) {
+        t.ok(err, 'error thrown')
+        t.end()
+      })
     })
   }
 }
