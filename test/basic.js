@@ -271,7 +271,7 @@ function copyFixtureToTempDir (fixtureSubdir, cb) {
   let fixtureDir = path.join(__dirname, 'fixtures', fixtureSubdir)
   waterfall([
     cb => fs.emptyDir(tmpdir, cb),
-    cb => fs.copy(fixtureDir, tmpdir, cb),
+    (cb1, cb2) => fs.copy(fixtureDir, tmpdir, cb2 || cb1), // inconsistent cb arguments from fs.emptyDir
     cb => cb(null, tmpdir)
   ], cb)
 }
