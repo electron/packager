@@ -9,6 +9,7 @@ const path = require('path')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
+const pkgUp = require('pkg-up')
 
 // Generates a path to the generated app that reflects the name given in the options.
 // Returns the Helper.app location on darwin since the top-level .app is already tested for the
@@ -270,6 +271,11 @@ function copyFixtureToTempDir (fixtureSubdir, cb) {
   let tmpdir = path.join(os.tmpdir(), fixtureSubdir)
   let fixtureDir = path.join(__dirname, 'fixtures', fixtureSubdir)
   waterfall([
+    cb => {
+      let tmpdirPkg = pkgUp.sync(path.join(tmpdir, '..'))
+      if (tmpdirPkg) return cb(new Error(`Found package.json in parent of temp directory, which will interfere with test results. Please remove package.json at ${tmpdirPkg}`))
+      cb()
+    },
     cb => fs.emptyDir(tmpdir, cb),
     (cb1, cb2) => fs.copy(fixtureDir, tmpdir, cb2 || cb1), // inconsistent cb arguments from fs.emptyDir
     cb => cb(null, tmpdir)
