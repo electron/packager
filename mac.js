@@ -69,8 +69,13 @@ class MacApp {
     return this.updatePlist(base, `${this.appName} ${helperSuffix}`, identifier, name)
   }
 
-  extendAppPlist (filename) {
-    let extendedAppPlist = plist.parse(fs.readFileSync(filename).toString())
+  extendAppPlist (props) {
+    let extendedAppPlist = props
+
+    if (typeof props === 'string') {
+      extendedAppPlist = plist.parse(fs.readFileSync(props).toString())
+    }
+
     return Object.assign(this.appPlist, extendedAppPlist)
   }
 
