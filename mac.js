@@ -98,7 +98,7 @@ class MacApp {
     this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts['helper-bundle-id'] || `${appBundleIdentifier}.helper`)
 
     if (this.opts['extend-info']) {
-      this.appPlis = this.extendAppPlist(this.opts['extend-info'])
+      this.appPlist = this.extendAppPlist(this.opts['extend-info'])
     }
 
     this.appPlist = this.updatePlist(this.appPlist, this.appName, appBundleIdentifier, this.appName)
