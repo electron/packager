@@ -37,7 +37,7 @@
     "coveralls": "^2.11.6",
     "eslint": "^3.2.0",
     "eslint-config-standard": "^6.0.0",
-    "eslint-plugin-promise": "^2.0.0",
+    "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.0",
     "is-admin": "^2.0.0",
     "nyc": "^8.0.0",
