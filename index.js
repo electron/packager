@@ -83,19 +83,23 @@ function getMetadata (opts, dir, cb) {
       opts['app-version'] = result.values.version
     }
 
-    if (result.values[`dependencies.electron`]) {
-      var packageName = result.source[`dependencies.electron`].prop.split('.')[1]
-      resolve(packageName, {
-        basedir: path.dirname(result.source[`dependencies.electron`].src)
-      }, function (err, res, pkg) {
-        if (err) return cb(err)
-        debug(`Inferring target Electron version from ${result.source['dependencies.electron'].prop} in ${result.source['dependencies.electron'].src}`)
-        opts.version = pkg.version
-        return cb(null)
-      })
+    if (result.values['dependencies.electron']) {
+      let {prop, src} = result.source['dependencies.electron']
+      return getVersion(opts, prop.split('.')[1], src, cb)
     } else {
       return cb(null)
     }
+  })
+}
+
+function getVersion (opts, packageName, src, cb) {
+  resolve(packageName, {
+    basedir: path.dirname(src)
+  }, (err, res, pkg) => {
+    if (err) return cb(err)
+    debug(`Inferring target Electron version from ${packageName} in ${src}`)
+    opts.version = pkg.version
+    return cb(null)
   })
 }
 

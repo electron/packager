@@ -301,7 +301,7 @@ function createInferFailureTest (opts, fixtureSubdir) {
 }
 
 function createInferMissingVersionTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
     copyFixtureToTempDir('infer-missing-version-only', (err, dir) => {
       if (err) return t.end(err)
@@ -310,7 +310,7 @@ function createInferMissingVersionTest (opts) {
       opts.dir = dir
       let packageJSON = require(path.join(opts.dir, 'package.json'))
 
-      packager(opts, function (err, paths) {
+      packager(opts, (err, paths) => {
         if (!err) {
           var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
           t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
@@ -328,6 +328,10 @@ function createInferMissingFieldsTest (opts) {
 
 function createInferWithBadFieldsTest (opts) {
   return createInferFailureTest(opts, 'infer-bad-fields')
+}
+
+function createInferWithMalformedJSONTest (opts) {
+  return createInferFailureTest(opts, 'infer-malformed-json')
 }
 
 function createTmpdirTest (opts) {
@@ -449,6 +453,7 @@ util.testSinglePlatform('infer test using `electron-prebuilt` package', createIn
 util.testSinglePlatform('infer test using `electron` package', createInferElectronTest)
 util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
 util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
+util.testSinglePlatform('infer with malformed JSON test', createInferWithMalformedJSONTest)
 util.testSinglePlatform('infer with missing version only test', createInferMissingVersionTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
