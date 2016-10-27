@@ -67,8 +67,9 @@ function getMetadata (opts, dir, cb) {
     }
 
     if (result.values['dependencies.electron']) {
-      let {prop, src} = result.source['dependencies.electron']
-      return getVersion(opts, prop.split('.')[1], src, cb)
+      let prop = result.source['dependencies.electron'].prop.split('.')[1]
+      let src = result.source['dependencies.electron'].src
+      return getVersion(opts, prop, src, cb)
     } else {
       return cb(null)
     }
