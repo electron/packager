@@ -38,29 +38,12 @@ function getMetadata (opts, dir, cb) {
   // Search package.json files to infer name and version from
   getPackageInfo(props, dir, (err, result) => {
     if (err && err.missingProps) {
-      let requiredProps = ['productName', 'dependencies.electron']
       let missingProps = err.missingProps.map(prop => {
         return Array.isArray(prop) ? prop[0] : prop
       })
 
-      // Callback w/ error if there are required props that are missing
-      if (missingProps.filter(prop => requiredProps.find(reqProp => prop === reqProp)).length !== 0) {
-        let messages = missingProps.map(missingProp => {
-          let hash, propName
-          if (missingProp === 'productName') {
-            hash = 'name'
-            propName = 'application name'
-          }
-
-          if (missingProp === 'dependencies.electron') {
-            hash = 'version'
-            propName = 'Electron version'
-          }
-
-          return `Unable to determine ${propName}. Please specify an ${propName}\n\n` +
-            'For more information, please see\n' +
-            `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
-        })
+      if (isMissingRequiredProperty(missingProps)) {
+        let messages = missingProps.map(errorMessageForProperty)
 
         debug(err.message)
         err.message = messages.join('\n') + '\n'
@@ -90,6 +73,30 @@ function getMetadata (opts, dir, cb) {
       return cb(null)
     }
   })
+}
+
+function isMissingRequiredProperty (props) {
+  var requiredProps = props.filter(
+    (prop) => prop === 'productName' || prop === 'dependencies.electron'
+  )
+  return requiredProps.length !== 0
+}
+
+function errorMessageForProperty (prop) {
+  let hash, propName
+  if (prop === 'productName') {
+    hash = 'name'
+    propName = 'application name'
+  }
+
+  if (prop === 'dependencies.electron') {
+    hash = 'version'
+    propName = 'Electron version'
+  }
+
+  return `Unable to determine ${propName}. Please specify an ${propName}\n\n` +
+    'For more information, please see\n' +
+    `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
 }
 
 function getVersion (opts, packageName, src, cb) {
