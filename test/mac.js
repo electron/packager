@@ -158,12 +158,12 @@ function createExtraResource2Test (baseOpts) {
   }
 }
 
-function createExtendInfoTest (baseOpts, extraPath) {
+function createExtendInfoTest (baseOpts, extraPathOrParams) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
-    opts['extend-info'] = extraPath
+    opts['extend-info'] = extraPathOrParams
     opts['build-version'] = '3.2.1'
     opts['app-bundle-id'] = 'com.electron.extratest'
     opts['app-category-type'] = 'public.app-category.music'
@@ -532,6 +532,7 @@ module.exports = (baseOpts) => {
     platform: 'darwin'
   }
   let extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
+  let extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString())
 
   util.packagerTest('helper app paths test', createHelperAppPathsTest(baseOpts))
   util.packagerTest('helper app paths test with app name needing sanitization', createHelperAppPathsTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
@@ -541,7 +542,8 @@ module.exports = (baseOpts) => {
   util.packagerTest('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
   util.packagerTest('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
 
-  util.packagerTest('extend-info test', createExtendInfoTest(baseOpts, extraInfoPath))
+  util.packagerTest('extend-info by filename test', createExtendInfoTest(baseOpts, extraInfoPath))
+  util.packagerTest('extend-info by params test', createExtendInfoTest(baseOpts, extraInfoParams))
 
   util.packagerTest('extra-resource test: one arg', createExtraResourceTest(baseOpts))
   util.packagerTest('extra-resource test: two arg', createExtraResource2Test(baseOpts))

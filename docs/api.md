@@ -233,9 +233,13 @@ Valid values are listed in [Apple's documentation](https://developer.apple.com/l
 
 ##### `extend-info`
 
-*String*
+*String* or *Object*
 
-Filename of a plist file; the contents are added to the app's plist. Entries in `extend-info` override entries in the base plist file supplied by `electron` or `electron-prebuilt`, but are overridden by other explicit arguments such as [`app-version`](#app-version) or [`app-bundle-id`](#app-bundle-id).
+When the value is a `String`, the filename of a plist file. Its contents are added to the app's plist. When the value is an `Object`, an already-parsed plist data structure that is merged into the app's plist.
+
+Entries from `extend-info` override entries in the base plist file supplied by `electron` or `electron-prebuilt`, but are overridden by other explicit arguments such as [`app-version`](#app-version) or [`app-bundle-id`](#app-bundle-id).
+
+
 
 ##### `extra-resource`
 
