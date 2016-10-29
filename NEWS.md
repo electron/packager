@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## [8.2.0] - 2016-10-29
+
+### Added
+
+* Allow `extend-info` to specify an object instead of a filename (#510)
+
+### Fixed
+
+* Retrieving metadata from `package.json` by upgrading `get-package-info` (#505)
+* Typo when using `extend-info` (#510)
+
 ## [8.1.0] - 2016-09-30
 
 ### Added
@@ -274,6 +285,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.2.0]: https://github.com/electron-userland/electron-packager/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/electron-userland/electron-packager/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/electron-userland/electron-packager/compare/v7.7.0...v8.0.0
 [7.7.0]: https://github.com/electron-userland/electron-packager/compare/v7.6.0...v7.7.0
