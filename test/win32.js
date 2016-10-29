@@ -56,11 +56,13 @@ function setFileVersionTest (buildVersion) {
     'build-version': buildVersion
   }
 
-  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
-                                   opts,
-                                   ['4.99.101.0', buildVersion],
-                                   ['Product version should match package.json version',
-                                    'File version should match build version'])
+  return generateVersionStringTest(
+    ['ProductVersion', 'FileVersion'],
+    opts,
+    ['4.99.101.0', buildVersion],
+    ['Product version should match package.json version',
+      'File version should match build version']
+  )
 }
 
 function setProductVersionTest (appVersion) {
@@ -68,19 +70,23 @@ function setProductVersionTest (appVersion) {
     'app-version': appVersion
   }
 
-  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
-                                   opts,
-                                   [appVersion, appVersion],
-                                   ['Product version should match app version',
-                                    'File version should match app version'])
+  return generateVersionStringTest(
+    ['ProductVersion', 'FileVersion'],
+    opts,
+    [appVersion, appVersion],
+    ['Product version should match app version',
+      'File version should match app version']
+  )
 }
 
 function defaultProductAndFileVersionToPackageVersionTest () {
-  return generateVersionStringTest(['ProductVersion', 'FileVersion'],
-                                   {},
-                                   ['4.99.101.0', '4.99.101.0'],
-                                   ['Product version should match package.json version',
-                                    'File version should match package.json version'])
+  return generateVersionStringTest(
+    ['ProductVersion', 'FileVersion'],
+    {},
+    ['4.99.101.0', '4.99.101.0'],
+    ['Product version should match package.json version',
+      'File version should match package.json version']
+  )
 }
 
 function setCopyrightTest (appCopyright) {
@@ -99,11 +105,13 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
     }
   }
 
-  return generateVersionStringTest(['LegalCopyright', 'CompanyName'],
-                                   opts,
-                                   [appCopyright, companyName],
-                                   ['Legal copyright should match app copyright',
-                                    'Company name should match win32metadata value'])
+  return generateVersionStringTest(
+    ['LegalCopyright', 'CompanyName'],
+    opts,
+    [appCopyright, companyName],
+    ['Legal copyright should match app copyright',
+      'Company name should match win32metadata value']
+  )
 }
 
 function setCompanyNameTest (companyName, optName) {
