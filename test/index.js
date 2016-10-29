@@ -26,6 +26,7 @@ function npmInstallforFixtures () {
   const fixtures = [
     'basic',
     'basic-renamed-to-electron',
+    'infer-missing-version-only',
     'el-0374'
   ]
   return fixtures.map((fixture) => {

@@ -23,50 +23,92 @@ function getMetadata (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts['app-version']) props.push('version')
-  if (!opts.version) props.push(['dependencies.electron', 'devDependencies.electron'])
+  if (!opts.version) {
+    props.push([
+      'dependencies.electron',
+      'devDependencies.electron',
+      'dependencies.electron-prebuilt',
+      'devDependencies.electron-prebuilt'
+    ])
+  }
 
   // Name and version provided, no need to infer
   if (props.length === 0) return cb(null)
 
   // Search package.json files to infer name and version from
-  getPackageInfo(props, dir, function (err, result) {
-    if (err) {
-      // `get-package-info` exploded looking for `electron`. Try `electron-prebuilt` instead
-      props.pop()
-      props.push(['dependencies.electron-prebuilt', 'devDependencies.electron-prebuilt'])
-      getPackageInfo(props, dir, function (err, result) {
-        if (err) return cb(err)
-        return inferNameAndVersionFromInstalled('electron-prebuilt', opts, result, cb)
+  getPackageInfo(props, dir, (err, result) => {
+    if (err && err.missingProps) {
+      let missingProps = err.missingProps.map(prop => {
+        return Array.isArray(prop) ? prop[0] : prop
       })
+
+      if (isMissingRequiredProperty(missingProps)) {
+        let messages = missingProps.map(errorMessageForProperty)
+
+        debug(err.message)
+        err.message = messages.join('\n') + '\n'
+        return cb(err)
+      } else {
+        // Missing props not required, can continue w/ partial result
+        result = err.result
+      }
+    } else if (err) {
+      return cb(err)
+    }
+
+    if (result.values.productName) {
+      debug(`Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`)
+      opts.name = result.values.productName
+    }
+
+    if (result.values.version) {
+      debug(`Inferring app-version from version in ${result.source.version.src}`)
+      opts['app-version'] = result.values.version
+    }
+
+    if (result.values['dependencies.electron']) {
+      let prop = result.source['dependencies.electron'].prop.split('.')[1]
+      let src = result.source['dependencies.electron'].src
+      return getVersion(opts, prop, src, cb)
     } else {
-      return inferNameAndVersionFromInstalled('electron', opts, result, cb)
+      return cb(null)
     }
   })
 }
 
-function inferNameAndVersionFromInstalled (packageName, opts, result, cb) {
-  if (result.values.productName) {
-    debug('Inferring application name from productName or name in package.json')
-    opts.name = result.values.productName
+function isMissingRequiredProperty (props) {
+  var requiredProps = props.filter(
+    (prop) => prop === 'productName' || prop === 'dependencies.electron'
+  )
+  return requiredProps.length !== 0
+}
+
+function errorMessageForProperty (prop) {
+  let hash, propName
+  if (prop === 'productName') {
+    hash = 'name'
+    propName = 'application name'
   }
 
-  if (result.values.version) {
-    debug('Inferring app-version from version in package.json')
-    opts['app-version'] = result.values.version
+  if (prop === 'dependencies.electron') {
+    hash = 'version'
+    propName = 'Electron version'
   }
 
-  if (result.values[`dependencies.${packageName}`]) {
-    resolve(packageName, {
-      basedir: path.dirname(result.source[`dependencies.${packageName}`].src)
-    }, function (err, res, pkg) {
-      if (err) return cb(err)
-      debug(`Inferring target Electron version from ${packageName} dependency or devDependency in package.json`)
-      opts.version = pkg.version
-      return cb(null)
-    })
-  } else {
+  return `Unable to determine ${propName}. Please specify an ${propName}\n\n` +
+    'For more information, please see\n' +
+    `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
+}
+
+function getVersion (opts, packageName, src, cb) {
+  resolve(packageName, {
+    basedir: path.dirname(src)
+  }, (err, res, pkg) => {
+    if (err) return cb(err)
+    debug(`Inferring target Electron version from ${packageName} in ${src}`)
+    opts.version = pkg.version
     return cb(null)
-  }
+  })
 }
 
 function createSeries (opts, archs, platforms) {
@@ -198,15 +240,7 @@ module.exports = function packager (opts, cb) {
   debug(`Target Architectures: ${archs.join(', ')}`)
 
   getMetadata(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
-    if (err) {
-      err.message = 'Unable to determine application name or Electron version. ' +
-        'Please specify an application name and Electron version.\n\n' +
-        'For more infomation, please see \n' +
-        'https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#name or \n' +
-        'https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#version\n\n' +
-        err.message
-      return cb(err)
-    }
+    if (err) return cb(err)
 
     debug(`Application name: ${opts.name}`)
     debug(`Target Electron version: ${opts.version}`)

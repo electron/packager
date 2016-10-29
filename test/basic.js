@@ -3,11 +3,13 @@
 const common = require('../common')
 const config = require('./config.json')
 const fs = require('fs-extra')
+const os = require('os')
 const packager = require('..')
 const path = require('path')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
+const pkgUp = require('pkg-up')
 
 // Generates a path to the generated app that reflects the name given in the options.
 // Returns the Helper.app location on darwin since the top-level .app is already tested for the
@@ -265,16 +267,57 @@ function createInferElectronTest (opts) {
   }
 }
 
+function copyFixtureToTempDir (fixtureSubdir, cb) {
+  let tmpdir = path.join(os.tmpdir(), fixtureSubdir)
+  let fixtureDir = path.join(__dirname, 'fixtures', fixtureSubdir)
+  waterfall([
+    cb => {
+      let tmpdirPkg = pkgUp.sync(path.join(tmpdir, '..'))
+      if (tmpdirPkg) return cb(new Error(`Found package.json in parent of temp directory, which will interfere with test results. Please remove package.json at ${tmpdirPkg}`))
+      cb()
+    },
+    cb => fs.emptyDir(tmpdir, cb),
+    (cb1, cb2) => fs.copy(fixtureDir, tmpdir, cb2 || cb1), // inconsistent cb arguments from fs.emptyDir
+    cb => cb(null, tmpdir)
+  ], cb)
+}
+
 function createInferFailureTest (opts, fixtureSubdir) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    delete opts.version
-    opts.dir = path.join(__dirname, 'fixtures', fixtureSubdir)
+    copyFixtureToTempDir(fixtureSubdir, (err, dir) => {
+      if (err) return t.end(err)
 
-    packager(opts, function (err, paths) {
-      t.ok(err, 'error thrown')
-      t.end()
+      delete opts.version
+      opts.dir = dir
+
+      packager(opts, function (err, paths) {
+        t.ok(err, 'error thrown')
+        t.end()
+      })
+    })
+  }
+}
+
+function createInferMissingVersionTest (opts) {
+  return (t) => {
+    t.timeoutAfter(config.timeout)
+    copyFixtureToTempDir('infer-missing-version-only', (err, dir) => {
+      if (err) return t.end(err)
+
+      delete opts.version
+      opts.dir = dir
+      let packageJSON = require(path.join(opts.dir, 'package.json'))
+
+      packager(opts, (err, paths) => {
+        if (!err) {
+          var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
+          t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
+        }
+
+        t.end(err)
+      })
     })
   }
 }
@@ -285,6 +328,10 @@ function createInferMissingFieldsTest (opts) {
 
 function createInferWithBadFieldsTest (opts) {
   return createInferFailureTest(opts, 'infer-bad-fields')
+}
+
+function createInferWithMalformedJSONTest (opts) {
+  return createInferFailureTest(opts, 'infer-malformed-json')
 }
 
 function createTmpdirTest (opts) {
@@ -406,6 +453,8 @@ util.testSinglePlatform('infer test using `electron-prebuilt` package', createIn
 util.testSinglePlatform('infer test using `electron` package', createInferElectronTest)
 util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
 util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
+util.testSinglePlatform('infer with malformed JSON test', createInferWithMalformedJSONTest)
+util.testSinglePlatform('infer with missing version only test', createInferMissingVersionTest)
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
 util.testSinglePlatform('prune test', (baseOpts) => {
