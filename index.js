@@ -216,7 +216,7 @@ function createSeries (opts, archs, platforms) {
           testSymlink(function (result) {
             if (result) return checkOverwrite()
 
-            console.error(`Cannot create symlinks; skipping ${combination.platform} platform`)
+            console.error(`Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${combination.platform} platform`)
             callback()
           })
         } else {
