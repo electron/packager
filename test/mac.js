@@ -552,43 +552,43 @@ module.exports = (baseOpts) => {
 
   test('osx-sign argument test: default args', function (t) {
     var args = true
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out')
-    t.same(signOpts, {identity: null, app: 'out', platform: 'darwin'})
+    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
   test('osx-sign argument test: identity=true sets autodiscovery mode', function (t) {
     var args = {identity: true}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out')
-    t.same(signOpts, {identity: null, app: 'out', platform: 'darwin'})
+    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
   test('osx-sign argument test: entitlements passed to electron-osx-sign', function (t) {
     var args = {entitlements: 'path-to-entitlements'}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out')
-    t.same(signOpts, {app: 'out', platform: 'darwin', entitlements: args.entitlements})
+    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements})
     t.end()
   })
 
   test('osx-sign argument test: app not overwritten', function (t) {
     var args = {app: 'some-other-path'}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out')
-    t.same(signOpts, {app: 'out', platform: 'darwin'})
+    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
   test('osx-sign argument test: platform not overwritten', function (t) {
     var args = {platform: 'mas'}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out')
-    t.same(signOpts, {app: 'out', platform: 'darwin'})
+    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
   test('osx-sign argument test: binaries not set', (t) => {
     let args = {binaries: ['binary1', 'binary2']}
-    let signOpts = mac.createSignOpts(args, 'darwin', 'out')
-    t.same(signOpts, {app: 'out', platform: 'darwin'})
+    let signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
