@@ -120,6 +120,8 @@ but are not limited to:
 
 *String*
 
+The local path to the icon file, if the target platform supports setting embedding an icon.
+
 Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
 
 - OS X: `.icns`
