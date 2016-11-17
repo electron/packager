@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## [8.3.0] - 2016-11-16
+
+### Changed
+
+* Upgrade to electron-osx-sign 0.4.x (#384)
+
+### Fixed
+
+* Clarify symlink error message for Windows
+
 ## [8.2.0] - 2016-10-29
 
 ### Added
@@ -285,6 +295,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.3.0]: https://github.com/electron-userland/electron-packager/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/electron-userland/electron-packager/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/electron-userland/electron-packager/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/electron-userland/electron-packager/compare/v7.7.0...v8.0.0
