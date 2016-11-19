@@ -58,6 +58,9 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   and then be integrated into this project.
 * If you are contributing a nontrivial change, please add an entry to `NEWS.md`. The format is
   similar to the one described at [Keep a Changelog](http://keepachangelog.com/).
+* Please **do not** bump the version number in your pull requests, the maintainers will do that.
+  Feel free to indicate whether the changes require a major, minor, or patch version bump, as
+  prescribed by the [semantic versioning specification](http://semver.org/).
 * Once your pull request is approved, please make sure your commits are rebased onto the latest
   commit in the master branch, and that you limit/squash the number of commits created to a
   "feature"-level. For instance:
