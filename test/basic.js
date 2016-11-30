@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const os = require('os')
 const packager = require('..')
 const path = require('path')
+const targets = require('../targets')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
@@ -418,6 +419,12 @@ function createDisableSymlinkDereferencingTest (opts) {
     })
   }
 }
+
+test('validateListFromOptions does not take non-Array/String values', (t) => {
+  t.notOk(targets.validateListFromOptions({digits: 64}, {'64': true, '65': true}, 'digits') instanceof Array,
+          'should not be an Array')
+  t.end()
+})
 
 test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', function (t) {
   var opts = {
