@@ -2,6 +2,10 @@
 
 const common = require('./common')
 
+function unsupportedListOption (name, value, supported) {
+  return new Error(`Unsupported ${name}=${value} (${typeof value}); must be a String matching: ${Object.keys(supported).join(', ')}`)
+}
+
 module.exports = {
   supportedArchs: common.archs.reduce((result, arch) => {
     result[arch] = true
@@ -23,10 +27,17 @@ module.exports = {
     let list = opts[name] || process[name]
     if (list === 'all') return Object.keys(supported)
 
-    if (!Array.isArray(list)) list = list.split(',')
+    if (!Array.isArray(list)) {
+      if (typeof list === 'string') {
+        list = list.split(',')
+      } else {
+        return unsupportedListOption(name, list, supported)
+      }
+    }
+
     for (let value of list) {
       if (!supported[value]) {
-        return new Error(`Unsupported ${name}=${value}; must be one of: ${Object.keys(supported).join(', ')}`)
+        return unsupportedListOption(name, value, supported)
       }
     }
 
