@@ -124,7 +124,7 @@ The local path to the icon file, if the target platform supports setting embeddi
 
 Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
 
-- OS X: `.icns`
+- [OS X][1]: `.icns` ([Use `iconutil`][2] to convert your PNG icons to a single `.icns` file)
 - Windows: `.ico` ([See the readme](https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
 - Linux: this option is not required, as the dock/window list icon is set via
   [the `icon` option in the `BrowserWindow` constructor](http://electron.atom.io/docs/api/browser-window/#new-browserwindowoptions).
@@ -164,6 +164,9 @@ default ignored directories listed above.*
 ##### `name`
 
 *String*
+
+[1]: https://developer.apple.com/library/content/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Optimizing/Optimizing.html#//apple_ref/doc/uid/TP40012302-CH7-SW1
+[2]: https://developer.apple.com/library/content/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Optimizing/Optimizing.html#//apple_ref/doc/uid/TP40012302-CH7-SW2
 
 The application name. If omitted, it will use the `productName` or `name` value from the nearest `package.json`.
 
