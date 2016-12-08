@@ -212,7 +212,7 @@ class MacApp {
             // Although not signed successfully, the application is packed.
             console.warn('Code sign failed; please retry manually.', err)
           }
-          cb()
+          cb(err)
         })
       })
     }
