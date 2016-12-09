@@ -2,9 +2,15 @@
 
 ## Unreleased
 
+## [8.4.0] - 2016-12-08
+
 ### Added
 
 * `quiet` option (#541)
+
+### Fixed
+
+* Better type checking when validating arch/platform (#534)
 
 ## [8.3.0] - 2016-11-16
 
@@ -299,6 +305,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.4.0]: https://github.com/electron-userland/electron-packager/compare/v8.3.0...v8.4.0
 [8.3.0]: https://github.com/electron-userland/electron-packager/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/electron-userland/electron-packager/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/electron-userland/electron-packager/compare/v8.0.0...v8.1.0
