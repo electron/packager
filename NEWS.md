@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* `quiet` option (#541)
+
 ## [8.3.0] - 2016-11-16
 
 ### Changed
