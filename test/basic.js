@@ -427,9 +427,9 @@ test('validateListFromOptions does not take non-Array/String values', (t) => {
 })
 
 test('setting the quiet option does not print messages', (t) => {
-  const error_log = console.error
-  const warning_log = console.warn
-  let output = '';
+  const errorLog = console.error
+  const warningLog = console.warn
+  let output = ''
   console.error = (message) => { output += message }
   console.warn = (message) => { output += message }
 
@@ -438,8 +438,8 @@ test('setting the quiet option does not print messages', (t) => {
   common.info('info', true)
   t.equal('', output, 'quieted common.info should not call console.error')
 
-  console.error = error_log
-  console.warn = warning_log
+  console.error = errorLog
+  console.warn = warningLog
   t.end()
 })
 
