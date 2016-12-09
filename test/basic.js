@@ -426,6 +426,23 @@ test('validateListFromOptions does not take non-Array/String values', (t) => {
   t.end()
 })
 
+test('setting the quiet option does not print messages', (t) => {
+  const error_log = console.error
+  const warning_log = console.warn
+  let output = '';
+  console.error = (message) => { output += message }
+  console.warn = (message) => { output += message }
+
+  common.warning('warning', true)
+  t.equal('', output, 'quieted common.warning should not call console.warn')
+  common.info('info', true)
+  t.equal('', output, 'quieted common.info should not call console.error')
+
+  console.error = error_log
+  console.warn = warning_log
+  t.end()
+})
+
 test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', function (t) {
   var opts = {
     download: {

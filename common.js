@@ -23,7 +23,8 @@ function parseCLIArgs (argv) {
       'deref-symlinks',
       'download.strictSSL',
       'overwrite',
-      'prune'
+      'prune',
+      'quiet'
     ],
     default: {
       'deref-symlinks': true,
@@ -99,9 +100,21 @@ function generateFinalPath (opts) {
   return path.join(opts.out || process.cwd(), generateFinalBasename(opts))
 }
 
-function subOptionWarning (properties, optionName, parameter, value) {
+function info (message, quiet) {
+  if (!quiet) {
+    console.error(message)
+  }
+}
+
+function warning (message, quiet) {
+  if (!quiet) {
+    console.warn(message)
+  }
+}
+
+function subOptionWarning (properties, optionName, parameter, value, quiet) {
   if (properties.hasOwnProperty(parameter)) {
-    console.warn(`WARNING: ${optionName}.${parameter} will be inferred from the main options`)
+    warning(`WARNING: ${optionName}.${parameter} will be inferred from the main options`, quiet)
   }
   properties[parameter] = value
 }
@@ -115,7 +128,7 @@ function createAsarOpts (opts) {
   } else if (opts.asar === false || opts.asar === undefined) {
     return false
   } else {
-    console.warn(`asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`)
+    warning(`asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`)
     return false
   }
 
@@ -125,9 +138,9 @@ function createAsarOpts (opts) {
 function createDownloadOpts (opts, platform, arch) {
   let downloadOpts = Object.assign({}, opts.download)
 
-  subOptionWarning(downloadOpts, 'download', 'platform', platform)
-  subOptionWarning(downloadOpts, 'download', 'arch', arch)
-  subOptionWarning(downloadOpts, 'download', 'version', opts.version)
+  subOptionWarning(downloadOpts, 'download', 'platform', platform, opts.quiet)
+  subOptionWarning(downloadOpts, 'download', 'arch', arch, opts.quiet)
+  subOptionWarning(downloadOpts, 'download', 'version', opts.version, opts.quiet)
 
   return downloadOpts
 }
@@ -172,6 +185,8 @@ module.exports = {
 
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
+
+  info: info,
 
   initializeApp: function initializeApp (opts, templatePath, appRelativePath, callback) {
     // Performs the following initial operations for an app:
@@ -284,5 +299,6 @@ module.exports = {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
     fs.rename(path.join(basePath, oldName), path.join(basePath, newName), cb)
   },
-  sanitizeAppName: sanitizeAppName
+  sanitizeAppName: sanitizeAppName,
+  warning: warning
 }

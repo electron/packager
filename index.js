@@ -157,7 +157,7 @@ function createSeries (opts, archs, platforms) {
             buildParentDir = opts.out || process.cwd()
           }
           var buildDir = path.join(buildParentDir, `${platform}-${arch}-template`)
-          console.error(`Packaging app for platform ${platform} ${arch} using electron v${version}`)
+          common.info(`Packaging app for platform ${platform} ${arch} using electron v${version}`, opts.quiet)
           series([
             function (cb) {
               debug(`Creating ${buildDir}`)
@@ -203,7 +203,7 @@ function createSeries (opts, archs, platforms) {
                   createApp(comboOpts)
                 })
               } else {
-                console.error(`Skipping ${platform} ${arch} (output dir already exists, use --overwrite to force)`)
+                common.info(`Skipping ${platform} ${arch} (output dir already exists, use --overwrite to force)`, opts.quiet)
                 callback()
               }
             } else {
@@ -216,7 +216,7 @@ function createSeries (opts, archs, platforms) {
           testSymlink(function (result) {
             if (result) return checkOverwrite()
 
-            console.error(`Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${combination.platform} platform`)
+            common.info(`Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${combination.platform} platform`, opts.quiet)
             callback()
           })
         } else {
