@@ -200,6 +200,13 @@ The non-`all` values correspond to the platform names used by [Electron releases
 
 Runs [`npm prune --production`](https://docs.npmjs.com/cli/prune) before starting to package the app.
 
+##### `quiet`
+
+*Boolean* (default: `false`)
+
+If `true`, disables printing informational and warning messages to the console when packaging the
+application. This does *not* disable errors.
+
 ##### `tmpdir`
 
 *String* or *`false`* (default: system temp directory)

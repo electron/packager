@@ -199,18 +199,18 @@ class MacApp {
 
     if ((platform === 'all' || platform === 'mas') &&
         osxSignOpt === undefined) {
-      console.warn('WARNING: signing is required for mas builds. Provide the osx-sign option, ' +
-                   'or manually sign the app later.')
+      common.warning('WARNING: signing is required for mas builds. Provide the osx-sign option, ' +
+                     'or manually sign the app later.')
     }
 
     if (osxSignOpt) {
       this.operations.push((cb) => {
-        let signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version)
+        let signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.quiet)
         debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
         sign(signOpts, (err) => {
           if (err) {
             // Although not signed successfully, the application is packed.
-            console.warn('Code sign failed; please retry manually.', err)
+            common.warning('Code sign failed; please retry manually.', err)
           }
           cb()
         })
@@ -233,19 +233,19 @@ function filterCFBundleIdentifier (identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '')
 }
 
-function createSignOpts (properties, platform, app, version) {
+function createSignOpts (properties, platform, app, version, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
   let signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options
   // user may think they can pass platform, app, or version, but they will be ignored
-  common.subOptionWarning(signOpts, 'osx-sign', 'platform', platform)
-  common.subOptionWarning(signOpts, 'osx-sign', 'app', app)
-  common.subOptionWarning(signOpts, 'osx-sign', 'version', version)
+  common.subOptionWarning(signOpts, 'osx-sign', 'platform', platform, quiet)
+  common.subOptionWarning(signOpts, 'osx-sign', 'app', app, quiet)
+  common.subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet)
 
   if (signOpts.binaries) {
-    console.warn('WARNING: osx-sign.binaries is not an allowed sub-option. Not passing to electron-osx-sign.')
+    common.warning('WARNING: osx-sign.binaries is not an allowed sub-option. Not passing to electron-osx-sign.')
     delete signOpts.binaries
   }
 

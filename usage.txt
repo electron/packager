@@ -50,6 +50,7 @@ overwrite          if output directory for a platform already exists, replaces i
                    skipping it
 platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple).
                    Defaults to the host platform
+quiet              Do not print informational or warning messages
 tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable
                    use of a temporary directory.
 version            the version of Electron that is being packaged, see
