@@ -154,7 +154,7 @@ The `Foo Bar.app` folder generated can be executed by a system running OS X, whi
 
 ## Related
 
-- [electron-builder](https://www.npmjs.com/package/electron-builder) - for creating installer wizards
+- [electron-forge](https://www.npmjs.com/package/electron-forge) - creates, builds, and distributes modern Electron applications
 - [grunt-electron](https://github.com/sindresorhus/grunt-electron) - grunt plugin for electron-packager
 - [electron-packager-interactive](https://github.com/Urucas/electron-packager-interactive) - an interactive CLI for electron-packager
 - [electron-packager-plugin-non-proprietary-codecs-ffmpeg](https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg) - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs
