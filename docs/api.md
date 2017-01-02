@@ -95,7 +95,7 @@ Whether to package the application's source code into an archive, using [Electro
 
 *String*
 
-The build version of the application. Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
+The build version of the application. Defaults to the value of [`app-version`](#app-version). Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
 
 ##### `derefSymlinks`
 
