@@ -32,6 +32,7 @@ function parseCLIArgs (argv) {
       prune: true
     },
     string: [
+      'electron-version',
       'out'
     ]
   })
@@ -51,6 +52,10 @@ function parseCLIArgs (argv) {
   if (args.out === '') {
     args.out = null
   }
+
+  // Transform hyphenated keys into camelCase
+  args.electronVersion = args['electron-version']
+  delete args['electron-version']
 
   // Overrides for multi-typed arguments, because minimist doesn't support it
 
@@ -140,7 +145,7 @@ function createDownloadOpts (opts, platform, arch) {
 
   subOptionWarning(downloadOpts, 'download', 'platform', platform, opts.quiet)
   subOptionWarning(downloadOpts, 'download', 'arch', arch, opts.quiet)
-  subOptionWarning(downloadOpts, 'download', 'version', opts.version, opts.quiet)
+  subOptionWarning(downloadOpts, 'download', 'version', opts.electronVersion, opts.quiet)
 
   return downloadOpts
 }
@@ -171,6 +176,19 @@ module.exports = {
     }
 
     return combinations
+  },
+
+  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, extraCondition/* optional */) {
+    if (extraCondition === undefined) {
+      extraCondition = true
+    }
+    if (properties.hasOwnProperty(oldName) && extraCondition) {
+      warning(`The ${oldName} parameter is deprecated, use ${newName} instead`)
+      if (!properties.hasOwnProperty(newName)) {
+        properties[newName] = properties[oldName]
+      }
+      delete properties[oldName]
+    }
   },
 
   downloadElectronZip: function downloadElectronZip (downloadOpts, cb) {
@@ -226,7 +244,7 @@ module.exports = {
       function (cb) {
         var afterCopyHooks = (opts.afterCopy || []).map(function (afterCopyFn) {
           return function (cb) {
-            afterCopyFn(appPath, opts.version, opts.platform, opts.arch, cb)
+            afterCopyFn(appPath, opts.electronVersion, opts.platform, opts.arch, cb)
           }
         })
         series(afterCopyHooks, cb)

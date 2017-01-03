@@ -23,7 +23,7 @@ function getMetadata (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts['app-version']) props.push('version')
-  if (!opts.version) {
+  if (!opts.electronVersion) {
     props.push([
       'dependencies.electron',
       'devDependencies.electron',
@@ -106,7 +106,7 @@ function getVersion (opts, packageName, src, cb) {
   }, (err, res, pkg) => {
     if (err) return cb(err)
     debug(`Inferring target Electron version from ${packageName} in ${src}`)
-    opts.version = pkg.version
+    opts.electronVersion = pkg.version
     return cb(null)
   })
 }
@@ -239,11 +239,13 @@ module.exports = function packager (opts, cb) {
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 
+  common.deprecatedParameter(opts, 'version', 'electronVersion')
+
   getMetadata(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)
 
     debug(`Application name: ${opts.name}`)
-    debug(`Target Electron version: ${opts.version}`)
+    debug(`Target Electron version: ${opts.electronVersion}`)
 
     ignore.generateIgnores(opts)
 

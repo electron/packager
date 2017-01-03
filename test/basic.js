@@ -210,7 +210,7 @@ function createInferElectronPrebuiltTest (opts) {
     t.timeoutAfter(config.timeout)
 
     // Don't specify name or version
-    delete opts.version
+    delete opts.electronVersion
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
     var finalPath
@@ -252,7 +252,7 @@ function createInferElectronTest (opts) {
     t.timeoutAfter(config.timeout)
 
     // Don't specify name or version
-    delete opts.version
+    delete opts.electronVersion
     opts.dir = path.join(__dirname, 'fixtures', 'basic-renamed-to-electron')
 
     var packageJSON = require(path.join(opts.dir, 'package.json'))
@@ -290,7 +290,7 @@ function createInferFailureTest (opts, fixtureSubdir) {
     copyFixtureToTempDir(fixtureSubdir, (err, dir) => {
       if (err) return t.end(err)
 
-      delete opts.version
+      delete opts.electronVersion
       opts.dir = dir
 
       packager(opts, function (err, paths) {
@@ -307,7 +307,7 @@ function createInferMissingVersionTest (opts) {
     copyFixtureToTempDir('infer-missing-version-only', (err, dir) => {
       if (err) return t.end(err)
 
-      delete opts.version
+      delete opts.electronVersion
       opts.dir = dir
       let packageJSON = require(path.join(opts.dir, 'package.json'))
 
@@ -450,7 +450,7 @@ test('download argument test: download.{arch,platform,version} does not overwrit
       platform: 'win32',
       version: '0.30.0'
     },
-    version: '0.36.0'
+    electronVersion: '0.36.0'
   }
 
   var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
@@ -496,7 +496,7 @@ util.packagerTest('building for Linux target sanitizes binary name', (t) => {
   let opts = {
     name: '@username/package-name',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
-    version: '0.37.4',
+    electronVersion: '0.37.4',
     arch: 'ia32',
     platform: 'linux'
   }
@@ -544,7 +544,7 @@ util.packagerTest('fails with invalid version', (t) => {
   let opts = {
     name: 'invalidElectronTest',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
-    version: '0.0.1',
+    electronVersion: '0.0.1',
     arch: 'x64',
     platform: 'linux',
     download: {
@@ -558,11 +558,36 @@ util.packagerTest('fails with invalid version', (t) => {
   })
 })
 
+util.packagerTest('electronVersion overrides deprecated version', (t) => {
+  const opts = {
+    electronVersion: '0.1.2',
+    version: '1.2.3'
+  }
+
+  common.deprecatedParameter(opts, 'version', 'electronVersion')
+
+  t.equal(opts.electronVersion, '0.1.2', 'electronVersion should not change')
+  t.equal(opts.version, undefined, 'version should be deleted')
+  t.end()
+})
+
+util.packagerTest('version used if electronVersion not set', (t) => {
+  const opts = {
+    version: '1.2.3'
+  }
+
+  common.deprecatedParameter(opts, 'version', 'electronVersion')
+
+  t.equal(opts.electronVersion, '1.2.3', 'electronVersion have version value')
+  t.equal(opts.version, undefined, 'version should be deleted')
+  t.end()
+})
+
 util.packagerTest('dir argument test: should work with relative path', (t) => {
   let opts = {
     name: 'ElectronTest',
     dir: path.join('..', 'fixtures', 'el-0374'),
-    version: '0.37.4',
+    electronVersion: '0.37.4',
     arch: 'x64',
     platform: 'linux'
   }

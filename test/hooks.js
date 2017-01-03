@@ -13,14 +13,14 @@ function createHookTest (hookName) {
     var opts = {
       name: 'basicTest',
       dir: util.fixtureSubdir('basic'),
-      version: config.version,
+      electronVersion: config.version,
       arch: 'ia32',
       platform: 'all'
     }
 
     opts[hookName] = [function testHook (buildPath, electronVersion, platform, arch, callback) {
       hookCalled = true
-      t.equal(electronVersion, opts.version, hookName + ' electronVersion should be the same as the options object')
+      t.equal(electronVersion, opts.electronVersion, hookName + ' electronVersion should be the same as the options object')
       t.equal(arch, opts.arch, hookName + ' arch should be the same as the options object')
       callback()
     }]

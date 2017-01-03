@@ -14,7 +14,7 @@ function createMultiTest (arch, platform) {
     var opts = {
       name: 'basicTest',
       dir: util.fixtureSubdir('basic'),
-      version: config.version,
+      electronVersion: config.version,
       arch: arch,
       platform: platform
     }
@@ -41,7 +41,7 @@ util.packagerTest('all test', (t) => {
   var opts = {
     name: 'basicTest',
     dir: util.fixtureSubdir('basic'),
-    version: config.version,
+    electronVersion: config.version,
     all: true
   }
 
@@ -79,7 +79,7 @@ util.packagerTest('platform=all test (one arch)', function (t) {
   var opts = {
     name: 'basicTest',
     dir: util.fixtureSubdir('basic'),
-    version: config.version,
+    electronVersion: config.version,
     arch: 'ia32',
     platform: 'all'
   }
@@ -106,7 +106,7 @@ util.packagerTest('arch=all test (one platform)', (t) => {
   var opts = {
     name: 'basicTest',
     dir: util.fixtureSubdir('basic'),
-    version: config.version,
+    electronVersion: config.version,
     arch: 'all',
     platform: 'linux'
   }

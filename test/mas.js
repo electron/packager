@@ -6,7 +6,7 @@ const util = require('./util')
 var baseOpts = {
   name: 'basicTest',
   dir: util.fixtureSubdir('basic'),
-  version: config.version,
+  electronVersion: config.version,
   arch: 'x64',
   platform: 'mas'
 }

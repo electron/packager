@@ -195,7 +195,7 @@ class MacApp {
   enqueueAppSigningIfSpecified () {
     let osxSignOpt = this.opts['osx-sign']
     let platform = this.opts.platform
-    let version = this.opts.version
+    let version = this.opts.electronVersion
 
     if ((platform === 'all' || platform === 'mas') &&
         osxSignOpt === undefined) {

@@ -39,6 +39,8 @@ download           a list of sub-options to pass to electron-download. They are 
                    - mirror: alternate URL to download Electron zips
                    - strictSSL: whether SSL certs are required to be valid when downloading
                      Electron. Defaults to true, use --download.strictSSL=false to disable checks.
+electron-version   the version of Electron that is being packaged, see
+                   https://github.com/electron/electron/releases
 icon               the local path to an icon file to use as the icon for the app.
                    Note: Format depends on platform.
 ignore             do not copy files into app whose filenames regex .match this string. See also:
@@ -53,8 +55,7 @@ platform           all, or one or more of: darwin, linux, mas, win32 (comma-deli
 quiet              Do not print informational or warning messages
 tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable
                    use of a temporary directory.
-version            the version of Electron that is being packaged, see
-                   https://github.com/electron/electron/releases
+version            an alias for electron-version (deprecated)
 
 * darwin/mas target platforms only *
 

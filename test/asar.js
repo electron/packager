@@ -15,7 +15,7 @@ function createDefaultAppAsarTest (opts) {
 
     opts.name = 'el0374Test'
     opts.dir = path.join(__dirname, 'fixtures', 'el-0374')
-    opts.version = '0.37.4'
+    opts.electronVersion = '0.37.4'
 
     var resourcesPath
 
