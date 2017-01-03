@@ -52,8 +52,9 @@
   },
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "eslint .",
     "pretest": "rimraf test/work",
-    "test": "eslint . && nyc tape test"
+    "test": "npm run lint && nyc tape test"
   },
   "directories": {
     "test": "test"
