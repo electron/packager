@@ -26,7 +26,7 @@ exports.areFilesEqual = function areFilesEqual (file1, file2, callback) {
 }
 
 exports.downloadAll = function downloadAll (version, callback) {
-  let combinations = common.createDownloadCombos({version: config.version}, common.platforms, common.archs, (platform, arch) => {
+  let combinations = common.createDownloadCombos({electronVersion: config.version}, common.platforms, common.archs, (platform, arch) => {
     // Skip testing darwin/mas target on Windows since electron-packager itself skips it
     // (see https://github.com/electron-userland/electron-packager/issues/71)
     return common.isPlatformMac(platform) && process.platform === 'win32'
@@ -87,7 +87,7 @@ exports.packagerTest = function packagerTest (name, testFunction) {
 
 exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, ...createTestArgs */) {
   var args = slice.call(arguments, 2)
-  exports.packagerTest(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', version: config.version}].concat(args)))
+  exports.packagerTest(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', electronVersion: config.version}].concat(args)))
 }
 
 exports.verifyPackageExistence = function verifyPackageExistence (finalPaths, callback) {

@@ -116,6 +116,15 @@ but are not limited to:
 - `strictSSL` (*Boolean* - default: `true`): Whether SSL certificates are required to be valid when
   downloading Electron.
 
+##### `electronVersion`
+
+*String*
+
+The Electron version with which the app is built (without the leading 'v') - for example,
+[`1.4.13`](https://github.com/electron/electron/releases/tag/v1.4.13). See [Electron releases] for
+valid versions. If omitted, it will use the version of the nearest local installation of
+`electron` or `electron-prebuilt`, defined in `package.json` in either `dependencies` or `devDependencies`.
+
 ##### `icon`
 
 *String*
@@ -215,12 +224,8 @@ The base directory to use as a temp directory. Set to `false` to disable use of 
 
 ##### `version`
 
-*String*
-
-The Electron version with which the app is built (without the leading 'v') - for example,
-[`0.33.9`](https://github.com/electron/electron/releases/tag/v0.33.9). See [Electron releases] for
-valid versions. If omitted, it will use the version of the nearest local installation of
-`electron` or `electron-prebuilt`, defined in `package.json` in either `dependencies` or `devDependencies`.
+*String* (**deprecated** and will be removed in a future major version, please use the
+[`electronVersion`](#electronversion) parameter instead)
 
 #### OS X/Mac App Store targets only
 

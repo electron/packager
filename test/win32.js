@@ -13,7 +13,7 @@ const win32 = require('../win32')
 const baseOpts = {
   name: 'basicTest',
   dir: util.fixtureSubdir('basic'),
-  version: config.version,
+  electronVersion: config.version,
   arch: 'x64',
   platform: 'win32'
 }

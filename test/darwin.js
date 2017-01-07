@@ -6,7 +6,7 @@ const path = require('path')
 var baseOpts = {
   name: 'basicTest',
   dir: path.join(__dirname, 'fixtures', 'basic'),
-  version: config.version,
+  electronVersion: config.version,
   arch: 'x64',
   platform: 'darwin'
 }

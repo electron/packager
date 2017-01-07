@@ -3,6 +3,14 @@
 const common = require('../common')
 const test = require('tape')
 
+test('CLI argument test: --electron-version populates opts.electronVersion', (t) => {
+  let args = common.parseCLIArgs([])
+  t.equal(args.electronVersion, undefined)
+  args = common.parseCLIArgs(['--electron-version=1.2.3'])
+  t.equal(args.electronVersion, '1.2.3')
+  t.end()
+})
+
 test('CLI argument test: --download.strictSSL default', function (t) {
   var args = common.parseCLIArgs([])
   t.true(args.download.strictSSL, 'default for --download.strictSSL is true')
