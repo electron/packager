@@ -10,7 +10,7 @@
 
 ### Deprecated
 
-* `version` is deprecated in favor of `electronVersion` (#547)
+* `version` is deprecated in favor of `electronVersion` (`--electron-version` via CLI) (#547)
 
 ## [8.4.0] - 2016-12-08
 
