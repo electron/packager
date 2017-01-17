@@ -239,7 +239,7 @@ module.exports = function packager (opts, cb) {
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 
-  common.deprecatedParameter(opts, 'version', 'electronVersion')
+  common.deprecatedParameter(opts, 'version', 'electronVersion', 'electron-version')
 
   getMetadata(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)

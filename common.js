@@ -178,12 +178,9 @@ module.exports = {
     return combinations
   },
 
-  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, extraCondition/* optional */) {
-    if (extraCondition === undefined) {
-      extraCondition = true
-    }
-    if (properties.hasOwnProperty(oldName) && extraCondition) {
-      warning(`The ${oldName} parameter is deprecated, use ${newName} instead`)
+  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName) {
+    if (properties.hasOwnProperty(oldName)) {
+      warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`)
       if (!properties.hasOwnProperty(newName)) {
         properties[newName] = properties[oldName]
       }
