@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* Show CLI option when showing option deprecation message (#560)
+
 ## [8.5.0] - 2017-01-10
 
 ### Added
