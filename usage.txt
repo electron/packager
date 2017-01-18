@@ -31,7 +31,7 @@ asar               whether to package the source code within your app into an ar
                    - unpackDir: unpacks the dir to the app.asar.unpacked directory whose names glob
                      pattern or exactly match this string. It's relative to the <sourcedir>.
 build-version      build version to set for the app
-deref-symlinks     whether symlinks should be dereferenced. Defaults to true.
+deref-symlinks     whether symlinks should be dereferenced within the app source. Defaults to true.
 download           a list of sub-options to pass to electron-download. They are specified via dot
                    notation, e.g., --download.cache=/tmp/cache
                    Properties supported:
