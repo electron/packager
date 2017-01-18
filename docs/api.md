@@ -101,7 +101,7 @@ The build version of the application. Defaults to the value of [`app-version`](#
 
 *Boolean* (default: `true`)
 
-Whether symlinks should be dereferenced during copying.
+Whether symlinks should be dereferenced during the copying of the application source.
 
 ##### `download`
 
