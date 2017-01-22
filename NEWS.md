@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [8.5.1] - 2017-01-22
+
 ### Fixed
 
 * Show CLI option when showing option deprecation message (#560)
@@ -319,6 +321,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.5.1]: https://github.com/electron-userland/electron-packager/compare/v8.5.0...v8.5.1
 [8.5.0]: https://github.com/electron-userland/electron-packager/compare/v8.4.0...v8.5.0
 [8.4.0]: https://github.com/electron-userland/electron-packager/compare/v8.3.0...v8.4.0
 [8.3.0]: https://github.com/electron-userland/electron-packager/compare/v8.2.0...v8.3.0
