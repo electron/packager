@@ -27,7 +27,7 @@ See [CONTRIBUTING.md](https://github.com/electron-userland/electron-packager/blo
 Electron Packager is known to run on the following **host** platforms:
 
 * Windows (32/64 bit)
-* OS X
+* OS X (also known as macOS)
 * Linux (x86/x86_64)
 
 It generates executables/bundles for the following **target** platforms:
