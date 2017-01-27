@@ -12,7 +12,7 @@ Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`
 Electron Packager is a command line tool and Node.js library that bundles Electron-based application
 source code with a renamed Electron executable and supporting files into folders ready for distribution.
 
-Note that packaged Electron applications can be relatively large. A zipped barebones OS X Electron application is around 40MB.
+Note that packaged Electron applications can be relatively large. A zipped barebones macOS Electron application is around 40MB.
 
 ### Electron Packager is an [OPEN Open Source Project](http://openopensource.org/)
 
@@ -27,16 +27,16 @@ See [CONTRIBUTING.md](https://github.com/electron-userland/electron-packager/blo
 Electron Packager is known to run on the following **host** platforms:
 
 * Windows (32/64 bit)
-* OS X
+* macOS
 * Linux (x86/x86_64)
 
 It generates executables/bundles for the following **target** platforms:
 
 * Windows (also known as `win32`, for both 32/64 bit)
-* OS X (also known as `darwin`) / [Mac App Store](http://electron.atom.io/docs/v0.36.0/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
+* macOS (also known as `darwin`) / [Mac App Store](http://electron.atom.io/docs/v0.36.0/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
 * Linux (for x86, x86_64, and armv7l architectures)
 
-<sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
+<sup>*</sup> *Note for macOS / MAS target bundles: the `.app` bundle can only be signed when building on a host macOS platform.*
 
 ## Installation
 
@@ -56,7 +56,7 @@ Building an Electron app for the Windows target platform requires editing the `E
 Currently, Electron Packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish
 this. A Windows executable is bundled in that Node package and needs to be run in order for this
 functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) 1.6 or
-later needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
+later needs to be installed. On macOS, it is installable via [Homebrew](http://brew.sh/).
 
 ## Usage
 
@@ -100,7 +100,7 @@ default. You can use `--ignore` to ignore files and folders via a regular expres
 
 #### Example
 
-Let's assume that you have made an app based on the [electron-quick-start](https://github.com/electron/electron-quick-start) repository on a OS X or Linux host platform with the following file structure:
+Let's assume that you have made an app based on the [electron-quick-start](https://github.com/electron/electron-quick-start) repository on a macOS or Linux host platform with the following file structure:
 
 ```
 foobar
@@ -130,7 +130,7 @@ electron-packager . --all
 * Download [all supported target platforms and arches](#supported-platforms) of Electron
 using the installed `electron` or `electron-prebuilt` version (and cache the downloads in `~/.electron`)
 * For the `darwin` build, as an example:
-  * build the OS X `Foo Bar.app`
+  * build the macOS `Foo Bar.app`
   * place `Foo Bar.app` in `foobar/Foo Bar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)
 
 The file structure now looks like:
@@ -149,7 +149,7 @@ foobar
 └── script.js
 ```
 
-The `Foo Bar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
+The `Foo Bar.app` folder generated can be executed by a system running macOS, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
 
 ### [Programmatic API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
 
