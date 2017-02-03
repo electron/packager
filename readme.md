@@ -81,7 +81,7 @@ This will:
 
 For an overview of the other optional flags, run `electron-packager --help` or see
 [usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt). For
-detailed descriptions, see the [API documentation](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
+detailed descriptions, see the [API documentation](https://electron-userland.github.io/electron-packager/api).
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 
