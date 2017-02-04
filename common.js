@@ -40,8 +40,11 @@ function parseCLIArgs (argv) {
   args.dir = args._[0]
   args.name = args._[1]
 
+  // Transform hyphenated keys into camelCase
+  module.exports.camelCase(args, false)
+
   var protocolSchemes = [].concat(args.protocol || [])
-  var protocolNames = [].concat(args['protocol-name'] || [])
+  var protocolNames = [].concat(args.protocolName || [])
 
   if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
     args.protocols = protocolSchemes.map(function (scheme, i) {
@@ -53,10 +56,6 @@ function parseCLIArgs (argv) {
     args.out = null
   }
 
-  // Transform hyphenated keys into camelCase
-  args.electronVersion = args['electron-version']
-  delete args['electron-version']
-
   // Overrides for multi-typed arguments, because minimist doesn't support it
 
   // asar: `Object` or `true`
@@ -65,8 +64,8 @@ function parseCLIArgs (argv) {
   }
 
   // osx-sign: `Object` or `true`
-  if (args['osx-sign'] === 'true') {
-    args['osx-sign'] = true
+  if (args.osxSign === 'true') {
+    args.osxSign = true
   }
 
   // tmpdir: `String` or `false`
@@ -192,6 +191,35 @@ module.exports = {
       }
       delete properties[oldName]
     }
+  },
+
+  kebabProperties: {
+    'electron-version': 'electronVersion',
+    'app-copyright': 'appCopyright',
+    'app-version': 'appVersion',
+    'build-version': 'buildVersion',
+    'app-bundle-id': 'appBundleId',
+    'app-category-type': 'appCategoryType',
+    'extend-info': 'extendInfo',
+    'extra-resource': 'extraResource',
+    'helper-bundle-id': 'helperBundleId',
+    'osx-sign': 'osxSign',
+    'protocol-name': 'protocolName'
+  },
+
+  camelCase: function camelCase (properties, warn) {
+    Object.keys(module.exports.kebabProperties).forEach(function (key) {
+      var value = module.exports.kebabProperties[key]
+      if (properties.hasOwnProperty(key)) {
+        if (warn) {
+          warning(`The ${key} parameter is deprecated when used from JS, use ${value} instead. It will be removed in the next major version.`)
+        }
+        if (!properties.hasOwnProperty(value)) {
+          properties[value] = properties[key]
+        }
+        delete properties[key]
+      }
+    })
   },
 
   downloadElectronZip: function downloadElectronZip (downloadOpts, cb) {

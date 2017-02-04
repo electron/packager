@@ -21,7 +21,7 @@ function debugHostInfo () {
 function getMetadata (opts, dir, cb) {
   var props = []
   if (!opts.name) props.push(['productName', 'name'])
-  if (!opts['app-version']) props.push('version')
+  if (!opts.appVersion) props.push('version')
   if (!opts.electronVersion) {
     props.push([
       'dependencies.electron',
@@ -62,7 +62,7 @@ function getMetadata (opts, dir, cb) {
 
     if (result.values.version) {
       debug(`Inferring app-version from version in ${result.source.version.src}`)
-      opts['app-version'] = result.values.version
+      opts.appVersion = result.values.version
     }
 
     if (result.values['dependencies.electron']) {
@@ -239,6 +239,8 @@ module.exports = function packager (opts, cb) {
   debug(`Target Architectures: ${archs.join(', ')}`)
 
   common.deprecatedParameter(opts, 'version', 'electronVersion', 'electron-version')
+
+  common.camelCase(opts, true)
 
   getMetadata(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)

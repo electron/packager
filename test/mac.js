@@ -99,7 +99,7 @@ function createExtraResourceTest (baseOpts) {
     var extra1Path = path.join(__dirname, 'fixtures', extra1Base)
 
     var opts = Object.create(baseOpts)
-    opts['extra-resource'] = extra1Path
+    opts.extraResource = extra1Path
 
     var resourcesPath
 
@@ -132,7 +132,7 @@ function createExtraResource2Test (baseOpts) {
     var extra2Path = path.join(__dirname, 'fixtures', extra2Base)
 
     var opts = Object.create(baseOpts)
-    opts['extra-resource'] = [ extra1Path, extra2Path ]
+    opts.extraResource = [ extra1Path, extra2Path ]
 
     var resourcesPath
 
@@ -163,10 +163,10 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
-    opts['extend-info'] = extraPathOrParams
-    opts['build-version'] = '3.2.1'
-    opts['app-bundle-id'] = 'com.electron.extratest'
-    opts['app-category-type'] = 'public.app-category.music'
+    opts.extendInfo = extraPathOrParams
+    opts.buildVersion = '3.2.1'
+    opts.appBundleId = 'com.electron.extratest'
+    opts.appCategoryType = 'public.app-category.music'
 
     var plistPath
 
@@ -186,7 +186,7 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
         t.equal(obj.TestKeyBool, true, 'TestKeyBool should come from extend-info')
         t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extend-info')
         t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extend-info')
-        t.equal(obj.CFBundleVersion, opts['build-version'], 'CFBundleVersion should reflect build-version argument')
+        t.equal(obj.CFBundleVersion, opts.buildVersion, 'CFBundleVersion should reflect build-version argument')
         t.equal(obj.CFBundleIdentifier, 'com.electron.extratest', 'CFBundleIdentifier should reflect app-bundle-id argument')
         t.equal(obj.LSApplicationCategoryType, 'public.app-category.music', 'LSApplicationCategoryType should reflect app-category-type argument')
         t.equal(obj.CFBundlePackageType, 'APPL', 'CFBundlePackageType should be Electron default')
@@ -228,10 +228,10 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
 
     var plistPath
     var opts = Object.create(baseOpts)
-    opts['app-version'] = opts['build-version'] = appVersion
+    opts.appVersion = opts.buildVersion = appVersion
 
     if (buildVersion) {
-      opts['build-version'] = buildVersion
+      opts.buildVersion = buildVersion
     }
 
     waterfall([
@@ -245,8 +245,8 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.CFBundleVersion, '' + opts['build-version'], 'CFBundleVersion should reflect build-version')
-        t.equal(obj.CFBundleShortVersionString, '' + opts['app-version'], 'CFBundleShortVersionString should reflect app-version')
+        t.equal(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect build-version')
+        t.equal(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect app-version')
         t.equal(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
         t.equal(typeof obj.CFBundleShortVersionString, 'string', 'CFBundleShortVersionString should be a string')
         cb()
@@ -290,7 +290,7 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
 
     var plistPath
     var opts = Object.create(baseOpts)
-    opts['app-category-type'] = appCategoryType
+    opts.appCategoryType = appCategoryType
 
     waterfall([
       function (cb) {
@@ -303,7 +303,7 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.LSApplicationCategoryType, opts['app-category-type'], 'LSApplicationCategoryType should reflect opts["app-category-type"]')
+        t.equal(obj.LSApplicationCategoryType, opts.appCategoryType, 'LSApplicationCategoryType should reflect opts["app-category-type"]')
         cb()
       }
     ], function (err) {
@@ -319,10 +319,10 @@ function createAppBundleTest (baseOpts, appBundleId) {
     var plistPath
     var opts = Object.create(baseOpts)
     if (appBundleId) {
-      opts['app-bundle-id'] = appBundleId
+      opts.appBundleId = appBundleId
     }
     var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
-    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts['app-bundle-id'] || defaultBundleName)
+    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
 
     waterfall([
       function (cb) {
@@ -385,14 +385,14 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
     var tempPath, plistPath
     var opts = Object.create(baseOpts)
     if (helperBundleId) {
-      opts['helper-bundle-id'] = helperBundleId
+      opts.helperBundleId = helperBundleId
     }
     if (appBundleId) {
-      opts['app-bundle-id'] = appBundleId
+      opts.appBundleId = appBundleId
     }
     var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
-    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts['app-bundle-id'] || defaultBundleName)
-    var helperBundleIdentifier = mac.filterCFBundleIdentifier(opts['helper-bundle-id'] || appBundleIdentifier + '.helper')
+    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+    var helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
     waterfall([
       function (cb) {
@@ -459,7 +459,7 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
 
     var plistPath
     var opts = Object.create(baseOpts)
-    opts['app-copyright'] = humanReadableCopyright
+    opts.appCopyright = humanReadableCopyright
 
     waterfall([
       function (cb) {
@@ -472,7 +472,7 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.NSHumanReadableCopyright, opts['app-copyright'], 'NSHumanReadableCopyright should reflect opts["app-copyright"]')
+        t.equal(obj.NSHumanReadableCopyright, opts.appCopyright, 'NSHumanReadableCopyright should reflect opts["app-copyright"]')
         cb()
       }
     ], function (err) {
@@ -596,7 +596,7 @@ module.exports = (baseOpts) => {
     t.timeoutAfter(config.macExecTimeout)
 
     var opts = Object.create(baseOpts)
-    opts['osx-sign'] = {identity: 'Developer CodeCert'}
+    opts.osxSign = {identity: 'Developer CodeCert'}
 
     var appPath
 

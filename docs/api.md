@@ -53,11 +53,21 @@ When `true`, sets both [`arch`](#arch) and [`platform`](#platform) to `all`.
 
 ##### `app-copyright`
 
+*String* (**deprecated** and will be removed in a future major version, please use the
+[`appCopyright`](#appCopyright) parameter instead)
+
+##### `appCopyright`
+
 *String*
 
 The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on OS X.
 
 ##### `app-version`
+
+*String* (**deprecated** and will be removed in a future major version, please use the
+[`appVersion`](#appVersion) parameter instead)
+
+##### `appVersion`
 
 *String*
 
@@ -93,6 +103,12 @@ Whether to package the application's source code into an archive, using [Electro
 
 ##### `build-version`
 
+*String* (**deprecated** and will be removed in a future major version, please use the
+[`buildVersion`](#buildVersion) parameter instead)
+
+
+##### `buildVersion`
+
 *String*
 
 The build version of the application. Defaults to the value of [`app-version`](#app-version). Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
@@ -115,6 +131,7 @@ but are not limited to:
 - `quiet` (*Boolean* - default: `false`): Whether to show a progress bar when downloading Electron.
 - `strictSSL` (*Boolean* - default: `true`): Whether SSL certificates are required to be valid when
   downloading Electron.
+
 
 ##### `electronVersion`
 
@@ -232,11 +249,21 @@ The base directory to use as a temp directory. Set to `false` to disable use of 
 
 ##### `app-bundle-id`
 
+*String* (**deprecated** and will be removed in a future major version, please use the
+[`appBundleId`](#appBundleId) parameter instead)
+
+##### `appBundleId`
+
 *String*
 
 The bundle identifier to use in the application's plist.
 
 ##### `app-category-type`
+
+*String* (**deprecated** and will be removed in a future major version, please use the
+  [`appCategoryType`](#appCategoryType) parameter instead)
+
+##### `appCategoryType`
 
 *String*
 
@@ -248,15 +275,23 @@ Valid values are listed in [Apple's documentation](https://developer.apple.com/l
 
 ##### `extend-info`
 
+*String* (**deprecated** and will be removed in a future major version, please use the
+  [`extendInfo`](#extendInfo) parameter instead)
+
+##### `extendInfo`
+
 *String* or *Object*
 
 When the value is a `String`, the filename of a plist file. Its contents are added to the app's plist. When the value is an `Object`, an already-parsed plist data structure that is merged into the app's plist.
 
 Entries from `extend-info` override entries in the base plist file supplied by `electron` or `electron-prebuilt`, but are overridden by other explicit arguments such as [`app-version`](#app-version) or [`app-bundle-id`](#app-bundle-id).
 
-
-
 ##### `extra-resource`
+
+*String* (**deprecated** and will be removed in a future major version, please use the
+  [`extraResource`](#extraResource) parameter instead)
+
+##### `extraResource`
 
 *String* or *Array*
 
@@ -264,11 +299,21 @@ Filename of a file to be copied directly into the app's `Contents/Resources` dir
 
 ##### `helper-bundle-id`
 
+*String* (**deprecated** and will be removed in a future major version, please use the
+  [`helperBundleId`](#helperBundleId) parameter instead)
+
+##### `helperBundleId`
+
 *String*
 
 The bundle identifier to use in the application helper's plist.
 
 ##### `osx-sign`
+
+*String* (**deprecated** and will be removed in a future major version, please use the
+  [`osxSign`](#osxSign) parameter instead)
+
+##### `osxSign`
 
 *Object* or *`true`*
 
@@ -279,7 +324,7 @@ If present, signs OS X target apps when the host platform is OS X and XCode is i
 
 ##### `protocol`
 
-*Array* of *String*s
+*Array* of *String*​s
 
 The URL protocol scheme(s) to associate the app with. For example, specifying
 `myapp` would cause URLs such as `myapp://path` to be opened with the app. Maps
@@ -288,7 +333,12 @@ corresponding `protocol-name` option to be specified.
 
 ##### `protocol-name`
 
-*Array* of *String*s
+*String* (**deprecated** and will be removed in a future major version, please use the
+[`protocolName`](#protocolName) parameter instead)
+
+##### `protocolName`
+
+*Array* of *String*​s
 
 The descriptive name(s) of the URL protocol scheme(s) specified via the `protocol`
 option. Maps to the `CFBundleURLName` metadata property.

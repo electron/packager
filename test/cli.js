@@ -33,7 +33,7 @@ test('CLI argument test: using --asar overrides other --asar.options', (t) => {
 
 test('CLI argument test: --osx-sign=true', function (t) {
   var args = common.parseCLIArgs(['--osx-sign=true'])
-  t.equal(args['osx-sign'], true)
+  t.equal(args.osxSign, true)
   t.end()
 })
 

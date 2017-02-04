@@ -22,19 +22,19 @@ class MacApp {
   }
 
   get appCategoryType () {
-    return this.opts['app-category-type']
+    return this.opts.appCategoryType
   }
 
   get appCopyright () {
-    return this.opts['app-copyright']
+    return this.opts.appCopyright
   }
 
   get appVersion () {
-    return this.opts['app-version']
+    return this.opts.appVersion
   }
 
   get buildVersion () {
-    return this.opts['build-version']
+    return this.opts.buildVersion
   }
 
   get protocols () {
@@ -99,11 +99,11 @@ class MacApp {
 
     let defaultBundleName = `com.electron.${common.sanitizeAppName(this.appName).toLowerCase()}`
 
-    let appBundleIdentifier = filterCFBundleIdentifier(this.opts['app-bundle-id'] || defaultBundleName)
-    this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts['helper-bundle-id'] || `${appBundleIdentifier}.helper`)
+    let appBundleIdentifier = filterCFBundleIdentifier(this.opts.appBundleId || defaultBundleName)
+    this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts.helperBundleId || `${appBundleIdentifier}.helper`)
 
-    if (this.opts['extend-info']) {
-      this.appPlist = this.extendAppPlist(this.opts['extend-info'])
+    if (this.opts.extendInfo) {
+      this.appPlist = this.extendAppPlist(this.opts.extendInfo)
     }
 
     this.appPlist = this.updatePlist(this.appPlist, this.appName, appBundleIdentifier, this.appName)
@@ -193,7 +193,7 @@ class MacApp {
   }
 
   enqueueAppSigningIfSpecified () {
-    let osxSignOpt = this.opts['osx-sign']
+    let osxSignOpt = this.opts.osxSign
     let platform = this.opts.platform
     let version = this.opts.electronVersion
 
@@ -250,7 +250,7 @@ function createSignOpts (properties, platform, app, version, quiet) {
   }
 
   // Take argument osx-sign as signing identity:
-  // if opts['osx-sign'] is true (bool), fallback to identity=null for
+  // if opts.osxSign is true (bool), fallback to identity=null for
   // autodiscovery. Otherwise, provide signing certificate info.
   if (signOpts.identity === true) {
     signOpts.identity = null
@@ -272,8 +272,8 @@ module.exports = {
         appCreator.enqueueCopyingIcon()
       }
 
-      if (opts['extra-resource']) {
-        appCreator.enqueueCopyingExtraFiles(opts['extra-resource'])
+      if (opts.extraResource) {
+        appCreator.enqueueCopyingExtraFiles(opts.extraResource)
       }
 
       appCreator.enqueueRenamingElectronBinary()
