@@ -113,13 +113,13 @@ function info (message, quiet) {
 
 function warning (message, quiet) {
   if (!quiet) {
-    console.warn(message)
+    console.warn(`WARNING: ${message}`)
   }
 }
 
 function subOptionWarning (properties, optionName, parameter, value, quiet) {
   if (properties.hasOwnProperty(parameter)) {
-    warning(`WARNING: ${optionName}.${parameter} will be inferred from the main options`, quiet)
+    warning(`${optionName}.${parameter} will be inferred from the main options`, quiet)
   }
   properties[parameter] = value
 }
