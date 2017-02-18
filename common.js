@@ -124,6 +124,10 @@ function subOptionWarning (properties, optionName, parameter, value, quiet) {
   properties[parameter] = value
 }
 
+function baseTempDir (opts) {
+  return path.join(opts.tmpdir || os.tmpdir(), 'electron-packager')
+}
+
 function createAsarOpts (opts) {
   let asarOptions
   if (opts.asar === true) {
@@ -159,6 +163,8 @@ module.exports = {
   isPlatformMac: isPlatformMac,
 
   subOptionWarning: subOptionWarning,
+
+  baseTempDir: baseTempDir,
 
   createAsarOpts: createAsarOpts,
   createDownloadOpts: createDownloadOpts,
@@ -215,7 +221,7 @@ module.exports = {
     if (opts.tmpdir === false) {
       tempPath = generateFinalPath(opts)
     } else {
-      tempPath = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager', `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
+      tempPath = path.join(baseTempDir(opts), `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
     }
 
     debug(`Initializing app in ${tempPath} from ${templatePath} template`)
