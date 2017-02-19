@@ -86,6 +86,7 @@ exports.packagerTest = function packagerTest (name, testFunction) {
   exports.teardown()
 }
 
+// Rest parameters are added (not behind a feature flag) in Node 6
 exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, ...createTestArgs */) {
   var args = slice.call(arguments, 2)
   exports.packagerTest(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', electronVersion: config.version}].concat(args)))

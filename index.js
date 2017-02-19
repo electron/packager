@@ -7,7 +7,6 @@ const fs = require('fs-extra')
 const getPackageInfo = require('get-package-info')
 const ignore = require('./ignore')
 const metadata = require('./package.json')
-const os = require('os')
 const path = require('path')
 const resolve = require('resolve')
 const series = require('run-series')
@@ -112,7 +111,7 @@ function getVersion (opts, packageName, src, cb) {
 }
 
 function createSeries (opts, archs, platforms) {
-  var tempBase = path.join(opts.tmpdir || os.tmpdir(), 'electron-packager')
+  const tempBase = common.baseTempDir(opts)
 
   function testSymlink (cb) {
     var testPath = path.join(tempBase, 'symlink-test')
