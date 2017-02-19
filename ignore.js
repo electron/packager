@@ -18,7 +18,7 @@ function generateIgnores (opts) {
     const common = require('./common')
 
     if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-    opts.ignore = (opts.ignore) ? opts.ignore.concat(DEFAULT_IGNORES) : DEFAULT_IGNORES
+    opts.ignore = (opts.ignore) ? opts.ignore.concat(DEFAULT_IGNORES) : [].concat(DEFAULT_IGNORES)
     if (process.platform === 'linux') {
       opts.ignore.push(common.baseTempDir(opts))
     }
