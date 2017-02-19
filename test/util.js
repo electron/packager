@@ -63,9 +63,10 @@ exports.getWorkCwd = function getWorkCwd () {
 exports.setup = function setup () {
   test('setup', function (t) {
     fs.mkdirp(WORK_CWD, function (err) {
-      if (err) t.end(err)
-      process.chdir(WORK_CWD)
-      t.end()
+      if (!err) {
+        process.chdir(WORK_CWD)
+      }
+      t.end(err)
     })
   })
 }
@@ -81,7 +82,7 @@ exports.teardown = function teardown () {
 
 exports.packagerTest = function packagerTest (name, testFunction) {
   exports.setup()
-  test(name, testFunction)
+  test(name, testFunction) // eslint-disable-line tape/test-ended
   exports.teardown()
 }
 

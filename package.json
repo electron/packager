@@ -39,6 +39,7 @@
     "eslint-config-standard": "^6.0.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.0",
+    "eslint-plugin-tape": "^1.1.0",
     "is-admin": "^2.0.0",
     "nyc": "^10.0.0",
     "pkg-up": "^1.0.0",
@@ -61,10 +62,16 @@
   },
   "keywords": [],
   "eslintConfig": {
-    "extends": "standard",
+    "extends": [
+      "plugin:tape/recommended",
+      "standard"
+    ],
     "parserOptions": {
       "sourceType": "script"
     },
+    "plugins": [
+      "tape"
+    ],
     "rules": {
       "strict": [
         "error"
