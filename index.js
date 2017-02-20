@@ -243,6 +243,10 @@ module.exports = function packager (opts, cb) {
   getMetadata(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)
 
+    if (/ Helper$/.test(opts.name)) {
+      return cb('Application names cannot end in " Helper" due to limitations on macOS')
+    }
+
     debug(`Application name: ${opts.name}`)
     debug(`Target Electron version: ${opts.electronVersion}`)
 
