@@ -1,6 +1,6 @@
 {
   "name": "electron-packager",
-  "version": "8.5.1",
+  "version": "8.5.2",
   "description": "Package and distribute your Electron app with OS-specific bundles (.app, .exe etc) via JS or CLI",
   "main": "index.js",
   "bin": {
