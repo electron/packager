@@ -163,18 +163,22 @@ function isMissingRequiredProperty (props) {
 }
 
 function errorMessageForProperty (prop) {
-  let hash, propName
-  if (prop === 'productName') {
-    hash = 'name'
-    propName = 'application name'
+  let hash, propDescription
+  switch (prop) {
+    case 'productName':
+      hash = 'name'
+      propDescription = 'application name'
+      break
+    case 'dependencies.electron':
+      hash = 'version'
+      propDescription = 'Electron version'
+      break
+    default:
+      hash = ''
+      propDescription = '[Unknown Property]'
   }
 
-  if (prop === 'dependencies.electron') {
-    hash = 'version'
-    propName = 'Electron version'
-  }
-
-  return `Unable to determine ${propName}. Please specify an ${propName}\n\n` +
+  return `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
     'For more information, please see\n' +
     `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
 }
@@ -273,7 +277,7 @@ module.exports = {
   generateFinalPath: generateFinalPath,
 
   getMetadataFromPackageJSON: function getMetadataFromPackageJSON (opts, dir, cb) {
-    var props = []
+    let props = []
     if (!opts.name) props.push(['productName', 'name'])
     if (!opts.appVersion) props.push('version')
     if (!opts.electronVersion) {
