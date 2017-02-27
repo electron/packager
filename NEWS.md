@@ -3,10 +3,12 @@
 ## Unreleased
 
 ### Changed
-* Options previously formatted in kebab-case (i.e., with hyphens) are now available in camelCase, per JavaScript naming standards (#580)
+
+* Options formatted in kebab-case (i.e., with hyphens) are available in camelCase, per JavaScript naming standards (#580)
 
 ### Deprecated
-* Options currently formatted in kebab-case (i.e., with hyphens) are deprecated in favor of their camelCase variants, per JavaScript naming standards (#580)
+
+* Options formatted in kebab-case (i.e., with hyphens) are deprecated in favor of their camelCase variants, per JavaScript naming standards (#580)
 
 ## [8.5.2] - 2017-02-19
 
