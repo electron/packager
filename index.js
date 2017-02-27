@@ -4,6 +4,7 @@ const common = require('./common')
 const debug = require('debug')('electron-packager')
 const extract = require('extract-zip')
 const fs = require('fs-extra')
+const getMetadataFromPackageJSON = require('./infer')
 const ignore = require('./ignore')
 const metadata = require('./package.json')
 const path = require('path')
@@ -148,7 +149,7 @@ module.exports = function packager (opts, cb) {
 
   common.camelCase(opts, true)
 
-  common.getMetadataFromPackageJSON(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
+  getMetadataFromPackageJSON(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)
 
     if (/ Helper$/.test(opts.name)) {

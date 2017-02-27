@@ -50,6 +50,7 @@ series(setupFuncs, (error) => {
   require('./asar')
   require('./cli')
   require('./ignore')
+  require('./infer')
   require('./hooks')
   require('./multitarget')
   require('./win32')
