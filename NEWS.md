@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Changed
+
+* Options formatted in kebab-case (i.e., with hyphens) are available in camelCase, per JavaScript naming standards (#580)
+
+### Deprecated
+
+* Options formatted in kebab-case (i.e., with hyphens) are deprecated in favor of their camelCase variants, per JavaScript naming standards (#580)
+
 ## [8.5.2] - 2017-02-19
 
 ### Fixed

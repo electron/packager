@@ -29,23 +29,23 @@ module.exports = {
         }
       ]
 
-      let win32metadata = Object.assign({}, opts['version-string'], opts.win32metadata)
+      let win32metadata = Object.assign({}, opts.versionString, opts.win32metadata)
 
       var rcOpts = {'version-string': win32metadata}
 
-      if (opts['app-version']) {
-        rcOpts['product-version'] = rcOpts['file-version'] = opts['app-version']
+      if (opts.appVersion) {
+        rcOpts['product-version'] = rcOpts['file-version'] = opts.appVersion
       }
 
-      if (opts['build-version']) {
-        rcOpts['file-version'] = opts['build-version']
+      if (opts.buildVersion) {
+        rcOpts['file-version'] = opts.buildVersion
       }
 
-      if (opts['app-copyright']) {
-        rcOpts['version-string'].LegalCopyright = opts['app-copyright']
+      if (opts.appCopyright) {
+        rcOpts['version-string'].LegalCopyright = opts.appCopyright
       }
 
-      if (opts.icon || opts.win32metadata || opts['version-string'] || opts['app-copyright'] || opts['app-version'] || opts['build-version']) {
+      if (opts.icon || opts.win32metadata || opts['version-string'] || opts.appCopyright || opts.appVersion || opts.buildVersion) {
         operations.push(function (cb) {
           common.normalizeExt(opts.icon, '.ico', function (err, icon) {
             // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
