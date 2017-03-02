@@ -495,7 +495,7 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
   }
 
   packager(opts, (err) => {
-    t.equal('Application names cannot end in " Helper" due to limitations on macOS', err)
+    t.equal('Application names cannot end in " Helper" due to limitations on macOS', err.message)
     t.end()
   })
 })
