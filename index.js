@@ -246,7 +246,7 @@ module.exports = function packager (opts, cb) {
     if (err) return cb(err)
 
     if (/ Helper$/.test(opts.name)) {
-      return cb('Application names cannot end in " Helper" due to limitations on macOS')
+      return cb(new Error('Application names cannot end in " Helper" due to limitations on macOS'))
     }
 
     debug(`Application name: ${opts.name}`)
