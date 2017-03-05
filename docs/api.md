@@ -176,6 +176,7 @@ described after the list*):
 * `node_modules/.bin`
 * `node_modules/electron`
 * `node_modules/electron-prebuilt`
+* `node_modules/electron-prebuilt-compile`
 * `node_modules/electron-packager`
 * `.git`
 * files and folders ending in `.o` and `.obj`
