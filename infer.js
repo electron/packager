@@ -33,15 +33,32 @@ function errorMessageForProperty (prop) {
     `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
 }
 
-function getVersion (opts, packageName, src, cb) {
-  resolve(packageName, {
-    basedir: path.dirname(src)
-  }, (err, res, pkg) => {
-    if (err) return cb(err)
-    debug(`Inferring target Electron version from ${packageName} in ${src}`)
-    opts.electronVersion = pkg.version
+function getVersion (opts, electronProp, cb) {
+  // Destructured assignments are added in Node 6
+  const splitProp = electronProp.prop.split('.')
+  const depType = splitProp[0]
+  const packageName = splitProp[1]
+  const src = electronProp.src
+  if (packageName === 'electron-prebuilt-compile') {
+    // electron-prebuilt-compile cannot be resolved because `main` does not point
+    // to a valid JS file.
+    const electronVersion = electronProp.pkg[depType][packageName]
+    if (!/^\d+\.\d+\.\d+/.test(electronVersion)) {
+      return cb(new Error('Using electron-prebuilt-compile with Electron Packager requires specifying an exact Electron version'))
+    }
+
+    opts.electronVersion = electronVersion
     return cb(null)
-  })
+  } else {
+    resolve(packageName, {
+      basedir: path.dirname(src)
+    }, (err, res, pkg) => {
+      if (err) return cb(err)
+      debug(`Inferring target Electron version from ${packageName} in ${src}`)
+      opts.electronVersion = pkg.version
+      return cb(null)
+    })
+  }
 }
 
 module.exports = function getMetadataFromPackageJSON (opts, dir, cb) {
@@ -52,6 +69,8 @@ module.exports = function getMetadataFromPackageJSON (opts, dir, cb) {
     props.push([
       'dependencies.electron',
       'devDependencies.electron',
+      'dependencies.electron-prebuilt-compile',
+      'devDependencies.electron-prebuilt-compile',
       'dependencies.electron-prebuilt',
       'devDependencies.electron-prebuilt'
     ])
@@ -92,9 +111,7 @@ module.exports = function getMetadataFromPackageJSON (opts, dir, cb) {
     }
 
     if (result.values['dependencies.electron']) {
-      let prop = result.source['dependencies.electron'].prop.split('.')[1]
-      let src = result.source['dependencies.electron'].src
-      return getVersion(opts, prop, src, cb)
+      return getVersion(opts, result.source['dependencies.electron'], cb)
     } else {
       return cb(null)
     }

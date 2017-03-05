@@ -105,9 +105,15 @@ function createInferWithMalformedJSONTest (opts) {
   return createInferFailureTest(opts, 'infer-malformed-json')
 }
 
+function createInferNonSpecificElectronPrebuiltCompileFailureTest (opts) {
+  return createInferFailureTest(opts, 'infer-non-specific-electron-prebuilt-compile')
+}
+
 util.testSinglePlatform('infer using `electron-prebuilt` package', createInferElectronVersionTest('basic', 'electron-prebuilt'))
+util.testSinglePlatform('infer using `electron-prebuilt-compile` package', createInferElectronVersionTest('infer-electron-prebuilt-compile', 'electron-prebuilt-compile'))
 util.testSinglePlatform('infer using `electron` package only', createInferMissingVersionTest)
 util.testSinglePlatform('infer where `electron` version is preferred over `electron-prebuilt`', createInferElectronVersionTest('basic-renamed-to-electron', 'electron'))
 util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
 util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
 util.testSinglePlatform('infer with malformed JSON test', createInferWithMalformedJSONTest)
+util.testSinglePlatform('infer using a non-specific `electron-prebuilt-compile` package version', createInferNonSpecificElectronPrebuiltCompileFailureTest)
