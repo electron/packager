@@ -127,7 +127,7 @@ electron-packager .
 
 * Use the current directory for the `sourcedir`
 * Infer the `appname` from the `productName` in `package.json`
-* Infer the `app-version` from the `version` in `package.json`
+* Infer the `appVersion` from the `version` in `package.json`
 * Infer the `platform` and `arch` from the host, in this example, `darwin` platform and `x64` arch.
 * Download the darwin x64 build of Electron 1.4.15 (and cache the downloads in `~/.electron`)
 * Build the OS X `Foo Bar.app`

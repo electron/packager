@@ -181,14 +181,14 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.TestKeyString, 'String data', 'TestKeyString should come from extend-info')
-        t.equal(obj.TestKeyInt, 12345, 'TestKeyInt should come from extend-info')
-        t.equal(obj.TestKeyBool, true, 'TestKeyBool should come from extend-info')
-        t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extend-info')
-        t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extend-info')
-        t.equal(obj.CFBundleVersion, opts.buildVersion, 'CFBundleVersion should reflect build-version argument')
-        t.equal(obj.CFBundleIdentifier, 'com.electron.extratest', 'CFBundleIdentifier should reflect app-bundle-id argument')
-        t.equal(obj.LSApplicationCategoryType, 'public.app-category.music', 'LSApplicationCategoryType should reflect app-category-type argument')
+        t.equal(obj.TestKeyString, 'String data', 'TestKeyString should come from extendInfo')
+        t.equal(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
+        t.equal(obj.TestKeyBool, true, 'TestKeyBool should come from extendInfo')
+        t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extendInfo')
+        t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extendInfo')
+        t.equal(obj.CFBundleVersion, opts.buildVersion, 'CFBundleVersion should reflect buildVersion argument')
+        t.equal(obj.CFBundleIdentifier, 'com.electron.extratest', 'CFBundleIdentifier should reflect appBundleId argument')
+        t.equal(obj.LSApplicationCategoryType, 'public.app-category.music', 'LSApplicationCategoryType should reflect appCategoryType argument')
         t.equal(obj.CFBundlePackageType, 'APPL', 'CFBundlePackageType should be Electron default')
         cb()
       }
@@ -245,8 +245,8 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect build-version')
-        t.equal(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect app-version')
+        t.equal(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
+        t.equal(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
         t.equal(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
         t.equal(typeof obj.CFBundleShortVersionString, 'string', 'CFBundleShortVersionString should be a string')
         cb()
@@ -303,7 +303,7 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.LSApplicationCategoryType, opts.appCategoryType, 'LSApplicationCategoryType should reflect opts["app-category-type"]')
+        t.equal(obj.LSApplicationCategoryType, opts.appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType')
         cb()
       }
     ], function (err) {
@@ -337,7 +337,7 @@ function createAppBundleTest (baseOpts, appBundleId) {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name')
-        t.equal(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleName should reflect opts["app-bundle-id"] or fallback to default')
+        t.equal(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
         t.equal(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string')
         t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string')
@@ -407,7 +407,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
       }, function (file, cb) {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name in helper app')
-        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts["helper-bundle-id"], opts["app-bundle-id"] or fallback to default in helper app')
+        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper app')
         t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string in helper app')
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
@@ -422,7 +422,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.equal(obj.CFBundleName, opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
         t.equal(obj.CFBundleDisplayName, opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
         t.equal(obj.CFBundleExecutable, opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
-        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier + '.EH', 'CFBundleName should reflect opts["helper-bundle-id"], opts["app-bundle-id"] or fallback to default in helper EH app')
+        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier + '.EH', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper EH app')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper EH app')
         t.equal(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string in helper EH app')
         t.equal(typeof obj.CFBundleExecutable, 'string', 'CFBundleExecutable should be a string in helper EH app')
@@ -439,7 +439,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.equal(obj.CFBundleName, opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
         t.equal(obj.CFBundleDisplayName, opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
         t.equal(obj.CFBundleExecutable, opts.name + ' Helper NP', 'CFBundleExecutable should reflect opts.name in helper NP app')
-        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts["helper-bundle-id"], opts["app-bundle-id"] or fallback to default in helper NP app')
+        t.equal(obj.CFBundleIdentifier, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper NP app')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper NP app')
         t.equal(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string in helper NP app')
         t.equal(typeof obj.CFBundleExecutable, 'string', 'CFBundleExecutable should be a string in helper NP app')
@@ -542,50 +542,50 @@ module.exports = (baseOpts) => {
   util.packagerTest('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
   util.packagerTest('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
 
-  util.packagerTest('extend-info by filename test', createExtendInfoTest(baseOpts, extraInfoPath))
-  util.packagerTest('extend-info by params test', createExtendInfoTest(baseOpts, extraInfoParams))
+  util.packagerTest('extendInfo by filename test', createExtendInfoTest(baseOpts, extraInfoPath))
+  util.packagerTest('extendInfo by params test', createExtendInfoTest(baseOpts, extraInfoParams))
 
-  util.packagerTest('extra-resource test: one arg', createExtraResourceTest(baseOpts))
-  util.packagerTest('extra-resource test: two arg', createExtraResource2Test(baseOpts))
+  util.packagerTest('extraResource test: one arg', createExtraResourceTest(baseOpts))
+  util.packagerTest('extraResource test: two arg', createExtraResource2Test(baseOpts))
 
   util.packagerTest('protocol/protocol-name argument test', createProtocolTest(baseOpts))
 
-  test('osx-sign argument test: default args', function (t) {
+  test('osxSign argument test: default args', function (t) {
     var args = true
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
-  test('osx-sign argument test: identity=true sets autodiscovery mode', function (t) {
+  test('osxSign argument test: identity=true sets autodiscovery mode', function (t) {
     var args = {identity: true}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
-  test('osx-sign argument test: entitlements passed to electron-osx-sign', function (t) {
+  test('osxSign argument test: entitlements passed to electron-osx-sign', function (t) {
     var args = {entitlements: 'path-to-entitlements'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements})
     t.end()
   })
 
-  test('osx-sign argument test: app not overwritten', function (t) {
+  test('osxSign argument test: app not overwritten', function (t) {
     var args = {app: 'some-other-path'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
-  test('osx-sign argument test: platform not overwritten', function (t) {
+  test('osxSign argument test: platform not overwritten', function (t) {
     var args = {platform: 'mas'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     t.end()
   })
 
-  test('osx-sign argument test: binaries not set', (t) => {
+  test('osxSign argument test: binaries not set', (t) => {
     let args = {binaries: ['binary1', 'binary2']}
     let signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
