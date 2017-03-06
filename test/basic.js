@@ -3,14 +3,12 @@
 const common = require('../common')
 const config = require('./config.json')
 const fs = require('fs-extra')
-const os = require('os')
 const packager = require('..')
 const path = require('path')
 const targets = require('../targets')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
-const pkgUp = require('pkg-up')
 
 // Generates a path to the generated app that reflects the name given in the options.
 // Returns the Helper.app location on darwin since the top-level .app is already tested for the
@@ -205,136 +203,6 @@ function createOverwriteTest (opts) {
   }
 }
 
-function createInferElectronPrebuiltTest (opts) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    // Don't specify name or version
-    delete opts.electronVersion
-    opts.dir = path.join(__dirname, 'fixtures', 'basic')
-
-    var finalPath
-    var packageJSON
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        finalPath = paths[0]
-        fs.stat(finalPath, cb)
-      }, function (stats, cb) {
-        t.true(stats.isDirectory(), 'The expected output directory should exist')
-        fs.readFile(path.join(opts.dir, 'package.json'), cb)
-      }, function (pkg, cb) {
-        packageJSON = JSON.parse(pkg)
-        // Set opts name to use generateNamePath
-        opts.name = packageJSON.productName
-        fs.stat(path.join(finalPath, generateNamePath(opts)), cb)
-      }, function (stats, cb) {
-        if (common.isPlatformMac(opts.platform)) {
-          t.true(stats.isDirectory(), 'The Helper.app should reflect productName')
-        } else {
-          t.true(stats.isFile(), 'The executable should reflect productName')
-        }
-        fs.readFile(path.join(finalPath, 'version'), cb)
-      }, function (version, cb) {
-        t.equal(`v${packageJSON.devDependencies['electron-prebuilt']}`, version.toString(), 'The version should be inferred from installed electron-prebuilt version')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
-  }
-}
-
-function createInferElectronTest (opts) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    // Don't specify name or version
-    delete opts.electronVersion
-    opts.dir = path.join(__dirname, 'fixtures', 'basic-renamed-to-electron')
-
-    var packageJSON = require(path.join(opts.dir, 'package.json'))
-
-    packager(opts, function (err, paths) {
-      if (!err) {
-        var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
-        t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
-      }
-
-      t.end(err)
-    })
-  }
-}
-
-function copyFixtureToTempDir (fixtureSubdir, cb) {
-  let tmpdir = path.join(os.tmpdir(), fixtureSubdir)
-  let fixtureDir = path.join(__dirname, 'fixtures', fixtureSubdir)
-  waterfall([
-    cb => {
-      let tmpdirPkg = pkgUp.sync(path.join(tmpdir, '..'))
-      if (tmpdirPkg) return cb(new Error(`Found package.json in parent of temp directory, which will interfere with test results. Please remove package.json at ${tmpdirPkg}`))
-      cb()
-    },
-    cb => fs.emptyDir(tmpdir, cb),
-    (cb1, cb2) => fs.copy(fixtureDir, tmpdir, cb2 || cb1), // inconsistent cb arguments from fs.emptyDir
-    cb => cb(null, tmpdir)
-  ], cb)
-}
-
-function createInferFailureTest (opts, fixtureSubdir) {
-  return function (t) {
-    t.timeoutAfter(config.timeout)
-
-    copyFixtureToTempDir(fixtureSubdir, (err, dir) => {
-      if (err) return t.end(err)
-
-      delete opts.electronVersion
-      opts.dir = dir
-
-      packager(opts, function (err, paths) {
-        t.ok(err, 'error thrown')
-        t.end()
-      })
-    })
-  }
-}
-
-function createInferMissingVersionTest (opts) {
-  return (t) => {
-    t.timeoutAfter(config.timeout)
-    copyFixtureToTempDir('infer-missing-version-only', (err, dir) => {
-      if (err) return t.end(err)
-
-      delete opts.electronVersion
-      opts.dir = dir
-      let packageJSON = require(path.join(opts.dir, 'package.json'))
-
-      packager(opts, (err, paths) => {
-        if (!err) {
-          var version = fs.readFileSync(path.join(paths[0], 'version'), 'utf8')
-          t.equal(`v${packageJSON.devDependencies['electron']}`, version.toString(), 'The version should be inferred from installed `electron` version')
-        }
-
-        t.end(err)
-      })
-    })
-  }
-}
-
-function createInferMissingFieldsTest (opts) {
-  return createInferFailureTest(opts, 'infer-missing-fields')
-}
-
-function createInferWithBadFieldsTest (opts) {
-  return createInferFailureTest(opts, 'infer-bad-fields')
-}
-
-function createInferWithMalformedJSONTest (opts) {
-  return createInferFailureTest(opts, 'infer-malformed-json')
-}
-
 function createTmpdirTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
@@ -499,12 +367,7 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     t.end()
   })
 })
-util.testSinglePlatform('infer test using `electron-prebuilt` package', createInferElectronPrebuiltTest)
-util.testSinglePlatform('infer test using `electron` package', createInferElectronTest)
-util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
-util.testSinglePlatform('infer with bad fields test', createInferWithBadFieldsTest)
-util.testSinglePlatform('infer with malformed JSON test', createInferWithMalformedJSONTest)
-util.testSinglePlatform('infer with missing version only test', createInferMissingVersionTest)
+
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
 util.testSinglePlatform('prune test', (baseOpts) => {
