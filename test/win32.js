@@ -90,6 +90,21 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
   )
 }
 
+function setRequestedExecutionLevelTest (requestedExecutionLevel) {
+  var opts = {
+    win32metadata: {
+      requestedExecutionLevel: 'asInvoker'
+    }
+  }
+
+  return generateVersionStringTest(
+    'win32metadata',
+    opts,
+    {requestedExecutionLevel: requestedExecutionLevel},
+    'requestedExecutionLevel in win32metadata should match win32metadata value '
+  )
+}
+
 function setCompanyNameTest (companyName, optName) {
   let opts = {}
   opts[optName] = {
@@ -159,3 +174,4 @@ util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTe
 util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
 util.packagerTest('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
 util.packagerTest('win32 set CompanyName test (version-string)', setCompanyNameTest('MyCompany LLC', 'version-string'))
+util.packagerTest('win32 set requestedExecutionLevel test (win32metadata)', setRequestedExecutionLevelTest('asInvoker'))
