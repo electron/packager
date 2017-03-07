@@ -5,6 +5,26 @@ const debug = require('debug')('electron-packager')
 const path = require('path')
 const series = require('run-series')
 
+function generateRceditOptionsSansIcon (opts) {
+  const win32metadata = Object.assign({}, opts['version-string'], opts.win32metadata)
+
+  let rcOpts = {'version-string': win32metadata}
+
+  if (opts.appVersion) {
+    rcOpts['product-version'] = rcOpts['file-version'] = opts.appVersion
+  }
+
+  if (opts.buildVersion) {
+    rcOpts['file-version'] = opts.buildVersion
+  }
+
+  if (opts.appCopyright) {
+    rcOpts['version-string'].LegalCopyright = opts.appCopyright
+  }
+
+  return rcOpts
+}
+
 function updateWineMissingException (err) {
   if (err && err.code === 'ENOENT' && err.syscall === 'spawn wine') {
     err.message = 'Could not find "wine" on your system.\n\n' +
@@ -29,21 +49,7 @@ module.exports = {
         }
       ]
 
-      let win32metadata = Object.assign({}, opts.versionString, opts.win32metadata)
-
-      var rcOpts = {'version-string': win32metadata}
-
-      if (opts.appVersion) {
-        rcOpts['product-version'] = rcOpts['file-version'] = opts.appVersion
-      }
-
-      if (opts.buildVersion) {
-        rcOpts['file-version'] = opts.buildVersion
-      }
-
-      if (opts.appCopyright) {
-        rcOpts['version-string'].LegalCopyright = opts.appCopyright
-      }
+      const rcOpts = generateRceditOptionsSansIcon(opts)
 
       if (opts.icon || opts.win32metadata || opts['version-string'] || opts.appCopyright || opts.appVersion || opts.buildVersion) {
         operations.push(function (cb) {
@@ -67,5 +73,6 @@ module.exports = {
       })
     })
   },
+  generateRceditOptionsSansIcon: generateRceditOptionsSansIcon,
   updateWineMissingException: updateWineMissingException
 }
