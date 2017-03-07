@@ -54,7 +54,7 @@ When `true`, sets both [`arch`](#arch) and [`platform`](#platform) to `all`.
 ##### `app-copyright`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-[`appCopyright`](#appCopyright) parameter instead)
+[`appCopyright`](#appcopyright) parameter instead)
 
 ##### `appCopyright`
 
@@ -65,7 +65,7 @@ The human-readable copyright line for the app. Maps to the `LegalCopyright` meta
 ##### `app-version`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-[`appVersion`](#appVersion) parameter instead)
+[`appVersion`](#appversion) parameter instead)
 
 ##### `appVersion`
 
@@ -104,14 +104,14 @@ Whether to package the application's source code into an archive, using [Electro
 ##### `build-version`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-[`buildVersion`](#buildVersion) parameter instead)
+[`buildVersion`](#buildversion) parameter instead)
 
 
 ##### `buildVersion`
 
 *String*
 
-The build version of the application. Defaults to the value of [`app-version`](#app-version). Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
+The build version of the application. Defaults to the value of [`appVersion`](#appversion). Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
 
 ##### `derefSymlinks`
 
@@ -252,7 +252,7 @@ The base directory to use as a temp directory. Set to `false` to disable use of 
 ##### `app-bundle-id`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-[`appBundleId`](#appBundleId) parameter instead)
+[`appBundleId`](#appbundleid) parameter instead)
 
 ##### `appBundleId`
 
@@ -263,7 +263,7 @@ The bundle identifier to use in the application's plist.
 ##### `app-category-type`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-  [`appCategoryType`](#appCategoryType) parameter instead)
+  [`appCategoryType`](#appcategorytype) parameter instead)
 
 ##### `appCategoryType`
 
@@ -278,7 +278,7 @@ Valid values are listed in [Apple's documentation](https://developer.apple.com/l
 ##### `extend-info`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-  [`extendInfo`](#extendInfo) parameter instead)
+  [`extendInfo`](#extendinfo) parameter instead)
 
 ##### `extendInfo`
 
@@ -286,12 +286,12 @@ Valid values are listed in [Apple's documentation](https://developer.apple.com/l
 
 When the value is a `String`, the filename of a plist file. Its contents are added to the app's plist. When the value is an `Object`, an already-parsed plist data structure that is merged into the app's plist.
 
-Entries from `extend-info` override entries in the base plist file supplied by `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other explicit arguments such as [`app-version`](#app-version) or [`app-bundle-id`](#app-bundle-id).
+Entries from `extend-info` override entries in the base plist file supplied by `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other explicit arguments such as [`appVersion`](#appversion) or [`appBundleId`](#appbundleid).
 
 ##### `extra-resource`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-  [`extraResource`](#extraResource) parameter instead)
+  [`extraResource`](#extraresource) parameter instead)
 
 ##### `extraResource`
 
@@ -302,7 +302,7 @@ Filename of a file to be copied directly into the app's `Contents/Resources` dir
 ##### `helper-bundle-id`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-  [`helperBundleId`](#helperBundleId) parameter instead)
+  [`helperBundleId`](#helperbundleid) parameter instead)
 
 ##### `helperBundleId`
 
@@ -313,7 +313,7 @@ The bundle identifier to use in the application helper's plist.
 ##### `osx-sign`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-  [`osxSign`](#osxSign) parameter instead)
+  [`osxSign`](#osxsign) parameter instead)
 
 ##### `osxSign`
 
@@ -336,7 +336,7 @@ corresponding `protocol-name` option to be specified.
 ##### `protocol-name`
 
 *String* (**deprecated** and will be removed in a future major version, please use the
-[`protocolName`](#protocolName) parameter instead)
+[`protocolName`](#protocolname) parameter instead)
 
 ##### `protocolName`
 
