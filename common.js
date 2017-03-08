@@ -33,6 +33,7 @@ function parseCLIArgs (argv) {
     },
     string: [
       'electron-version',
+      'max-buffer-size',
       'out'
     ]
   })
@@ -294,7 +295,13 @@ module.exports = {
     if (opts.prune || opts.prune === undefined) {
       operations.push(function (cb) {
         debug('Running npm prune --production')
-        child.exec('npm prune --production', {cwd: appPath}, cb)
+        var bufferSize = 200; // default value in child.exec
+        var bs = opts['max-buffer-size']
+        if(Number(bs) > 0) {
+          bufferSize = bs;
+          debug('now buffer size is ' + bufferSize + 'MB')
+        }
+        child.exec('npm prune --production', {cwd: appPath, maxBuffer: bufferSize * 1024}, cb)
       })
     }
 
