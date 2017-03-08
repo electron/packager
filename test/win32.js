@@ -4,7 +4,6 @@ const config = require('./config.json')
 const fs = require('fs')
 const packager = require('..')
 const path = require('path')
-const rcinfo = require('rcinfo')
 const test = require('tape')
 const util = require('./util')
 const waterfall = require('run-waterfall')
@@ -20,58 +19,49 @@ const baseOpts = {
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return (t) => {
-    t.timeoutAfter(process.platform === 'darwin' ? config.macExecTimeout : config.timeout)
+    t.timeoutAfter(config.timeout)
 
-    let appExePath
-    let opts = Object.assign({}, baseOpts, extraOpts)
+    const opts = Object.assign({}, baseOpts, extraOpts)
+    const rcOpts = win32.generateRceditOptionsSansIcon(opts)
+    console.log(opts)
+    console.log(rcOpts)
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
-        appExePath = path.join(paths[0], opts.name + '.exe')
-        fs.stat(appExePath, cb)
-      }, (stats, cb) => {
-        t.true(stats.isFile(), 'The expected EXE file should exist')
-        rcinfo(appExePath, cb)
-      }, (info, cb) => {
-        metadataProperties = [].concat(metadataProperties)
-        expectedValues = [].concat(expectedValues)
-        assertionMsgs = [].concat(assertionMsgs)
-        metadataProperties.forEach((property, i) => {
-          var value = expectedValues[i]
-          var msg = assertionMsgs[i]
-          t.equal(info[property], value, msg)
-        })
-        cb()
-      }
-    ], (err) => {
-      t.end(err)
+    metadataProperties = [].concat(metadataProperties)
+    expectedValues = [].concat(expectedValues)
+    assertionMsgs = [].concat(assertionMsgs)
+    metadataProperties.forEach((property, i) => {
+      var value = expectedValues[i]
+      var msg = assertionMsgs[i]
+      console.log(property)
+      t.deepEqual(rcOpts[property], value, msg)
     })
+    t.end()
   }
 }
 
 function setFileVersionTest (buildVersion) {
-  var opts = {
-    'build-version': buildVersion
+  const appVersion = '4.99.101.0'
+  const opts = {
+    appVersion: appVersion,
+    buildVersion: buildVersion
   }
 
   return generateVersionStringTest(
-    ['ProductVersion', 'FileVersion'],
+    ['product-version', 'file-version'],
     opts,
-    ['4.99.101.0', buildVersion],
-    ['Product version should match package.json version',
+    [appVersion, buildVersion],
+    ['Product version should match app version',
       'File version should match build version']
   )
 }
 
 function setProductVersionTest (appVersion) {
   var opts = {
-    'app-version': appVersion
+    appVersion: appVersion
   }
 
   return generateVersionStringTest(
-    ['ProductVersion', 'FileVersion'],
+    ['product-version', 'file-version'],
     opts,
     [appVersion, appVersion],
     ['Product version should match app version',
@@ -79,38 +69,27 @@ function setProductVersionTest (appVersion) {
   )
 }
 
-function defaultProductAndFileVersionToPackageVersionTest () {
-  return generateVersionStringTest(
-    ['ProductVersion', 'FileVersion'],
-    {},
-    ['4.99.101.0', '4.99.101.0'],
-    ['Product version should match package.json version',
-      'File version should match package.json version']
-  )
-}
-
 function setCopyrightTest (appCopyright) {
   var opts = {
-    'app-copyright': appCopyright
+    appCopyright: appCopyright
   }
 
-  return generateVersionStringTest('LegalCopyright', opts, appCopyright, 'Legal copyright should match app copyright')
+  return generateVersionStringTest('version-string', opts, {LegalCopyright: appCopyright}, 'Legal copyright should match app copyright')
 }
 
 function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
   var opts = {
-    'app-copyright': appCopyright,
-    'win32metadata': {
+    appCopyright: appCopyright,
+    win32metadata: {
       CompanyName: companyName
     }
   }
 
   return generateVersionStringTest(
-    ['LegalCopyright', 'CompanyName'],
+    'version-string',
     opts,
-    [appCopyright, companyName],
-    ['Legal copyright should match app copyright',
-      'Company name should match win32metadata value']
+    {LegalCopyright: appCopyright, CompanyName: companyName},
+    'Legal copyright should match app copyright and Company name should match win32metadata value'
   )
 }
 
@@ -120,9 +99,9 @@ function setCompanyNameTest (companyName, optName) {
     CompanyName: companyName
   }
 
-  return generateVersionStringTest('CompanyName',
+  return generateVersionStringTest('version-string',
                                    opts,
-                                   companyName,
+                                   {CompanyName: companyName},
                                    `Company name should match ${optName} value`)
 }
 
@@ -179,8 +158,7 @@ util.packagerTest('win32 executable name is based on sanitized app name', (t) =>
 
 util.packagerTest('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 util.packagerTest('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
-util.packagerTest('win32 app/build versions default to package.json version test', defaultProductAndFileVersionToPackageVersionTest())
 util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
 util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
 util.packagerTest('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
-util.packagerTest('win32 set CompanyName test (versionString)', setCompanyNameTest('MyCompany LLC', 'versionString'))
+util.packagerTest('win32 set CompanyName test (version-string)', setCompanyNameTest('MyCompany LLC', 'version-string'))
