@@ -23,8 +23,6 @@ function generateVersionStringTest (metadataProperties, extraOpts, expectedValue
 
     const opts = Object.assign({}, baseOpts, extraOpts)
     const rcOpts = win32.generateRceditOptionsSansIcon(opts)
-    console.log(opts)
-    console.log(rcOpts)
 
     metadataProperties = [].concat(metadataProperties)
     expectedValues = [].concat(expectedValues)
@@ -32,7 +30,6 @@ function generateVersionStringTest (metadataProperties, extraOpts, expectedValue
     metadataProperties.forEach((property, i) => {
       var value = expectedValues[i]
       var msg = assertionMsgs[i]
-      console.log(property)
       t.deepEqual(rcOpts[property], value, msg)
     })
     t.end()
