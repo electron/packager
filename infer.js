@@ -20,7 +20,7 @@ function errorMessageForProperty (prop) {
       propDescription = 'application name'
       break
     case 'dependencies.electron':
-      hash = 'version'
+      hash = 'electronversion'
       propDescription = 'Electron version'
       break
     default:
