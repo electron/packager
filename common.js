@@ -88,6 +88,18 @@ function asarApp (appPath, asarOptions, cb) {
   })
 }
 
+function pruneModules (opts, appPath, cb) {
+  var pmName = opts['package-manager']
+  if (pmName !== undefined && pmName === 'yarn') {
+    child.exec('yarn install --production ', { cwd: appPath }, cb)
+  } else if (pmName !== undefined && pmName !== 'npm') {
+    warning(`specified package-manager "${pmName}" is not available, use {"npm", "yarn"} instead`)
+  } else {
+    // defaults to npm
+    child.exec('npm prune --production', { cwd: appPath }, cb)
+  }
+}
+
 function isPlatformMac (platform) {
   return platform === 'darwin' || platform === 'mas'
 }
@@ -293,8 +305,7 @@ module.exports = {
     // appPath is predictable (e.g. before .app is renamed for mac)
     if (opts.prune || opts.prune === undefined) {
       operations.push(function (cb) {
-        debug('Running npm prune --production')
-        child.exec('npm prune --production', {cwd: appPath}, cb)
+        pruneModules(opts, appPath, cb)
       })
     }
 
