@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+## [8.6.0] - 2017-03-14
+
+### Added
+
+* Limited support for electron-prebuilt-compile (#608)
+
 ### Changed
 
 * Options formatted in kebab-case (i.e., with hyphens) are available in camelCase, per JavaScript naming standards (#580)
+* rcedit upgraded to 0.8.0
 
 ### Deprecated
 
