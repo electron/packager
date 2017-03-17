@@ -40,7 +40,7 @@
     "eslint-config-standard": "^10.0.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-node": "^4.2.2",
-    "eslint-plugin-promise": "^3.0.0",
+    "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.0",
     "eslint-plugin-tape": "^1.1.0",
     "nyc": "^10.0.0",
@@ -64,6 +64,7 @@
   "keywords": [],
   "eslintConfig": {
     "extends": [
+      "plugin:promise/recommended",
       "plugin:tape/recommended",
       "standard"
     ],
@@ -71,6 +72,7 @@
       "sourceType": "script"
     },
     "plugins": [
+      "promise",
       "tape"
     ],
     "rules": {
