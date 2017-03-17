@@ -2,8 +2,8 @@
 
 const config = require('./config.json')
 const packager = require('..')
+const pify = require('pify')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 
 function createHookTest (hookName) {
   util.packagerTest('platform=all test (one arch) (' + hookName + ' hook)', (t) => {
@@ -25,20 +25,15 @@ function createHookTest (hookName) {
       callback()
     }]
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (finalPaths, cb) {
+    pify(packager)(opts)
+      .then(finalPaths => {
         t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
-        t.true(hookCalled, hookName + ' methods should have been called')
-        util.verifyPackageExistence(finalPaths, cb)
-      }, function (exists, cb) {
+        t.true(hookCalled, `${hookName} methods should have been called`)
+        return pify(util.verifyPackageExistence)(finalPaths)
+      }).then(exists => {
         t.true(exists, 'Packages should be generated for both 32-bit platforms')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   })
 }
 
