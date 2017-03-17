@@ -1,12 +1,12 @@
 'use strict'
 
 const config = require('./config.json')
-const fs = require('fs')
+const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
+const pify = require('pify')
 const test = require('tape')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 const win32 = require('../win32')
 
 const baseOpts = {
@@ -165,22 +165,17 @@ test('error message unchanged when error not about wine', (t) => {
 })
 
 util.packagerTest('win32 executable name is based on sanitized app name', (t) => {
-  let opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
+  const opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
 
-  waterfall([
-    (cb) => {
-      packager(opts, cb)
-    }, (paths, cb) => {
+  pify(packager)(opts)
+    .then(paths => {
       t.equal(1, paths.length, '1 bundle created')
-      let appExePath = path.join(paths[0], '@username-package-name.exe')
-      fs.stat(appExePath, cb)
-    }, (stats, cb) => {
-      t.true(stats.isFile(), 'The sanitized EXE filename should exist')
-      cb()
-    }
-  ], (err) => {
-    t.end(err)
-  })
+      const appExePath = path.join(paths[0], '@username-package-name.exe')
+      fs.exists(appExePath)
+    }).then(exists => {
+      t.true(exists, 'The sanitized EXE filename should exist')
+      t.end()
+    }).catch(t.end)
 })
 
 util.packagerTest('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
