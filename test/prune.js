@@ -4,10 +4,10 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
+const pify = require('pify')
 const prune = require('../prune')
 const test = require('tape')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 const which = require('which')
 
 function createPruneOptionTest (baseOpts, prune, testMessage) {
@@ -22,29 +22,24 @@ function createPruneOptionTest (baseOpts, prune, testMessage) {
     let finalPath
     let resourcesPath
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
+    pify(packager)(opts)
+      .then(paths => {
         finalPath = paths[0]
-        fs.stat(finalPath, cb)
-      }, (stats, cb) => {
+        return fs.stat(finalPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
         resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
-        fs.stat(resourcesPath, cb)
-      }, (stats, cb) => {
+        return fs.stat(resourcesPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'), cb)
-      }, (stats, cb) => {
-        t.true(stats.isDirectory(), 'package.json dependency should exist under app/node_modules')
-        fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), (exists) => {
-          t.equal(!prune, exists, testMessage)
-          cb()
-        })
-      }
-    ], (err) => {
-      t.end(err)
-    })
+        return fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'))
+      }).then(stats => {
+        t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
+        return fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
+      }).then(exists => {
+        t.equal(!prune, exists, testMessage)
+        return t.end()
+      }).catch(t.end)
   }
 }
 

@@ -5,10 +5,10 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
+const pify = require('pify')
 const targets = require('../targets')
 const test = require('tape')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 
 // Generates a path to the generated app that reflects the name given in the options.
 // Returns the Helper.app location on darwin since the top-level .app is already tested for the
@@ -22,7 +22,7 @@ function generateNamePath (opts) {
 }
 
 function createDefaultsTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'defaultsTest'
@@ -39,55 +39,46 @@ function createDefaultsTest (opts) {
     var finalPath
     var resourcesPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         t.true(Array.isArray(paths), 'packager call should resolve to an array')
         t.equal(paths.length, 1, 'Single-target run should resolve to a 1-item array')
 
         finalPath = paths[0]
         t.equal(finalPath, path.join(util.getWorkCwd(), common.generateFinalBasename(defaultOpts)),
           'Path should follow the expected format and be in the cwd')
-        fs.stat(finalPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(finalPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
         resourcesPath = path.join(finalPath, util.generateResourcesPath(defaultOpts))
-        fs.stat(path.join(finalPath, generateNamePath(defaultOpts)), cb)
-      }, function (stats, cb) {
+        return fs.stat(path.join(finalPath, generateNamePath(defaultOpts)))
+      }).then(stats => {
         if (common.isPlatformMac(defaultOpts.platform)) {
           t.true(stats.isDirectory(), 'The Helper.app should reflect opts.name')
         } else {
           t.true(stats.isFile(), 'The executable should reflect opts.name')
         }
-        fs.stat(resourcesPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(resourcesPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), (exists) => {
-          t.false(exists, 'The output directory should NOT contain devDependencies by default (prune=true)')
-          util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), cb)
-        })
-      }, function (equal, cb) {
+        return fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
+      }).then(exists => {
+        t.false(exists, 'The output directory should NOT contain devDependencies by default (prune=true)')
+        return pify(util.areFilesEqual)(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'))
+      }).then(equal => {
         t.true(equal, 'File under packaged app directory should match source file')
-        util.areFilesEqual(path.join(opts.dir, 'ignore', 'this.txt'),
-          path.join(resourcesPath, 'app', 'ignore', 'this.txt'),
-          cb)
-      }, function (equal, cb) {
-        t.true(equal,
-          'File under subdirectory of packaged app directory should match source file and not be ignored by default')
-        fs.exists(path.join(resourcesPath, 'default_app'), function (exists) {
-          t.false(exists, 'The output directory should not contain the Electron default app directory')
-          cb()
-        })
-      }, function (cb) {
-        fs.exists(path.join(resourcesPath, 'default_app.asar'), function (exists) {
-          t.false(exists, 'The output directory should not contain the Electron default app asar file')
-          cb()
-        })
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return pify(util.areFilesEqual)(path.join(opts.dir, 'ignore', 'this.txt'),
+                                        path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
+      }).then(equal => {
+        t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
+        return fs.exists(path.join(resourcesPath, 'default_app'))
+      }).then(exists => {
+        t.false(exists, 'The output directory should not contain the Electron default app directory')
+        return fs.exists(path.join(resourcesPath, 'default_app.asar'))
+      }).then(exists => {
+        t.false(exists, 'The output directory should not contain the Electron default app asar file')
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -101,29 +92,24 @@ function createOutTest (opts) {
 
     var finalPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         finalPath = paths[0]
         t.equal(finalPath, path.join('dist', common.generateFinalBasename(opts)),
           'Path should follow the expected format and be under the folder specified in `out`')
-        fs.stat(finalPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(finalPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
-        fs.stat(path.join(finalPath, util.generateResourcesPath(opts)), cb)
-      }, function (stats, cb) {
+        return fs.stat(path.join(finalPath, util.generateResourcesPath(opts)))
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
 function createOverwriteTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
 
     opts.name = 'overwriteTest'
@@ -132,41 +118,32 @@ function createOverwriteTest (opts) {
     var finalPath
     var testPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         finalPath = paths[0]
-        fs.stat(finalPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(finalPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
         // Create a dummy file to detect whether the output directory is replaced in subsequent runs
         testPath = path.join(finalPath, 'test.txt')
-        fs.writeFile(testPath, 'test', cb)
-      }, function (cb) {
-        // Run again, defaulting to overwrite false
-        packager(opts, cb)
-      }, function (paths, cb) {
-        fs.stat(testPath, cb)
-      }, function (stats, cb) {
+        return fs.writeFile(testPath, 'test')
+      }).then(() => pify(packager)(opts)) // Run again, defaulting to overwrite false
+      .then(paths => fs.stat(testPath))
+      .then(stats => {
         t.true(stats.isFile(), 'The existing output directory should exist as before (skipped by default)')
         // Run a third time, explicitly setting overwrite to true
         opts.overwrite = true
-        packager(opts, cb)
-      }, function (paths, cb) {
-        fs.exists(testPath, function (exists) {
-          t.false(exists, 'The output directory should be regenerated when overwrite is true')
-          cb()
-        })
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return pify(packager)(opts)
+      }).then(paths => fs.exists(testPath))
+      .then(exists => {
+        t.false(exists, 'The output directory should be regenerated when overwrite is true')
+        return t.end()
+      }).catch(t.end)
   }
 }
 
 function createTmpdirTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'tmpdirTest'
@@ -174,24 +151,17 @@ function createTmpdirTest (opts) {
     opts.out = 'dist'
     opts.tmpdir = path.join(util.getWorkCwd(), 'tmp')
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        fs.stat(path.join(opts.tmpdir, 'electron-packager'), cb)
-      },
-      function (stats, cb) {
+    pify(packager)(opts)
+      .then(paths => fs.stat(path.join(opts.tmpdir, 'electron-packager')))
+      .then(stats => {
         t.true(stats.isDirectory(), 'The expected temp directory should exist')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
 function createDisableTmpdirUsingTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'disableTmpdirTest'
@@ -199,24 +169,17 @@ function createDisableTmpdirUsingTest (opts) {
     opts.out = 'dist'
     opts.tmpdir = false
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        fs.stat(paths[0], cb)
-      },
-      function (stats, cb) {
+    pify(packager)(opts)
+      .then(paths => fs.stat(paths[0]))
+      .then(stats => {
         t.true(stats.isDirectory(), 'The expected out directory should exist')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
 function createDisableSymlinkDereferencingTest (opts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     opts.name = 'disableSymlinkDerefTest'
@@ -225,28 +188,31 @@ function createDisableSymlinkDereferencingTest (opts) {
     opts.derefSymlinks = false
     opts.asar = false
 
-    var dst = path.join(opts.dir, 'main-link.js')
+    const dest = path.join(opts.dir, 'main-link.js')
 
-    waterfall([
-      function (cb) {
-        var src = path.join(opts.dir, 'main.js')
-        fs.ensureSymlink(src, dst, cb)
-      }, function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
-        var dstLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
-        fs.lstat(dstLink, cb)
-      },
-      function (stats, cb) {
+    const src = path.join(opts.dir, 'main.js')
+    fs.ensureSymlink(src, dest)
+      .then(() => pify(packager)(opts))
+      .then(paths => {
+        const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
+        return fs.lstat(destLink)
+      }).then(stats => {
         t.true(stats.isSymbolicLink(), 'The expected file should still be a symlink.')
-        cb()
-      },
-      function (cb) {
-        fs.remove(dst, cb)
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return fs.remove(dest)
+      }).then(t.end).catch(t.end)
+  }
+}
+
+function invalidOptionTest (opts) {
+  return (t) => {
+    return pify(packager)(opts)
+      .then(
+        paths => t.end('no paths returned'),
+        (err) => {
+          t.ok(err, 'error thrown')
+          return t.end()
+        }
+      )
   }
 }
 
@@ -324,10 +290,14 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     platform: 'linux'
   }
 
-  packager(opts, (err) => {
-    t.equal('Application names cannot end in " Helper" due to limitations on macOS', err.message)
-    t.end()
-  })
+  return pify(packager)(opts)
+    .then(
+      () => t.end('should not finish'),
+      (err) => {
+        t.equal('Application names cannot end in " Helper" due to limitations on macOS', err.message)
+        t.end()
+      }
+    )
 })
 
 util.testSinglePlatform('defaults test', createDefaultsTest)
@@ -338,7 +308,7 @@ util.testSinglePlatform('disable tmpdir test', createDisableTmpdirUsingTest)
 util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
 
 util.packagerTest('building for Linux target sanitizes binary name', (t) => {
-  let opts = {
+  const opts = {
     name: '@username/package-name',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
     electronVersion: '0.37.4',
@@ -346,62 +316,34 @@ util.packagerTest('building for Linux target sanitizes binary name', (t) => {
     platform: 'linux'
   }
 
-  waterfall([
-    (cb) => {
-      packager(opts, cb)
-    }, (paths, cb) => {
+  pify(packager)(opts)
+    .then(paths => {
       t.equal(1, paths.length, '1 bundle created')
-      fs.stat(path.join(paths[0], '@username-package-name'), cb)
-    }, (stats, cb) => {
+      return fs.stat(path.join(paths[0], '@username-package-name'))
+    }).then(stats => {
       t.true(stats.isFile(), 'The sanitized binary filename should exist')
-      cb()
-    }
-  ], (err) => {
-    t.end(err)
-  })
+      return t.end()
+    }).catch(t.end)
 })
 
-util.packagerTest('fails with invalid arch', (t) => {
-  let opts = {
-    arch: 'z80',
-    platform: 'linux'
+util.packagerTest('fails with invalid arch', invalidOptionTest({
+  arch: 'z80',
+  platform: 'linux'
+}))
+util.packagerTest('fails with invalid platform', invalidOptionTest({
+  arch: 'ia32',
+  platform: 'dos'
+}))
+util.packagerTest('fails with invalid version', invalidOptionTest({
+  name: 'invalidElectronTest',
+  dir: path.join(__dirname, 'fixtures', 'el-0374'),
+  electronVersion: '0.0.1',
+  arch: 'x64',
+  platform: 'linux',
+  download: {
+    quiet: !!process.env.CI
   }
-  packager(opts, (err, paths) => {
-    t.equal(undefined, paths, 'no paths returned')
-    t.ok(err, 'error thrown')
-    t.end()
-  })
-})
-
-util.packagerTest('fails with invalid platform', (t) => {
-  let opts = {
-    arch: 'ia32',
-    platform: 'dos'
-  }
-  packager(opts, (err, paths) => {
-    t.equal(undefined, paths, 'no paths returned')
-    t.ok(err, 'error thrown')
-    t.end()
-  })
-})
-
-util.packagerTest('fails with invalid version', (t) => {
-  let opts = {
-    name: 'invalidElectronTest',
-    dir: path.join(__dirname, 'fixtures', 'el-0374'),
-    electronVersion: '0.0.1',
-    arch: 'x64',
-    platform: 'linux',
-    download: {
-      quiet: !!process.env.CI
-    }
-  }
-  packager(opts, (err, paths) => {
-    t.equal(undefined, paths, 'no paths returned')
-    t.ok(err, 'error thrown')
-    t.end()
-  })
-})
+}))
 
 util.packagerTest('electronVersion overrides deprecated version', (t) => {
   const opts = {
@@ -429,15 +371,17 @@ util.packagerTest('version used if electronVersion not set', (t) => {
 })
 
 util.packagerTest('dir argument test: should work with relative path', (t) => {
-  let opts = {
+  const opts = {
     name: 'ElectronTest',
     dir: path.join('..', 'fixtures', 'el-0374'),
     electronVersion: '0.37.4',
     arch: 'x64',
     platform: 'linux'
   }
-  packager(opts, (err, paths) => {
-    t.equal(path.join(__dirname, 'work', 'ElectronTest-linux-x64'), paths[0], 'paths returned')
-    t.end(err)
-  })
+
+  pify(packager)(opts)
+    .then(paths => {
+      t.equal(path.join(__dirname, 'work', 'ElectronTest-linux-x64'), paths[0], 'paths returned')
+      return t.end()
+    }).catch(t.end)
 })
