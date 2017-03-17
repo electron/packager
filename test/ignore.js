@@ -6,10 +6,9 @@ const fs = require('fs-extra')
 const ignore = require('../ignore')
 const path = require('path')
 const packager = require('..')
-const series = require('run-series')
+const pify = require('pify')
 const test = require('tape')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 
 function createIgnoreTest (opts, ignorePattern, ignoredFile) {
   return (t) => {
@@ -21,24 +20,19 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
       opts.ignore = ignorePattern
     }
 
-    var appPath
+    let appPath
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
+    pify(packager)(opts)
+      .then(paths => {
         appPath = path.join(paths[0], util.generateResourcesPath(opts), 'app')
-        fs.stat(path.join(appPath, 'package.json'), cb)
-      }, (stats, cb) => {
-        t.true(stats.isFile(), 'The expected output directory should exist and contain files')
-        fs.exists(path.join(appPath, ignoredFile), exists => {
-          t.false(exists, 'Ignored file should not exist in output app directory')
-          cb()
-        })
-      }
-    ], (err) => {
-      t.end(err)
-    })
+        return fs.exists(path.join(appPath, 'package.json'))
+      }).then(exists => {
+        t.true(exists, 'The expected output directory should exist and contain files')
+        return fs.exists(path.join(appPath, ignoredFile))
+      }).then(exists => {
+        t.false(exists, 'Ignored file should not exist in output app directory')
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -54,37 +48,23 @@ function createIgnoreOutDirTest (opts, distPath) {
     var outDir = opts.dir + path.sep + distPath
     opts.out = outDir
 
-    series([
-      (cb) => {
-        fs.copy(util.fixtureSubdir('basic'), appDir, {
-          dereference: true,
-          stopOnErr: true,
-          filter: file => { return path.basename(file) !== 'node_modules' }
-        }, cb)
-      },
-      (cb) => {
-        // create out dir before packager (real world issue - when second run includes unignored out dir)
-        fs.mkdirp(outDir, cb)
-      },
-      (cb) => {
-        // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(outDir, 'ignoreMe'), 'w', (err, fd) => {
-          if (err) return cb(err)
-          fs.close(fd, cb)
-        })
-      },
-      (cb) => {
-        packager(opts, cb)
-      },
-      (cb) => {
-        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir)), (exists) => {
-          t.false(exists, 'Out dir must not exist in output app directory')
-          cb()
-        })
-      }
-    ], (err) => {
-      t.end(err)
-    })
+    fs.copy(util.fixtureSubdir('basic'), appDir, {
+      dereference: true,
+      stopOnErr: true,
+      filter: file => { return path.basename(file) !== 'node_modules' }
+    }).then(() => {
+      // create out dir before packager (real world issue - when second run includes unignored out dir)
+      return fs.mkdirp(outDir)
+    }).then(() => {
+      // create file to ensure that directory will be not ignored because empty
+      return fs.open(path.join(outDir, 'ignoreMe'), 'w')
+    }).then(fd => fs.close(fd))
+      .then(() => pify(packager)(opts))
+      .then(() => fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir))))
+      .then(exists => {
+        t.false(exists, 'Out dir must not exist in output app directory')
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -101,37 +81,23 @@ function createIgnoreImplicitOutDirTest (opts) {
     var testFilename = 'ignoreMe'
     var previousPackedResultDir
 
-    series([
-      (cb) => {
-        fs.copy(util.fixtureSubdir('basic'), appDir, {
-          dereference: true,
-          stopOnErr: true,
-          filter: file => { return path.basename(file) !== 'node_modules' }
-        }, cb)
-      },
-      (cb) => {
-        previousPackedResultDir = path.join(outDir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
-        fs.mkdirp(previousPackedResultDir, cb)
-      },
-      (cb) => {
-        // create file to ensure that directory will be not ignored because empty
-        fs.open(path.join(previousPackedResultDir, testFilename), 'w', (err, fd) => {
-          if (err) return cb(err)
-          fs.close(fd, cb)
-        })
-      },
-      (cb) => {
-        packager(opts, cb)
-      },
-      (cb) => {
-        fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename), (exists) => {
-          t.false(exists, 'Out dir must not exist in output app directory')
-          cb()
-        })
-      }
-    ], (err) => {
-      t.end(err)
-    })
+    fs.copy(util.fixtureSubdir('basic'), appDir, {
+      dereference: true,
+      stopOnErr: true,
+      filter: file => { return path.basename(file) !== 'node_modules' }
+    }).then(() => {
+      previousPackedResultDir = path.join(outDir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
+      return fs.mkdirp(previousPackedResultDir)
+    }).then(() => {
+      // create file to ensure that directory will be not ignored because empty
+      return fs.open(path.join(previousPackedResultDir, testFilename), 'w')
+    }).then(fd => fs.close(fd))
+      .then(() => pify(packager)(opts))
+      .then(() => fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename)))
+      .then(exists => {
+        t.false(exists, 'Out dir must not exist in output app directory')
+        return t.end()
+      }).catch(t.end)
   }
 }
 
