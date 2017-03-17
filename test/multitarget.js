@@ -2,119 +2,54 @@
 
 const config = require('./config.json')
 const packager = require('..')
+const pify = require('pify')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 
-function createMultiTest (arch, platform) {
+function createMultiTargetOptions (extraOpts) {
+  return Object.assign({
+    name: 'basicTest',
+    dir: util.fixtureSubdir('basic'),
+    electronVersion: config.version
+  }, extraOpts)
+}
+
+function createMultiTargetPromise (t, opts, expectedPackageCount, packageExistenceMessage) {
+  pify(packager)(opts)
+    .then(finalPaths => {
+      t.equal(finalPaths.length, expectedPackageCount,
+              'packager call should resolve with expected number of paths')
+      return pify(util.verifyPackageExistence)(finalPaths)
+    }).then(exists => {
+      t.true(exists, packageExistenceMessage)
+      return t.end()
+    }).catch(t.end)
+}
+
+function createMultiTargetTest (extraOpts, expectedPackageCount, packageExistenceMessage) {
   return (t) => {
-    // 4 packages will be built during this test
-    t.timeoutAfter(config.timeout * 4)
+    t.timeoutAfter(config.timeout * expectedPackageCount)
 
-    var opts = {
-      name: 'basicTest',
-      dir: util.fixtureSubdir('basic'),
-      electronVersion: config.version,
-      arch: arch,
-      platform: platform
-    }
-
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (finalPaths, cb) => {
-        t.equal(finalPaths.length, 4, 'packager call should resolve with expected number of paths')
-        util.verifyPackageExistence(finalPaths, cb)
-      }, (exists, cb) => {
-        t.true(exists, 'Packages should be generated for all combinations of specified archs and platforms')
-        cb()
-      }
-    ], (err) => {
-      t.end(err)
-    })
+    const opts = createMultiTargetOptions(extraOpts)
+    createMultiTargetPromise(t, opts, expectedPackageCount, packageExistenceMessage)
   }
 }
 
+function createMultiTest (arch, platform) {
+  return createMultiTargetTest({arch: arch, platform: platform}, 4,
+                               'Packages should be generated for all combinations of specified archs and platforms')
+}
+
 util.packagerTest('all test', (t) => {
-  t.timeoutAfter(config.timeout * 7) // 7 packages will be built during this test
+  const EXPECTED_PACKAGES = 7
+  const opts = createMultiTargetOptions({all: true})
+  const message = 'Packages should be generated for all possible platforms'
 
-  var opts = {
-    name: 'basicTest',
-    dir: util.fixtureSubdir('basic'),
-    electronVersion: config.version,
-    all: true
-  }
-
-  var expectedAppCount = 7
-
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (finalPaths, cb) {
-      // OS X only has 64-bit releases
-      t.equal(finalPaths.length, expectedAppCount,
-        'packager call should resolve with expected number of paths')
-      util.verifyPackageExistence(finalPaths, cb)
-    }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for all possible platforms')
-      cb()
-    }
-  ], function (err) {
-    t.end(err)
-  })
+  return createMultiTargetPromise(t, opts, EXPECTED_PACKAGES, message)
 })
 
-util.packagerTest('platform=all test (one arch)', function (t) {
-  t.timeoutAfter(config.timeout * 2) // 2 packages will be built during this test
-
-  var opts = {
-    name: 'basicTest',
-    dir: util.fixtureSubdir('basic'),
-    electronVersion: config.version,
-    arch: 'ia32',
-    platform: 'all'
-  }
-
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (finalPaths, cb) {
-      t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
-      util.verifyPackageExistence(finalPaths, cb)
-    }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for both 32-bit platforms')
-      cb()
-    }
-  ], function (err) {
-    t.end(err)
-  })
-})
-
-util.packagerTest('arch=all test (one platform)', (t) => {
-  const LINUX_ARCH_COUNT = 3
-  t.timeoutAfter(config.timeout * LINUX_ARCH_COUNT)
-
-  var opts = {
-    name: 'basicTest',
-    dir: util.fixtureSubdir('basic'),
-    electronVersion: config.version,
-    arch: 'all',
-    platform: 'linux'
-  }
-
-  waterfall([
-    function (cb) {
-      packager(opts, cb)
-    }, function (finalPaths, cb) {
-      t.equal(finalPaths.length, LINUX_ARCH_COUNT, 'packager call should resolve with expected number of paths')
-      util.verifyPackageExistence(finalPaths, cb)
-    }, function (exists, cb) {
-      t.true(exists, 'Packages should be generated for all expected architectures')
-      cb()
-    }
-  ], function (err) {
-    t.end(err)
-  })
-})
-
+util.packagerTest('platform=all test (one arch)',
+                  createMultiTargetTest({arch: 'ia32', platform: 'all'}, 2, 'Packages should be generated for both 32-bit platforms'))
+util.packagerTest('arch=all test (one platform)',
+                  createMultiTargetTest({arch: 'all', platform: 'linux'}, 3, 'Packages should be generated for all expected architectures'))
 util.packagerTest('multi-platform / multi-arch test, from arrays', createMultiTest(['ia32', 'x64'], ['linux', 'win32']))
 util.packagerTest('multi-platform / multi-arch test, from strings', createMultiTest('ia32,x64', 'linux,win32'))
