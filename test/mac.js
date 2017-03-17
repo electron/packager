@@ -1,15 +1,15 @@
 'use strict'
 
 const config = require('./config.json')
-const exec = require('child_process').exec
-const fs = require('fs')
+const exec = require('mz/child_process').exec
+const fs = require('fs-extra')
 const mac = require('../mac')
 const packager = require('..')
 const path = require('path')
+const pify = require('pify')
 const plist = require('plist')
 const test = require('tape')
 const util = require('./util')
-const waterfall = require('run-waterfall')
 
 function getHelperExecutablePath (helperName) {
   return path.join(`${helperName}.app`, 'Contents', 'MacOS', helperName)
@@ -26,32 +26,27 @@ function createHelperAppPathsTest (baseOpts, expectedName) {
       expectedName = opts.name
     }
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
+    pify(packager)(opts)
+      .then(paths => {
         frameworksPath = path.join(paths[0], `${expectedName}.app`, 'Contents', 'Frameworks')
         // main Helper.app is already tested in basic test suite; test its executable and the other helpers
-        fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper`)), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper`)))
+      }).then(stats => {
         t.true(stats.isFile(), 'The Helper.app executable should reflect sanitized opts.name')
-        fs.stat(path.join(frameworksPath, `${expectedName} Helper EH.app`), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(frameworksPath, `${expectedName} Helper EH.app`))
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The Helper EH.app should reflect sanitized opts.name')
-        fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper EH`)), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper EH`)))
+      }).then(stats => {
         t.true(stats.isFile(), 'The Helper EH.app executable should reflect sanitized opts.name')
-        fs.stat(path.join(frameworksPath, `${expectedName} Helper NP.app`), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(frameworksPath, `${expectedName} Helper NP.app`))
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The Helper NP.app should reflect sanitized opts.name')
-        fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper NP`)), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper NP`)))
+      }).then(stats => {
         t.true(stats.isFile(), 'The Helper NP.app executable should reflect sanitized opts.name')
-        cb()
-      }
-    ], (err) => {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -65,29 +60,24 @@ function createIconTest (baseOpts, icon, iconPath) {
     var resourcesPath
     var plistPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(resourcesPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(resourcesPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
-        util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile), cb)
-      }, function (equal, cb) {
+        return pify(util.areFilesEqual)(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
+      }).then(equal => {
         t.true(equal, 'installed icon file should be identical to the specified icon file')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -103,22 +93,17 @@ function createExtraResourceTest (baseOpts) {
 
     var resourcesPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        fs.stat(resourcesPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(resourcesPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base), cb)
-      }, function (equal, cb) {
+        return pify(util.areFilesEqual)(extra1Path, path.join(resourcesPath, extra1Base))
+      }).then(equal => {
         t.true(equal, 'resource file data1.txt should match')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -136,25 +121,20 @@ function createExtraResource2Test (baseOpts) {
 
     var resourcesPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        fs.stat(resourcesPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(resourcesPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base), cb)
-      }, function (equal, cb) {
+        return pify(util.areFilesEqual)(extra1Path, path.join(resourcesPath, extra1Base))
+      }).then(equal => {
         t.true(equal, 'resource file data1.txt should match')
-        util.areFilesEqual(extra2Path, path.join(resourcesPath, extra2Base), cb)
-      }, function (equal, cb) {
+        return pify(util.areFilesEqual)(extra2Path, path.join(resourcesPath, extra2Base))
+      }).then(equal => {
         t.true(equal, 'resource file extrainfo.plist should match')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -170,16 +150,14 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
 
     var plistPath
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.TestKeyString, 'String data', 'TestKeyString should come from extendInfo')
         t.equal(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
@@ -190,11 +168,8 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
         t.equal(obj.CFBundleIdentifier, 'com.electron.extratest', 'CFBundleIdentifier should reflect appBundleId argument')
         t.equal(obj.LSApplicationCategoryType, 'public.app-category.music', 'LSApplicationCategoryType should reflect appCategoryType argument')
         t.equal(obj.CFBundlePackageType, 'APPL', 'CFBundlePackageType should be Electron default')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -206,19 +181,14 @@ function createBinaryNameTest (baseOpts, expectedAppName) {
     let binaryPath
     let appName = expectedAppName || opts.name
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
+    pify(packager)(opts)
+      .then(paths => {
         binaryPath = path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS')
-        fs.stat(path.join(binaryPath, appName), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(binaryPath, appName))
+      }).then(stats => {
         t.true(stats.isFile(), 'The binary should reflect a sanitized opts.name')
-        cb()
-      }
-    ], (err) => {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -234,26 +204,21 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
       opts.buildVersion = buildVersion
     }
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
         t.equal(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
         t.equal(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
         t.equal(typeof obj.CFBundleShortVersionString, 'string', 'CFBundleShortVersionString should be a string')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -263,24 +228,19 @@ function createAppVersionInferenceTest (baseOpts) {
 
     var plistPath
 
-    waterfall([
-      function (cb) {
-        packager(baseOpts, cb)
-      }, function (paths, cb) {
+    pify(packager)(baseOpts)
+      .then(paths => {
         plistPath = path.join(paths[0], baseOpts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleVersion, '4.99.101', 'CFBundleVersion should reflect package.json version')
         t.equal(obj.CFBundleShortVersionString, '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -292,23 +252,18 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
     var opts = Object.create(baseOpts)
     opts.appCategoryType = appCategoryType
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.LSApplicationCategoryType, opts.appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -324,16 +279,14 @@ function createAppBundleTest (baseOpts, appBundleId) {
     var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
     var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name')
@@ -342,11 +295,8 @@ function createAppBundleTest (baseOpts, appBundleId) {
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string')
         t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string')
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -356,25 +306,20 @@ function createAppBundleFrameworkTest (baseOpts) {
 
     var frameworkPath
 
-    waterfall([
-      function (cb) {
-        packager(baseOpts, cb)
-      }, function (paths, cb) {
+    pify(packager)(baseOpts)
+      .then(paths => {
         frameworkPath = path.join(paths[0], `${baseOpts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
-        fs.stat(frameworkPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(frameworkPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'Expected Electron Framework.framework to be a directory')
-        fs.lstat(path.join(frameworkPath, 'Electron Framework'), cb)
-      }, function (stats, cb) {
+        return fs.lstat(path.join(frameworkPath, 'Electron Framework'))
+      }).then(stats => {
         t.true(stats.isSymbolicLink(), 'Expected Electron Framework.framework/Electron Framework to be a symlink')
-        fs.lstat(path.join(frameworkPath, 'Versions', 'Current'), cb)
-      }, function (stats, cb) {
+        return fs.lstat(path.join(frameworkPath, 'Versions', 'Current'))
+      }).then(stats => {
         t.true(stats.isSymbolicLink(), 'Expected Electron Framework.framework/Versions/Current to be a symlink')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -394,17 +339,15 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
     var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
     var helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         tempPath = paths[0]
         plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist in helper app')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name in helper app')
         t.equal(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
@@ -413,11 +356,11 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
         // check helper EH
         plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper EH.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist in helper EH app')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
         t.equal(obj.CFBundleDisplayName, opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
@@ -430,11 +373,11 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
         // check helper NP
         plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper NP.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist in helper NP app')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
         t.equal(obj.CFBundleDisplayName, opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
@@ -445,11 +388,8 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.equal(typeof obj.CFBundleExecutable, 'string', 'CFBundleExecutable should be a string in helper NP app')
         t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string in helper NP app')
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -461,23 +401,18 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
     var opts = Object.create(baseOpts)
     opts.appCopyright = humanReadableCopyright
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         var obj = plist.parse(file)
         t.equal(obj.NSHumanReadableCopyright, opts.appCopyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -495,16 +430,14 @@ function createProtocolTest (baseOpts) {
       schemes: ['bar', 'baz']
     }]
 
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, function (file, cb) {
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
         t.deepEqual(plist.parse(file).CFBundleURLTypes, [{
           CFBundleURLName: 'Foo',
           CFBundleURLSchemes: ['foo']
@@ -512,11 +445,8 @@ function createProtocolTest (baseOpts) {
           CFBundleURLName: 'Bar',
           CFBundleURLSchemes: ['bar', 'baz']
         }], 'CFBundleURLTypes did not contain specified protocol schemes and names')
-        cb()
-      }
-    ], function (err) {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   }
 }
 
@@ -554,70 +484,68 @@ module.exports = (baseOpts) => {
     var args = true
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
-    t.end()
+    return t.end()
   })
 
   test('osxSign argument test: identity=true sets autodiscovery mode', function (t) {
     var args = {identity: true}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
-    t.end()
+    return t.end()
   })
 
   test('osxSign argument test: entitlements passed to electron-osx-sign', function (t) {
     var args = {entitlements: 'path-to-entitlements'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements})
-    t.end()
+    return t.end()
   })
 
   test('osxSign argument test: app not overwritten', function (t) {
     var args = {app: 'some-other-path'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
-    t.end()
+    return t.end()
   })
 
   test('osxSign argument test: platform not overwritten', function (t) {
     var args = {platform: 'mas'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
-    t.end()
+    return t.end()
   })
 
   test('osxSign argument test: binaries not set', (t) => {
     let args = {binaries: ['binary1', 'binary2']}
     let signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
-    t.end()
+    return t.end()
   })
 
   util.packagerTest('codesign test', (t) => {
     t.timeoutAfter(config.macExecTimeout)
 
-    var opts = Object.create(baseOpts)
-    opts.osxSign = {identity: 'Developer CodeCert'}
+    const opts = Object.assign({}, baseOpts, {osxSign: {identity: 'Developer CodeCert'}})
+    let appPath
 
-    var appPath
-
-    waterfall([
-      function (cb) {
-        packager(opts, cb)
-      }, function (paths, cb) {
+    pify(packager)(opts)
+      .then(paths => {
         appPath = path.join(paths[0], opts.name + '.app')
-        fs.stat(appPath, cb)
-      }, function (stats, cb) {
+        return fs.stat(appPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The expected .app directory should exist')
-        exec('codesign -v ' + appPath, cb)
-      }, function (stdout, stderr, cb) {
-        t.pass('codesign should verify successfully')
-        cb()
-      }
-    ], function (err) {
-      var notFound = err && err.code === 127
-      if (notFound) console.log('codesign not installed; skipped')
-      t.end(notFound ? null : err)
-    })
+        return exec(`codesign -v ${appPath}`)
+      }).then(
+        (stdout, stderr) => {
+          t.pass('codesign should verify successfully')
+          return t.end()
+        },
+        (err) => {
+          const notFound = err && err.code === 127
+          if (notFound) console.log('codesign not installed; skipped')
+          return t.end(notFound ? null : err)
+        }
+      ).catch(t.end)
   })
 
   util.packagerTest('binary naming test', createBinaryNameTest(baseOpts))
@@ -627,21 +555,19 @@ module.exports = (baseOpts) => {
     t.timeoutAfter(config.timeout)
 
     let plistPath
-    let opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
-    let appBundleIdentifier = 'com.electron.username-package-name'
-    let expectedSanitizedName = '@username-package-name'
+    const opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
+    const appBundleIdentifier = 'com.electron.username-package-name'
+    const expectedSanitizedName = '@username-package-name'
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
+    pify(packager)(opts)
+      .then(paths => {
         plistPath = path.join(paths[0], `${expectedSanitizedName}.app`, 'Contents', 'Info.plist')
-        fs.stat(plistPath, cb)
-      }, (stats, cb) => {
+        return fs.stat(plistPath)
+      }).then(stats => {
         t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        fs.readFile(plistPath, 'utf8', cb)
-      }, (file, cb) => {
-        let obj = plist.parse(file)
+        return fs.readFile(plistPath, 'utf8')
+      }).then(file => {
+        const obj = plist.parse(file)
         t.equal(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string')
         t.equal(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string')
@@ -649,11 +575,8 @@ module.exports = (baseOpts) => {
         t.equal(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string')
         t.equal(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
         t.equal(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
-        cb()
-      }
-    ], (err) => {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   })
 
   util.packagerTest('app and build version test', createAppVersionTest(baseOpts, '1.1.0', '1.1.0.1234'))
@@ -677,25 +600,19 @@ module.exports = (baseOpts) => {
   util.packagerTest('app humanReadableCopyright test', createAppHumanReadableCopyrightTest(baseOpts, 'Copyright © 2003–2015 Organization. All rights reserved.'))
 
   util.packagerTest('app named Electron packaged successfully', (t) => {
-    let opts = Object.create(baseOpts)
-    opts.name = 'Electron'
+    const opts = Object.assign({}, baseOpts, {name: 'Electron'})
     let appPath
 
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
+    pify(packager)(opts)
+      .then(paths => {
         appPath = path.join(paths[0], 'Electron.app')
-        fs.stat(appPath, cb)
-      }, (stats, cb) => {
+        return fs.stat(appPath)
+      }).then(stats => {
         t.true(stats.isDirectory(), 'The Electron.app folder exists')
-        fs.stat(path.join(appPath, 'Contents', 'MacOS', 'Electron'), cb)
-      }, (stats, cb) => {
+        return fs.stat(path.join(appPath, 'Contents', 'MacOS', 'Electron'))
+      }).then(stats => {
         t.true(stats.isFile(), 'The Electron.app/Contents/MacOS/Electron binary exists')
-        cb()
-      }
-    ], (err) => {
-      t.end(err)
-    })
+        return t.end()
+      }).catch(t.end)
   })
 }
