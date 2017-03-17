@@ -472,7 +472,7 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
         fs.readFile(plistPath, 'utf8', cb)
       }, function (file, cb) {
         var obj = plist.parse(file)
-        t.equal(obj.NSHumanReadableCopyright, opts.appCopyright, 'NSHumanReadableCopyright should reflect opts["app-copyright"]')
+        t.equal(obj.NSHumanReadableCopyright, opts.appCopyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
         cb()
       }
     ], function (err) {
