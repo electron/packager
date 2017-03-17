@@ -29,7 +29,7 @@ function createHookTest (hookName) {
       .then(finalPaths => {
         t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
         t.true(hookCalled, `${hookName} methods should have been called`)
-        return pify(util.verifyPackageExistence)(finalPaths)
+        return util.verifyPackageExistence(finalPaths)
       }).then(exists => {
         t.true(exists, 'Packages should be generated for both 32-bit platforms')
         return t.end()

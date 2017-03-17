@@ -43,6 +43,7 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.0",
     "eslint-plugin-tape": "^1.1.0",
+    "mz": "^2.6.0",
     "nyc": "^10.0.0",
     "pkg-up": "^2.0.0",
     "rimraf": "^2.3.2",

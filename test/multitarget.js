@@ -18,7 +18,7 @@ function createMultiTargetPromise (t, opts, expectedPackageCount, packageExisten
     .then(finalPaths => {
       t.equal(finalPaths.length, expectedPackageCount,
               'packager call should resolve with expected number of paths')
-      return pify(util.verifyPackageExistence)(finalPaths)
+      return util.verifyPackageExistence(finalPaths)
     }).then(exists => {
       t.true(exists, packageExistenceMessage)
       return t.end()

@@ -73,7 +73,7 @@ function createIconTest (baseOpts, icon, iconPath) {
         return fs.readFile(plistPath, 'utf8')
       }).then(file => {
         var obj = plist.parse(file)
-        return pify(util.areFilesEqual)(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
+        return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
       }).then(equal => {
         t.true(equal, 'installed icon file should be identical to the specified icon file')
         return t.end()
@@ -99,7 +99,7 @@ function createExtraResourceTest (baseOpts) {
         return fs.stat(resourcesPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return pify(util.areFilesEqual)(extra1Path, path.join(resourcesPath, extra1Base))
+        return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
       }).then(equal => {
         t.true(equal, 'resource file data1.txt should match')
         return t.end()
@@ -127,10 +127,10 @@ function createExtraResource2Test (baseOpts) {
         return fs.stat(resourcesPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return pify(util.areFilesEqual)(extra1Path, path.join(resourcesPath, extra1Base))
+        return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
       }).then(equal => {
         t.true(equal, 'resource file data1.txt should match')
-        return pify(util.areFilesEqual)(extra2Path, path.join(resourcesPath, extra2Base))
+        return util.areFilesEqual(extra2Path, path.join(resourcesPath, extra2Base))
       }).then(equal => {
         t.true(equal, 'resource file extrainfo.plist should match')
         return t.end()

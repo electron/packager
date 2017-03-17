@@ -64,10 +64,10 @@ function createDefaultsTest (opts) {
         return fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
       }).then(exists => {
         t.false(exists, 'The output directory should NOT contain devDependencies by default (prune=true)')
-        return pify(util.areFilesEqual)(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'))
+        return util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'))
       }).then(equal => {
         t.true(equal, 'File under packaged app directory should match source file')
-        return pify(util.areFilesEqual)(path.join(opts.dir, 'ignore', 'this.txt'),
+        return util.areFilesEqual(path.join(opts.dir, 'ignore', 'this.txt'),
                                         path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
       }).then(equal => {
         t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
