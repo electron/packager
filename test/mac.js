@@ -51,7 +51,7 @@ function createHelperAppPathsTest (baseOpts, expectedName) {
 }
 
 function createIconTest (baseOpts, icon, iconPath) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
@@ -82,7 +82,7 @@ function createIconTest (baseOpts, icon, iconPath) {
 }
 
 function createExtraResourceTest (baseOpts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var extra1Base = 'data1.txt'
@@ -108,7 +108,7 @@ function createExtraResourceTest (baseOpts) {
 }
 
 function createExtraResource2Test (baseOpts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var extra1Base = 'data1.txt'
@@ -139,7 +139,7 @@ function createExtraResource2Test (baseOpts) {
 }
 
 function createExtendInfoTest (baseOpts, extraPathOrParams) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var opts = Object.create(baseOpts)
@@ -193,7 +193,7 @@ function createBinaryNameTest (baseOpts, expectedAppName) {
 }
 
 function createAppVersionTest (baseOpts, appVersion, buildVersion) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var plistPath
@@ -223,7 +223,7 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
 }
 
 function createAppVersionInferenceTest (baseOpts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var plistPath
@@ -245,7 +245,7 @@ function createAppVersionInferenceTest (baseOpts) {
 }
 
 function createAppCategoryTypeTest (baseOpts, appCategoryType) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var plistPath
@@ -268,7 +268,7 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
 }
 
 function createAppBundleTest (baseOpts, appBundleId) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var plistPath
@@ -301,7 +301,7 @@ function createAppBundleTest (baseOpts, appBundleId) {
 }
 
 function createAppBundleFrameworkTest (baseOpts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var frameworkPath
@@ -324,7 +324,7 @@ function createAppBundleFrameworkTest (baseOpts) {
 }
 
 function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var tempPath, plistPath
@@ -394,7 +394,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
 }
 
 function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var plistPath
@@ -417,7 +417,7 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
 }
 
 function createProtocolTest (baseOpts) {
-  return function (t) {
+  return (t) => {
     t.timeoutAfter(config.timeout)
 
     var plistPath
@@ -480,35 +480,35 @@ module.exports = (baseOpts) => {
 
   util.packagerTest('protocol/protocol-name argument test', createProtocolTest(baseOpts))
 
-  test('osxSign argument test: default args', function (t) {
+  test('osxSign argument test: default args', (t) => {
     var args = true
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
-  test('osxSign argument test: identity=true sets autodiscovery mode', function (t) {
+  test('osxSign argument test: identity=true sets autodiscovery mode', (t) => {
     var args = {identity: true}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
-  test('osxSign argument test: entitlements passed to electron-osx-sign', function (t) {
+  test('osxSign argument test: entitlements passed to electron-osx-sign', (t) => {
     var args = {entitlements: 'path-to-entitlements'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements})
     return t.end()
   })
 
-  test('osxSign argument test: app not overwritten', function (t) {
+  test('osxSign argument test: app not overwritten', (t) => {
     var args = {app: 'some-other-path'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
-  test('osxSign argument test: platform not overwritten', function (t) {
+  test('osxSign argument test: platform not overwritten', (t) => {
     var args = {platform: 'mas'}
     var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
