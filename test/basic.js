@@ -122,44 +122,6 @@ function createOutTest (opts) {
   }
 }
 
-function createPruneOptionTest (baseOpts, prune, testMessage) {
-  return (t) => {
-    t.timeoutAfter(config.timeout)
-
-    let opts = Object.create(baseOpts)
-    opts.name = 'basicTest'
-    opts.dir = path.join(__dirname, 'fixtures', 'basic')
-    opts.prune = prune
-
-    let finalPath
-    let resourcesPath
-
-    waterfall([
-      (cb) => {
-        packager(opts, cb)
-      }, (paths, cb) => {
-        finalPath = paths[0]
-        fs.stat(finalPath, cb)
-      }, (stats, cb) => {
-        t.true(stats.isDirectory(), 'The expected output directory should exist')
-        resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
-        fs.stat(resourcesPath, cb)
-      }, (stats, cb) => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'), cb)
-      }, (stats, cb) => {
-        t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
-        fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), (exists) => {
-          t.equal(!prune, exists, testMessage)
-          cb()
-        })
-      }
-    ], (err) => {
-      t.end(err)
-    })
-  }
-}
-
 function createOverwriteTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
@@ -370,12 +332,6 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
 
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
-util.testSinglePlatform('prune test', (baseOpts) => {
-  return createPruneOptionTest(baseOpts, true, 'npm devDependency should NOT exist under app/node_modules')
-})
-util.testSinglePlatform('prune=false test', (baseOpts) => {
-  return createPruneOptionTest(baseOpts, false, 'npm devDependency should exist under app/node_modules')
-})
 util.testSinglePlatform('overwrite test', createOverwriteTest)
 util.testSinglePlatform('tmpdir test', createTmpdirTest)
 util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)

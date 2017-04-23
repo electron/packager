@@ -53,6 +53,7 @@ series(setupFuncs, (error) => {
   require('./infer')
   require('./hooks')
   require('./multitarget')
+  require('./prune')
   require('./win32')
 
   if (process.platform !== 'win32') {

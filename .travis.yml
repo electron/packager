@@ -32,5 +32,3 @@ env:
     # prevent wine popup dialogs about installing additional packages
     - WINEDLLOVERRIDES="mscoree,mshtml="
     - WINEDEBUG="-all"
-    # temporarily enable debug logging to diagnose flaky spec failures
-    - DEBUG=electron-packager

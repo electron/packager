@@ -1,7 +1,6 @@
 'use strict'
 
 const asar = require('asar')
-const child = require('child_process')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
 const fs = require('fs-extra')
@@ -9,6 +8,7 @@ const ignore = require('./ignore')
 const minimist = require('minimist')
 const os = require('os')
 const path = require('path')
+const pruneModules = require('./prune').pruneModules
 const sanitize = require('sanitize-filename')
 const semver = require('semver')
 const series = require('run-series')
@@ -86,18 +86,6 @@ function asarApp (appPath, asarOptions, cb) {
       cb(null, dest)
     })
   })
-}
-
-function pruneModules (opts, appPath, cb) {
-  var pmName = opts['package-manager']
-  if (pmName !== undefined && pmName === 'yarn') {
-    child.exec('yarn install --production ', { cwd: appPath }, cb)
-  } else if (pmName !== undefined && pmName !== 'npm') {
-    warning(`specified package-manager "${pmName}" is not available, use {"npm", "yarn"} instead`)
-  } else {
-    // defaults to npm
-    child.exec('npm prune --production', { cwd: appPath }, cb)
-  }
 }
 
 function isPlatformMac (platform) {
@@ -210,6 +198,7 @@ module.exports = {
     'app-copyright': 'appCopyright',
     'app-version': 'appVersion',
     'build-version': 'buildVersion',
+    'package-manager': 'packageManager',
     'app-bundle-id': 'appBundleId',
     'app-category-type': 'appCategoryType',
     'extend-info': 'extendInfo',
