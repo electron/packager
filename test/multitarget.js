@@ -1,7 +1,6 @@
 'use strict'
 
 const config = require('./config.json')
-const isAdmin = require('is-admin')
 const packager = require('..')
 const util = require('./util')
 const waterfall = require('run-waterfall')
@@ -36,7 +35,7 @@ function createMultiTest (arch, platform) {
 }
 
 util.packagerTest('all test', (t) => {
-  t.timeoutAfter(config.timeout * 7) // 5-7 packages will be built during this test
+  t.timeoutAfter(config.timeout * 7) // 7 packages will be built during this test
 
   var opts = {
     name: 'basicTest',
@@ -49,15 +48,6 @@ util.packagerTest('all test', (t) => {
 
   waterfall([
     function (cb) {
-      if (process.platform === 'win32') {
-        isAdmin().then((admin) => {
-          if (!admin) expectedAppCount = 5
-          cb()
-        })
-      } else {
-        cb()
-      }
-    }, function (cb) {
       packager(opts, cb)
     }, function (finalPaths, cb) {
       // OS X only has 64-bit releases
