@@ -1,7 +1,6 @@
 'use strict'
 
 const asar = require('asar')
-const child = require('child_process')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
 const fs = require('fs-extra')
@@ -9,6 +8,7 @@ const ignore = require('./ignore')
 const minimist = require('minimist')
 const os = require('os')
 const path = require('path')
+const pruneModules = require('./prune').pruneModules
 const sanitize = require('sanitize-filename')
 const semver = require('semver')
 const series = require('run-series')
@@ -198,6 +198,7 @@ module.exports = {
     'app-copyright': 'appCopyright',
     'app-version': 'appVersion',
     'build-version': 'buildVersion',
+    'package-manager': 'packageManager',
     'app-bundle-id': 'appBundleId',
     'app-category-type': 'appCategoryType',
     'extend-info': 'extendInfo',
@@ -293,8 +294,7 @@ module.exports = {
     // appPath is predictable (e.g. before .app is renamed for mac)
     if (opts.prune || opts.prune === undefined) {
       operations.push(function (cb) {
-        debug('Running npm prune --production')
-        child.exec('npm prune --production', {cwd: appPath}, cb)
+        pruneModules(opts, appPath, cb)
       })
     }
 

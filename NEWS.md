@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* `packageManager` (`--package-manager` via CLI) option (#618)
+
 ## [8.6.0] - 2017-03-14
 
 ### Added
