@@ -62,7 +62,7 @@ function createSeries (opts, archs, platforms) {
           } else {
             buildParentDir = opts.out || process.cwd()
           }
-          var buildDir = path.join(buildParentDir, `${platform}-${arch}-template`)
+          var buildDir = path.resolve(path.join(buildParentDir, `${platform}-${arch}-template`))
           common.info(`Packaging app for platform ${platform} ${arch} using electron v${version}`, opts.quiet)
           series([
             function (cb) {

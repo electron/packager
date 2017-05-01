@@ -25,7 +25,7 @@ function createDefaultsTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    opts.name = 'basicTest'
+    opts.name = 'defaultsTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     delete opts.platform
     delete opts.arch
@@ -95,7 +95,7 @@ function createOutTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    opts.name = 'basicTest'
+    opts.name = 'outTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
 
@@ -126,7 +126,7 @@ function createOverwriteTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout * 2) // Multiplied since this test packages the application twice
 
-    opts.name = 'basicTest'
+    opts.name = 'overwriteTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
 
     var finalPath
@@ -169,7 +169,7 @@ function createTmpdirTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    opts.name = 'basicTest'
+    opts.name = 'tmpdirTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
     opts.tmpdir = path.join(util.getWorkCwd(), 'tmp')
@@ -194,7 +194,7 @@ function createDisableTmpdirUsingTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    opts.name = 'basicTest'
+    opts.name = 'disableTmpdirTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
     opts.tmpdir = false
@@ -219,7 +219,7 @@ function createDisableSymlinkDereferencingTest (opts) {
   return function (t) {
     t.timeoutAfter(config.timeout)
 
-    opts.name = 'basicTest'
+    opts.name = 'disableSymlinkDerefTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.out = 'dist'
     opts.derefSymlinks = false
@@ -334,7 +334,7 @@ util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
 util.testSinglePlatform('overwrite test', createOverwriteTest)
 util.testSinglePlatform('tmpdir test', createTmpdirTest)
-util.testSinglePlatform('tmpdir test', createDisableTmpdirUsingTest)
+util.testSinglePlatform('disable tmpdir test', createDisableTmpdirUsingTest)
 util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
 
 util.packagerTest('building for Linux target sanitizes binary name', (t) => {
