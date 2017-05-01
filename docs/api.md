@@ -375,6 +375,10 @@ Object (also known as a "hash") of application metadata to embed into the execut
 - `OriginalFilename`
 - `ProductName`
 - `InternalName`
+- `requested-execution-level`
+- `application-manifest`
+
+For more information, see the [node-rcedit module](https://github.com/electron/node-rcedit).
 
 ## callback
 

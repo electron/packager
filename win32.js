@@ -22,6 +22,13 @@ function generateRceditOptionsSansIcon (opts) {
     rcOpts['version-string'].LegalCopyright = opts.appCopyright
   }
 
+  const manifestProperties = ['application-manifest', 'requested-execution-level']
+  for (const manifestProperty of manifestProperties) {
+    if (win32metadata[manifestProperty]) {
+      rcOpts[manifestProperty] = win32metadata[manifestProperty]
+    }
+  }
+
   return rcOpts
 }
 
