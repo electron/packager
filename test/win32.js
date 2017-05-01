@@ -93,15 +93,30 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
 function setRequestedExecutionLevelTest (requestedExecutionLevel) {
   var opts = {
     win32metadata: {
-      requestedExecutionLevel: 'asInvoker'
+      'requested-execution-level': requestedExecutionLevel
     }
   }
 
   return generateVersionStringTest(
-    'win32metadata',
+    'requested-execution-level',
     opts,
-    {requestedExecutionLevel: requestedExecutionLevel},
-    'requestedExecutionLevel in win32metadata should match win32metadata value '
+    requestedExecutionLevel,
+    'requested-execution-level in win32metadata should match rcOpts value'
+  )
+}
+
+function setApplicationManifestTest (applicationManifest) {
+  var opts = {
+    win32metadata: {
+      'application-manifest': applicationManifest
+    }
+  }
+
+  return generateVersionStringTest(
+    'application-manifest',
+    opts,
+    applicationManifest,
+    'application-manifest in win32metadata should match rcOpts value'
   )
 }
 
@@ -174,4 +189,5 @@ util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTe
 util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
 util.packagerTest('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
 util.packagerTest('win32 set CompanyName test (version-string)', setCompanyNameTest('MyCompany LLC', 'version-string'))
-util.packagerTest('win32 set requestedExecutionLevel test (win32metadata)', setRequestedExecutionLevelTest('asInvoker'))
+util.packagerTest('win32 set requested-execution-level test (win32metadata)', setRequestedExecutionLevelTest('asInvoker'))
+util.packagerTest('win32 set application-manifest test (win32metadata)', setApplicationManifestTest('/path/to/manifest.xml'))
