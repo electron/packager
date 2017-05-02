@@ -35,7 +35,7 @@ function createPruneOptionTest (baseOpts, prune, testMessage) {
         return fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'))
       }).then(stats => {
         t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
-        return fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
+        return fs.pathExists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
       }).then(exists => {
         t.equal(!prune, exists, testMessage)
         return t.end()

@@ -25,10 +25,10 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
     pify(packager)(opts)
       .then(paths => {
         appPath = path.join(paths[0], util.generateResourcesPath(opts), 'app')
-        return fs.exists(path.join(appPath, 'package.json'))
+        return fs.pathExists(path.join(appPath, 'package.json'))
       }).then(exists => {
         t.true(exists, 'The expected output directory should exist and contain files')
-        return fs.exists(path.join(appPath, ignoredFile))
+        return fs.pathExists(path.join(appPath, ignoredFile))
       }).then(exists => {
         t.false(exists, 'Ignored file should not exist in output app directory')
         return t.end()
@@ -60,7 +60,7 @@ function createIgnoreOutDirTest (opts, distPath) {
       return fs.open(path.join(outDir, 'ignoreMe'), 'w')
     }).then(fd => fs.close(fd))
       .then(() => pify(packager)(opts))
-      .then(() => fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir))))
+      .then(() => fs.pathExists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir))))
       .then(exists => {
         t.false(exists, 'Out dir must not exist in output app directory')
         return t.end()
@@ -93,7 +93,7 @@ function createIgnoreImplicitOutDirTest (opts) {
       return fs.open(path.join(previousPackedResultDir, testFilename), 'w')
     }).then(fd => fs.close(fd))
       .then(() => pify(packager)(opts))
-      .then(() => fs.exists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename)))
+      .then(() => fs.pathExists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename)))
       .then(exists => {
         t.false(exists, 'Out dir must not exist in output app directory')
         return t.end()

@@ -171,7 +171,7 @@ util.packagerTest('win32 executable name is based on sanitized app name', (t) =>
     .then(paths => {
       t.equal(1, paths.length, '1 bundle created')
       const appExePath = path.join(paths[0], '@username-package-name.exe')
-      return fs.exists(appExePath)
+      return fs.pathExists(appExePath)
     }).then(exists => {
       t.true(exists, 'The sanitized EXE filename should exist')
       return t.end()

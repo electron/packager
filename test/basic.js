@@ -61,7 +61,7 @@ function createDefaultsTest (opts) {
         return fs.stat(resourcesPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return fs.exists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
+        return fs.pathExists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
       }).then(exists => {
         t.false(exists, 'The output directory should NOT contain devDependencies by default (prune=true)')
         return util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'))
@@ -71,10 +71,10 @@ function createDefaultsTest (opts) {
                                         path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
       }).then(equal => {
         t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
-        return fs.exists(path.join(resourcesPath, 'default_app'))
+        return fs.pathExists(path.join(resourcesPath, 'default_app'))
       }).then(exists => {
         t.false(exists, 'The output directory should not contain the Electron default app directory')
-        return fs.exists(path.join(resourcesPath, 'default_app.asar'))
+        return fs.pathExists(path.join(resourcesPath, 'default_app.asar'))
       }).then(exists => {
         t.false(exists, 'The output directory should not contain the Electron default app asar file')
         return t.end()
@@ -134,7 +134,7 @@ function createOverwriteTest (opts) {
         // Run a third time, explicitly setting overwrite to true
         opts.overwrite = true
         return pify(packager)(opts)
-      }).then(paths => fs.exists(testPath))
+      }).then(paths => fs.pathExists(testPath))
       .then(exists => {
         t.false(exists, 'The output directory should be regenerated when overwrite is true')
         return t.end()

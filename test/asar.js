@@ -22,7 +22,7 @@ function createDefaultAppAsarTest (opts) {
     pify(packager)(opts)
       .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        return fs.exists(path.join(resourcesPath, 'default_app.asar'))
+        return fs.pathExists(path.join(resourcesPath, 'default_app.asar'))
       }).then(exists => {
         t.false(exists, 'The output directory should not contain the Electron default_app.asar file')
         return t.end()
@@ -56,7 +56,7 @@ function createAsarTest (opts) {
         return fs.stat(path.join(resourcesPath, 'app.asar'))
       }).then(stats => {
         t.true(stats.isFile(), 'app.asar should exist under the resources subdirectory when opts.asar is true')
-        return fs.exists(path.join(resourcesPath, 'app'))
+        return fs.pathExists(path.join(resourcesPath, 'app'))
       }).then(exists => {
         t.false(exists, 'app subdirectory should NOT exist when app.asar is built')
         return fs.stat(path.join(resourcesPath, 'app.asar.unpacked'))

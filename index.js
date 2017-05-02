@@ -102,7 +102,9 @@ function createSeries (opts, archs, platforms) {
 
         function checkOverwrite () {
           var finalPath = common.generateFinalPath(comboOpts)
-          fs.exists(finalPath, function (exists) {
+          fs.pathExists(finalPath, function (err, exists) {
+            if (err) return callback(err)
+
             if (exists) {
               if (opts.overwrite) {
                 fs.remove(finalPath, function () {
