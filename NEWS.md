@@ -7,8 +7,8 @@
 ### Added
 
 * `packageManager` (`--package-manager` via CLI) option (#618)
-* `win32metadata.application-manifest` option (#620)
-* `win32metadata.requested-execution-level` option (#620)
+* `win32metadata.application-manifest` option (#610)
+* `win32metadata.requested-execution-level` option (#610)
 
 ### Fixed
 
