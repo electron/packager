@@ -2,9 +2,17 @@
 
 ## Unreleased
 
+## [8.7.0] - 2017-05-01
+
 ### Added
 
 * `packageManager` (`--package-manager` via CLI) option (#618)
+* `win32metadata.application-manifest` option (#620)
+* `win32metadata.requested-execution-level` option (#620)
+
+### Fixed
+
+* Support for `extract-zip` >= 1.6.1
 
 ## [8.6.0] - 2017-03-14
 
@@ -348,6 +356,8 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.7.0]: https://github.com/electron-userland/electron-packager/compare/v8.6.0...v8.7.0
+[8.6.0]: https://github.com/electron-userland/electron-packager/compare/v8.5.2...v8.6.0
 [8.5.2]: https://github.com/electron-userland/electron-packager/compare/v8.5.1...v8.5.2
 [8.5.1]: https://github.com/electron-userland/electron-packager/compare/v8.5.0...v8.5.1
 [8.5.0]: https://github.com/electron-userland/electron-packager/compare/v8.4.0...v8.5.0
