@@ -163,6 +163,18 @@ test('error message unchanged when error not about wine', (t) => {
   t.end()
 })
 
+test('win32metadata defaults', (t) => {
+  const opts = {
+    name: 'Win32 App'
+  }
+  const rcOpts = win32.generateRceditOptionsSansIcon(opts, 'Win32 App.exe')
+
+  t.equal(rcOpts['version-string'].InternalName, opts.name)
+  t.equal(rcOpts['version-string'].OriginalFilename, 'Win32 App.exe')
+  t.equal(rcOpts['version-string'].ProductName, opts.name)
+  t.end()
+})
+
 util.packagerTest('win32 executable name is based on sanitized app name', (t) => {
   const opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
 

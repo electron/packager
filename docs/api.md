@@ -373,15 +373,15 @@ option. Maps to the `CFBundleURLName` metadata property.
 *Object*
 
 Object (also known as a "hash") of application metadata to embed into the executable:
-- `CompanyName`
-- `FileDescription`
-- `OriginalFilename`
-- `ProductName`
-- `InternalName`
+- `CompanyName` (defaults to `author` name from the nearest `package.json`)
+- `FileDescription` (defaults to `description` from the nearest `package.json`)
+- `OriginalFilename` (defaults to renamed `.exe` file)
+- `ProductName` (defaults to either `productName` or `name` from the nearest `package.json`)
+- `InternalName` (defaults to either `productName` or `name` from the nearest `package.json`)
 - `requested-execution-level`
 - `application-manifest`
 
-For more information, see the [node-rcedit module](https://github.com/electron/node-rcedit).
+For more information, see the [`node-rcedit` module](https://github.com/electron/node-rcedit).
 
 ## callback
 

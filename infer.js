@@ -2,6 +2,7 @@
 
 const debug = require('debug')('electron-packager')
 const getPackageInfo = require('get-package-info')
+const parseAuthor = require('parse-author')
 const path = require('path')
 const resolve = require('resolve')
 
@@ -61,7 +62,7 @@ function getVersion (opts, electronProp, cb) {
   }
 }
 
-module.exports = function getMetadataFromPackageJSON (opts, dir, cb) {
+module.exports = function getMetadataFromPackageJSON (platforms, opts, dir, cb) {
   let props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts.appVersion) props.push('version')
@@ -74,6 +75,16 @@ module.exports = function getMetadataFromPackageJSON (opts, dir, cb) {
       'dependencies.electron-prebuilt',
       'devDependencies.electron-prebuilt'
     ])
+  }
+
+  if (platforms.indexOf('win32') !== -1) {
+    if (!(opts.win32metadata && opts.win32metadata.FileDescription)) {
+      props.push('description')
+    }
+
+    if (!(opts.win32metadata && opts.win32metadata.CompanyName)) {
+      props.push('author')
+    }
   }
 
   // Name and version provided, no need to infer
@@ -108,6 +119,20 @@ module.exports = function getMetadataFromPackageJSON (opts, dir, cb) {
     if (result.values.version) {
       debug(`Inferring appVersion from version in ${result.source.version.src}`)
       opts.appVersion = result.values.version
+    }
+
+    if ((result.values.description || result.values.author) && !opts.win32metadata) {
+      opts.win32metadata = {}
+    }
+
+    if (result.values.description) {
+      debug(`Inferring win32metadata.FileDescription from description in ${result.source.description.src}`)
+      opts.win32metadata.FileDescription = result.values.description
+    }
+
+    if (result.values.author) {
+      debug(`Inferring win32metadata.CompanyName from description in ${result.source.author.src}`)
+      opts.win32metadata.CompanyName = parseAuthor(result.values.author).name
     }
 
     if (result.values['dependencies.electron']) {
