@@ -294,7 +294,7 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     .then(
       () => t.end('should not finish'),
       (err) => {
-        t.equal('Application names cannot end in " Helper" due to limitations on macOS', err.message)
+        t.equal(err.message, 'Application names cannot end in " Helper" due to limitations on macOS')
         t.end()
       }
     )
