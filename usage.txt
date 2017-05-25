@@ -59,7 +59,7 @@ tmpdir             temp directory. Defaults to system temp directory, use --tmpd
                    use of a temporary directory.
 version            an alias for electron-version (deprecated)
 
-* darwin/mas target platforms only *
+* darwin/mac target platforms only *
 
 app-bundle-id      bundle identifier to use in the app plist
 app-category-type  the application category type
