@@ -2,7 +2,6 @@
 
 const config = require('./config.json')
 const packager = require('..')
-const pify = require('pify')
 const util = require('./util')
 
 function createHookTest (hookName) {
@@ -25,7 +24,7 @@ function createHookTest (hookName) {
       callback()
     }]
 
-    pify(packager)(opts)
+    packager(opts)
       .then(finalPaths => {
         t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
         t.true(hookCalled, `${hookName} methods should have been called`)

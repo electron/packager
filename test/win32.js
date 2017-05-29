@@ -4,7 +4,6 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const pify = require('pify')
 const test = require('tape')
 const util = require('./util')
 const win32 = require('../win32')
@@ -167,7 +166,7 @@ test('error message unchanged when error not about wine', (t) => {
 util.packagerTest('win32 executable name is based on sanitized app name', (t) => {
   const opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
 
-  pify(packager)(opts)
+  packager(opts)
     .then(paths => {
       t.equal(1, paths.length, '1 bundle created')
       const appExePath = path.join(paths[0], '@username-package-name.exe')

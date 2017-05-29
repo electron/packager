@@ -52,7 +52,7 @@ function createInferFailureTest (opts, fixtureSubdir) {
         delete opts.electronVersion
         opts.dir = dir
 
-        return pify(packager)(opts)
+        return packager(opts)
       }).then(
         paths => t.end('expected error'),
         err => {

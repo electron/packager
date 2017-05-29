@@ -4,7 +4,6 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const pify = require('pify')
 const prune = require('../prune')
 const test = require('tape')
 const util = require('./util')
@@ -22,7 +21,7 @@ function createPruneOptionTest (baseOpts, prune, testMessage) {
     let finalPath
     let resourcesPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         finalPath = paths[0]
         return fs.stat(finalPath)

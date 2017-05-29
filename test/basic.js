@@ -5,7 +5,6 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const pify = require('pify')
 const targets = require('../targets')
 const test = require('tape')
 const util = require('./util')
@@ -39,7 +38,7 @@ function createDefaultsTest (opts) {
     var finalPath
     var resourcesPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         t.true(Array.isArray(paths), 'packager call should resolve to an array')
         t.equal(paths.length, 1, 'Single-target run should resolve to a 1-item array')
@@ -92,7 +91,7 @@ function createOutTest (opts) {
 
     var finalPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         finalPath = paths[0]
         t.equal(finalPath, path.join('dist', common.generateFinalBasename(opts)),
@@ -118,7 +117,7 @@ function createOverwriteTest (opts) {
     var finalPath
     var testPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         finalPath = paths[0]
         return fs.stat(finalPath)
@@ -127,13 +126,13 @@ function createOverwriteTest (opts) {
         // Create a dummy file to detect whether the output directory is replaced in subsequent runs
         testPath = path.join(finalPath, 'test.txt')
         return fs.writeFile(testPath, 'test')
-      }).then(() => pify(packager)(opts)) // Run again, defaulting to overwrite false
+      }).then(() => packager(opts)) // Run again, defaulting to overwrite false
       .then(paths => fs.stat(testPath))
       .then(stats => {
         t.true(stats.isFile(), 'The existing output directory should exist as before (skipped by default)')
         // Run a third time, explicitly setting overwrite to true
         opts.overwrite = true
-        return pify(packager)(opts)
+        return packager(opts)
       }).then(paths => fs.pathExists(testPath))
       .then(exists => {
         t.false(exists, 'The output directory should be regenerated when overwrite is true')
@@ -151,7 +150,7 @@ function createTmpdirTest (opts) {
     opts.out = 'dist'
     opts.tmpdir = path.join(util.getWorkCwd(), 'tmp')
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => fs.stat(path.join(opts.tmpdir, 'electron-packager')))
       .then(stats => {
         t.true(stats.isDirectory(), 'The expected temp directory should exist')
@@ -169,7 +168,7 @@ function createDisableTmpdirUsingTest (opts) {
     opts.out = 'dist'
     opts.tmpdir = false
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => fs.stat(paths[0]))
       .then(stats => {
         t.true(stats.isDirectory(), 'The expected out directory should exist')
@@ -192,7 +191,7 @@ function createDisableSymlinkDereferencingTest (opts) {
 
     const src = path.join(opts.dir, 'main.js')
     fs.ensureSymlink(src, dest)
-      .then(() => pify(packager)(opts))
+      .then(() => packager(opts))
       .then(paths => {
         const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
         return fs.lstat(destLink)
@@ -205,7 +204,7 @@ function createDisableSymlinkDereferencingTest (opts) {
 
 function invalidOptionTest (opts) {
   return (t) => {
-    return pify(packager)(opts)
+    return packager(opts)
       .then(
         paths => t.end('no paths returned'),
         (err) => {
@@ -290,7 +289,7 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     platform: 'linux'
   }
 
-  return pify(packager)(opts)
+  return packager(opts)
     .then(
       () => t.end('should not finish'),
       (err) => {
@@ -316,7 +315,7 @@ util.packagerTest('building for Linux target sanitizes binary name', (t) => {
     platform: 'linux'
   }
 
-  pify(packager)(opts)
+  packager(opts)
     .then(paths => {
       t.equal(1, paths.length, '1 bundle created')
       return fs.stat(path.join(paths[0], '@username-package-name'))
@@ -379,7 +378,7 @@ util.packagerTest('dir argument test: should work with relative path', (t) => {
     platform: 'linux'
   }
 
-  pify(packager)(opts)
+  packager(opts)
     .then(paths => {
       t.equal(path.join(__dirname, 'work', 'ElectronTest-linux-x64'), paths[0], 'paths returned')
       return t.end()

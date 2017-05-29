@@ -5,7 +5,6 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const pify = require('pify')
 const test = require('tape')
 const util = require('./util')
 
@@ -19,7 +18,7 @@ function createDefaultAppAsarTest (opts) {
 
     var resourcesPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
         return fs.pathExists(path.join(resourcesPath, 'default_app.asar'))
@@ -43,7 +42,7 @@ function createAsarTest (opts) {
     let finalPath
     let resourcesPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         finalPath = paths[0]
         return fs.stat(finalPath)

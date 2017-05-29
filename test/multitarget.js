@@ -2,7 +2,6 @@
 
 const config = require('./config.json')
 const packager = require('..')
-const pify = require('pify')
 const util = require('./util')
 
 function createMultiTargetOptions (extraOpts) {
@@ -14,7 +13,7 @@ function createMultiTargetOptions (extraOpts) {
 }
 
 function createMultiTargetPromise (t, opts, expectedPackageCount, packageExistenceMessage) {
-  pify(packager)(opts)
+  packager(opts)
     .then(finalPaths => {
       t.equal(finalPaths.length, expectedPackageCount,
               'packager call should resolve with expected number of paths')

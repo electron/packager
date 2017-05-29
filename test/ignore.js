@@ -6,7 +6,6 @@ const fs = require('fs-extra')
 const ignore = require('../ignore')
 const path = require('path')
 const packager = require('..')
-const pify = require('pify')
 const test = require('tape')
 const util = require('./util')
 
@@ -22,7 +21,7 @@ function createIgnoreTest (opts, ignorePattern, ignoredFile) {
 
     let appPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         appPath = path.join(paths[0], util.generateResourcesPath(opts), 'app')
         return fs.pathExists(path.join(appPath, 'package.json'))
@@ -59,7 +58,7 @@ function createIgnoreOutDirTest (opts, distPath) {
       // create file to ensure that directory will be not ignored because empty
       return fs.open(path.join(outDir, 'ignoreMe'), 'w')
     }).then(fd => fs.close(fd))
-      .then(() => pify(packager)(opts))
+      .then(() => packager(opts))
       .then(() => fs.pathExists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir))))
       .then(exists => {
         t.false(exists, 'Out dir must not exist in output app directory')
@@ -92,7 +91,7 @@ function createIgnoreImplicitOutDirTest (opts) {
       // create file to ensure that directory will be not ignored because empty
       return fs.open(path.join(previousPackedResultDir, testFilename), 'w')
     }).then(fd => fs.close(fd))
-      .then(() => pify(packager)(opts))
+      .then(() => packager(opts))
       .then(() => fs.pathExists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename)))
       .then(exists => {
         t.false(exists, 'Out dir must not exist in output app directory')

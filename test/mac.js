@@ -6,7 +6,6 @@ const fs = require('fs-extra')
 const mac = require('../mac')
 const packager = require('..')
 const path = require('path')
-const pify = require('pify')
 const plist = require('plist')
 const test = require('tape')
 const util = require('./util')
@@ -26,7 +25,7 @@ function createHelperAppPathsTest (baseOpts, expectedName) {
       expectedName = opts.name
     }
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         frameworksPath = path.join(paths[0], `${expectedName}.app`, 'Contents', 'Frameworks')
         // main Helper.app is already tested in basic test suite; test its executable and the other helpers
@@ -60,7 +59,7 @@ function createIconTest (baseOpts, icon, iconPath) {
     var resourcesPath
     var plistPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
@@ -93,7 +92,7 @@ function createExtraResourceTest (baseOpts) {
 
     var resourcesPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
         return fs.stat(resourcesPath)
@@ -121,7 +120,7 @@ function createExtraResource2Test (baseOpts) {
 
     var resourcesPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
         return fs.stat(resourcesPath)
@@ -150,7 +149,7 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
 
     var plistPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -181,7 +180,7 @@ function createBinaryNameTest (baseOpts, expectedAppName) {
     let binaryPath
     let appName = expectedAppName || opts.name
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         binaryPath = path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS')
         return fs.stat(path.join(binaryPath, appName))
@@ -204,7 +203,7 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
       opts.buildVersion = buildVersion
     }
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -228,7 +227,7 @@ function createAppVersionInferenceTest (baseOpts) {
 
     var plistPath
 
-    pify(packager)(baseOpts)
+    packager(baseOpts)
       .then(paths => {
         plistPath = path.join(paths[0], baseOpts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -252,7 +251,7 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
     var opts = Object.create(baseOpts)
     opts.appCategoryType = appCategoryType
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -279,7 +278,7 @@ function createAppBundleTest (baseOpts, appBundleId) {
     var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
     var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -306,7 +305,7 @@ function createAppBundleFrameworkTest (baseOpts) {
 
     var frameworkPath
 
-    pify(packager)(baseOpts)
+    packager(baseOpts)
       .then(paths => {
         frameworkPath = path.join(paths[0], `${baseOpts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
         return fs.stat(frameworkPath)
@@ -339,7 +338,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
     var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
     var helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         tempPath = paths[0]
         plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper.app', 'Contents', 'Info.plist')
@@ -401,7 +400,7 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
     var opts = Object.create(baseOpts)
     opts.appCopyright = humanReadableCopyright
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -430,7 +429,7 @@ function createProtocolTest (baseOpts) {
       schemes: ['bar', 'baz']
     }]
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -528,7 +527,7 @@ module.exports = (baseOpts) => {
     const opts = Object.assign({}, baseOpts, {osxSign: {identity: 'Developer CodeCert'}})
     let appPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         appPath = path.join(paths[0], opts.name + '.app')
         return fs.stat(appPath)
@@ -559,7 +558,7 @@ module.exports = (baseOpts) => {
     const appBundleIdentifier = 'com.electron.username-package-name'
     const expectedSanitizedName = '@username-package-name'
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         plistPath = path.join(paths[0], `${expectedSanitizedName}.app`, 'Contents', 'Info.plist')
         return fs.stat(plistPath)
@@ -603,7 +602,7 @@ module.exports = (baseOpts) => {
     const opts = Object.assign({}, baseOpts, {name: 'Electron'})
     let appPath
 
-    pify(packager)(opts)
+    packager(opts)
       .then(paths => {
         appPath = path.join(paths[0], 'Electron.app')
         return fs.stat(appPath)
