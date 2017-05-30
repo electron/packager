@@ -77,7 +77,7 @@ The release version of the application. By default the `version` property in the
 
 *String* (default: the arch of the host computer running Node)
 
-Allowed values: `ia32`, `x64`, `armv7l`, `all`
+Allowed values: `ia32`, `x64`, `armv7l`, `arm64`, `all`
 
 The target system architecture(s) to build for.
 Not required if the [`all`](#all) option is set.

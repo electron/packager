@@ -13,7 +13,7 @@ const sanitize = require('sanitize-filename')
 const semver = require('semver')
 const series = require('run-series')
 
-const archs = ['ia32', 'x64', 'armv7l']
+const archs = ['ia32', 'x64', 'armv7l', 'arm64']
 const platforms = ['darwin', 'linux', 'mas', 'win32']
 
 function parseCLIArgs (argv) {
@@ -174,7 +174,7 @@ module.exports = {
         // Electron does not have 32-bit releases for Mac OS X, so skip that combination
         if (isPlatformMac(platform) && arch === 'ia32') continue
         // Electron only has armv7l releases for Linux
-        if (arch === 'armv7l' && platform !== 'linux') continue
+        if ((arch === 'armv7l' || arch === 'arm64') && platform !== 'linux') continue
         if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
         combinations.push(createDownloadOpts(opts, platform, arch))
       }

@@ -34,7 +34,7 @@ It generates executables/bundles for the following **target** platforms:
 
 * Windows (also known as `win32`, for both 32/64 bit)
 * OS X (also known as `darwin`) / [Mac App Store](http://electron.atom.io/docs/v0.36.0/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
-* Linux (for x86, x86_64, and armv7l architectures)
+* Linux (for x86, x86_64, armv7l, arm64 architectures)
 
 <sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
 

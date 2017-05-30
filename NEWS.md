@@ -99,11 +99,11 @@
 ### Added
 
 * `win32metadata` option (#331, #463)
-* `linux` platform, `armv7l` arch support (#106, #474)
+* `linux` platform, `armv7l` or `arm64` arch support (#106, #474)
 
 ### Changed
 
-* `all` now includes the `linux` platform, `armv7l` arch combination
+* `all` now includes the `linux` platform, `armv7l` and `arm64` arch combinations
 * Default the `platform` option to the host platform (#464)
 * Default the `arch` option to the host arch (#36, #464)
 * Default the `prune` option to `true` (#235, #472)
