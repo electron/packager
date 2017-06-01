@@ -5,6 +5,7 @@ const bufferEqual = require('buffer-equal')
 const common = require('../common')
 const config = require('./config.json')
 const fs = require('fs-extra')
+const os = require('os')
 const path = require('path')
 const pify = require('pify')
 const test = require('tape')
@@ -56,6 +57,7 @@ exports.downloadAll = function downloadAll (version) {
 
   return Promise.all(combinations.map(combination => {
     return pify(common.downloadElectronZip)(Object.assign({}, combination, {
+      cache: path.join(os.homedir(), '.electron'),
       quiet: !!process.env.CI,
       version: version
     }))
