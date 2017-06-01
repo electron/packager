@@ -11,7 +11,8 @@ const util = require('./util')
 function preDownloadElectron () {
   const versions = [
     config.version,
-    '1.7.0'
+    '0.37.4',
+    '1.3.1'
   ]
   return versions.map((version) => {
     return (cb) => {
