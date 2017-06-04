@@ -263,11 +263,6 @@ application. This does *not* disable errors.
 
 The base directory to use as a temp directory. Set to `false` to disable use of a temporary directory.
 
-##### `version`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-[`electronVersion`](#electronversion) parameter instead)
-
 #### OS X/Mac App Store targets only
 
 ##### `app-bundle-id`

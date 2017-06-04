@@ -344,31 +344,6 @@ util.packagerTest('fails with invalid version', invalidOptionTest({
   }
 }))
 
-util.packagerTest('electronVersion overrides deprecated version', (t) => {
-  const opts = {
-    electronVersion: '0.1.2',
-    version: '1.2.3'
-  }
-
-  common.deprecatedParameter(opts, 'version', 'electronVersion')
-
-  t.equal(opts.electronVersion, '0.1.2', 'electronVersion should not change')
-  t.equal(opts.version, undefined, 'version should be deleted')
-  t.end()
-})
-
-util.packagerTest('version used if electronVersion not set', (t) => {
-  const opts = {
-    version: '1.2.3'
-  }
-
-  common.deprecatedParameter(opts, 'version', 'electronVersion')
-
-  t.equal(opts.electronVersion, '1.2.3', 'electronVersion have version value')
-  t.equal(opts.version, undefined, 'version should be deleted')
-  t.end()
-})
-
 util.packagerTest('dir argument test: should work with relative path', (t) => {
   const opts = {
     name: 'ElectronTest',

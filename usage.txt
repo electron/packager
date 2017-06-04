@@ -57,7 +57,6 @@ platform           all, or one or more of: darwin, linux, mas, win32 (comma-deli
 quiet              Do not print informational or warning messages
 tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable
                    use of a temporary directory.
-version            an alias for electron-version (deprecated)
 
 * darwin/mas target platforms only *
 
