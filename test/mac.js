@@ -467,6 +467,7 @@ module.exports = (baseOpts) => {
   util.packagerTest('helper app paths test with app name needing sanitization', createHelperAppPathsTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
 
   util.packagerTest('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
+  // This test exists because the .icns file basename changed as of 0.37.4
   util.packagerTest('icon test: el-0.37.4, .icns specified', createIconTest(el0374Opts, icnsPath, icnsPath))
   util.packagerTest('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
   util.packagerTest('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
