@@ -453,13 +453,11 @@ function createProtocolTest (baseOpts) {
 module.exports = (baseOpts) => {
   let iconBase = path.join(__dirname, 'fixtures', 'monochrome')
   let icnsPath = iconBase + '.icns'
-  let el0374Opts = {
+  let el0374Opts = Object.assign({}, baseOpts, {
     name: 'el0374Test',
     dir: util.fixtureSubdir('el-0374'),
-    electronVersion: '0.37.4',
-    arch: 'x64',
-    platform: 'darwin'
-  }
+    electronVersion: '0.37.4'
+  })
   let extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
   let extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString())
 
