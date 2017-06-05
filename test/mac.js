@@ -14,6 +14,34 @@ function getHelperExecutablePath (helperName) {
   return path.join(`${helperName}.app`, 'Contents', 'MacOS', helperName)
 }
 
+function parseInfoPlist (t, opts, basePath) {
+  const plistPath = path.join(basePath, `${opts.name}.app`, 'Contents', 'Info.plist')
+
+  return fs.stat(plistPath)
+    .then(stats => {
+      t.true(stats.isFile(), 'The expected Info.plist file should exist')
+      return fs.readFile(plistPath, 'utf8')
+    }).then(file => plist.parse(file))
+}
+
+function packageAndParseInfoPlist (t, opts) {
+  return packager(opts)
+    .then(paths => parseInfoPlist(t, opts, paths[0]))
+}
+
+function packageAndEnsureResourcesPath (t, opts) {
+  let resourcesPath
+
+  return packager(opts)
+    .then(paths => {
+      resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+      return fs.stat(resourcesPath)
+    }).then(stats => {
+      t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+      return resourcesPath
+    })
+}
+
 function createHelperAppPathsTest (baseOpts, expectedName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
@@ -56,21 +84,17 @@ function createIconTest (baseOpts, icon, iconPath) {
     const opts = Object.assign({}, baseOpts, {icon: icon})
 
     let resourcesPath
-    let plistPath
+    let outputPath
 
     packager(opts)
       .then(paths => {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        outputPath = paths[0]
+        resourcesPath = path.join(outputPath, util.generateResourcesPath(opts))
         return fs.stat(resourcesPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        const obj = plist.parse(file)
+        return parseInfoPlist(t, opts, outputPath)
+      }).then(obj => {
         return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
       }).then(equal => {
         t.true(equal, 'installed icon file should be identical to the specified icon file')
@@ -88,16 +112,9 @@ function createExtraResourceTest (baseOpts) {
 
     const opts = Object.assign({}, baseOpts, {extraResource: extra1Path})
 
-    let resourcesPath
-
-    packager(opts)
-      .then(paths => {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        return fs.stat(resourcesPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
-      }).then(equal => {
+    packageAndEnsureResourcesPath(t, opts)
+      .then(resourcesPath => util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base)))
+      .then(equal => {
         t.true(equal, 'resource file data1.txt should match')
         return t.end()
       }).catch(t.end)
@@ -117,12 +134,9 @@ function createExtraResource2Test (baseOpts) {
 
     let resourcesPath
 
-    packager(opts)
-      .then(paths => {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        return fs.stat(resourcesPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+    packageAndEnsureResourcesPath(t, opts)
+      .then(rpath => {
+        resourcesPath = rpath
         return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
       }).then(equal => {
         t.true(equal, 'resource file data1.txt should match')
@@ -145,17 +159,8 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
       extendInfo: extraPathOrParams
     })
 
-    let plistPath
-
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        let obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.TestKeyString, 'String data', 'TestKeyString should come from extendInfo')
         t.equal(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
         t.equal(obj.TestKeyBool, true, 'TestKeyBool should come from extendInfo')
@@ -193,22 +198,14 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let plistPath
     let opts = Object.assign({}, baseOpts, {appVersion: appVersion, buildVersion: appVersion})
 
     if (buildVersion) {
       opts.buildVersion = buildVersion
     }
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        let obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
         t.equal(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
         t.equal(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
@@ -222,17 +219,8 @@ function createAppVersionInferenceTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let plistPath
-
-    packager(baseOpts)
-      .then(paths => {
-        plistPath = path.join(paths[0], baseOpts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        const obj = plist.parse(file)
+    packageAndParseInfoPlist(t, Object.create(baseOpts))
+      .then(obj => {
         t.equal(obj.CFBundleVersion, '4.99.101', 'CFBundleVersion should reflect package.json version')
         t.equal(obj.CFBundleShortVersionString, '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
         return t.end()
@@ -244,18 +232,10 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let plistPath
     const opts = Object.assign({}, baseOpts, {appCategoryType: appCategoryType})
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        let obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.LSApplicationCategoryType, opts.appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType')
         return t.end()
       }).catch(t.end)
@@ -266,7 +246,6 @@ function createAppBundleTest (baseOpts, appBundleId) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let plistPath
     let opts = Object.create(baseOpts)
     if (appBundleId) {
       opts.appBundleId = appBundleId
@@ -274,15 +253,8 @@ function createAppBundleTest (baseOpts, appBundleId) {
     const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
     const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        const obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name')
         t.equal(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
@@ -392,18 +364,10 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let plistPath
     const opts = Object.assign({}, baseOpts, {appCopyright: humanReadableCopyright})
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        const obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.NSHumanReadableCopyright, opts.appCopyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
         return t.end()
       }).catch(t.end)
@@ -414,7 +378,6 @@ function createProtocolTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let plistPath
     const opts = Object.assign({}, baseOpts, {
       protocols: [{
         name: 'Foo',
@@ -425,15 +388,9 @@ function createProtocolTest (baseOpts) {
       }]
     })
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], `${opts.name}.app`, 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        t.deepEqual(plist.parse(file).CFBundleURLTypes, [{
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
+        t.deepEqual(obj.CFBundleURLTypes, [{
           CFBundleURLName: 'Foo',
           CFBundleURLSchemes: ['foo']
         }, {
