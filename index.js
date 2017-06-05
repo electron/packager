@@ -8,6 +8,7 @@ const getMetadataFromPackageJSON = require('./infer')
 const ignore = require('./ignore')
 const metadata = require('./package.json')
 const path = require('path')
+const pify = require('pify')
 const series = require('run-series')
 const targets = require('./targets')
 
@@ -102,7 +103,9 @@ function createSeries (opts, archs, platforms) {
 
         function checkOverwrite () {
           var finalPath = common.generateFinalPath(comboOpts)
-          fs.exists(finalPath, function (exists) {
+          fs.pathExists(finalPath, function (err, exists) {
+            if (err) return callback(err)
+
             if (exists) {
               if (opts.overwrite) {
                 fs.remove(finalPath, function () {
@@ -133,7 +136,7 @@ function createSeries (opts, archs, platforms) {
   }))
 }
 
-module.exports = function packager (opts, cb) {
+module.exports = pify(function packager (opts, cb) {
   debugHostInfo()
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
 
@@ -170,4 +173,4 @@ module.exports = function packager (opts, cb) {
       }))
     })
   })
-}
+})

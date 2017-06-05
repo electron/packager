@@ -1,8 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
-const exec = require('child_process').exec
-const series = require('run-series')
+const exec = require('mz/child_process').exec
 const util = require('./util')
 
 // Download all Electron distributions before running tests to avoid timing out due to network
@@ -14,51 +13,47 @@ function preDownloadElectron () {
     '0.37.4',
     '1.3.1'
   ]
-  return versions.map((version) => {
-    return (cb) => {
-      console.log(`Calling electron-download for ${version} before running tests...`)
-      util.downloadAll(version, cb)
-    }
-  })
+  return Promise.all(versions.map(util.downloadAll))
 }
 
-function npmInstallforFixtures () {
+function npmInstallForFixture (fixture) {
+  console.log(`Running npm install in fixtures/${fixture}...`)
+  return exec('npm install --no-bin-links', {cwd: util.fixtureSubdir(fixture)})
+    .catch((err) => console.error(err))
+}
+
+function npmInstallForFixtures () {
   const fixtures = [
     'basic',
     'basic-renamed-to-electron',
     'infer-missing-version-only',
     'el-0374'
   ]
-  return fixtures.map((fixture) => {
-    return (cb) => {
-      console.log(`Running npm install in fixtures/${fixture}...`)
-      exec('npm install --no-bin-links', {cwd: util.fixtureSubdir(fixture)}, cb)
-    }
-  })
+  return Promise.all(fixtures.map(npmInstallForFixture))
 }
 
-let setupFuncs = preDownloadElectron().concat(npmInstallforFixtures())
+preDownloadElectron()
+  .then(npmInstallForFixtures)
+  .then(() => {
+    console.log('Running tests...')
+    require('./basic')
+    require('./asar')
+    require('./cli')
+    require('./ignore')
+    require('./infer')
+    require('./hooks')
+    require('./multitarget')
+    require('./prune')
+    require('./win32')
 
-series(setupFuncs, (error) => {
-  if (error) {
+    if (process.platform !== 'win32') {
+      // Perform additional tests specific to building for OS X
+      require('./darwin')
+      require('./mas')
+    }
+
+    return true
+  }).catch((error) => {
     console.error(error.stack || error)
     return process.exit(1)
-  }
-
-  console.log('Running tests...')
-  require('./basic')
-  require('./asar')
-  require('./cli')
-  require('./ignore')
-  require('./infer')
-  require('./hooks')
-  require('./multitarget')
-  require('./prune')
-  require('./win32')
-
-  if (process.platform !== 'win32') {
-    // Perform additional tests specific to building for OS X
-    require('./darwin')
-    require('./mas')
-  }
-})
+  })

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+* Promise support for `packager` - function returns a Promise instead of the return value of the
+  callback (#658)
+
 ## [8.7.0] - 2017-05-01
 
 ### Added
