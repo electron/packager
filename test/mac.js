@@ -14,6 +14,34 @@ function getHelperExecutablePath (helperName) {
   return path.join(`${helperName}.app`, 'Contents', 'MacOS', helperName)
 }
 
+function parseInfoPlist (t, opts, basePath) {
+  const plistPath = path.join(basePath, `${opts.name}.app`, 'Contents', 'Info.plist')
+
+  return fs.stat(plistPath)
+    .then(stats => {
+      t.true(stats.isFile(), 'The expected Info.plist file should exist')
+      return fs.readFile(plistPath, 'utf8')
+    }).then(file => plist.parse(file))
+}
+
+function packageAndParseInfoPlist (t, opts) {
+  return packager(opts)
+    .then(paths => parseInfoPlist(t, opts, paths[0]))
+}
+
+function packageAndEnsureResourcesPath (t, opts) {
+  let resourcesPath
+
+  return packager(opts)
+    .then(paths => {
+      resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
+      return fs.stat(resourcesPath)
+    }).then(stats => {
+      t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+      return resourcesPath
+    })
+}
+
 function createHelperAppPathsTest (baseOpts, expectedName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
@@ -53,25 +81,20 @@ function createIconTest (baseOpts, icon, iconPath) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(baseOpts)
-    opts.icon = icon
+    const opts = Object.assign({}, baseOpts, {icon: icon})
 
-    var resourcesPath
-    var plistPath
+    let resourcesPath
+    let outputPath
 
     packager(opts)
       .then(paths => {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
+        outputPath = paths[0]
+        resourcesPath = path.join(outputPath, util.generateResourcesPath(opts))
         return fs.stat(resourcesPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+        return parseInfoPlist(t, opts, outputPath)
+      }).then(obj => {
         return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
       }).then(equal => {
         t.true(equal, 'installed icon file should be identical to the specified icon file')
@@ -84,22 +107,14 @@ function createExtraResourceTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var extra1Base = 'data1.txt'
-    var extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+    const extra1Base = 'data1.txt'
+    const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
 
-    var opts = Object.create(baseOpts)
-    opts.extraResource = extra1Path
+    const opts = Object.assign({}, baseOpts, {extraResource: extra1Path})
 
-    var resourcesPath
-
-    packager(opts)
-      .then(paths => {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        return fs.stat(resourcesPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
-      }).then(equal => {
+    packageAndEnsureResourcesPath(t, opts)
+      .then(resourcesPath => util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base)))
+      .then(equal => {
         t.true(equal, 'resource file data1.txt should match')
         return t.end()
       }).catch(t.end)
@@ -110,22 +125,18 @@ function createExtraResource2Test (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var extra1Base = 'data1.txt'
-    var extra1Path = path.join(__dirname, 'fixtures', extra1Base)
-    var extra2Base = 'extrainfo.plist'
-    var extra2Path = path.join(__dirname, 'fixtures', extra2Base)
+    const extra1Base = 'data1.txt'
+    const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+    const extra2Base = 'extrainfo.plist'
+    const extra2Path = path.join(__dirname, 'fixtures', extra2Base)
 
-    var opts = Object.create(baseOpts)
-    opts.extraResource = [ extra1Path, extra2Path ]
+    const opts = Object.assign(baseOpts, {extraResource: [extra1Path, extra2Path]})
 
-    var resourcesPath
+    let resourcesPath
 
-    packager(opts)
-      .then(paths => {
-        resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-        return fs.stat(resourcesPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+    packageAndEnsureResourcesPath(t, opts)
+      .then(rpath => {
+        resourcesPath = rpath
         return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
       }).then(equal => {
         t.true(equal, 'resource file data1.txt should match')
@@ -141,23 +152,15 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var opts = Object.create(baseOpts)
-    opts.extendInfo = extraPathOrParams
-    opts.buildVersion = '3.2.1'
-    opts.appBundleId = 'com.electron.extratest'
-    opts.appCategoryType = 'public.app-category.music'
+    const opts = Object.assign({}, baseOpts, {
+      appBundleId: 'com.electron.extratest',
+      appCategoryType: 'public.app-category.music',
+      buildVersion: '3.2.1',
+      extendInfo: extraPathOrParams
+    })
 
-    var plistPath
-
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.TestKeyString, 'String data', 'TestKeyString should come from extendInfo')
         t.equal(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
         t.equal(obj.TestKeyBool, true, 'TestKeyBool should come from extendInfo')
@@ -176,7 +179,7 @@ function createBinaryNameTest (baseOpts, expectedAppName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let opts = Object.create(baseOpts)
+    const opts = Object.create(baseOpts)
     let binaryPath
     let appName = expectedAppName || opts.name
 
@@ -195,23 +198,14 @@ function createAppVersionTest (baseOpts, appVersion, buildVersion) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var plistPath
-    var opts = Object.create(baseOpts)
-    opts.appVersion = opts.buildVersion = appVersion
+    let opts = Object.assign({}, baseOpts, {appVersion: appVersion, buildVersion: appVersion})
 
     if (buildVersion) {
       opts.buildVersion = buildVersion
     }
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
         t.equal(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
         t.equal(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
@@ -225,17 +219,8 @@ function createAppVersionInferenceTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var plistPath
-
-    packager(baseOpts)
-      .then(paths => {
-        plistPath = path.join(paths[0], baseOpts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+    packageAndParseInfoPlist(t, Object.create(baseOpts))
+      .then(obj => {
         t.equal(obj.CFBundleVersion, '4.99.101', 'CFBundleVersion should reflect package.json version')
         t.equal(obj.CFBundleShortVersionString, '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
         return t.end()
@@ -247,19 +232,10 @@ function createAppCategoryTypeTest (baseOpts, appCategoryType) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var plistPath
-    var opts = Object.create(baseOpts)
-    opts.appCategoryType = appCategoryType
+    const opts = Object.assign({}, baseOpts, {appCategoryType: appCategoryType})
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.LSApplicationCategoryType, opts.appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType')
         return t.end()
       }).catch(t.end)
@@ -270,23 +246,15 @@ function createAppBundleTest (baseOpts, appBundleId) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var plistPath
-    var opts = Object.create(baseOpts)
+    let opts = Object.create(baseOpts)
     if (appBundleId) {
       opts.appBundleId = appBundleId
     }
-    var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
-    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+    const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
+    const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name')
         t.equal(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
@@ -303,7 +271,7 @@ function createAppBundleFrameworkTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var frameworkPath
+    let frameworkPath
 
     packager(baseOpts)
       .then(paths => {
@@ -326,17 +294,17 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var tempPath, plistPath
-    var opts = Object.create(baseOpts)
+    let tempPath, plistPath
+    let opts = Object.create(baseOpts)
     if (helperBundleId) {
       opts.helperBundleId = helperBundleId
     }
     if (appBundleId) {
       opts.appBundleId = appBundleId
     }
-    var defaultBundleName = 'com.electron.' + opts.name.toLowerCase()
-    var appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
-    var helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
+    const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
+    const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+    const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
     packager(opts)
       .then(paths => {
@@ -347,7 +315,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.true(stats.isFile(), 'The expected Info.plist file should exist in helper app')
         return fs.readFile(plistPath, 'utf8')
       }).then(file => {
-        var obj = plist.parse(file)
+        const obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name in helper app')
         t.equal(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
         t.equal(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper app')
@@ -360,7 +328,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.true(stats.isFile(), 'The expected Info.plist file should exist in helper EH app')
         return fs.readFile(plistPath, 'utf8')
       }).then(file => {
-        var obj = plist.parse(file)
+        const obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
         t.equal(obj.CFBundleDisplayName, opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
         t.equal(obj.CFBundleExecutable, opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
@@ -377,7 +345,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
         t.true(stats.isFile(), 'The expected Info.plist file should exist in helper NP app')
         return fs.readFile(plistPath, 'utf8')
       }).then(file => {
-        var obj = plist.parse(file)
+        const obj = plist.parse(file)
         t.equal(obj.CFBundleName, opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
         t.equal(obj.CFBundleDisplayName, opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
         t.equal(obj.CFBundleExecutable, opts.name + ' Helper NP', 'CFBundleExecutable should reflect opts.name in helper NP app')
@@ -396,19 +364,10 @@ function createAppHumanReadableCopyrightTest (baseOpts, humanReadableCopyright) 
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var plistPath
-    var opts = Object.create(baseOpts)
-    opts.appCopyright = humanReadableCopyright
+    const opts = Object.assign({}, baseOpts, {appCopyright: humanReadableCopyright})
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        var obj = plist.parse(file)
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
         t.equal(obj.NSHumanReadableCopyright, opts.appCopyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
         return t.end()
       }).catch(t.end)
@@ -419,25 +378,19 @@ function createProtocolTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    var plistPath
-    var opts = Object.create(baseOpts)
-    opts.protocols = [{
-      name: 'Foo',
-      schemes: ['foo']
-    }, {
-      name: 'Bar',
-      schemes: ['bar', 'baz']
-    }]
+    const opts = Object.assign({}, baseOpts, {
+      protocols: [{
+        name: 'Foo',
+        schemes: ['foo']
+      }, {
+        name: 'Bar',
+        schemes: ['bar', 'baz']
+      }]
+    })
 
-    packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], opts.name + '.app', 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        t.deepEqual(plist.parse(file).CFBundleURLTypes, [{
+    packageAndParseInfoPlist(t, opts)
+      .then(obj => {
+        t.deepEqual(obj.CFBundleURLTypes, [{
           CFBundleURLName: 'Foo',
           CFBundleURLSchemes: ['foo']
         }, {
@@ -451,24 +404,23 @@ function createProtocolTest (baseOpts) {
 
 // Share testing script with platform darwin and mas
 module.exports = (baseOpts) => {
-  let iconBase = path.join(__dirname, 'fixtures', 'monochrome')
-  let icnsPath = iconBase + '.icns'
-  let el0374Opts = {
+  const iconBase = path.join(__dirname, 'fixtures', 'monochrome')
+  const icnsPath = `${iconBase}.icns`
+  const el0374Opts = Object.assign({}, baseOpts, {
     name: 'el0374Test',
     dir: util.fixtureSubdir('el-0374'),
-    electronVersion: '0.37.4',
-    arch: 'x64',
-    platform: 'darwin'
-  }
-  let extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
-  let extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString())
+    electronVersion: '0.37.4'
+  })
+  const extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
+  const extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString())
 
   util.packagerTest('helper app paths test', createHelperAppPathsTest(baseOpts))
   util.packagerTest('helper app paths test with app name needing sanitization', createHelperAppPathsTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
 
   util.packagerTest('icon test: .icns specified', createIconTest(baseOpts, icnsPath, icnsPath))
+  // This test exists because the .icns file basename changed as of 0.37.4
   util.packagerTest('icon test: el-0.37.4, .icns specified', createIconTest(el0374Opts, icnsPath, icnsPath))
-  util.packagerTest('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, iconBase + '.ico', icnsPath))
+  util.packagerTest('icon test: .ico specified (should replace with .icns)', createIconTest(baseOpts, `${iconBase}.ico`, icnsPath))
   util.packagerTest('icon test: basename only (should add .icns)', createIconTest(baseOpts, iconBase, icnsPath))
 
   util.packagerTest('extendInfo by filename test', createExtendInfoTest(baseOpts, extraInfoPath))
@@ -480,43 +432,43 @@ module.exports = (baseOpts) => {
   util.packagerTest('protocol/protocol-name argument test', createProtocolTest(baseOpts))
 
   test('osxSign argument test: default args', (t) => {
-    var args = true
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const args = true
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
   test('osxSign argument test: identity=true sets autodiscovery mode', (t) => {
-    var args = {identity: true}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const args = {identity: true}
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
   test('osxSign argument test: entitlements passed to electron-osx-sign', (t) => {
-    var args = {entitlements: 'path-to-entitlements'}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const args = {entitlements: 'path-to-entitlements'}
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements})
     return t.end()
   })
 
   test('osxSign argument test: app not overwritten', (t) => {
-    var args = {app: 'some-other-path'}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const args = {app: 'some-other-path'}
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
   test('osxSign argument test: platform not overwritten', (t) => {
-    var args = {platform: 'mas'}
-    var signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const args = {platform: 'mas'}
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
 
   test('osxSign argument test: binaries not set', (t) => {
-    let args = {binaries: ['binary1', 'binary2']}
-    let signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const args = {binaries: ['binary1', 'binary2']}
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.same(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
     return t.end()
   })
