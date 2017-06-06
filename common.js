@@ -14,7 +14,7 @@ const semver = require('semver')
 const series = require('run-series')
 
 const archs = ['ia32', 'x64', 'armv7l']
-const platforms = ['darwin', 'linux', 'mas', 'win32']
+const platforms = ['darwin', 'freebsd', 'linux', 'mas', 'win32']
 
 function parseCLIArgs (argv) {
   var args = minimist(argv, {

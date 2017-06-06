@@ -19,7 +19,7 @@ function generateIgnores (opts) {
 
     if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
     opts.ignore = (opts.ignore) ? opts.ignore.concat(DEFAULT_IGNORES) : [].concat(DEFAULT_IGNORES)
-    if (process.platform === 'linux') {
+    if (process.platform === 'linux' || process.platform === 'freebsd') {
       opts.ignore.push(common.baseTempDir(opts))
     }
 

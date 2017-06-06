@@ -14,6 +14,7 @@ module.exports = {
   // Maps to module filename for each platform (lazy-required if used)
   supportedPlatforms: {
     darwin: './mac',
+    freebsd: './freebsd',
     linux: './linux',
     mas: './mac', // map to darwin
     win32: './win32'

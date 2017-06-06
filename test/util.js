@@ -52,7 +52,8 @@ exports.downloadAll = function downloadAll (version) {
   const combinations = common.createDownloadCombos({electronVersion: config.version}, common.platforms, common.archs, (platform, arch) => {
     // Skip testing darwin/mas target on Windows since electron-packager itself skips it
     // (see https://github.com/electron-userland/electron-packager/issues/71)
-    return common.isPlatformMac(platform) && process.platform === 'win32'
+    return (common.isPlatformMac(platform) && process.platform === 'win32') ||
+           (platform === 'freebsd')
   })
 
   return Promise.all(combinations.map(combination => {
