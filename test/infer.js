@@ -115,20 +115,14 @@ util.testSinglePlatform('infer using `electron` package only', createInferMissin
 util.testSinglePlatform('infer where `electron` version is preferred over `electron-prebuilt`', createInferElectronVersionTest('basic-renamed-to-electron', 'electron'))
 util.testSinglePlatform('infer win32metadata', (opts) => {
   return (t) => {
-    const expected = {
-      CompanyName: 'Foo Bar',
-      FileDescription: 'Some description'
-    }
+    const expected = {CompanyName: 'Foo Bar'}
 
     testInferWin32metadata(t, opts, expected, 'win32metadata matches package.json values')
   }
 })
 util.testSinglePlatform('do not infer win32metadata if it already exists', (opts) => {
   return (t) => {
-    opts.win32metadata = {
-      CompanyName: 'Existing',
-      FileDescription: 'Existing description'
-    }
+    opts.win32metadata = {CompanyName: 'Existing'}
     const expected = Object.assign({}, opts.win32metadata)
 
     testInferWin32metadata(t, opts, expected, 'win32metadata did not update with package.json values')

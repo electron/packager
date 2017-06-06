@@ -7,6 +7,7 @@ const series = require('run-series')
 
 function generateRceditOptionsSansIcon (opts, newExeName) {
   const win32metadata = Object.assign({
+    FileDescription: opts.name,
     InternalName: opts.name,
     OriginalFilename: newExeName,
     ProductName: opts.name
