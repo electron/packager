@@ -148,8 +148,6 @@ module.exports = pify(function packager (opts, cb) {
   debug(`Target Platforms: ${platforms.join(', ')}`)
   debug(`Target Architectures: ${archs.join(', ')}`)
 
-  common.camelCase(opts, true)
-
   getMetadataFromPackageJSON(platforms, opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)
 

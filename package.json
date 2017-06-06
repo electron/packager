@@ -18,6 +18,7 @@
   "homepage": "https://github.com/electron-userland/electron-packager",
   "dependencies": {
     "asar": "^0.13.0",
+    "camelize": "^1.0.0",
     "debug": "^2.2.0",
     "electron-download": "^4.0.0",
     "electron-osx-sign": "^0.4.1",

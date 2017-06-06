@@ -1,6 +1,7 @@
 'use strict'
 
 const asar = require('asar')
+const camelize = require('camelize')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
 const fs = require('fs-extra')
@@ -40,8 +41,7 @@ function parseCLIArgs (argv) {
   args.dir = args._[0]
   args.name = args._[1]
 
-  // Transform hyphenated keys into camelCase
-  module.exports.camelCase(args, false)
+  args = camelize(args)
 
   var protocolSchemes = [].concat(args.protocol || [])
   var protocolNames = [].concat(args.protocolName || [])
@@ -193,36 +193,6 @@ module.exports = {
     }
   },
 
-  kebabProperties: {
-    'electron-version': 'electronVersion',
-    'app-copyright': 'appCopyright',
-    'app-version': 'appVersion',
-    'build-version': 'buildVersion',
-    'package-manager': 'packageManager',
-    'app-bundle-id': 'appBundleId',
-    'app-category-type': 'appCategoryType',
-    'extend-info': 'extendInfo',
-    'extra-resource': 'extraResource',
-    'helper-bundle-id': 'helperBundleId',
-    'osx-sign': 'osxSign',
-    'protocol-name': 'protocolName'
-  },
-
-  camelCase: function camelCase (properties, warn) {
-    Object.keys(module.exports.kebabProperties).forEach(function (key) {
-      var value = module.exports.kebabProperties[key]
-      if (properties.hasOwnProperty(key)) {
-        if (warn) {
-          warning(`The ${key} parameter is deprecated when used from JS, use ${value} instead. It will be removed in the next major version.`)
-        }
-        if (!properties.hasOwnProperty(value)) {
-          properties[value] = properties[key]
-        }
-        delete properties[key]
-      }
-    })
-  },
-
   downloadElectronZip: function downloadElectronZip (downloadOpts, cb) {
     // armv7l builds have only been backfilled for Electron >= 1.0.0.
     // See: https://github.com/electron/electron/pull/6986
@@ -264,14 +234,7 @@ module.exports = {
         fs.move(templatePath, tempPath, {clobber: true}, cb)
       },
       function (cb) {
-        // `deref-symlinks` is the default value so we'll use it unless
-        // `derefSymlinks` is defined.
-        var shouldDeref = opts['deref-symlinks']
-        if (opts.derefSymlinks !== undefined) {
-          shouldDeref = opts.derefSymlinks
-        }
-
-        fs.copy(opts.dir, appPath, {filter: ignore.userIgnoreFilter(opts), dereference: shouldDeref}, cb)
+        fs.copy(opts.dir, appPath, {filter: ignore.userIgnoreFilter(opts), dereference: opts.derefSymlinks}, cb)
       },
       function (cb) {
         var afterCopyHooks = (opts.afterCopy || []).map(function (afterCopyFn) {

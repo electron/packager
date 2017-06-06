@@ -59,21 +59,11 @@ An array of functions to be called after Electron has been extracted to a tempor
 
 When `true`, sets both [`arch`](#arch) and [`platform`](#platform) to `all`.
 
-##### `app-copyright`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-[`appCopyright`](#appcopyright) parameter instead)
-
 ##### `appCopyright`
 
 *String*
 
 The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on OS X.
-
-##### `app-version`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-[`appVersion`](#appversion) parameter instead)
 
 ##### `appVersion`
 
@@ -108,12 +98,6 @@ Whether to package the application's source code into an archive, using [Electro
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will not include their subdirectories.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
-
-##### `build-version`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-[`buildVersion`](#buildversion) parameter instead)
-
 
 ##### `buildVersion`
 
@@ -265,21 +249,11 @@ The base directory to use as a temp directory. Set to `false` to disable use of 
 
 #### OS X/Mac App Store targets only
 
-##### `app-bundle-id`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-[`appBundleId`](#appbundleid) parameter instead)
-
 ##### `appBundleId`
 
 *String*
 
 The bundle identifier to use in the application's plist.
-
-##### `app-category-type`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-  [`appCategoryType`](#appcategorytype) parameter instead)
 
 ##### `appCategoryType`
 
@@ -291,11 +265,6 @@ For example, `app-category-type=public.app-category.developer-tools` will set th
 
 Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
 
-##### `extend-info`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-  [`extendInfo`](#extendinfo) parameter instead)
-
 ##### `extendInfo`
 
 *String* or *Object*
@@ -304,32 +273,17 @@ When the value is a `String`, the filename of a plist file. Its contents are add
 
 Entries from `extend-info` override entries in the base plist file supplied by `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other explicit arguments such as [`appVersion`](#appversion) or [`appBundleId`](#appbundleid).
 
-##### `extra-resource`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-  [`extraResource`](#extraresource) parameter instead)
-
 ##### `extraResource`
 
 *String* or *Array*
 
 Filename of a file to be copied directly into the app's `Contents/Resources` directory.
 
-##### `helper-bundle-id`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-  [`helperBundleId`](#helperbundleid) parameter instead)
-
 ##### `helperBundleId`
 
 *String*
 
 The bundle identifier to use in the application helper's plist.
-
-##### `osx-sign`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-  [`osxSign`](#osxsign) parameter instead)
 
 ##### `osxSign`
 
@@ -348,11 +302,6 @@ The URL protocol scheme(s) to associate the app with. For example, specifying
 `myapp` would cause URLs such as `myapp://path` to be opened with the app. Maps
 to the `CFBundleURLSchemes` metadata property. This option requires a
 corresponding `protocol-name` option to be specified.
-
-##### `protocol-name`
-
-*String* (**deprecated** and will be removed in a future major version, please use the
-[`protocolName`](#protocolname) parameter instead)
 
 ##### `protocolName`
 

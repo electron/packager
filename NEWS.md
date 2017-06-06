@@ -18,6 +18,8 @@
 
 * `version` is removed in favor of `electronVersion` (CLI: `--electron-version`) (#665)
 * `version-string` is removed in favor of `win32metadata`
+* Options set via the JavaScript API formatted in kebab-case (i.e., with hyphens) are removed in
+  favor of their camelCase variants, per JavaScript naming standards
 
 ## [8.7.0] - 2017-05-01
 
