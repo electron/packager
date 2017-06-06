@@ -11,7 +11,7 @@ function generateRceditOptionsSansIcon (opts, newExeName) {
     InternalName: opts.name,
     OriginalFilename: newExeName,
     ProductName: opts.name
-  }, opts['version-string'], opts.win32metadata)
+  }, opts.win32metadata)
 
   let rcOpts = {'version-string': win32metadata}
 
@@ -63,7 +63,7 @@ module.exports = {
 
       const rcOpts = generateRceditOptionsSansIcon(opts, newExeName)
 
-      if (opts.icon || opts.win32metadata || opts['version-string'] || opts.appCopyright || opts.appVersion || opts.buildVersion) {
+      if (opts.icon || opts.win32metadata || opts.appCopyright || opts.appVersion || opts.buildVersion) {
         operations.push(function (cb) {
           common.normalizeExt(opts.icon, '.ico', function (err, icon) {
             // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
