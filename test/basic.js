@@ -299,6 +299,24 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     )
 })
 
+test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
+  let opts = {
+    old: 'value'
+  }
+  common.deprecatedParameter(opts, 'old', 'new', 'new-value')
+
+  t.false(opts.hasOwnProperty('old'), 'old property is not set')
+  t.true(opts.hasOwnProperty('new'), 'new property is set')
+
+  opts.not_overwritten_old = 'another'
+  common.deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value')
+
+  t.false(opts.hasOwnProperty('not_overwritten_old'), 'not_overwritten_old property is not set')
+  t.true(opts.hasOwnProperty('new'), 'new property is set')
+  t.equal('value', opts.new, 'new property is not overwritten')
+  t.end()
+})
+
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
 util.testSinglePlatform('overwrite test', createOverwriteTest)
