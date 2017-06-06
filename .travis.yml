@@ -21,6 +21,7 @@ after_success: npm run coveralls
 branches:
   only:
   - master
+  - 8.7.x
   - /^v\d+\.\d+\.\d+/
 env:
   global:
