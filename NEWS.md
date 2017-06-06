@@ -7,6 +7,10 @@
 * Promise support for `packager` - function returns a Promise instead of the return value of the
   callback (#658)
 
+### Removed
+
+* `version` is removed in favor of `electronVersion` (CLI: `--electron-version`) (#665)
+
 ## [8.7.0] - 2017-05-01
 
 ### Added

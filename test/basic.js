@@ -299,6 +299,24 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     )
 })
 
+test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
+  let opts = {
+    old: 'value'
+  }
+  common.deprecatedParameter(opts, 'old', 'new', 'new-value')
+
+  t.false(opts.hasOwnProperty('old'), 'old property is not set')
+  t.true(opts.hasOwnProperty('new'), 'new property is set')
+
+  opts.not_overwritten_old = 'another'
+  common.deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value')
+
+  t.false(opts.hasOwnProperty('not_overwritten_old'), 'not_overwritten_old property is not set')
+  t.true(opts.hasOwnProperty('new'), 'new property is set')
+  t.equal('value', opts.new, 'new property is not overwritten')
+  t.end()
+})
+
 util.testSinglePlatform('defaults test', createDefaultsTest)
 util.testSinglePlatform('out test', createOutTest)
 util.testSinglePlatform('overwrite test', createOverwriteTest)
@@ -343,31 +361,6 @@ util.packagerTest('fails with invalid version', invalidOptionTest({
     quiet: !!process.env.CI
   }
 }))
-
-util.packagerTest('electronVersion overrides deprecated version', (t) => {
-  const opts = {
-    electronVersion: '0.1.2',
-    version: '1.2.3'
-  }
-
-  common.deprecatedParameter(opts, 'version', 'electronVersion')
-
-  t.equal(opts.electronVersion, '0.1.2', 'electronVersion should not change')
-  t.equal(opts.version, undefined, 'version should be deleted')
-  t.end()
-})
-
-util.packagerTest('version used if electronVersion not set', (t) => {
-  const opts = {
-    version: '1.2.3'
-  }
-
-  common.deprecatedParameter(opts, 'version', 'electronVersion')
-
-  t.equal(opts.electronVersion, '1.2.3', 'electronVersion have version value')
-  t.equal(opts.version, undefined, 'version should be deleted')
-  t.end()
-})
 
 util.packagerTest('dir argument test: should work with relative path', (t) => {
   const opts = {
