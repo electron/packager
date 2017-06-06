@@ -94,4 +94,5 @@ win32metadata      a list of sub-properties used to set the application metadata
                    - OriginalFilename
                    - ProductName
                    - InternalName
-                   - requestedExecutionLevel (user, asInvoker or requireAdministrator)
+                   - requested-execution-level (user, asInvoker, or requireAdministrator)
+                   - application-manifest
