@@ -6,6 +6,12 @@
 
 * Promise support for `packager` - function returns a Promise instead of the return value of the
   callback (#658)
+* `win32metadata.CompanyName` defaults to `author` name from nearest `package.json` (#667)
+* `win32metadata.FileDescription` defaults to `description` from nearest `package.json` (#667)
+* `win32metadata.OriginalFilename` defaults to renamed `.exe` (#667)
+* `win32metadata.ProductName` defaults to `productName` or `name` from nearest `package.json` (#667)
+* `win32metadata.InternalName` defaults to `productName` or `name` from
+  nearest `package.json` (#667)
 
 ### Removed
 
