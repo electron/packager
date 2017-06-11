@@ -27,9 +27,15 @@ function generateVersionStringTest (metadataProperties, extraOpts, expectedValue
     expectedValues = [].concat(expectedValues)
     assertionMsgs = [].concat(assertionMsgs)
     metadataProperties.forEach((property, i) => {
-      var value = expectedValues[i]
-      var msg = assertionMsgs[i]
-      t.deepEqual(rcOpts[property], value, msg)
+      const value = expectedValues[i]
+      const msg = assertionMsgs[i]
+      if (property === 'version-string') {
+        for (const subkey in value) {
+          t.equal(rcOpts[property][subkey], value[subkey], `${msg} (${subkey})`)
+        }
+      } else {
+        t.equal(rcOpts[property], value, msg)
+      }
     })
     t.end()
   }
@@ -160,6 +166,19 @@ test('error message unchanged when error not about wine', (t) => {
   errNotSpawnWine = win32.updateWineMissingException(errNotSpawnWine)
   t.equal(errNotSpawnWine.message, 'unchanged')
 
+  t.end()
+})
+
+test('win32metadata defaults', (t) => {
+  const opts = {
+    name: 'Win32 App'
+  }
+  const rcOpts = win32.generateRceditOptionsSansIcon(opts, 'Win32 App.exe')
+
+  t.equal(rcOpts['version-string'].FileDescription, opts.name, 'default FileDescription')
+  t.equal(rcOpts['version-string'].InternalName, opts.name, 'default InternalName')
+  t.equal(rcOpts['version-string'].OriginalFilename, 'Win32 App.exe', 'default OriginalFilename')
+  t.equal(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
   t.end()
 })
 

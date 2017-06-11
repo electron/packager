@@ -88,10 +88,10 @@ win32metadata      a list of sub-properties used to set the application metadata
                    e.g. --win32metadata.CompanyName="Company Inc."
                    or --win32metadata.ProductName="Product"
                    Properties supported:
-                   - CompanyName
-                   - FileDescription
-                   - OriginalFilename
-                   - ProductName
-                   - InternalName
+                   - CompanyName (default: author name from nearest package.json)
+                   - FileDescription (default: appname)
+                   - OriginalFilename (default: renamed exe)
+                   - ProductName (default: appname)
+                   - InternalName (default: appname)
                    - requested-execution-level (user, asInvoker, or requireAdministrator)
                    - application-manifest

@@ -5,8 +5,13 @@ const debug = require('debug')('electron-packager')
 const path = require('path')
 const series = require('run-series')
 
-function generateRceditOptionsSansIcon (opts) {
-  const win32metadata = Object.assign({}, opts['version-string'], opts.win32metadata)
+function generateRceditOptionsSansIcon (opts, newExeName) {
+  const win32metadata = Object.assign({
+    FileDescription: opts.name,
+    InternalName: opts.name,
+    OriginalFilename: newExeName,
+    ProductName: opts.name
+  }, opts['version-string'], opts.win32metadata)
 
   let rcOpts = {'version-string': win32metadata}
 
@@ -56,7 +61,7 @@ module.exports = {
         }
       ]
 
-      const rcOpts = generateRceditOptionsSansIcon(opts)
+      const rcOpts = generateRceditOptionsSansIcon(opts, newExeName)
 
       if (opts.icon || opts.win32metadata || opts['version-string'] || opts.appCopyright || opts.appVersion || opts.buildVersion) {
         operations.push(function (cb) {

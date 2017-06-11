@@ -150,7 +150,7 @@ module.exports = pify(function packager (opts, cb) {
 
   common.camelCase(opts, true)
 
-  getMetadataFromPackageJSON(opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
+  getMetadataFromPackageJSON(platforms, opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)
 
     if (/ Helper$/.test(opts.name)) {
