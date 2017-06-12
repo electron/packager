@@ -17,6 +17,7 @@
 ### Removed
 
 * `version` is removed in favor of `electronVersion` (CLI: `--electron-version`) (#665)
+* `version-string` is removed in favor of `win32metadata`
 
 ## [8.7.0] - 2017-05-01
 

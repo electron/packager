@@ -363,11 +363,6 @@ option. Maps to the `CFBundleURLName` metadata property.
 
 #### Windows targets only
 
-##### `version-string`
-
-*Object* (**deprecated** and will be removed in a future major version, please use the
-[`win32metadata`](#win32metadata) parameter instead)
-
 ##### `win32metadata`
 
 *Object*

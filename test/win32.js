@@ -125,16 +125,17 @@ function setApplicationManifestTest (applicationManifest) {
   )
 }
 
-function setCompanyNameTest (companyName, optName) {
-  let opts = {}
-  opts[optName] = {
-    CompanyName: companyName
+function setCompanyNameTest (companyName) {
+  const opts = {
+    win32metadata: {
+      CompanyName: companyName
+    }
   }
 
   return generateVersionStringTest('version-string',
                                    opts,
                                    {CompanyName: companyName},
-                                   `Company name should match ${optName} value`)
+                                   `Company name should match win32metadata value`)
 }
 
 test('better error message when wine is not found', (t) => {
@@ -200,7 +201,6 @@ util.packagerTest('win32 build version sets FileVersion test', setFileVersionTes
 util.packagerTest('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
 util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
 util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
-util.packagerTest('win32 set CompanyName test (win32metadata)', setCompanyNameTest('MyCompany LLC', 'win32metadata'))
-util.packagerTest('win32 set CompanyName test (version-string)', setCompanyNameTest('MyCompany LLC', 'version-string'))
-util.packagerTest('win32 set requested-execution-level test (win32metadata)', setRequestedExecutionLevelTest('asInvoker'))
-util.packagerTest('win32 set application-manifest test (win32metadata)', setApplicationManifestTest('/path/to/manifest.xml'))
+util.packagerTest('win32 set CompanyName test', setCompanyNameTest('MyCompany LLC'))
+util.packagerTest('win32 set requested-execution-level test', setRequestedExecutionLevelTest('asInvoker'))
+util.packagerTest('win32 set application-manifest test', setApplicationManifestTest('/path/to/manifest.xml'))
