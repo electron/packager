@@ -17,7 +17,7 @@ appname            the name of the app, if it needs to be different from the "pr
 all                equivalent to --platform=all --arch=all
 app-copyright      human-readable copyright line for the app
 app-version        release version to set for the app
-arch               all, or one or more of: ia32, x64, armv7l (comma-delimited if multiple). Defaults
+arch               all, or one or more of: ia32, x64, armv7l, arm64 (comma-delimited if multiple). Defaults
                    to the host arch
 asar               whether to package the source code within your app into an archive. You can either
                    pass --asar by itself to use the default configuration, OR use dot notation to
