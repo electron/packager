@@ -215,19 +215,6 @@ function invalidOptionTest (opts) {
   }
 }
 
-test('camelCase de-kebab-cases known parameters', (t) => {
-  let opts = {
-    'abc-def': true,
-    'electron-version': '1.6.0'
-  }
-  common.camelCase(opts, false)
-  t.equal('1.6.0', opts.electronVersion, 'camelCased known property exists')
-  t.equal(undefined, opts['electron-version'], 'kebab-cased known property does not exist')
-  t.equal(undefined, opts.abcDef, 'camelCased unknown property does not exist')
-  t.equal(true, opts['abc-def'], 'kebab-cased unknown property exists')
-  t.end()
-})
-
 test('validateListFromOptions does not take non-Array/String values', (t) => {
   t.notOk(targets.validateListFromOptions({digits: 64}, {'64': true, '65': true}, 'digits') instanceof Array,
           'should not be an Array')
