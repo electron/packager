@@ -6,8 +6,10 @@ const common = require('../common')
 const config = require('./config.json')
 const fs = require('fs-extra')
 const os = require('os')
+const packager = require('../index')
 const path = require('path')
 const pify = require('pify')
+const targets = require('../targets')
 const test = require('tape')
 
 const ORIGINAL_CWD = process.cwd()
@@ -34,6 +36,8 @@ function teardown () {
   })
 }
 
+exports.allPlatformArchCombosCount = 7
+
 exports.areFilesEqual = function areFilesEqual (file1, file2) {
   let buffer1, buffer2
 
@@ -49,7 +53,7 @@ exports.areFilesEqual = function areFilesEqual (file1, file2) {
 
 exports.downloadAll = function downloadAll (version) {
   console.log(`Calling electron-download for ${version} before running tests...`)
-  const combinations = common.createDownloadCombos({electronVersion: config.version}, common.platforms, common.archs, (platform, arch) => {
+  const combinations = common.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, (platform, arch) => {
     // Skip testing darwin/mas target on Windows since electron-packager itself skips it
     // (see https://github.com/electron-userland/electron-packager/issues/71)
     return common.isPlatformMac(platform) && process.platform === 'win32'
@@ -76,6 +80,19 @@ exports.generateResourcesPath = function generateResourcesPath (opts) {
 
 exports.getWorkCwd = function getWorkCwd () {
   return WORK_CWD
+}
+
+exports.invalidOptionTest = function invalidOptionTest (opts) {
+  return (t) => {
+    return packager(opts)
+      .then(
+        paths => t.end('no paths returned'),
+        (err) => {
+          t.ok(err, 'error thrown')
+          return t.end()
+        }
+      )
+  }
 }
 
 exports.packagerTest = function packagerTest (name, testFunction) {

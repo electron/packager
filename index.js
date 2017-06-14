@@ -85,7 +85,7 @@ function createSeries (opts, archs, platforms) {
               }
             }
           ], function () {
-            require(targets.supportedPlatforms[platform]).createApp(comboOpts, buildDir, callback)
+            require(targets.osModules[platform]).createApp(comboOpts, buildDir, callback)
           })
         }
 
@@ -140,8 +140,8 @@ module.exports = pify(function packager (opts, cb) {
   debugHostInfo()
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
 
-  let archs = targets.validateListFromOptions(opts, targets.supportedArchs, 'arch')
-  let platforms = targets.validateListFromOptions(opts, targets.supportedPlatforms, 'platform')
+  let archs = targets.validateListFromOptions(opts, 'arch')
+  let platforms = targets.validateListFromOptions(opts, 'platform')
   if (!Array.isArray(archs)) return cb(archs)
   if (!Array.isArray(platforms)) return cb(platforms)
 

@@ -2,6 +2,7 @@
 
 const debug = require('debug')('electron-packager')
 const path = require('path')
+const targets = require('./targets')
 
 const DEFAULT_IGNORES = [
   '/node_modules/electron($|/)',
@@ -34,8 +35,8 @@ function generateOutIgnores (opts) {
   let normalizedOut = opts.out ? path.resolve(opts.out) : null
   let outIgnores = []
   if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (let platform of common.platforms) {
-      for (let arch of common.archs) {
+    for (const platform of Object.keys(targets.officialPlatformArchCombos)) {
+      for (const arch of targets.officialPlatformArchCombos[platform]) {
         let basenameOpts = {
           arch: arch,
           name: opts.name,

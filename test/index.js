@@ -42,8 +42,8 @@ preDownloadElectron()
     require('./ignore')
     require('./infer')
     require('./hooks')
-    require('./multitarget')
     require('./prune')
+    require('./targets')
     require('./win32')
 
     if (process.platform !== 'win32') {
