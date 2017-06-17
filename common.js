@@ -163,7 +163,9 @@ module.exports = {
   createAsarOpts: createAsarOpts,
 
   createDownloadCombos: function createDownloadCombos (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map(([platform, arch]) => {
+    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map((combo) => {
+      const platform = combo[0]
+      const arch = combo[1]
       return createDownloadOpts(opts, platform, arch)
     })
   },
