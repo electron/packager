@@ -13,6 +13,10 @@
 * `win32metadata.ProductName` defaults to `productName` or `name` from nearest `package.json` (#667)
 * `win32metadata.InternalName` defaults to `productName` or `name` from
   nearest `package.json` (#667)
+* Warn when downloading from the official Electron releases and the arch/platform combination
+  specified is invalid (#562)
+* Do not error out immediately if a `download.mirror` is specified and an unofficial arch/platform
+  is specified (#670)
 
 ### Removed
 

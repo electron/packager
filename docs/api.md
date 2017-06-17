@@ -81,7 +81,8 @@ The target system architecture(s) to build for.
 Not required if the [`all`](#all) option is set.
 If `arch` is set to `all`, all supported architectures for the target platforms specified by [`platform`](#platform) will be built.
 Arbitrary combinations of individual architectures are also supported via a comma-delimited string or array of strings.
-The non-`all` values correspond to the architecture names used by [Electron releases].
+The non-`all` values correspond to the architecture names used by [Electron releases]. This value
+is not restricted to the official set if [`download.mirror`](#download) is set.
 
 ##### `asar`
 
@@ -225,7 +226,8 @@ The target platform(s) to build for.
 Not required if the [`all`](#all) option is set.
 If `platform` is set to `all`, all [supported target platforms](#supported-platforms) for the target architectures specified by [`arch`](#arch) will be built.
 Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
-The non-`all` values correspond to the platform names used by [Electron releases].
+The non-`all` values correspond to the platform names used by [Electron releases]. This value
+is not restricted to the official set if [`download.mirror`](#download) is set.
 
 ##### `prune`
 
