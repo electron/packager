@@ -136,6 +136,13 @@ valid versions. If omitted, it will use the version of the nearest local install
 `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, defined in `package.json` in either
 `dependencies` or `devDependencies`.
 
+##### `extraResource`
+
+*String* or *Array* of *String*s
+
+One or more files to be copied directly into the app's `Contents/Resources` directory for OS X
+target platforms, and the `resources` directory for other target platforms.
+
 ##### `icon`
 
 *String*
@@ -274,12 +281,6 @@ Valid values are listed in [Apple's documentation](https://developer.apple.com/l
 When the value is a `String`, the filename of a plist file. Its contents are added to the app's plist. When the value is an `Object`, an already-parsed plist data structure that is merged into the app's plist.
 
 Entries from `extend-info` override entries in the base plist file supplied by `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other explicit arguments such as [`appVersion`](#appversion) or [`appBundleId`](#appbundleid).
-
-##### `extraResource`
-
-*String* or *Array*
-
-Filename of a file to be copied directly into the app's `Contents/Resources` directory.
 
 ##### `helperBundleId`
 
