@@ -47,6 +47,7 @@ testMultiTarget('arch=all test (one platform)', {arch: 'all', platform: 'linux'}
 
 testCombinations('multi-platform / multi-arch test, from arrays', ['ia32', 'x64'], ['linux', 'win32'])
 testCombinations('multi-platform / multi-arch test, from strings', 'ia32,x64', 'linux,win32')
+testCombinations('multi-platform / multi-arch test, from strings with spaces', 'ia32, x64', 'linux, win32')
 
 util.packagerTest('fails with invalid arch', util.invalidOptionTest({
   arch: 'z80',
