@@ -5,7 +5,6 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const targets = require('../targets')
 const test = require('tape')
 const util = require('./util')
 
@@ -202,25 +201,6 @@ function createDisableSymlinkDereferencingTest (opts) {
   }
 }
 
-function invalidOptionTest (opts) {
-  return (t) => {
-    return packager(opts)
-      .then(
-        paths => t.end('no paths returned'),
-        (err) => {
-          t.ok(err, 'error thrown')
-          return t.end()
-        }
-      )
-  }
-}
-
-test('validateListFromOptions does not take non-Array/String values', (t) => {
-  t.notOk(targets.validateListFromOptions({digits: 64}, {'64': true, '65': true}, 'digits') instanceof Array,
-          'should not be an Array')
-  t.end()
-})
-
 test('setting the quiet option does not print messages', (t) => {
   const errorLog = console.error
   const warningLog = console.warn
@@ -330,15 +310,7 @@ util.packagerTest('building for Linux target sanitizes binary name', (t) => {
     }).catch(t.end)
 })
 
-util.packagerTest('fails with invalid arch', invalidOptionTest({
-  arch: 'z80',
-  platform: 'linux'
-}))
-util.packagerTest('fails with invalid platform', invalidOptionTest({
-  arch: 'ia32',
-  platform: 'dos'
-}))
-util.packagerTest('fails with invalid version', invalidOptionTest({
+util.packagerTest('fails with invalid version', util.invalidOptionTest({
   name: 'invalidElectronTest',
   dir: path.join(__dirname, 'fixtures', 'el-0374'),
   electronVersion: '0.0.1',

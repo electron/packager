@@ -119,7 +119,7 @@ test('generateIgnores ignores the generated temporary directory only on Linux', 
 
 test('generateOutIgnores ignores all possible platform/arch permutations', (t) => {
   let ignores = ignore.generateOutIgnores({name: 'test'})
-  t.equal(ignores.length, common.platforms.length * common.archs.length)
+  t.equal(ignores.length, util.allPlatformArchCombosCount)
   t.end()
 })
 

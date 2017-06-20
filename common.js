@@ -13,9 +13,7 @@ const pruneModules = require('./prune').pruneModules
 const sanitize = require('sanitize-filename')
 const semver = require('semver')
 const series = require('run-series')
-
-const archs = ['ia32', 'x64', 'armv7l']
-const platforms = ['darwin', 'linux', 'mas', 'win32']
+const targets = require('./targets')
 
 function parseCLIArgs (argv) {
   var args = minimist(argv, {
@@ -154,9 +152,6 @@ function createDownloadOpts (opts, platform, arch) {
 }
 
 module.exports = {
-  archs: archs,
-  platforms: platforms,
-
   parseCLIArgs: parseCLIArgs,
 
   isPlatformMac: isPlatformMac,
@@ -166,22 +161,15 @@ module.exports = {
   baseTempDir: baseTempDir,
 
   createAsarOpts: createAsarOpts,
-  createDownloadOpts: createDownloadOpts,
-  createDownloadCombos: function createDownloadCombos (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-    let combinations = []
-    for (let arch of selectedArchs) {
-      for (let platform of selectedPlatforms) {
-        // Electron does not have 32-bit releases for Mac OS X, so skip that combination
-        if (isPlatformMac(platform) && arch === 'ia32') continue
-        // Electron only has armv7l releases for Linux
-        if (arch === 'armv7l' && platform !== 'linux') continue
-        if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
-        combinations.push(createDownloadOpts(opts, platform, arch))
-      }
-    }
 
-    return combinations
+  createDownloadCombos: function createDownloadCombos (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
+    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map((combo) => {
+      const platform = combo[0]
+      const arch = combo[1]
+      return createDownloadOpts(opts, platform, arch)
+    })
   },
+  createDownloadOpts: createDownloadOpts,
 
   deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName) {
     if (properties.hasOwnProperty(oldName)) {
