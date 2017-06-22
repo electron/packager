@@ -17,6 +17,7 @@
   specified is invalid (#562)
 * Do not error out immediately if a `download.mirror` is specified and an unofficial arch/platform
   is specified (#670)
+* Allow spaces when specifying archs/platforms as a string, rather than an array (#487)
 
 ### Removed
 

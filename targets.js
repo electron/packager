@@ -68,7 +68,7 @@ module.exports = {
 
     if (!Array.isArray(list)) {
       if (typeof list === 'string') {
-        list = list.split(',')
+        list = list.split(/,\s*/)
       } else {
         return unsupportedListOption(name, list, supported[name])
       }
