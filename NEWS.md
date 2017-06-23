@@ -18,6 +18,7 @@
 * Do not error out immediately if a `download.mirror` is specified and an unofficial arch/platform
   is specified (#670)
 * Allow spaces when specifying archs/platforms as a string, rather than an array (#487)
+* The `extraResource` option works on all target platforms (#637)
 
 ### Removed
 

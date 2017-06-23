@@ -29,19 +29,6 @@ function packageAndParseInfoPlist (t, opts) {
     .then(paths => parseInfoPlist(t, opts, paths[0]))
 }
 
-function packageAndEnsureResourcesPath (t, opts) {
-  let resourcesPath
-
-  return packager(opts)
-    .then(paths => {
-      resourcesPath = path.join(paths[0], util.generateResourcesPath(opts))
-      return fs.stat(resourcesPath)
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-      return resourcesPath
-    })
-}
-
 function createHelperAppPathsTest (baseOpts, expectedName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
@@ -98,51 +85,6 @@ function createIconTest (baseOpts, icon, iconPath) {
         return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
       }).then(equal => {
         t.true(equal, 'installed icon file should be identical to the specified icon file')
-        return t.end()
-      }).catch(t.end)
-  }
-}
-
-function createExtraResourceTest (baseOpts) {
-  return (t) => {
-    t.timeoutAfter(config.timeout)
-
-    const extra1Base = 'data1.txt'
-    const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
-
-    const opts = Object.assign({}, baseOpts, {extraResource: extra1Path})
-
-    packageAndEnsureResourcesPath(t, opts)
-      .then(resourcesPath => util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base)))
-      .then(equal => {
-        t.true(equal, 'resource file data1.txt should match')
-        return t.end()
-      }).catch(t.end)
-  }
-}
-
-function createExtraResource2Test (baseOpts) {
-  return (t) => {
-    t.timeoutAfter(config.timeout)
-
-    const extra1Base = 'data1.txt'
-    const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
-    const extra2Base = 'extrainfo.plist'
-    const extra2Path = path.join(__dirname, 'fixtures', extra2Base)
-
-    const opts = Object.assign(baseOpts, {extraResource: [extra1Path, extra2Path]})
-
-    let resourcesPath
-
-    packageAndEnsureResourcesPath(t, opts)
-      .then(rpath => {
-        resourcesPath = rpath
-        return util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base))
-      }).then(equal => {
-        t.true(equal, 'resource file data1.txt should match')
-        return util.areFilesEqual(extra2Path, path.join(resourcesPath, extra2Base))
-      }).then(equal => {
-        t.true(equal, 'resource file extrainfo.plist should match')
         return t.end()
       }).catch(t.end)
   }
@@ -425,9 +367,6 @@ module.exports = (baseOpts) => {
 
   util.packagerTest('extendInfo by filename test', createExtendInfoTest(baseOpts, extraInfoPath))
   util.packagerTest('extendInfo by params test', createExtendInfoTest(baseOpts, extraInfoParams))
-
-  util.packagerTest('extraResource test: one arg', createExtraResourceTest(baseOpts))
-  util.packagerTest('extraResource test: two arg', createExtraResource2Test(baseOpts))
 
   util.packagerTest('protocol/protocol-name argument test', createProtocolTest(baseOpts))
 

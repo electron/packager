@@ -95,6 +95,19 @@ exports.invalidOptionTest = function invalidOptionTest (opts) {
   }
 }
 
+exports.packageAndEnsureResourcesPath = function packageAndEnsureResourcesPath (t, opts) {
+  let resourcesPath
+
+  return packager(opts)
+    .then(paths => {
+      resourcesPath = path.join(paths[0], exports.generateResourcesPath(opts))
+      return fs.stat(resourcesPath)
+    }).then(stats => {
+      t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+      return resourcesPath
+    })
+}
+
 exports.packagerTest = function packagerTest (name, testFunction) {
   setup()
   test(name, testFunction) // eslint-disable-line tape/test-ended

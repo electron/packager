@@ -201,6 +201,71 @@ function createDisableSymlinkDereferencingTest (opts) {
   }
 }
 
+function createExtraResourceStringTest (platform) {
+  return (opts) => {
+    return (t) => {
+      t.timeoutAfter(config.timeout)
+
+      const extra1Base = 'data1.txt'
+      const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+
+      opts.name = 'extraResourceStringTest'
+      opts.dir = path.join(__dirname, 'fixtures', 'basic')
+      opts.out = 'dist'
+      opts.platform = platform
+      opts.extraResource = extra1Path
+
+      util.packageAndEnsureResourcesPath(t, opts)
+        .then(resourcesPath => util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base)))
+        .then(equal => {
+          t.true(equal, 'resource file data1.txt should match')
+          return t.end()
+        }).catch(t.end)
+    }
+  }
+}
+
+function createExtraResourceArrayTest (platform) {
+  return (opts) => {
+    return (t) => {
+      t.timeoutAfter(config.timeout)
+
+      const extra1Base = 'data1.txt'
+      const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+      const extra2Base = 'extrainfo.plist'
+      const extra2Path = path.join(__dirname, 'fixtures', extra2Base)
+
+      opts.name = 'extraResourceArrayTest'
+      opts.dir = path.join(__dirname, 'fixtures', 'basic')
+      opts.out = 'dist'
+      opts.platform = platform
+      opts.extraResource = [extra1Path, extra2Path]
+
+      let extra1DistPath
+      let extra2DistPath
+
+      util.packageAndEnsureResourcesPath(t, opts)
+        .then(resourcesPath => {
+          extra1DistPath = path.join(resourcesPath, extra1Base)
+          extra2DistPath = path.join(resourcesPath, extra2Base)
+          return fs.pathExists(extra1DistPath)
+        }).then(exists => {
+          t.true(exists, 'resource file data1.txt exists')
+          return util.areFilesEqual(extra1Path, extra1DistPath)
+        }).then(equal => {
+          t.true(equal, 'resource file data1.txt should match')
+          return fs.pathExists(extra2DistPath)
+        }).then(exists => {
+          t.true(exists, 'resource file extrainfo.plist exists')
+          return util.areFilesEqual(extra2Path, extra2DistPath)
+        }).then(equal => {
+          t.true(equal, 'resource file extrainfo.plist should match')
+          return t.end()
+        }).catch(t.end)
+    }
+  }
+}
+
 test('setting the quiet option does not print messages', (t) => {
   const errorLog = console.error
   const warningLog = console.warn
@@ -290,6 +355,11 @@ util.testSinglePlatform('overwrite test', createOverwriteTest)
 util.testSinglePlatform('tmpdir test', createTmpdirTest)
 util.testSinglePlatform('disable tmpdir test', createDisableTmpdirUsingTest)
 util.testSinglePlatform('deref symlink test', createDisableSymlinkDereferencingTest)
+
+for (const platform of ['darwin', 'linux']) {
+  util.testSinglePlatform(`extraResource test: string (${platform})`, createExtraResourceStringTest(platform))
+  util.testSinglePlatform(`extraResource test: array (${platform})`, createExtraResourceArrayTest(platform))
+}
 
 util.packagerTest('building for Linux target sanitizes binary name', (t) => {
   const opts = {

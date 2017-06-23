@@ -166,15 +166,6 @@ class MacApp {
     })
   }
 
-  enqueueCopyingExtraFiles (extras) {
-    if (!Array.isArray(extras)) extras = [extras]
-    extras.forEach((filename) => {
-      this.operations.push((cb) => {
-        fs.copy(filename, path.join(this.resourcesPath, path.basename(filename)), cb)
-      })
-    })
-  }
-
   enqueueRenamingElectronBinary () {
     this.operations.push((cb) => {
       common.rename(path.join(this.contentsPath, 'MacOS'),
@@ -270,10 +261,6 @@ module.exports = {
 
       if (opts.icon) {
         appCreator.enqueueCopyingIcon()
-      }
-
-      if (opts.extraResource) {
-        appCreator.enqueueCopyingExtraFiles(opts.extraResource)
       }
 
       appCreator.enqueueRenamingElectronBinary()
