@@ -51,7 +51,7 @@ function createPruneOptionTest (baseOpts, prune, testMessage) {
 test('pruneCommand returns the correct command when passing a known package manager', (t) => {
   t.equal(prune.pruneCommand('npm'), 'npm prune --production', 'passing npm gives the npm prune command')
   t.equal(prune.pruneCommand('cnpm'), 'cnpm prune --production', 'passing cnpm gives the cnpm prune command')
-  t.equal(prune.pruneCommand('yarn'), 'yarn install --production', 'passing yarn gives the yarn "prune command"')
+  t.equal(prune.pruneCommand('yarn'), 'yarn install --production --no-bin-links', 'passing yarn gives the yarn "prune command"')
   t.end()
 })
 
