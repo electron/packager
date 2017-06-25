@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [8.7.2] - 2017-06-25
+
+### Fixed
+
+* Stop yarn creating `.bin` folders when pruning (#678)
+
 ## [8.7.1] - 2017-06-05
 
 ### Fixed
@@ -362,6 +368,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[8.7.2]: https://github.com/electron-userland/electron-packager/compare/v8.7.1...v8.7.2
 [8.7.1]: https://github.com/electron-userland/electron-packager/compare/v8.7.0...v8.7.1
 [8.7.0]: https://github.com/electron-userland/electron-packager/compare/v8.6.0...v8.7.0
 [8.6.0]: https://github.com/electron-userland/electron-packager/compare/v8.5.2...v8.6.0
