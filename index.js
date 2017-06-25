@@ -95,6 +95,7 @@ function createSeries (opts, archs, platforms) {
         comboOpts.platform = platform
         comboOpts.version = version
         comboOpts.afterCopy = opts.afterCopy
+        comboOpts.afterPrune = opts.afterPrune
 
         if (!useTempDir) {
           createApp(comboOpts)

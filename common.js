@@ -257,6 +257,14 @@ module.exports = {
       operations.push(function (cb) {
         pruneModules(opts, appPath, cb)
       })
+      operations.push(function (cb) {
+        var afterPruneHooks = (opts.afterPrune || []).map(function (afterPruneFn) {
+          return function (cb) {
+            afterPruneFn(appPath, opts.electronVersion, opts.platform, opts.arch, cb)
+          }
+        })
+        series(afterPruneHooks, cb)
+      })
     }
 
     let asarOptions = createAsarOpts(opts)
