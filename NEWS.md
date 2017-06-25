@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* API hook for afterPrune (#677)
+
 ### Changed
 
 * Promise support for `packager` - function returns a Promise instead of the return value of the

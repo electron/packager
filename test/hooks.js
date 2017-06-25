@@ -37,4 +37,5 @@ function createHookTest (hookName) {
 }
 
 createHookTest('afterCopy')
+createHookTest('afterPrune')
 createHookTest('afterExtract')
