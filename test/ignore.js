@@ -132,7 +132,7 @@ util.testSinglePlatform('ignore test: RegExp', createIgnoreTest, /ignorethis/, '
 util.testSinglePlatform('ignore test: Function', createIgnoreTest,
                         file => { return file.match(/ignorethis/) }, 'ignorethis.txt')
 util.testSinglePlatform('ignore test: string with slash', createIgnoreTest, 'ignore/this',
-  path.join('ignore', 'this.txt'))
+                        path.join('ignore', 'this.txt'))
 util.testSinglePlatform('ignore test: only match subfolder of app', createIgnoreTest,
                         'electron-packager', path.join('electron-packager', 'readme.txt'))
 util.testSinglePlatform('ignore out dir test', createIgnoreOutDirTest, 'ignoredOutDir')

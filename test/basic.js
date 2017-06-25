@@ -44,7 +44,7 @@ function createDefaultsTest (opts) {
 
         finalPath = paths[0]
         t.equal(finalPath, path.join(util.getWorkCwd(), common.generateFinalBasename(defaultOpts)),
-          'Path should follow the expected format and be in the cwd')
+                'Path should follow the expected format and be in the cwd')
         return fs.stat(finalPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
@@ -66,7 +66,7 @@ function createDefaultsTest (opts) {
       }).then(equal => {
         t.true(equal, 'File under packaged app directory should match source file')
         return util.areFilesEqual(path.join(opts.dir, 'ignore', 'this.txt'),
-                                        path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
+                                  path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
       }).then(equal => {
         t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
         return fs.pathExists(path.join(resourcesPath, 'default_app'))
@@ -94,7 +94,7 @@ function createOutTest (opts) {
       .then(paths => {
         finalPath = paths[0]
         t.equal(finalPath, path.join('dist', common.generateFinalBasename(opts)),
-          'Path should follow the expected format and be under the folder specified in `out`')
+                'Path should follow the expected format and be under the folder specified in `out`')
         return fs.stat(finalPath)
       }).then(stats => {
         t.true(stats.isDirectory(), 'The expected output directory should exist')
