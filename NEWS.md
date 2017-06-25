@@ -31,6 +31,12 @@
 * Options set via the JavaScript API formatted in kebab-case (i.e., with hyphens) are removed in
   favor of their camelCase variants, per JavaScript naming standards (#669)
 
+## [8.7.1] - 2017-06-05
+
+### Fixed
+
+* Usage docs for `win32metadata.application-manifest` and `win32metadata.requested-execution-level`
+
 ## [8.7.0] - 2017-05-01
 
 ### Added
