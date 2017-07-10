@@ -17,7 +17,10 @@ Forge](https://github.com/electron-userland/electron-forge) (which uses Electron
 internally), or one of the [related Electron tools](#distributable-creators), which utilizes
 Electron Packager-created folders as a basis.
 
-Note that packaged Electron applications can be relatively large. A zipped, minimal Electron application is approximately the same size as the zipped prebuilt binary for a given target platform, target arch, and [Electron version](https://github.com/electron/electron/releases) _(files named `electron-v${version}-${platform}-${arch}`)_.
+Note that packaged Electron applications can be relatively large. A zipped, minimal Electron
+application is approximately the same size as the zipped prebuilt binary for a given target
+platform, target arch, and [Electron version](https://github.com/electron/electron/releases)
+_(files named `electron-v${version}-${platform}-${arch}.zip`)_.
 
 ### Electron Packager is an [OPEN Open Source Project](http://openopensource.org/)
 
