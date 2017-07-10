@@ -13,9 +13,9 @@ case "$TRAVIS_OS_NAME" in
     sudo apt-get install -y wine1.6 yarn
     ;;
   "osx")
-    # Force NPM 4.x if Node 8
+    # Force NPM >= 5.1.0 if Node 8
     if test "$TRAVIS_NODE_VERSION" = "8"; then
-      npm install -g npm@4
+      npm install -g npm@5
     fi
     # Create CA
     openssl req -newkey rsa:4096 -days 1 -x509 -nodes -subj \
