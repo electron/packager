@@ -14,8 +14,8 @@ source code with a renamed Electron executable and supporting files into folders
 
 For creating distributables like installers and Linux packages, consider using either [Electron
 Forge](https://github.com/electron-userland/electron-forge) (which uses Electron Packager
-internally), or one of the [related Electron tools](#related), which utilizes Electron
-Packager-created folders as a basis.
+internally), or one of the [related Electron tools](#distributable-creators), which utilizes
+Electron Packager-created folders as a basis.
 
 Note that packaged Electron applications can be relatively large. A zipped, minimal Electron application is approximately the same size as the zipped prebuilt binary for a given target platform, target arch, and [Electron version](https://github.com/electron/electron/releases) _(files named `electron-v${version}-${platform}-${arch}`)_.
 
