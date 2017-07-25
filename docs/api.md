@@ -228,7 +228,7 @@ Whether to replace an already existing output directory for a given platform (`t
 
 ##### `packageManager`
 
-*String* (default: `npm`)
+*String* | *Boolean* (default: `npm`)
 
 The package manager used to [prune](#prune) `devDependencies` modules from the outputted Electron
 app. Supported package managers:
@@ -237,6 +237,9 @@ app. Supported package managers:
 * [`cnpm`](https://github.com/cnpm/cnpm) (Does not currently work with Windows, see
   [GitHub issue](https://github.com/electron-userland/electron-packager/issues/515#issuecomment-297604044))
 * [`yarn`](https://yarnpkg.com/)
+
+If set to `false` we will use a custom [pruning module](https://www.npmjs.com/package/pruner) to walk your dependency
+tree and prune your dependencies for you.
 
 ##### `platform`
 

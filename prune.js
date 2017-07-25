@@ -2,6 +2,7 @@
 
 const child = require('child_process')
 const debug = require('debug')('electron-packager')
+const { Walker } = require('pruner')
 
 const knownPackageManagers = ['npm', 'cnpm', 'yarn']
 
@@ -16,19 +17,26 @@ function pruneCommand (packageManager) {
 }
 
 function pruneModules (opts, appPath, cb) {
-  const packageManager = opts.packageManager || 'npm'
-
-  if (packageManager === 'cnpm' && process.platform === 'win32') {
-    return cb(new Error('cnpm support does not currently work with Windows, see: https://github.com/electron-userland/electron-packager/issues/515#issuecomment-297604044'))
-  }
-
-  const command = pruneCommand(packageManager)
-
-  if (command) {
-    debug(`Pruning modules via: ${command}`)
-    child.exec(command, { cwd: appPath }, cb)
+  if (opts.packageManager === false) {
+    const walker = new Walker(appPath)
+    walker.prune()
+      .then(() => cb())
+      .catch((err) => cb(err))
   } else {
-    cb(new Error(`Unknown package manager "${packageManager}". Known package managers: ${knownPackageManagers.join(', ')}`))
+    const packageManager = opts.packageManager || 'npm'
+
+    if (packageManager === 'cnpm' && process.platform === 'win32') {
+      return cb(new Error('cnpm support does not currently work with Windows, see: https://github.com/electron-userland/electron-packager/issues/515#issuecomment-297604044'))
+    }
+
+    const command = pruneCommand(packageManager)
+
+    if (command) {
+      debug(`Pruning modules via: ${command}`)
+      child.exec(command, { cwd: appPath }, cb)
+    } else {
+      cb(new Error(`Unknown package manager "${packageManager}". Known package managers: ${knownPackageManagers.join(', ')}`))
+    }
   }
 }
 
