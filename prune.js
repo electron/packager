@@ -2,7 +2,7 @@
 
 const child = require('child_process')
 const debug = require('debug')('electron-packager')
-const { Walker } = require('pruner')
+const Walker = require('pruner').Walker
 
 const knownPackageManagers = ['npm', 'cnpm', 'yarn']
 
