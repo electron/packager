@@ -228,7 +228,7 @@ Whether to replace an already existing output directory for a given platform (`t
 
 ##### `packageManager`
 
-*String* | *Boolean* (default: `npm`)
+*String* or *Boolean* (default: `npm`)
 
 The package manager used to [prune](#prune) `devDependencies` modules from the outputted Electron
 app. Supported package managers:
