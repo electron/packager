@@ -75,6 +75,12 @@ util.testSinglePlatform('prune test with npm', (baseOpts) => {
   return createPruneOptionTest(baseOpts, true, 'package.json devDependency should NOT exist under app/node_modules')
 })
 
+// Not in the loop because it doesn't depend on an executable
+util.testSinglePlatform('prune test using pruner module (packageManager=false)', (baseOpts) => {
+  const opts = Object.assign({packageManager: false}, baseOpts)
+  return createPruneOptionTest(opts, true, 'package.json devDependency should NOT exist under app/node_modules')
+})
+
 for (const packageManager of ['cnpm', 'yarn']) {
   which(packageManager, (err, resolvedPath) => {
     if (err) return

@@ -5,6 +5,7 @@
 ### Added
 
 * API hook for afterPrune (#677)
+* Package manager-agnostic pruning support (set `packageManager` to `false`) (#690)
 
 ### Changed
 
