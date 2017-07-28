@@ -13,10 +13,6 @@ case "$TRAVIS_OS_NAME" in
     sudo apt-get install -y wine1.6 yarn
     ;;
   "osx")
-    # Force NPM >= 5.1.0 if Node 8
-    if test "$TRAVIS_NODE_VERSION" = "8"; then
-      npm install -g npm@5
-    fi
     # Create CA
     openssl req -newkey rsa:4096 -days 1 -x509 -nodes -subj \
       "/C=CI/ST=Travis/L=Developer/O=Developer/CN=Developer CA" \
@@ -40,4 +36,8 @@ case "$TRAVIS_OS_NAME" in
     ;;
 esac
 
+# Force npm@5.1.0 if Node 8 (NPM ~5.0.0, ~5.3.0 have issues)
+if test "$TRAVIS_NODE_VERSION" = "8"; then
+  npm install -g npm@5.1.0
+fi
 npm install -g cnpm
