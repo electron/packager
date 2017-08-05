@@ -25,6 +25,10 @@
 * Allow spaces when specifying archs/platforms as a string, rather than an array (#487)
 * The `extraResource` option works on all target platforms (#637)
 
+### Fixed
+
+* `common.warning` for codesigning (#694)
+
 ### Removed
 
 * `version` is removed in favor of `electronVersion` (CLI: `--electron-version`) (#665)

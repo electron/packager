@@ -201,7 +201,7 @@ class MacApp {
         sign(signOpts, (err) => {
           if (err) {
             // Although not signed successfully, the application is packed.
-            common.warning('Code sign failed; please retry manually.', err)
+            common.warning(`Code sign failed; please retry manually. ${err}`)
           }
           cb()
         })
