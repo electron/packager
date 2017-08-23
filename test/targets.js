@@ -38,8 +38,13 @@ test('validateListFromOptions does not take non-Array/String values', (t) => {
   t.end()
 })
 
-testMultiTarget('build for all available official targets', {all: true}, util.allPlatformArchCombosCount,
+testMultiTarget('build for all available official targets', {all: true, electronVersion: '1.8.0'},
+                util.allPlatformArchCombosCount,
                 'Packages should be generated for all possible platforms')
+testMultiTarget('build for all available official targets for a version without arm64 support',
+                {all: true},
+                util.allPlatformArchCombosCount - 1,
+                'Packages should be generated for all possible platforms (except arm64)')
 testMultiTarget('platform=all (one arch)', {arch: 'ia32', platform: 'all'}, 2,
                 'Packages should be generated for both 32-bit platforms')
 testMultiTarget('arch=all test (one platform)', {arch: 'all', platform: 'linux'}, 3,
@@ -59,6 +64,8 @@ util.packagerTest('fails with invalid platform', util.invalidOptionTest({
 }))
 
 testMultiTarget('invalid official combination', {arch: 'ia32', platform: 'darwin'}, 0, 'Package should not be generated for invalid official combination')
+testMultiTarget('platform=linux and arch=arm64 with a supported official Electron version', {arch: 'arm64', platform: 'linux', electronVersion: '1.8.0'}, 1, 'Package should be generated for arm64')
+testMultiTarget('platform=linux and arch=arm64 with an unsupported official Electron version', {arch: 'arm64', platform: 'linux'}, 0, 'Package should not be generated for arm64')
 testMultiTarget('unofficial arch', {arch: 'z80', platform: 'linux', download: {mirror: 'mirror'}}, 1,
                 'Package should be generated for non-standard arch from non-official mirror')
 testMultiTarget('unofficial platform', {arch: 'ia32', platform: 'minix', download: {mirror: 'mirror'}}, 1,

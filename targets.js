@@ -1,10 +1,12 @@
 'use strict'
 
-const officialArchs = ['ia32', 'x64', 'armv7l']
+const semver = require('semver')
+
+const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64']
 const officialPlatforms = ['darwin', 'linux', 'mas', 'win32']
 const officialPlatformArchCombos = {
   darwin: ['x64'],
-  linux: ['ia32', 'x64', 'armv7l'],
+  linux: ['ia32', 'x64', 'armv7l', 'arm64'],
   mas: ['x64'],
   win32: ['ia32', 'x64']
 }
@@ -23,15 +25,15 @@ const supported = {
 }
 
 function createPlatformArchPairs (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-  const common = require('./common')
   let combinations = []
   for (const arch of selectedArchs) {
     for (const platform of selectedPlatforms) {
       if (usingOfficialElectronPackages(opts)) {
-        if (!officialPlatformArchCombos[platform] || officialPlatformArchCombos[platform].indexOf(arch) === -1) {
-          if (!opts.all && opts.arch !== 'all' && opts.platform !== 'all') {
-            common.warning(`The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`)
-          }
+        if (!validOfficialPlatformArch(opts, platform, arch)) {
+          warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`)
+          continue
+        } else if (platform === 'linux' && arch === 'arm64' && !officialLinuxARM64BuildExists(opts)) {
+          warnIfAllNotSpecified(opts, 'Official linux/arm64 support only exists in Electron 1.8.0 and above')
           continue
         }
         if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
@@ -49,6 +51,25 @@ function unsupportedListOption (name, value, supported) {
 
 function usingOfficialElectronPackages (opts) {
   return !opts.download || !opts.download.hasOwnProperty('mirror')
+}
+
+function validOfficialPlatformArch (opts, platform, arch) {
+  return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].indexOf(arch) !== -1
+}
+
+function officialLinuxARM64BuildExists (opts) {
+  return semver.gte(opts.electronVersion, '1.8.0')
+}
+
+function allPlatformsOrArchsSpecified (opts) {
+  return opts.all || opts.arch === 'all' || opts.platform === 'all'
+}
+
+function warnIfAllNotSpecified (opts, message) {
+  if (!allPlatformsOrArchsSpecified(opts)) {
+    const common = require('./common')
+    common.warning(message)
+  }
 }
 
 module.exports = {

@@ -36,7 +36,7 @@ function teardown () {
   })
 }
 
-exports.allPlatformArchCombosCount = 7
+exports.allPlatformArchCombosCount = 8
 
 exports.areFilesEqual = function areFilesEqual (file1, file2) {
   let buffer1, buffer2
