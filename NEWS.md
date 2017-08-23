@@ -6,6 +6,7 @@
 
 * API hook for afterPrune (#677)
 * Package manager-agnostic pruning support (set `packageManager` to `false`) (#690)
+* `linux` platform, `arm64` builds (Electron 1.8.0 and above)
 
 ### Changed
 
@@ -24,6 +25,8 @@
   is specified (#670)
 * Allow spaces when specifying archs/platforms as a string, rather than an array (#487)
 * The `extraResource` option works on all target platforms (#637)
+* `all` or `platform=linux, arch=all` now include `arch=arm64` if the Electron version specified is
+  1.8.0 or above
 
 ### Fixed
 
