@@ -2,11 +2,13 @@
 
 ## Unreleased
 
+## [9.0.0] - 2017-08-23
+
 ### Added
 
 * API hook for afterPrune (#677)
 * Package manager-agnostic pruning support (set `packageManager` to `false`) (#690)
-* `linux` platform, `arm64` builds (Electron 1.8.0 and above) (#711)
+* `linux` platform, `arm64` arch builds (Electron 1.8.0 and above) (#711)
 
 ### Changed
 
@@ -405,6 +407,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[9.0.0]: https://github.com/electron-userland/electron-packager/compare/v8.7.2...v9.0.0
 [8.7.2]: https://github.com/electron-userland/electron-packager/compare/v8.7.1...v8.7.2
 [8.7.1]: https://github.com/electron-userland/electron-packager/compare/v8.7.0...v8.7.1
 [8.7.0]: https://github.com/electron-userland/electron-packager/compare/v8.6.0...v8.7.0
