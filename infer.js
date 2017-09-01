@@ -121,7 +121,13 @@ module.exports = function getMetadataFromPackageJSON (platforms, opts, dir, cb) 
 
     if (result.values.author) {
       debug(`Inferring win32metadata.CompanyName from author in ${result.source.author.src}`)
-      opts.win32metadata.CompanyName = parseAuthor(result.values.author).name
+      if (typeof result.values.author === 'string') {
+        opts.win32metadata.CompanyName = parseAuthor(result.values.author).name
+      } else if (result.values.author.name) {
+        opts.win32metadata.CompanyName = result.values.author.name
+      } else {
+        debug('Cannot infer win32metadata.CompanyName from author, no name found')
+      }
     }
 
     if (result.values['dependencies.electron']) {
