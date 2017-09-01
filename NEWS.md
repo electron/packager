@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* Inferring `win32metadata.CompanyName` from `author` in `package.json` when it's an Object (#718)
+
 ## [9.0.0] - 2017-08-23
 
 ### Added

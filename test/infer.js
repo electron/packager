@@ -93,6 +93,27 @@ function testInferWin32metadata (t, opts, expected, assertionMessage) {
     }).catch(t.end)
 }
 
+function testInferWin32metadataAuthorObject (t, opts, author, expected, assertionMessage) {
+  let packageJSONFilename
+  t.timeoutAfter(config.timeout)
+
+  copyFixtureToTempDir('infer-win32metadata')
+    .then((dir) => {
+      opts.dir = dir
+
+      packageJSONFilename = path.join(dir, 'package.json')
+      return fs.readJson(packageJSONFilename)
+    }).then(packageJSON => {
+      packageJSON.author = author
+      return fs.writeJson(packageJSONFilename, packageJSON)
+    }).then(() => {
+      return pify(getMetadataFromPackageJSON)(['win32'], opts, opts.dir)
+    }).then(() => {
+      t.deepEqual(opts.win32metadata, expected, assertionMessage)
+      return t.end()
+    }).catch(t.end)
+}
+
 function createInferMissingFieldsTest (opts) {
   return createInferFailureTest(opts, 'infer-missing-fields')
 }
@@ -126,6 +147,27 @@ util.testSinglePlatform('do not infer win32metadata if it already exists', (opts
     const expected = Object.assign({}, opts.win32metadata)
 
     testInferWin32metadata(t, opts, expected, 'win32metadata did not update with package.json values')
+  }
+})
+util.testSinglePlatform('infer win32metadata when author is an object', (opts) => {
+  return (t) => {
+    const author = {
+      name: 'Foo Bar Object',
+      email: 'foobar@example.com'
+    }
+    const expected = {CompanyName: 'Foo Bar Object'}
+
+    testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata did not update with package.json values')
+  }
+})
+util.testSinglePlatform('do not infer win32metadata.CompanyName when author is an object without a name', (opts) => {
+  return (t) => {
+    const author = {
+      email: 'foobar@example.com'
+    }
+    const expected = {}
+
+    testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata.CompanyName should not have been inferred')
   }
 })
 util.testSinglePlatform('infer missing fields test', createInferMissingFieldsTest)
