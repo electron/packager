@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [9.0.1] - 2017-09-02
+
 ### Fixed
 
 * Inferring `win32metadata.CompanyName` from `author` in `package.json` when it's an Object (#718)
@@ -411,6 +413,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[9.0.1]: https://github.com/electron-userland/electron-packager/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/electron-userland/electron-packager/compare/v8.7.2...v9.0.0
 [8.7.2]: https://github.com/electron-userland/electron-packager/compare/v8.7.1...v8.7.2
 [8.7.1]: https://github.com/electron-userland/electron-packager/compare/v8.7.0...v8.7.1
