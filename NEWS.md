@@ -6,6 +6,10 @@
 
 * CLI arguments with nonstandard argument values emit warnings (#722)
 
+### Deprecated
+
+* In the CLI, `--tmpdir=false` has been deprecated in favor of `--no-tmpdir` (#722)
+
 ## [9.0.1] - 2017-09-02
 
 ### Fixed

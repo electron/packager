@@ -71,6 +71,7 @@ function parseCLIArgs (argv) {
 
   // tmpdir: `String` or `false`
   if (args.tmpdir === 'false') {
+    warning('--tmpdir=false is deprecated, use --no-tmpdir instead')
     args.tmpdir = false
   }
 
