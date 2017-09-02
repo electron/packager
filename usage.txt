@@ -37,7 +37,7 @@ download           a list of sub-options to pass to electron-download. They are 
                    - cache: directory of cached Electron downloads. Defaults to `$HOME/.electron`
                    - mirror: alternate URL to download Electron zips
                    - strictSSL: whether SSL certs are required to be valid when downloading
-                     Electron. Defaults to true, use --download.strictSSL=false to disable checks.
+                     Electron. Defaults to true, use --no-download.strictSSL to disable checks.
 electron-version   the version of Electron that is being packaged, see
                    https://github.com/electron/electron/releases
 extra-resource     a file to copy into the app's resources directory
