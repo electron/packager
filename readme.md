@@ -161,6 +161,8 @@ The `Foo Bar.app` folder generated can be executed by a system running OS X, whi
 
 ### [Programmatic API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
 
+### [Frequently Asked Questions](https://github.com/electron-userland/electron-packager/blob/master/docs/faq.md)
+
 ## Related
 
 - [Electron Forge](https://www.npmjs.com/package/electron-forge) - creates, builds, and distributes modern Electron applications
