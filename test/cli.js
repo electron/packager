@@ -69,7 +69,7 @@ test('CLI argument test: --protocol with a corresponding --protocol-name', (t) =
 
 test('CLI argument test: --protocol without a corresponding --protocol-name', (t) => {
   var args = common.parseCLIArgs(['--protocol=foo'])
-  t.deepEqual(args.protocols, undefined)
+  t.deepEqual(args.protocols, undefined, 'no protocols have been fully defined')
   t.end()
 })
 

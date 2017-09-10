@@ -31,32 +31,33 @@ asar               whether to package the source code within your app into an ar
                    - unpackDir: unpacks the dir to the app.asar.unpacked directory whose names glob
                      pattern or exactly match this string. It's relative to the <sourcedir>.
 build-version      build version to set for the app
-deref-symlinks     whether symlinks should be dereferenced within the app source. Defaults to true.
 download           a list of sub-options to pass to electron-download. They are specified via dot
                    notation, e.g., --download.cache=/tmp/cache
                    Properties supported:
                    - cache: directory of cached Electron downloads. Defaults to `$HOME/.electron`
                    - mirror: alternate URL to download Electron zips
                    - strictSSL: whether SSL certs are required to be valid when downloading
-                     Electron. Defaults to true, use --download.strictSSL=false to disable checks.
+                     Electron. Defaults to true, use --no-download.strictSSL to disable checks.
 electron-version   the version of Electron that is being packaged, see
                    https://github.com/electron/electron/releases
 extra-resource     a file to copy into the app's resources directory
 icon               the local path to an icon file to use as the icon for the app.
                    Note: Format depends on platform.
-ignore             do not copy files into app whose filenames regex .match this string. See also:
+ignore             do not copy files into app whose filenames RegExp.match this string. See also:
                    https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#ignore
-                   and --no-prune.
+                   and --no-prune. Can be specified multiple times
+no-deref-symlinks  make sure symlinks are not dereferenced within the app source
 no-prune           do not prune devDependencies from the packaged app
 out                the dir to put the app into at the end. defaults to current working dir
 overwrite          if output directory for a platform already exists, replaces it rather than
                    skipping it
 package-manager    the package manager to use when pruning devDependencies. Supported package
-                   managers: npm (default), cnpm, yarn
+                   managers: npm (default), cnpm, yarn. Specify --no-package-manager to prune
+                   without using a package manager
 platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple).
                    Defaults to the host platform
 quiet              Do not print informational or warning messages
-tmpdir             temp directory. Defaults to system temp directory, use --tmpdir=false to disable
+tmpdir             temp directory. Defaults to system temp directory, use --no-tmpdir to disable
                    use of a temporary directory.
 
 * darwin/mas target platforms only *

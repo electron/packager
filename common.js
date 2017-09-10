@@ -51,6 +51,7 @@ function parseCLIArgs (argv) {
   }
 
   if (args.out === '') {
+    warning('Specifying --out= without a value is the same as the default value')
     args.out = null
   }
 
@@ -58,16 +59,19 @@ function parseCLIArgs (argv) {
 
   // asar: `Object` or `true`
   if (args.asar === 'true' || args.asar instanceof Array) {
+    warning('--asar does not take any arguments, it only has sub-properties (see --help)')
     args.asar = true
   }
 
   // osx-sign: `Object` or `true`
   if (args.osxSign === 'true') {
+    warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)')
     args.osxSign = true
   }
 
   // tmpdir: `String` or `false`
   if (args.tmpdir === 'false') {
+    warning('--tmpdir=false is deprecated, use --no-tmpdir instead')
     args.tmpdir = false
   }
 
