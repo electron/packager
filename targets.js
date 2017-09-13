@@ -82,6 +82,14 @@ function hostArch () {
 }
 
 module.exports = {
+  allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
+    const archs = officialPlatformArchCombos[platform]
+    if (platform === 'linux' && !officialLinuxARM64BuildExists({electronVersion: electronVersion})) {
+      return archs.filter((arch) => arch !== 'arm64')
+    }
+
+    return archs
+  },
   createPlatformArchPairs: createPlatformArchPairs,
   hostArch: hostArch,
   officialArchs: officialArchs,
