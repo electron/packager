@@ -72,8 +72,26 @@ function warnIfAllNotSpecified (opts, message) {
   }
 }
 
+function hostArch () {
+  /* istanbul ignore if */
+  if (process.arch === 'arm' && process.config.variables.arm_version === '7') {
+    return 'armv7l'
+  }
+
+  return process.arch
+}
+
 module.exports = {
+  allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
+    const archs = officialPlatformArchCombos[platform]
+    if (platform === 'linux' && !officialLinuxARM64BuildExists({electronVersion: electronVersion})) {
+      return archs.filter((arch) => arch !== 'arm64')
+    }
+
+    return archs
+  },
   createPlatformArchPairs: createPlatformArchPairs,
+  hostArch: hostArch,
   officialArchs: officialArchs,
   officialPlatformArchCombos: officialPlatformArchCombos,
   officialPlatforms: officialPlatforms,
@@ -84,8 +102,16 @@ module.exports = {
   validateListFromOptions: function validateListFromOptions (opts, name) {
     if (opts.all) return Array.from(supported[name].values())
 
-    let list = opts[name] || process[name]
-    if (list === 'all') return Array.from(supported[name].values())
+    let list = opts[name]
+    if (!list) {
+      if (name === 'arch') {
+        list = hostArch()
+      } else {
+        list = process[name]
+      }
+    } else if (list === 'all') {
+      return Array.from(supported[name].values())
+    }
 
     if (!Array.isArray(list)) {
       if (typeof list === 'string') {

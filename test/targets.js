@@ -30,6 +30,24 @@ function testCombinations (testcaseDescription, arch, platform) {
                   'Packages should be generated for all combinations of specified archs and platforms')
 }
 
+test('allOfficialArchsForPlatformAndVersion is undefined for unknown platforms', (t) => {
+  t.equal(targets.allOfficialArchsForPlatformAndVersion('unknown', '1.0.0'), undefined)
+  t.end()
+})
+
+test('allOfficialArchsForPlatformAndVersion returns the correct arches for a known platform', (t) => {
+  t.deepEqual(targets.allOfficialArchsForPlatformAndVersion('darwin', '1.0.0'), ['x64'])
+  t.end()
+})
+
+test('allOfficialArchsForPlatformAndVersion returns arm64 when the correct version is specified', (t) => {
+  t.notEqual(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').indexOf('arm64'), -1,
+             'should be found when version is >= 1.8.0')
+  t.equal(targets.allOfficialArchsForPlatformAndVersion('linux', '1.7.0').indexOf('arm64'), -1,
+          'should not be found when version is < 1.8.0')
+  t.end()
+})
+
 test('validateListFromOptions does not take non-Array/String values', (t) => {
   targets.supported.digits = new Set(['64', '65'])
   t.notOk(targets.validateListFromOptions({digits: 64}, 'digits') instanceof Array,
