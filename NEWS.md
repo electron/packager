@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [9.1.0] - 2017-09-15
+
+### Added
+
+* `hostArch()` and `allOfficialArchsForPlatformAndVersion()` (#727)
+
 ### Changed
 
 * CLI arguments with nonstandard argument values emit warnings (#722)
@@ -421,6 +427,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[9.1.0]: https://github.com/electron-userland/electron-packager/compare/v9.0.1...v9.1.0
 [9.0.1]: https://github.com/electron-userland/electron-packager/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/electron-userland/electron-packager/compare/v8.7.2...v9.0.0
 [8.7.2]: https://github.com/electron-userland/electron-packager/compare/v8.7.1...v8.7.2
