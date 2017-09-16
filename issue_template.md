@@ -1,5 +1,6 @@
 <!--
 Thanks for filing an issue!
+If you have questions about usage, see <https://github.com/electron-userland/electron-packager/blob/master/SUPPORT.md>.
 Please check off all of the steps as they are completed by replacing [ ] with [x].
 -->
 
