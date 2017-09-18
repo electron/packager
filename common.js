@@ -1,12 +1,10 @@
 'use strict'
 
 const asar = require('asar')
-const camelize = require('camelize')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
 const fs = require('fs-extra')
 const ignore = require('./ignore')
-const minimist = require('minimist')
 const os = require('os')
 const path = require('path')
 const pruneModules = require('./prune').pruneModules
@@ -14,9 +12,10 @@ const sanitize = require('sanitize-filename')
 const semver = require('semver')
 const series = require('run-series')
 const targets = require('./targets')
+const yargs = require('yargs-parser')
 
 function parseCLIArgs (argv) {
-  var args = minimist(argv, {
+  var args = yargs(argv, {
     boolean: [
       'all',
       'deref-symlinks',
@@ -38,8 +37,6 @@ function parseCLIArgs (argv) {
 
   args.dir = args._[0]
   args.name = args._[1]
-
-  args = camelize(args)
 
   var protocolSchemes = [].concat(args.protocol || [])
   var protocolNames = [].concat(args.protocolName || [])
