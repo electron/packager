@@ -18,14 +18,12 @@
   "homepage": "https://github.com/electron-userland/electron-packager",
   "dependencies": {
     "asar": "^0.13.0",
-    "camelize": "^1.0.0",
     "debug": "^3.0.0",
     "electron-download": "^4.0.0",
     "electron-osx-sign": "^0.4.1",
     "extract-zip": "^1.0.3",
     "fs-extra": "^4.0.0",
     "get-package-info": "^1.0.0",
-    "minimist": "^1.1.1",
     "parse-author": "^2.0.0",
     "pify": "^3.0.0",
     "plist": "^2.0.0",
@@ -34,7 +32,8 @@
     "resolve": "^1.1.6",
     "run-series": "^1.1.1",
     "sanitize-filename": "^1.6.0",
-    "semver": "^5.3.0"
+    "semver": "^5.3.0",
+    "yargs-parser": "^7.0.0"
   },
   "devDependencies": {
     "buffer-equal": "^1.0.0",
