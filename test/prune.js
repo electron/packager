@@ -54,20 +54,14 @@ test('pruneCommand returns null when the package manager is unknown', (t) => {
   t.end()
 })
 
-test('pruneModules returns an error when the package manager is unknown', (t) => {
-  prune.pruneModules({packageManager: 'unknown-package-manager'}, '/tmp/app-path', (err) => {
-    t.ok(err, 'error returned')
-    t.end()
-  })
-})
+util.testFailure('pruneModules returns an error when the package manager is unknown', () =>
+  prune.pruneModules({packageManager: 'unknown-package-manager'}, '/tmp/app-path')
+)
 
 if (process.platform === 'win32') {
-  test('pruneModules returns an error when trying to use cnpm on Windows', (t) => {
-    prune.pruneModules({packageManager: 'cnpm'}, '/tmp/app-path', (err) => {
-      t.ok(err, 'error returned')
-      t.end()
-    })
-  })
+  util.testFailure('pruneModules returns an error when trying to use cnpm on Windows', () =>
+    prune.pruneModules({packageManager: 'cnpm'}, '/tmp/app-path')
+  )
 }
 
 // This is not in the below loop so that it tests the default packageManager option.

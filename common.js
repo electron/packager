@@ -1,16 +1,13 @@
 'use strict'
 
-const asar = require('asar')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
 const fs = require('fs-extra')
-const ignore = require('./ignore')
 const os = require('os')
 const path = require('path')
-const pruneModules = require('./prune').pruneModules
+const pify = require('pify')
 const sanitize = require('sanitize-filename')
 const semver = require('semver')
-const series = require('run-series')
 const targets = require('./targets')
 const yargs = require('yargs-parser')
 
@@ -73,28 +70,6 @@ function parseCLIArgs (argv) {
   }
 
   return args
-}
-
-function asarApp (appPath, asarOptions, cb) {
-  var dest = path.join(appPath, '..', 'app.asar')
-  debug(`Running asar with the options ${JSON.stringify(asarOptions)}`)
-  asar.createPackageWithOptions(appPath, dest, asarOptions, function (err) {
-    if (err) return cb(err)
-    fs.remove(appPath, function (err) {
-      if (err) return cb(err)
-      cb(null, dest)
-    })
-  })
-}
-
-function copyExtraResources (operations, resourcesPath, extraResources) {
-  if (!Array.isArray(extraResources)) extraResources = [extraResources]
-
-  for (const resource of extraResources) {
-    operations.push(cb => {
-      fs.copy(resource, path.join(resourcesPath, path.basename(resource)), cb)
-    })
-  }
 }
 
 function isPlatformMac (platform) {
@@ -192,14 +167,14 @@ module.exports = {
     }
   },
 
-  downloadElectronZip: function downloadElectronZip (downloadOpts, cb) {
+  downloadElectronZip: function downloadElectronZip (downloadOpts) {
     // armv7l builds have only been backfilled for Electron >= 1.0.0.
     // See: https://github.com/electron/electron/pull/6986
     if (downloadOpts.arch === 'armv7l' && semver.lt(downloadOpts.version, '1.0.0')) {
       downloadOpts.arch = 'arm'
     }
     debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`)
-    download(downloadOpts, cb)
+    return pify(download)(downloadOpts)
   },
 
   generateFinalBasename: generateFinalBasename,
@@ -207,120 +182,37 @@ module.exports = {
 
   info: info,
 
-  initializeApp: function initializeApp (opts, templatePath, appRelativePath, callback) {
-    // Performs the following initial operations for an app:
-    // * Creates temporary directory
-    // * Copies template into temporary directory
-    // * Copies user's app into temporary directory
-    // * Prunes non-production node_modules (if opts.prune is either truthy or undefined)
-    // * Creates an asar (if opts.asar is set)
+  /**
+   * Forces a filename to a given extension and returns the normalized filename,
+   * if it exists.  Otherwise reports the error from the fs.stat call.
+   * (Used for resolving icon filenames, particularly during --all runs.)
+   *
+   * This error path is used by win32.js if no icon is specified
+   */
+  normalizeExt: function normalizeExt (filename, targetExt) {
+    if (!filename) throw new Error('No filename specified to normalizeExt')
 
-    var tempPath
-    if (opts.tmpdir === false) {
-      tempPath = generateFinalPath(opts)
-    } else {
-      tempPath = path.join(baseTempDir(opts), `${opts.platform}-${opts.arch}`, generateFinalBasename(opts))
-    }
-
-    debug(`Initializing app in ${tempPath} from ${templatePath} template`)
-
-    // Path to `app` directory
-    var appPath = path.join(tempPath, appRelativePath)
-    var resourcesPath = path.resolve(appPath, '..')
-
-    var operations = [
-      function (cb) {
-        fs.move(templatePath, tempPath, {clobber: true}, cb)
-      },
-      function (cb) {
-        fs.copy(opts.dir, appPath, {filter: ignore.userIgnoreFilter(opts), dereference: opts.derefSymlinks}, cb)
-      },
-      function (cb) {
-        var afterCopyHooks = (opts.afterCopy || []).map(function (afterCopyFn) {
-          return function (cb) {
-            afterCopyFn(appPath, opts.electronVersion, opts.platform, opts.arch, cb)
-          }
-        })
-        series(afterCopyHooks, cb)
-      },
-      function (cb) {
-        // Support removing old default_app folder that is now an asar archive
-        fs.remove(path.join(resourcesPath, 'default_app'), cb)
-      },
-      function (cb) {
-        fs.remove(path.join(resourcesPath, 'default_app.asar'), cb)
-      }
-    ]
-
-    // Prune and asar are now performed before platform-specific logic, primarily so that
-    // appPath is predictable (e.g. before .app is renamed for mac)
-    if (opts.prune || opts.prune === undefined) {
-      operations.push(function (cb) {
-        pruneModules(opts, appPath, cb)
-      })
-      operations.push(function (cb) {
-        var afterPruneHooks = (opts.afterPrune || []).map(function (afterPruneFn) {
-          return function (cb) {
-            afterPruneFn(appPath, opts.electronVersion, opts.platform, opts.arch, cb)
-          }
-        })
-        series(afterPruneHooks, cb)
-      })
-    }
-
-    let asarOptions = createAsarOpts(opts)
-    if (asarOptions) {
-      operations.push(function (cb) {
-        asarApp(appPath, asarOptions, cb)
-      })
-    }
-
-    if (opts.extraResource) {
-      copyExtraResources(operations, resourcesPath, opts.extraResource)
-    }
-
-    series(operations, function (err) {
-      if (err) return callback(err)
-      // Resolve to path to temporary app folder for platform-specific processes to use
-      callback(null, tempPath)
-    })
-  },
-
-  moveApp: function finalizeApp (opts, tempPath, callback) {
-    var finalPath = generateFinalPath(opts)
-
-    if (opts.tmpdir === false) {
-      callback(null, finalPath)
-      return
-    }
-
-    debug(`Moving ${tempPath} to ${finalPath}`)
-    fs.move(tempPath, finalPath, function (err) {
-      callback(err, finalPath)
-    })
-  },
-
-  normalizeExt: function normalizeExt (filename, targetExt, cb) {
-    // Forces a filename to a given extension and fires the given callback with the normalized filename,
-    // if it exists.  Otherwise reports the error from the fs.stat call.
-    // (Used for resolving icon filenames, particularly during --all runs.)
-
-    // This error path is used by win32.js if no icon is specified
-    if (!filename) return cb(new Error('No filename specified to normalizeExt'))
-
-    var ext = path.extname(filename)
+    const ext = path.extname(filename)
     if (ext !== targetExt) {
       filename = filename.slice(0, filename.length - ext.length) + targetExt
     }
 
-    fs.stat(filename, function (err) {
-      cb(err, err ? null : filename)
-    })
+    return fs.pathExists(filename)
+      .then(() => filename)
+      .catch(() => null)
   },
 
-  rename: function rename (basePath, oldName, newName, cb) {
+  promisifyHooks: function promisifyHooks (hooks, args) {
+    if (!hooks || !Array.isArray(hooks)) {
+      return Promise.resolve()
+    }
+
+    return Promise.all(hooks.map(hookFn => pify(hookFn).apply(this, args)))
+  },
+
+  rename: function rename (basePath, oldName, newName) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
-    fs.rename(path.join(basePath, oldName), path.join(basePath, newName), cb)
+    return fs.rename(path.join(basePath, oldName), path.join(basePath, newName))
   },
   sanitizeAppName: sanitizeAppName,
   warning: warning
