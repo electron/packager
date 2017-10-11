@@ -131,7 +131,7 @@ function packagerPromise (opts) {
 
   const packageJSONDir = path.resolve(process.cwd(), opts.dir) || process.cwd()
 
-  return pify(getMetadataFromPackageJSON)(platforms, opts, packageJSONDir)
+  return getMetadataFromPackageJSON(platforms, opts, packageJSONDir)
     .then(() => {
       if (opts.name.endsWith(' Helper')) {
         throw new Error('Application names cannot end in " Helper" due to limitations on macOS')
