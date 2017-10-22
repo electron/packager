@@ -286,9 +286,7 @@ function createSignOpts (properties, platform, app, version, quiet) {
 }
 
 module.exports = {
-  createApp: function createApp (opts, templatePath) {
-    return new MacApp(opts, templatePath).create()
-  },
+  App: MacApp,
   createSignOpts: createSignOpts,
   filterCFBundleIdentifier: filterCFBundleIdentifier
 }

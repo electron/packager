@@ -109,8 +109,5 @@ class WindowsApp extends App {
 
 module.exports = {
   App: WindowsApp,
-  createApp: function createApp (opts, templatePath) {
-    return new WindowsApp(opts, templatePath).create()
-  },
   updateWineMissingException: updateWineMissingException
 }

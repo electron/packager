@@ -21,7 +21,5 @@ class LinuxApp extends App {
 }
 
 module.exports = {
-  createApp: function createApp (opts, templatePath) {
-    return new LinuxApp(opts, templatePath).create()
-  }
+  App: LinuxApp
 }
