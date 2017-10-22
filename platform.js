@@ -53,8 +53,13 @@ class App {
     }
   }
 
+  relativeRename (basePath, oldName, newName) {
+    debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
+    return fs.rename(path.join(basePath, oldName), path.join(basePath, newName))
+  }
+
   renameElectron () {
-    return common.rename(this.electronBinaryDir, this.originalElectronName, this.newElectronName)
+    return this.relativeRename(this.electronBinaryDir, this.originalElectronName, this.newElectronName)
   }
 
   /**

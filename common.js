@@ -2,7 +2,6 @@
 
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
-const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
 const pify = require('pify')
@@ -190,10 +189,6 @@ module.exports = {
     return Promise.all(hooks.map(hookFn => pify(hookFn).apply(this, args)))
   },
 
-  rename: function rename (basePath, oldName, newName) {
-    debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
-    return fs.rename(path.join(basePath, oldName), path.join(basePath, newName))
-  },
   sanitizeAppName: sanitizeAppName,
   warning: warning
 }

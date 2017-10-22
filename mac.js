@@ -192,8 +192,8 @@ class MacApp extends App {
       const originalAppname = `${originalBasename}.app`
       const executableBasePath = path.join(this.frameworksPath, originalAppname, 'Contents', 'MacOS')
 
-      return common.rename(executableBasePath, originalBasename, newBasename)
-        .then(() => common.rename(this.frameworksPath, originalAppname, `${newBasename}.app`))
+      return this.relativeRename(executableBasePath, originalBasename, newBasename)
+        .then(() => this.relativeRename(this.frameworksPath, originalAppname, `${newBasename}.app`))
     }))
   }
 
