@@ -69,7 +69,7 @@ class WindowsApp extends App {
       return Promise.resolve()
     }
 
-    return common.normalizeExt(this.opts.icon, '.ico')
+    return this.normalizeIconExtension('.ico')
       .catch(() => Promise.resolve())
   }
 

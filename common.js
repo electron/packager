@@ -182,26 +182,6 @@ module.exports = {
 
   info: info,
 
-  /**
-   * Forces a filename to a given extension and returns the normalized filename,
-   * if it exists.  Otherwise reports the error from the fs.stat call.
-   * (Used for resolving icon filenames, particularly during --all runs.)
-   *
-   * This error path is used by win32.js if no icon is specified
-   */
-  normalizeExt: function normalizeExt (filename, targetExt) {
-    if (!filename) throw new Error('No filename specified to normalizeExt')
-
-    const ext = path.extname(filename)
-    if (ext !== targetExt) {
-      filename = filename.slice(0, filename.length - ext.length) + targetExt
-    }
-
-    return fs.pathExists(filename)
-      .then(() => filename)
-      .catch(() => null)
-  },
-
   promisifyHooks: function promisifyHooks (hooks, args) {
     if (!hooks || !Array.isArray(hooks)) {
       return Promise.resolve()

@@ -89,6 +89,26 @@ class App {
       .then(() => this.asarApp())
   }
 
+  /**
+   * Forces an icon filename to a given extension and returns the normalized filename,
+   * if it exists.  Otherwise, returns null.
+   *
+   * This error path is used by win32 if no icon is specified.
+   */
+  normalizeIconExtension (targetExt) {
+    if (!this.opts.icon) throw new Error('No filename specified to normalizeExt')
+
+    let iconFilename = this.opts.icon
+    const ext = path.extname(iconFilename)
+    if (ext !== targetExt) {
+      iconFilename = path.join(path.dirname(iconFilename), path.basename(iconFilename, ext) + targetExt)
+    }
+
+    return fs.pathExists(iconFilename)
+      .then(() => iconFilename)
+      .catch(() => null)
+  }
+
   prune () {
     if (this.opts.prune || this.opts.prune === undefined) {
       return pruneModules(this.opts, this.resourcesAppDir)

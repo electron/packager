@@ -202,7 +202,7 @@ class MacApp extends App {
       return Promise.resolve()
     }
 
-    return common.normalizeExt(this.opts.icon, '.icns')
+    return this.normalizeIconExtension('.icns')
       // Ignore error if icon doesn't exist, in case it's only available for other OS
       .catch(Promise.resolve)
       .then(icon => {
