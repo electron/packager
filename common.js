@@ -71,10 +71,6 @@ function parseCLIArgs (argv) {
   return args
 }
 
-function isPlatformMac (platform) {
-  return platform === 'darwin' || platform === 'mas'
-}
-
 function sanitizeAppName (name) {
   return sanitize(name, {replacement: '-'})
 }
@@ -106,10 +102,6 @@ function subOptionWarning (properties, optionName, parameter, value, quiet) {
   properties[parameter] = value
 }
 
-function baseTempDir (opts) {
-  return path.join(opts.tmpdir || os.tmpdir(), 'electron-packager')
-}
-
 function createAsarOpts (opts) {
   let asarOptions
   if (opts.asar === true) {
@@ -139,11 +131,9 @@ function createDownloadOpts (opts, platform, arch) {
 module.exports = {
   parseCLIArgs: parseCLIArgs,
 
-  isPlatformMac: isPlatformMac,
-
-  subOptionWarning: subOptionWarning,
-
-  baseTempDir: baseTempDir,
+  isPlatformMac: function isPlatformMac (platform) {
+    return platform === 'darwin' || platform === 'mas'
+  },
 
   createAsarOpts: createAsarOpts,
 
@@ -155,17 +145,6 @@ module.exports = {
     })
   },
   createDownloadOpts: createDownloadOpts,
-
-  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName) {
-    if (properties.hasOwnProperty(oldName)) {
-      warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`)
-      if (!properties.hasOwnProperty(newName)) {
-        properties[newName] = properties[oldName]
-      }
-      delete properties[oldName]
-    }
-  },
-
   downloadElectronZip: function downloadElectronZip (downloadOpts) {
     // armv7l builds have only been backfilled for Electron >= 1.0.0.
     // See: https://github.com/electron/electron/pull/6986
@@ -176,10 +155,23 @@ module.exports = {
     return pify(download)(downloadOpts)
   },
 
+  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName) {
+    if (properties.hasOwnProperty(oldName)) {
+      warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`)
+      if (!properties.hasOwnProperty(newName)) {
+        properties[newName] = properties[oldName]
+      }
+      delete properties[oldName]
+    }
+  },
+  subOptionWarning: subOptionWarning,
+
+  baseTempDir: function baseTempDir (opts) {
+    return path.join(opts.tmpdir || os.tmpdir(), 'electron-packager')
+  },
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
-
-  info: info,
+  sanitizeAppName: sanitizeAppName,
 
   promisifyHooks: function promisifyHooks (hooks, args) {
     if (!hooks || !Array.isArray(hooks)) {
@@ -189,6 +181,6 @@ module.exports = {
     return Promise.all(hooks.map(hookFn => pify(hookFn).apply(this, args)))
   },
 
-  sanitizeAppName: sanitizeAppName,
+  info: info,
   warning: warning
 }
