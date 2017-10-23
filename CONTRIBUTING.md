@@ -54,8 +54,8 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
   the package's documentation. Files that will likely need to be updated include `readme.md`,
   `docs/api.md`, and `usage.txt`.
-* This project uses the [JavaScript Standard Style](https://www.npmjs.com/package/standard) as a
-  coding convention. CI will fail if the PR does not conform to this standard.
+* This project uses the [JavaScript Standard Style](https://standardjs.com/) as a coding convention.
+  CI will fail if the PR does not conform to this standard.
 * One of the philosophies of the project is to keep the code base as small as possible. If you are
   adding a new feature, think about whether it is appropriate to go into a separate Node module,
   and then be integrated into this project.
