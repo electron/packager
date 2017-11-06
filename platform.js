@@ -74,17 +74,8 @@ class App {
     debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`)
 
     return fs.move(this.templatePath, this.stagingPath, { clobber: true })
-      .then(() =>
-        fs.copy(this.opts.dir, this.resourcesAppDir, {
-          filter: ignore.userIgnoreFilter(this.opts),
-          dereference: this.opts.derefSymlinks
-        })
-      ).then(() => {
-        const afterCopyHooks = (this.opts.afterCopy || []).map(
-          afterCopyFn => pify(afterCopyFn)(this.resourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch)
-        )
-        return Promise.all(afterCopyHooks)
-      }).then(() => {
+      .then(this.copyTemplate())
+      .then(() => {
         // Support removing old default_app folder that is now an asar archive
         return fs.remove(path.join(this.resourcesDir, 'default_app'))
       }).then(() => fs.remove(path.join(this.resourcesDir, 'default_app.asar')))
@@ -92,6 +83,19 @@ class App {
       // this.resourcesAppDir is predictable (e.g. before .app is renamed for mac)
       .then(() => this.prune())
       .then(() => this.asarApp())
+  }
+
+  copyTemplate () {
+    return () =>
+      fs.copy(this.opts.dir, this.resourcesAppDir, {
+        filter: ignore.userIgnoreFilter(this.opts),
+        dereference: this.opts.derefSymlinks
+      }).then(() => common.promisifyHooks(this.opts.afterCopy, [
+        this.resourcesAppDir,
+        this.opts.electronVersion,
+        this.opts.platform,
+        this.opts.arch
+      ]))
   }
 
   /**
@@ -117,12 +121,7 @@ class App {
   prune () {
     if (this.opts.prune || this.opts.prune === undefined) {
       return pruneModules(this.opts, this.resourcesAppDir)
-        .then(() => {
-          const afterPruneHooks = (this.opts.afterPrune || []).map(
-            afterPruneFn => pify(afterPruneFn)(this.resourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch)
-          )
-          return Promise.all(afterPruneHooks)
-        })
+        .then(() => common.promisifyHooks(this.opts.afterPrune, [this.resourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch]))
     }
 
     return Promise.resolve()
