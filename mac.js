@@ -48,6 +48,10 @@ class MacApp extends App {
     return `com.electron.${common.sanitizeAppName(this.appName).toLowerCase()}`
   }
 
+  get originalResourcesDir () {
+    return path.join(this.contentsPath, 'Resources')
+  }
+
   get resourcesDir () {
     return path.join(this.dotAppName, 'Contents', 'Resources')
   }
@@ -78,10 +82,6 @@ class MacApp extends App {
 
   get frameworksPath () {
     return path.join(this.contentsPath, 'Frameworks')
-  }
-
-  get resourcesPath () {
-    return path.join(this.contentsPath, 'Resources')
   }
 
   updatePlist (base, displayName, identifier, name) {
@@ -207,7 +207,7 @@ class MacApp extends App {
       .catch(Promise.resolve)
       .then(icon => {
         debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
-        return fs.copy(icon, path.join(this.resourcesPath, this.appPlist.CFBundleIconFile))
+        return fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist.CFBundleIconFile))
       })
   }
 

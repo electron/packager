@@ -17,12 +17,22 @@ class App {
     this.templatePath = templatePath
   }
 
+  /**
+   * Resource directory path before renaming.
+   */
+  get originalResourcesDir () {
+    return this.resourcesDir
+  }
+
+  /**
+   * Resource directory path after renaming.
+   */
   get resourcesDir () {
     return path.join(this.stagingPath, 'resources')
   }
 
-  get resourcesAppDir () {
-    return path.join(this.resourcesDir, 'app')
+  get originalResourcesAppDir () {
+    return path.join(this.originalResourcesDir, 'app')
   }
 
   get electronBinaryDir () {
@@ -77,21 +87,21 @@ class App {
       .then(this.copyTemplate())
       .then(() => {
         // Support removing old default_app folder that is now an asar archive
-        return fs.remove(path.join(this.resourcesDir, 'default_app'))
-      }).then(() => fs.remove(path.join(this.resourcesDir, 'default_app.asar')))
+        return fs.remove(path.join(this.originalResourcesDir, 'default_app'))
+      }).then(() => fs.remove(path.join(this.originalResourcesDir, 'default_app.asar')))
       // Prune and asar are performed before platform-specific logic, primarily so that
-      // this.resourcesAppDir is predictable (e.g. before .app is renamed for mac)
+      // this.originalResourcesAppDir is predictable (e.g. before .app is renamed for mac)
       .then(() => this.prune())
       .then(() => this.asarApp())
   }
 
   copyTemplate () {
     return () =>
-      fs.copy(this.opts.dir, this.resourcesAppDir, {
+      fs.copy(this.opts.dir, this.originalResourcesAppDir, {
         filter: ignore.userIgnoreFilter(this.opts),
         dereference: this.opts.derefSymlinks
       }).then(() => common.promisifyHooks(this.opts.afterCopy, [
-        this.resourcesAppDir,
+        this.originalResourcesAppDir,
         this.opts.electronVersion,
         this.opts.platform,
         this.opts.arch
@@ -120,8 +130,8 @@ class App {
 
   prune () {
     if (this.opts.prune || this.opts.prune === undefined) {
-      return pruneModules(this.opts, this.resourcesAppDir)
-        .then(() => common.promisifyHooks(this.opts.afterPrune, [this.resourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch]))
+      return pruneModules(this.opts, this.originalResourcesAppDir)
+        .then(() => common.promisifyHooks(this.opts.afterPrune, [this.originalResourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch]))
     }
 
     return Promise.resolve()
@@ -133,10 +143,10 @@ class App {
       return Promise.resolve()
     }
 
-    const dest = path.join(this.resourcesDir, 'app.asar')
+    const dest = path.join(this.originalResourcesDir, 'app.asar')
     debug(`Running asar with the options ${JSON.stringify(asarOptions)}`)
-    return pify(asar.createPackageWithOptions)(this.resourcesAppDir, dest, asarOptions)
-      .then(() => fs.remove(this.resourcesAppDir))
+    return pify(asar.createPackageWithOptions)(this.originalResourcesAppDir, dest, asarOptions)
+      .then(() => fs.remove(this.originalResourcesAppDir))
   }
 
   copyExtraResources (extraResources) {
