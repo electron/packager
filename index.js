@@ -152,7 +152,7 @@ module.exports = pify(function packager (opts, cb) {
   getMetadataFromPackageJSON(platforms, opts, path.resolve(process.cwd(), opts.dir) || process.cwd(), function (err) {
     if (err) return cb(err)
 
-    if (/ Helper$/.test(opts.name)) {
+    if (opts.name.endsWith(' Helper')) {
       return cb(new Error('Application names cannot end in " Helper" due to limitations on macOS'))
     }
 
