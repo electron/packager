@@ -7,6 +7,9 @@ environment:
   - nodejs_version: "6"
   - nodejs_version: "8"
   - nodejs_version: "9"
+matrix:
+  allow_failures:
+  - nodejs_version: "9"
 cache:
 - '%APPDATA%\npm-cache'
 - '%USERPROFILE%\.electron'
