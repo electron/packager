@@ -13,7 +13,7 @@ function createPruneOptionTest (baseOpts, prune, testMessage) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let opts = Object.create(baseOpts)
+    let opts = Object.assign({}, baseOpts)
     opts.name = 'basicTest'
     opts.dir = path.join(__dirname, 'fixtures', 'basic')
     opts.prune = prune
