@@ -11,7 +11,7 @@ node_js:
 - '8'
 - '9'
 matrix:
-  exclude:
+  allow_failures:
   - node_js: '9'
 cache:
 - apt: true
