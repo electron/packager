@@ -8,7 +8,6 @@ const fs = require('fs-extra')
 const os = require('os')
 const packager = require('../index')
 const path = require('path')
-const pify = require('pify')
 const targets = require('../targets')
 const test = require('tape')
 
@@ -60,12 +59,24 @@ exports.downloadAll = function downloadAll (version) {
   })
 
   return Promise.all(combinations.map(combination => {
-    return pify(common.downloadElectronZip)(Object.assign({}, combination, {
+    return common.downloadElectronZip(Object.assign({}, combination, {
       cache: path.join(os.homedir(), '.electron'),
       quiet: !!process.env.CI,
       version: version
     }))
   }))
+}
+
+exports.testFailure = function testFailure (description, promise) {
+  return test(description, t => {
+    return promise().then(() => {
+      t.fail('expected error')
+      return t.end()
+    }).catch(err => {
+      t.ok(err, 'error returned')
+      return t.end()
+    })
+  })
 }
 
 exports.fixtureSubdir = function fixtureSubdir (subdir) {

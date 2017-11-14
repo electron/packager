@@ -16,12 +16,16 @@ const baseOpts = {
   platform: 'win32'
 }
 
+function generateRceditOptionsSansIcon (opts) {
+  return new win32.App(opts).generateRceditOptionsSansIcon()
+}
+
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
     const opts = Object.assign({}, baseOpts, extraOpts)
-    const rcOpts = win32.generateRceditOptionsSansIcon(opts)
+    const rcOpts = generateRceditOptionsSansIcon(opts)
 
     metadataProperties = [].concat(metadataProperties)
     expectedValues = [].concat(expectedValues)
@@ -174,7 +178,7 @@ test('win32metadata defaults', (t) => {
   const opts = {
     name: 'Win32 App'
   }
-  const rcOpts = win32.generateRceditOptionsSansIcon(opts, 'Win32 App.exe')
+  const rcOpts = generateRceditOptionsSansIcon(opts)
 
   t.equal(rcOpts['version-string'].FileDescription, opts.name, 'default FileDescription')
   t.equal(rcOpts['version-string'].InternalName, opts.name, 'default InternalName')

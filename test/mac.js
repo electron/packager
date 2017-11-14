@@ -33,7 +33,7 @@ function createHelperAppPathsTest (baseOpts, expectedName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let opts = Object.create(baseOpts)
+    const opts = Object.assign({}, baseOpts)
     let frameworksPath
 
     if (!expectedName) {
@@ -121,7 +121,7 @@ function createBinaryNameTest (baseOpts, expectedAppName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    const opts = Object.create(baseOpts)
+    const opts = Object.assign({}, baseOpts)
     let binaryPath
     let appName = expectedAppName || opts.name
 
@@ -161,7 +161,7 @@ function createAppVersionInferenceTest (baseOpts) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    packageAndParseInfoPlist(t, Object.create(baseOpts))
+    packageAndParseInfoPlist(t, Object.assign({}, baseOpts))
       .then(obj => {
         t.equal(obj.CFBundleVersion, '4.99.101', 'CFBundleVersion should reflect package.json version')
         t.equal(obj.CFBundleShortVersionString, '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
@@ -188,7 +188,7 @@ function createAppBundleTest (baseOpts, appBundleId) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
-    let opts = Object.create(baseOpts)
+    let opts = Object.assign({}, baseOpts)
     if (appBundleId) {
       opts.appBundleId = appBundleId
     }
@@ -237,7 +237,7 @@ function createAppHelpersBundleTest (baseOpts, helperBundleId, appBundleId) {
     t.timeoutAfter(config.timeout)
 
     let tempPath, plistPath
-    let opts = Object.create(baseOpts)
+    let opts = Object.assign({}, baseOpts)
     if (helperBundleId) {
       opts.helperBundleId = helperBundleId
     }

@@ -1,5 +1,6 @@
 'use strict'
 
+const common = require('./common')
 const debug = require('debug')('electron-packager')
 const path = require('path')
 const targets = require('./targets')
@@ -15,11 +16,8 @@ const DEFAULT_IGNORES = [
 
 function generateIgnores (opts) {
   if (typeof (opts.ignore) !== 'function') {
-    // Avoid a circular require that breaks things
-    const common = require('./common')
-
     if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-    opts.ignore = (opts.ignore) ? opts.ignore.concat(DEFAULT_IGNORES) : [].concat(DEFAULT_IGNORES)
+    opts.ignore = opts.ignore ? opts.ignore.concat(DEFAULT_IGNORES) : [].concat(DEFAULT_IGNORES)
     if (process.platform === 'linux') {
       opts.ignore.push(common.baseTempDir(opts))
     }
@@ -29,9 +27,6 @@ function generateIgnores (opts) {
 }
 
 function generateOutIgnores (opts) {
-  // Avoid a circular require that breaks things
-  const common = require('./common')
-
   let normalizedOut = opts.out ? path.resolve(opts.out) : null
   let outIgnores = []
   if (normalizedOut === null || normalizedOut === process.cwd()) {

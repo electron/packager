@@ -6,7 +6,6 @@ const getMetadataFromPackageJSON = require('../infer')
 const os = require('os')
 const packager = require('..')
 const path = require('path')
-const pify = require('pify')
 const pkgUp = require('pkg-up')
 const util = require('./util')
 
@@ -19,8 +18,8 @@ function createInferElectronVersionTest (fixture, packageName) {
       delete opts.electronVersion
       opts.dir = path.join(__dirname, 'fixtures', fixture)
 
-      pify(getMetadataFromPackageJSON)([], opts, opts.dir)
-        .then((pkg) => {
+      getMetadataFromPackageJSON([], opts, opts.dir)
+        .then(() => {
           const packageJSON = require(path.join(opts.dir, 'package.json'))
           t.equal(opts.electronVersion, packageJSON.devDependencies[packageName], `The version should be inferred from installed ${packageName} version`)
           return t.end()
@@ -59,7 +58,7 @@ function createInferFailureTest (opts, fixtureSubdir) {
           t.ok(err, 'error thrown')
           return t.end()
         }
-      ).catch(t.end)
+      ).catch((err) => { console.error('ERROR OMG', err); t.end() })
   }
 }
 
@@ -71,7 +70,7 @@ function createInferMissingVersionTest (opts) {
         delete opts.electronVersion
         opts.dir = dir
 
-        return pify(getMetadataFromPackageJSON)([], opts, dir)
+        return getMetadataFromPackageJSON([], opts, dir)
       }).then(() => {
         const packageJSON = require(path.join(opts.dir, 'package.json'))
         t.equal(opts.electronVersion, packageJSON.devDependencies['electron'], 'The version should be inferred from installed electron module version')
@@ -86,7 +85,7 @@ function testInferWin32metadata (t, opts, expected, assertionMessage) {
     .then((dir) => {
       opts.dir = dir
 
-      return pify(getMetadataFromPackageJSON)(['win32'], opts, dir)
+      return getMetadataFromPackageJSON(['win32'], opts, dir)
     }).then(() => {
       t.deepEqual(opts.win32metadata, expected, assertionMessage)
       return t.end()
@@ -107,7 +106,7 @@ function testInferWin32metadataAuthorObject (t, opts, author, expected, assertio
       packageJSON.author = author
       return fs.writeJson(packageJSONFilename, packageJSON)
     }).then(() => {
-      return pify(getMetadataFromPackageJSON)(['win32'], opts, opts.dir)
+      return getMetadataFromPackageJSON(['win32'], opts, opts.dir)
     }).then(() => {
       t.deepEqual(opts.win32metadata, expected, assertionMessage)
       return t.end()
