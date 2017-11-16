@@ -16,9 +16,12 @@ matrix:
 cache:
 - apt: true
 - directories:
-  - "$HOME/.npm"
+  - "node_modules"
   - "$HOME/.electron"
 before_install: test/ci/before_install.sh
+install:
+- npm install
+- npm update
 after_success: npm run coveralls
 branches:
   only:
