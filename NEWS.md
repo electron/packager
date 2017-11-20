@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## [10.0.0] - 2017-11-19
+
+### Changed
+
+* Switch from `minimist` to `yargs-parser` (#732)
+* Electron Packager only officially supports Node versions that are supported by the
+  NodeJS team (#747)
+* Refactor to use `Promise`s internally. This has the side effect of somewhat parallelizing
+  building two or more targets at once, via `Promise.all` (#753)
+
 ## [9.1.0] - 2017-09-15
 
 ### Added
@@ -427,6 +437,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[10.0.0]: https://github.com/electron-userland/electron-packager/compare/v9.1.0...v10.0.0
 [9.1.0]: https://github.com/electron-userland/electron-packager/compare/v9.0.1...v9.1.0
 [9.0.1]: https://github.com/electron-userland/electron-packager/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/electron-userland/electron-packager/compare/v8.7.2...v9.0.0
