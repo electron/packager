@@ -158,6 +158,14 @@ valid versions. If omitted, it will use the version of the nearest local install
 One or more files to be copied directly into the app's `Contents/Resources` directory for OS X
 target platforms, and the `resources` directory for other target platforms.
 
+##### `executableName`
+
+*String*
+
+The name of the executable file (sans file extension). Defaults to the value for the [`name`](#name)
+parameter. For `darwin` or `mas` target platforms, this does not affect the name of the `.app`
+folder - this will use [`name`](#name) parameter.
+
 ##### `icon`
 
 *String*

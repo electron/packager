@@ -201,6 +201,20 @@ util.packagerTest('win32 executable name is based on sanitized app name', (t) =>
     }).catch(t.end)
 })
 
+util.packagerTest('win32 executable name uses executableName when available', t => {
+  const opts = Object.assign({}, baseOpts, {name: 'PackageName', executableName: 'my-package'})
+
+  packager(opts)
+    .then(paths => {
+      t.equal(1, paths.length, '1 bundle created')
+      const appExePath = path.join(paths[0], 'my-package.exe')
+      return fs.pathExists(appExePath)
+    }).then(exists => {
+      t.true(exists, 'the executableName-based filename should exist')
+      return t.end()
+    }).catch(t.end)
+})
+
 util.packagerTest('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 util.packagerTest('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
 util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))

@@ -40,6 +40,7 @@ download           a list of sub-options to pass to electron-download. They are 
                      Electron. Defaults to true, use --no-download.strictSSL to disable checks.
 electron-version   the version of Electron that is being packaged, see
                    https://github.com/electron/electron/releases
+executable-name    the name of the executable file, sans file extension. Defaults to appname
 extra-resource     a file to copy into the app's resources directory
 icon               the local path to an icon file to use as the icon for the app.
                    Note: Format depends on platform.
@@ -48,7 +49,7 @@ ignore             do not copy files into app whose filenames RegExp.match this 
                    and --no-prune. Can be specified multiple times
 no-deref-symlinks  make sure symlinks are not dereferenced within the app source
 no-prune           do not prune devDependencies from the packaged app
-out                the dir to put the app into at the end. defaults to current working dir
+out                the dir to put the app into at the end. Defaults to current working dir
 overwrite          if output directory for a platform already exists, replaces it rather than
                    skipping it
 package-manager    the package manager to use when pruning devDependencies. Supported package

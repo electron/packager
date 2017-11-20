@@ -25,7 +25,7 @@ class WindowsApp extends App {
   }
 
   get newElectronName () {
-    return `${common.sanitizeAppName(this.opts.name)}.exe`
+    return `${common.sanitizeAppName(this.executableName)}.exe`
   }
 
   get electronBinaryPath () {
