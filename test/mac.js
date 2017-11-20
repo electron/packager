@@ -117,18 +117,19 @@ function createExtendInfoTest (baseOpts, extraPathOrParams) {
   }
 }
 
-function createBinaryNameTest (baseOpts, expectedAppName) {
+function createBinaryNameTest (baseOpts, expectedExecutableName, expectedAppName) {
   return (t) => {
     t.timeoutAfter(config.timeout)
 
     const opts = Object.assign({}, baseOpts)
     let binaryPath
-    let appName = expectedAppName || opts.name
+    const appName = expectedAppName || expectedExecutableName || opts.name
+    const executableName = expectedExecutableName || opts.name
 
     packager(opts)
       .then(paths => {
         binaryPath = path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS')
-        return fs.stat(path.join(binaryPath, appName))
+        return fs.stat(path.join(binaryPath, executableName))
       }).then(stats => {
         t.true(stats.isFile(), 'The binary should reflect a sanitized opts.name')
         return t.end()
@@ -440,6 +441,7 @@ module.exports = (baseOpts) => {
 
   util.packagerTest('binary naming test', createBinaryNameTest(baseOpts))
   util.packagerTest('sanitized binary naming test', createBinaryNameTest(Object.assign({}, baseOpts, {name: '@username/package-name'}), '@username-package-name'))
+  util.packagerTest('executableName test', createBinaryNameTest(Object.assign({}, baseOpts, {executableName: 'app-name', name: 'MyAppName'}), 'app-name', 'MyAppName'))
 
   util.packagerTest('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', (t) => {
     t.timeoutAfter(config.timeout)

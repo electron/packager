@@ -152,7 +152,7 @@ class MacApp extends App {
     return Promise.all(plists.map(plistArgs => this.loadPlist.apply(this, plistArgs)))
       .then(() => this.extendAppPlist(this.opts.extendInfo))
       .then(() => {
-        this.appPlist = this.updatePlist(this.appPlist, this.appName, appBundleIdentifier, this.appName)
+        this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
         this.helperPlist = this.updateHelperPlist(this.helperPlist)
         this.helperEHPlist = this.updateHelperPlist(this.helperEHPlist, 'EH')
         this.helperNPPlist = this.updateHelperPlist(this.helperNPPlist, 'NP')

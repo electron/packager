@@ -9,7 +9,7 @@ class LinuxApp extends App {
   }
 
   get newElectronName () {
-    return common.sanitizeAppName(this.opts.name)
+    return common.sanitizeAppName(this.executableName)
   }
 
   create () {

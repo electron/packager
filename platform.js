@@ -51,6 +51,10 @@ class App {
     throw new Error('Child classes must implement this')
   }
 
+  get executableName () {
+    return this.opts.executableName || this.opts.name
+  }
+
   get stagingPath () {
     if (this.opts.tmpdir === false) {
       return common.generateFinalPath(this.opts)

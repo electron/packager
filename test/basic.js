@@ -380,6 +380,26 @@ util.packagerTest('building for Linux target sanitizes binary name', (t) => {
     }).catch(t.end)
 })
 
+util.packagerTest('executableName honored when building for Linux target', (t) => {
+  const opts = {
+    name: 'PackageName',
+    executableName: 'my-package',
+    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    electronVersion: '0.37.4',
+    arch: 'ia32',
+    platform: 'linux'
+  }
+
+  packager(opts)
+    .then(paths => {
+      t.equal(1, paths.length, '1 bundle created')
+      return fs.stat(path.join(paths[0], 'my-package'))
+    }).then(stats => {
+      t.true(stats.isFile(), 'The executableName-based filename should exist')
+      return t.end()
+    }).catch(t.end)
+})
+
 util.packagerTest('fails with invalid version', util.invalidOptionTest({
   name: 'invalidElectronTest',
   dir: path.join(__dirname, 'fixtures', 'el-0374'),
