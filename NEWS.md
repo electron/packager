@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## [10.1.0] - 2017-11-19
+
+### Added
+
+* Option to set the executable name separate from the app name (#758)
+
+### Fixed
+
+* `mz` dependency (#759)
+
 ## [10.0.0] - 2017-11-19
 
 ### Changed
