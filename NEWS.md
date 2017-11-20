@@ -447,6 +447,7 @@
 
 For versions prior to 5.2.0, please see `git log`.
 
+[10.1.0]: https://github.com/electron-userland/electron-packager/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/electron-userland/electron-packager/compare/v9.1.0...v10.0.0
 [9.1.0]: https://github.com/electron-userland/electron-packager/compare/v9.0.1...v9.1.0
 [9.0.1]: https://github.com/electron-userland/electron-packager/compare/v9.0.0...v9.0.1
