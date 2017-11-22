@@ -39,15 +39,13 @@ class App {
     return this.stagingPath
   }
 
-  get electronBinaryPath () {
-    return this.stagingPath
-  }
-
   get originalElectronName () {
+    /* istanbul ignore next */
     throw new Error('Child classes must implement this')
   }
 
   get newElectronName () {
+    /* istanbul ignore next */
     throw new Error('Child classes must implement this')
   }
 

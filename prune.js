@@ -23,6 +23,7 @@ function pruneModules (opts, appPath) {
   } else {
     const packageManager = opts.packageManager || 'npm'
 
+    /* istanbul ignore if */
     if (packageManager === 'cnpm' && process.platform === 'win32') {
       return Promise.reject(new Error('cnpm support does not currently work with Windows, see: https://github.com/electron-userland/electron-packager/issues/515#issuecomment-297604044'))
     }

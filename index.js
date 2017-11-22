@@ -45,15 +45,18 @@ class Packager {
     return fs.outputFile(testFile, '')
       .then(() => fs.symlink(testFile, testLink))
       .then(() => cleanup(true))
+      /* istanbul ignore next */
       .catch(() => cleanup(false))
       .then(result => {
         this.canCreateSymlinks = result
         if (this.canCreateSymlinks) return this.checkOverwrite(comboOpts, zipPath)
 
+        /* istanbul ignore next */
         return this.skipHostPlatformSansSymlinkSupport(comboOpts)
       })
   }
 
+  /* istanbul ignore next */
   skipHostPlatformSansSymlinkSupport (comboOpts) {
     common.info(`Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${comboOpts.platform} platform`, this.opts.quiet)
     return Promise.resolve()
@@ -124,6 +127,7 @@ class Packager {
         }
 
         if (common.isPlatformMac(comboOpts.platform)) {
+          /* istanbul ignore else */
           if (this.canCreateSymlinks === undefined) {
             return this.testSymlink(comboOpts, zipPath)
           } else if (!this.canCreateSymlinks) {

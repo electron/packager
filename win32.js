@@ -79,6 +79,7 @@ class WindowsApp extends App {
 
   runRcedit () {
     if (!this.needsRcedit()) {
+      /* istanbul ignore next */
       return Promise.resolve()
     }
 
@@ -94,6 +95,7 @@ class WindowsApp extends App {
         debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
         return pify(require('rcedit'))(this.electronBinaryPath, rcOpts)
       }).catch(err => {
+        /* istanbul ignore next */
         throw updateWineMissingException(err)
       })
   }

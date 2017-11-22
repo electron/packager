@@ -78,6 +78,7 @@ function userIgnoreFilter (opts) {
 
     var name = file.split(path.resolve(opts.dir))[1]
 
+    /* istanbul ignore if */
     if (path.sep === '\\') {
       // convert slashes so unix-format ignores work
       name = name.replace(/\\/g, '/')
