@@ -7,6 +7,18 @@ Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`
 [![Coverage Status](https://coveralls.io/repos/github/electron-userland/electron-packager/badge.svg?branch=master)](https://coveralls.io/github/electron-userland/electron-packager?branch=master)
 [![Dependency Status](https://dependencyci.com/github/electron-userland/electron-packager/badge)](https://dependencyci.com/github/electron-userland/electron-packager)
 
+[Supported Platforms](#supported-platforms) |
+[Installation](#installation) |
+[Usage](#usage) |
+[API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md) |
+[Contributing](https://github.com/electron-userland/electron-packager/blob/master/CONTRIBUTING.md) |
+[Support](https://github.com/electron-userland/electron-packager/blob/master/SUPPORT.md) |
+[Related](#related) |
+[FAQ](https://github.com/electron-userland/electron-packager/blob/master/docs/faq.md) |
+[Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
+
+----
+
 ## About
 
 Electron Packager is a command line tool and Node.js library that bundles Electron-based application
@@ -27,8 +39,6 @@ _(files named `electron-v${version}-${platform}-${arch}.zip`)_.
 Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
 
 See [CONTRIBUTING.md](https://github.com/electron-userland/electron-packager/blob/master/CONTRIBUTING.md) and [openopensource.org](http://openopensource.org/) for more details.
-
-### [Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
 
 ## Supported Platforms
 
@@ -158,10 +168,6 @@ foobar
 ```
 
 The `Foo Bar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
-
-### [Programmatic API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
-
-### [Frequently Asked Questions](https://github.com/electron-userland/electron-packager/blob/master/docs/faq.md)
 
 ## Related
 
