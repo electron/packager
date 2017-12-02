@@ -2,26 +2,25 @@
 
 const config = require('./config.json')
 const targets = require('../targets')
-const test = require('tape')
-const util = require('./util')
+const test = require('ava')
+const util = require('./_util')
 
 function createMultiTargetOptions (extraOpts) {
   return Object.assign({
-    name: 'basicTest',
+    name: 'targetTest',
     dir: util.fixtureSubdir('basic'),
     electronVersion: config.version
   }, extraOpts)
 }
 
 function testMultiTarget (testcaseDescription, extraOpts, expectedPackageCount, packageExistenceMessage) {
-  test(testcaseDescription, (t) => {
+  test(testcaseDescription, t => {
     const opts = createMultiTargetOptions(extraOpts)
     const platforms = targets.validateListFromOptions(opts, 'platform')
     const archs = targets.validateListFromOptions(opts, 'arch')
     const combinations = targets.createPlatformArchPairs(opts, platforms, archs)
 
-    t.equal(combinations.length, expectedPackageCount, packageExistenceMessage)
-    t.end()
+    t.is(combinations.length, expectedPackageCount, packageExistenceMessage)
   })
 }
 
@@ -30,30 +29,26 @@ function testCombinations (testcaseDescription, arch, platform) {
                   'Packages should be generated for all combinations of specified archs and platforms')
 }
 
-test('allOfficialArchsForPlatformAndVersion is undefined for unknown platforms', (t) => {
-  t.equal(targets.allOfficialArchsForPlatformAndVersion('unknown', '1.0.0'), undefined)
-  t.end()
+test('allOfficialArchsForPlatformAndVersion is undefined for unknown platforms', t => {
+  t.is(targets.allOfficialArchsForPlatformAndVersion('unknown', '1.0.0'), undefined)
 })
 
-test('allOfficialArchsForPlatformAndVersion returns the correct arches for a known platform', (t) => {
+test('allOfficialArchsForPlatformAndVersion returns the correct arches for a known platform', t => {
   t.deepEqual(targets.allOfficialArchsForPlatformAndVersion('darwin', '1.0.0'), ['x64'])
-  t.end()
 })
 
-test('allOfficialArchsForPlatformAndVersion returns arm64 when the correct version is specified', (t) => {
-  t.notEqual(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').indexOf('arm64'), -1,
-             'should be found when version is >= 1.8.0')
-  t.equal(targets.allOfficialArchsForPlatformAndVersion('linux', '1.7.0').indexOf('arm64'), -1,
-          'should not be found when version is < 1.8.0')
-  t.end()
+test('allOfficialArchsForPlatformAndVersion returns arm64 when the correct version is specified', t => {
+  t.not(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').indexOf('arm64'), -1,
+        'should be found when version is >= 1.8.0')
+  t.is(targets.allOfficialArchsForPlatformAndVersion('linux', '1.7.0').indexOf('arm64'), -1,
+       'should not be found when version is < 1.8.0')
 })
 
-test('validateListFromOptions does not take non-Array/String values', (t) => {
+test('validateListFromOptions does not take non-Array/String values', t => {
   targets.supported.digits = new Set(['64', '65'])
-  t.notOk(targets.validateListFromOptions({digits: 64}, 'digits') instanceof Array,
+  t.false(targets.validateListFromOptions({digits: 64}, 'digits') instanceof Array,
           'should not be an Array')
   delete targets.supported.digits
-  t.end()
 })
 
 testMultiTarget('build for all available official targets', {all: true, electronVersion: '1.8.0'},
@@ -72,11 +67,11 @@ testCombinations('multi-platform / multi-arch test, from arrays', ['ia32', 'x64'
 testCombinations('multi-platform / multi-arch test, from strings', 'ia32,x64', 'linux,win32')
 testCombinations('multi-platform / multi-arch test, from strings with spaces', 'ia32, x64', 'linux, win32')
 
-util.packagerTest('fails with invalid arch', util.invalidOptionTest({
+test('fails with invalid arch', util.invalidOptionTest({
   arch: 'z80',
   platform: 'linux'
 }))
-util.packagerTest('fails with invalid platform', util.invalidOptionTest({
+test('fails with invalid platform', util.invalidOptionTest({
   arch: 'ia32',
   platform: 'dos'
 }))

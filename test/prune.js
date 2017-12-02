@@ -1,91 +1,76 @@
 'use strict'
 
-const config = require('./config.json')
 const fs = require('fs-extra')
-const packager = require('..')
 const path = require('path')
 const prune = require('../prune')
-const test = require('tape')
-const util = require('./util')
+const test = require('ava')
+const util = require('./_util')
 const which = require('which')
 
-function createPruneOptionTest (baseOpts, prune, testMessage) {
-  return (t) => {
-    t.timeoutAfter(config.timeout)
+function createPruneOptionTest (t, baseOpts, prune, testMessage) {
+  util.timeoutTest()
 
-    let opts = Object.assign({}, baseOpts)
-    opts.name = 'basicTest'
-    opts.dir = path.join(__dirname, 'fixtures', 'basic')
-    opts.prune = prune
+  const opts = Object.assign({}, baseOpts, {
+    name: 'pruneTest',
+    dir: util.fixtureSubdir('basic'),
+    prune: prune
+  })
 
-    let finalPath
-    let resourcesPath
+  let resourcesPath
 
-    packager(opts)
-      .then(paths => {
-        finalPath = paths[0]
-        return fs.stat(finalPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The expected output directory should exist')
-        resourcesPath = path.join(finalPath, util.generateResourcesPath(opts))
-        return fs.stat(resourcesPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'))
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
-        return fs.pathExists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
-      }).then(exists => {
-        t.equal(!prune, exists, testMessage)
-        return t.end()
-      }).catch(t.end)
-  }
+  return util.packageAndEnsureResourcesPath(t, opts)
+    .then(generatedResourcesPath => {
+      resourcesPath = generatedResourcesPath
+      return fs.stat(path.join(resourcesPath, 'app', 'node_modules', 'run-series'))
+    }).then(stats => {
+      t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
+      return fs.pathExists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
+    }).then(exists => t.is(!prune, exists, testMessage))
 }
 
-test('pruneCommand returns the correct command when passing a known package manager', (t) => {
-  t.equal(prune.pruneCommand('npm'), 'npm prune --production', 'passing npm gives the npm prune command')
-  t.equal(prune.pruneCommand('cnpm'), 'cnpm prune --production', 'passing cnpm gives the cnpm prune command')
-  t.equal(prune.pruneCommand('yarn'), 'yarn install --production --no-bin-links', 'passing yarn gives the yarn "prune command"')
-  t.end()
+test('pruneCommand returns the correct command when passing a known package manager', t => {
+  t.is(prune.pruneCommand('npm'), 'npm prune --production', 'passing npm gives the npm prune command')
+  t.is(prune.pruneCommand('cnpm'), 'cnpm prune --production', 'passing cnpm gives the cnpm prune command')
+  t.is(prune.pruneCommand('yarn'), 'yarn install --production --no-bin-links', 'passing yarn gives the yarn "prune command"')
 })
 
-test('pruneCommand returns null when the package manager is unknown', (t) => {
-  t.notOk(prune.pruneCommand('unknown-package-manager'))
-  t.end()
+test('pruneCommand returns undefined when the package manager is unknown', t => {
+  t.is(prune.pruneCommand('unknown-package-manager'), undefined)
 })
 
-util.testFailure('pruneModules returns an error when the package manager is unknown', () =>
-  prune.pruneModules({packageManager: 'unknown-package-manager'}, '/tmp/app-path')
+test('pruneModules returns an error when the package manager is unknown', t =>
+  t.throws(prune.pruneModules({packageManager: 'unknown-package-manager'}, '/tmp/app-path'))
 )
 
 if (process.platform === 'win32') {
-  util.testFailure('pruneModules returns an error when trying to use cnpm on Windows', () =>
-    prune.pruneModules({packageManager: 'cnpm'}, '/tmp/app-path')
+  test('pruneModules returns an error when trying to use cnpm on Windows', t =>
+    t.throws(prune.pruneModules({packageManager: 'cnpm'}, '/tmp/app-path'))
   )
 }
 
 // This is not in the below loop so that it tests the default packageManager option.
-util.testSinglePlatform('prune test with npm', (baseOpts) => {
-  return createPruneOptionTest(baseOpts, true, 'package.json devDependency should NOT exist under app/node_modules')
+util.testSinglePlatform('prune test with npm', (t, baseOpts) => {
+  return createPruneOptionTest(t, baseOpts, true, 'package.json devDependency should NOT exist under app/node_modules')
 })
 
 // Not in the loop because it doesn't depend on an executable
-util.testSinglePlatform('prune test using pruner module (packageManager=false)', (baseOpts) => {
+util.testSinglePlatform('prune test using pruner module (packageManager=false)', (t, baseOpts) => {
   const opts = Object.assign({packageManager: false}, baseOpts)
-  return createPruneOptionTest(opts, true, 'package.json devDependency should NOT exist under app/node_modules')
+  return createPruneOptionTest(t, opts, true, 'package.json devDependency should NOT exist under app/node_modules')
 })
 
 for (const packageManager of ['cnpm', 'yarn']) {
-  which(packageManager, (err, resolvedPath) => {
-    if (err) return
-
-    util.testSinglePlatform(`prune test with ${packageManager}`, (baseOpts) => {
-      const opts = Object.assign({packageManager: packageManager}, baseOpts)
-      return createPruneOptionTest(opts, true, 'package.json devDependency should NOT exist under app/node_modules')
-    })
-  })
+  try {
+    if (which.sync(packageManager)) {
+      util.testSinglePlatform(`prune test with ${packageManager}`, (t, baseOpts) => {
+        const opts = Object.assign({packageManager: packageManager}, baseOpts)
+        return createPruneOptionTest(t, opts, true, 'package.json devDependency should NOT exist under app/node_modules')
+      })
+    }
+  } catch (e) {
+    console.log(`Cannot find ${packageManager}, skipping test`)
+  }
 }
 
-util.testSinglePlatform('prune=false test', (baseOpts) => {
-  return createPruneOptionTest(baseOpts, false, 'npm devDependency should exist under app/node_modules')
-})
+util.testSinglePlatform('prune=false test', createPruneOptionTest, false,
+                        'npm devDependency should exist under app/node_modules')

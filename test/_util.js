@@ -4,36 +4,74 @@
 const bufferEqual = require('buffer-equal')
 const common = require('../common')
 const config = require('./config.json')
+const exec = require('mz/child_process').exec
 const fs = require('fs-extra')
 const os = require('os')
 const packager = require('../index')
 const path = require('path')
 const targets = require('../targets')
-const test = require('tape')
+const tempy = require('tempy')
+const test = require('ava')
+
+// Download all Electron distributions before running tests to avoid timing out due to network
+// speed. Most tests run with the config.json version, but we have some tests using 0.37.4, and an
+// electron module specific test using 1.3.1.
+function preDownloadElectron () {
+  const versions = [
+    config.version,
+    '0.37.4',
+    '1.3.1'
+  ]
+  return Promise.all(versions.map(exports.downloadAll))
+}
+
+function npmInstallForFixture (fixture) {
+  console.log(`Running npm install in fixtures/${fixture}...`)
+  return exec('npm install --no-bin-links', {cwd: exports.fixtureSubdir(fixture)})
+    .catch((err) => console.error(err))
+}
+
+function npmInstallForFixtures () {
+  const fixtures = [
+    'basic',
+    'basic-renamed-to-electron',
+    'infer-missing-version-only',
+    'el-0374'
+  ]
+  return Promise.all(fixtures.map(npmInstallForFixture))
+}
 
 const ORIGINAL_CWD = process.cwd()
 const WORK_CWD = path.join(__dirname, 'work')
 
-// tape doesn't seem to have a provision for before/beforeEach/afterEach/after,
-// so run setup/teardown and cleanup tasks as additional "tests" to put them in sequence
-// and run them irrespective of test failures
-
-function setup () {
-  test('setup', (t) => {
-    fs.mkdirp(WORK_CWD)
-      .then(() => {
-        process.chdir(WORK_CWD)
-        return t.end()
-      }).catch(t.end)
-  })
+function ensureWorkDirExists () {
+  return fs.mkdirs(WORK_CWD).then(() => process.chdir(WORK_CWD))
 }
 
-function teardown () {
-  test('teardown', (t) => {
-    process.chdir(ORIGINAL_CWD)
-    fs.remove(WORK_CWD).then(t.end).catch(t.end)
-  })
-}
+test.before(t =>
+  preDownloadElectron()
+    .then(npmInstallForFixtures)
+    .catch(error => {
+      console.error(error.stack || error)
+      return process.exit(1)
+    })
+    .then(ensureWorkDirExists)
+)
+
+test.after.always(t => {
+  process.chdir(ORIGINAL_CWD)
+  return fs.remove(WORK_CWD)
+})
+
+test.beforeEach(t => {
+  t.context.workDir = tempy.directory()
+  t.context.tempDir = tempy.directory()
+})
+
+test.afterEach.always(t => {
+  return fs.remove(t.context.workDir)
+    .then(() => fs.remove(t.context.tempDir))
+})
 
 exports.allPlatformArchCombosCount = 8
 
@@ -67,18 +105,6 @@ exports.downloadAll = function downloadAll (version) {
   }))
 }
 
-exports.testFailure = function testFailure (description, promise) {
-  return test(description, t => {
-    return promise().then(() => {
-      t.fail('expected error')
-      return t.end()
-    }).catch(err => {
-      t.ok(err, 'error returned')
-      return t.end()
-    })
-  })
-}
-
 exports.fixtureSubdir = function fixtureSubdir (subdir) {
   return path.join(__dirname, 'fixtures', subdir)
 }
@@ -89,21 +115,8 @@ exports.generateResourcesPath = function generateResourcesPath (opts) {
     : 'resources'
 }
 
-exports.getWorkCwd = function getWorkCwd () {
-  return WORK_CWD
-}
-
 exports.invalidOptionTest = function invalidOptionTest (opts) {
-  return (t) => {
-    return packager(opts)
-      .then(
-        paths => t.end('no paths returned'),
-        (err) => {
-          t.ok(err, 'error thrown')
-          return t.end()
-        }
-      )
-  }
+  return t => t.throws(packager(opts))
 }
 
 exports.packageAndEnsureResourcesPath = function packageAndEnsureResourcesPath (t, opts) {
@@ -120,15 +133,29 @@ exports.packageAndEnsureResourcesPath = function packageAndEnsureResourcesPath (
 }
 
 exports.packagerTest = function packagerTest (name, testFunction) {
-  setup()
-  test(name, testFunction) // eslint-disable-line tape/test-ended
-  teardown()
+  test(name, t => {
+    const opts = {
+      name: 'packagerTest',
+      out: t.context.workDir,
+      tmpdir: t.context.tempDir
+    }
+    return testFunction(t, opts)
+  })
 }
 
 // Rest parameters are added (not behind a feature flag) in Node 6
-exports.testSinglePlatform = function testSinglePlatform (name, createTest /*, ...createTestArgs */) {
-  var args = Array.prototype.slice.call(arguments, 2)
-  exports.packagerTest(name, createTest.apply(null, [{platform: 'linux', arch: 'x64', electronVersion: config.version}].concat(args)))
+exports.testSinglePlatform = function testSinglePlatform (name, testFunction /*, ...testFunctionArgs */) {
+  const args = Array.prototype.slice.call(arguments, 2)
+  exports.packagerTest(name, (t, opts) => {
+    Object.assign(opts, {platform: 'linux', arch: 'x64', electronVersion: config.version})
+    return testFunction.apply(null, [t, opts].concat(args))
+  })
+}
+
+exports.timeoutTest = function timeoutTest (multiplier) {
+  if (!multiplier) multiplier = 1
+
+  setTimeout(() => { throw new Error('Timed out') }, config.timeout * multiplier)
 }
 
 exports.verifyPackageExistence = function verifyPackageExistence (finalPaths) {

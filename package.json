@@ -37,19 +37,19 @@
     "yargs-parser": "^8.0.0"
   },
   "devDependencies": {
+    "ava": "^0.24.0",
     "buffer-equal": "^1.0.0",
     "coveralls": "^3.0.0",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^10.0.0",
+    "eslint-plugin-ava": "^4.3.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.0",
-    "eslint-plugin-tape": "^1.1.0",
     "nyc": "^11.0.0",
     "pkg-up": "^2.0.0",
-    "rimraf": "^2.3.2",
-    "tape": "^4.0.0",
+    "tempy": "^0.2.1",
     "which": "^1.2.14"
   },
   "engines": {
@@ -58,8 +58,7 @@
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
-    "pretest": "rimraf test/work",
-    "test": "npm run lint && nyc tape test"
+    "test": "npm run lint && nyc ava test"
   },
   "directories": {
     "test": "test"
@@ -67,16 +66,16 @@
   "keywords": [],
   "eslintConfig": {
     "extends": [
+      "plugin:ava/recommended",
       "plugin:promise/recommended",
-      "plugin:tape/recommended",
       "standard"
     ],
     "parserOptions": {
       "sourceType": "script"
     },
     "plugins": [
-      "promise",
-      "tape"
+      "ava",
+      "promise"
     ],
     "rules": {
       "indent": [
@@ -89,6 +88,7 @@
           "SwitchCase": 1
         }
       ],
+      "ava/prefer-async-await": 0,
       "strict": "error"
     }
   }
