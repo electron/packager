@@ -13,7 +13,7 @@ Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`
 [API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md) |
 [Contributing](https://github.com/electron-userland/electron-packager/blob/master/CONTRIBUTING.md) |
 [Support](https://github.com/electron-userland/electron-packager/blob/master/SUPPORT.md) |
-[Related](#related) |
+[Related Apps/Libraries](#related) |
 [FAQ](https://github.com/electron-userland/electron-packager/blob/master/docs/faq.md) |
 [Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
 
@@ -77,6 +77,8 @@ functionality to work, so on non-Windows host platforms, [Wine](https://www.wine
 later needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
 
 ## Usage
+
+JavaScript API usage can be found in the [API documentation](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
 
 ### From the Command Line
 
