@@ -28,7 +28,7 @@ function testWrapper (testName, extraOpts, testFunction/*, ...extraArgs */) {
   const extraArgs = Array.prototype.slice.call(arguments, 3)
 
   util.packagerTest(testName, (t, baseOpts) => {
-    util.timeoutTest(2)
+    util.timeoutTest(t, 2)
     const opts = Object.assign({}, baseOpts, extraOpts)
 
     return testFunction.apply(null, [t, opts].concat(extraArgs))
@@ -100,7 +100,7 @@ function iconTest (t, opts, icon, iconPath) {
   return util.packageAndEnsureResourcesPath(t, opts)
     .then(generatedResourcesPath => {
       resourcesPath = generatedResourcesPath
-      const outputPath = resourcesPath.replace(`${path.sep}${exports.generateResourcesPath(opts)}`, '')
+      const outputPath = resourcesPath.replace(`${path.sep}${util.generateResourcesPath(opts)}`, '')
       return parseInfoPlist(t, opts, outputPath)
     }).then(obj => {
       return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
@@ -108,8 +108,6 @@ function iconTest (t, opts, icon, iconPath) {
 }
 
 function extendInfoTest (t, baseOpts, extraPathOrParams) {
-  util.timeoutTest()
-
   const opts = Object.assign({}, baseOpts, {
     appBundleId: 'com.electron.extratest',
     appCategoryType: 'public.app-category.music',

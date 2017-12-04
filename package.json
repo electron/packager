@@ -58,7 +58,7 @@
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
-    "test": "npm run lint && nyc ava test"
+    "test": "npm run lint && nyc ava test/index.js"
   },
   "directories": {
     "test": "test"

@@ -43,13 +43,13 @@ function preDownloadElectron () {
 }
 
 function npmInstallForFixture (fixture) {
-  console.log(`Running npm install in fixtures/${fixture}...`)
   const fixtureDir = exports.fixtureSubdir(fixture)
   return fs.exists(path.join(fixtureDir, 'node_modules'))
     .then(exists => {
       if (exists) {
         return true
       } else {
+        console.log(`Running npm install in fixtures/${fixture}...`)
         return exec('npm install --no-bin-links', {cwd: fixtureDir})
       }
     })
@@ -68,8 +68,10 @@ function npmInstallForFixtures () {
 const ORIGINAL_CWD = process.cwd()
 const WORK_CWD = path.join(__dirname, 'work')
 
-function ensureWorkDirExists () {
-  return fs.mkdirs(WORK_CWD).then(() => process.chdir(WORK_CWD))
+function ensureEmptyWorkDirExists () {
+  return fs.remove(WORK_CWD)
+    .then(() => fs.mkdirs(WORK_CWD))
+    .then(() => process.chdir(WORK_CWD))
 }
 
 test.before(t =>
@@ -79,7 +81,7 @@ test.before(t =>
       console.error(error.stack || error)
       return process.exit(1)
     })
-    .then(ensureWorkDirExists)
+    .then(ensureEmptyWorkDirExists)
 )
 
 test.after.always(t => {
@@ -93,6 +95,9 @@ test.beforeEach(t => {
 })
 
 test.afterEach.always(t => {
+  if (t.context.timeout) {
+    clearTimeout(t.context.timeout)
+  }
   return fs.remove(t.context.workDir)
     .then(() => fs.remove(t.context.tempDir))
 })
@@ -159,10 +164,10 @@ exports.testSinglePlatform = function testSinglePlatform (name, testFunction /*,
   })
 }
 
-exports.timeoutTest = function timeoutTest (multiplier) {
+exports.timeoutTest = function timeoutTest (t, multiplier) {
   if (!multiplier) multiplier = 1
 
-  setTimeout(() => { throw new Error('Timed out') }, config.timeout * multiplier)
+  t.context.timeout = setTimeout(() => { throw new Error('Timed out') }, config.timeout * multiplier)
 }
 
 exports.verifyPackageExistence = function verifyPackageExistence (finalPaths) {

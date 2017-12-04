@@ -8,7 +8,7 @@ const util = require('./_util')
 const which = require('which')
 
 function createPruneOptionTest (t, baseOpts, prune, testMessage) {
-  util.timeoutTest()
+  util.timeoutTest(t)
 
   const opts = Object.assign({}, baseOpts, {
     name: 'pruneTest',

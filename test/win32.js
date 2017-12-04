@@ -22,7 +22,7 @@ function generateRceditOptionsSansIcon (opts) {
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return t => {
-    util.timeoutTest()
+    util.timeoutTest(t)
 
     const opts = Object.assign({}, win32Opts, extraOpts)
     const rcOpts = generateRceditOptionsSansIcon(opts)

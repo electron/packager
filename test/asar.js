@@ -20,7 +20,7 @@ test('asar argument test: asar is not an Object or a bool', t => {
 })
 
 util.testSinglePlatform('default_app.asar removal test', (t, opts) => {
-  util.timeoutTest()
+  util.timeoutTest(t)
 
   opts.name = 'default_appASARTest'
   opts.dir = util.fixtureSubdir('el-0374')
@@ -32,7 +32,7 @@ util.testSinglePlatform('default_app.asar removal test', (t, opts) => {
 })
 
 util.testSinglePlatform('asar test', (t, opts) => {
-  util.timeoutTest()
+  util.timeoutTest(t)
 
   opts.name = 'asarTest'
   opts.dir = util.fixtureSubdir('basic')
