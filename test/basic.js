@@ -287,7 +287,7 @@ for (const platform of ['darwin', 'linux']) {
   util.testSinglePlatform(`extraResource test: array (${platform})`, createExtraResourceArrayTest, platform)
 }
 
-util.packagerTest('building for Linux target sanitizes binary name', (t, opts) => {
+util.testSinglePlatform('building for Linux target sanitizes binary name', (t, opts) => {
   opts.name = '@username/package-name'
   opts.dir = util.fixtureSubdir('basic')
 
@@ -298,7 +298,7 @@ util.packagerTest('building for Linux target sanitizes binary name', (t, opts) =
     }).then(stats => t.true(stats.isFile(), 'The sanitized binary filename should exist'))
 })
 
-util.packagerTest('executableName honored when building for Linux target', (t, opts) => {
+util.testSinglePlatform('executableName honored when building for Linux target', (t, opts) => {
   opts.name = 'PackageName'
   opts.executableName = 'my-package'
   opts.dir = util.fixtureSubdir('basic')
@@ -321,7 +321,7 @@ util.packagerTest('fails with invalid version', util.invalidOptionTest({
   }
 }))
 
-util.packagerTest('dir argument test: should work with relative path', (t, opts) => {
+util.testSinglePlatform('dir argument test: should work with relative path', (t, opts) => {
   opts.name = 'ElectronTest'
   opts.dir = path.join('..', 'fixtures', 'el-0374')
   opts.electronVersion = '0.37.4'
