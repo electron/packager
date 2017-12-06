@@ -9,8 +9,6 @@ const test = require('ava')
 const util = require('./_util')
 
 function ignoreTest (t, opts, ignorePattern, ignoredFile) {
-  util.timeoutTest(t)
-
   opts.name = 'ignoreTest'
   opts.dir = util.fixtureSubdir('basic')
   if (ignorePattern) {
@@ -30,8 +28,6 @@ function ignoreTest (t, opts, ignorePattern, ignoredFile) {
 }
 
 function ignoreOutDirTest (t, opts, distPath) {
-  util.timeoutTest(t)
-
   opts.name = 'ignoreOutDirTest'
   opts.dir = t.context.workDir
 
@@ -56,8 +52,6 @@ function ignoreOutDirTest (t, opts, distPath) {
 }
 
 function ignoreImplicitOutDirTest (t, opts) {
-  util.timeoutTest(t)
-
   opts.name = 'ignoreImplicitOutDirTest'
   opts.dir = t.context.workDir
   delete opts.out

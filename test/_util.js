@@ -95,9 +95,6 @@ test.beforeEach(t => {
 })
 
 test.afterEach.always(t => {
-  if (t.context.timeout) {
-    clearTimeout(t.context.timeout)
-  }
   return fs.remove(t.context.workDir)
     .then(() => fs.remove(t.context.tempDir))
 })
@@ -162,12 +159,6 @@ exports.testSinglePlatform = function testSinglePlatform (name, testFunction /*,
     Object.assign(opts, {platform: 'linux', arch: 'x64', electronVersion: config.version})
     return testFunction.apply(null, [t, opts].concat(args))
   })
-}
-
-exports.timeoutTest = function timeoutTest (t, multiplier) {
-  if (!multiplier) multiplier = 1
-
-  t.context.timeout = setTimeout(() => { throw new Error('Timed out') }, config.timeout * multiplier)
 }
 
 exports.verifyPackageExistence = function verifyPackageExistence (finalPaths) {

@@ -64,6 +64,9 @@
     "test": "test"
   },
   "keywords": [],
+  "ava": {
+    "timeout": "60s"
+  },
   "eslintConfig": {
     "extends": [
       "plugin:ava/recommended",

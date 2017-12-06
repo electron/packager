@@ -28,7 +28,6 @@ function testWrapper (testName, extraOpts, testFunction/*, ...extraArgs */) {
   const extraArgs = Array.prototype.slice.call(arguments, 3)
 
   util.packagerTest(testName, (t, baseOpts) => {
-    util.timeoutTest(t, 2)
     const opts = Object.assign({}, baseOpts, extraOpts)
 
     return testFunction.apply(null, [t, opts].concat(extraArgs))

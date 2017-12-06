@@ -5,9 +5,8 @@ const packager = require('..')
 const util = require('./_util')
 
 function createHookTest (hookName) {
+  // 2 packages will be built during this test
   util.packagerTest('platform=all test (one arch) (' + hookName + ' hook)', (t, opts) => {
-    util.timeoutTest(t, 2) // 2 packages will be built during this test
-
     let hookCalled = false
     opts.dir = util.fixtureSubdir('basic')
     opts.electronVersion = config.version
