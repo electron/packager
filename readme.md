@@ -207,3 +207,4 @@ These Node modules utilize Electron Packager API hooks:
 - [electron-packager-plugin-non-proprietary-codecs-ffmpeg](https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg) - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs
 - [electron-rebuild](https://github.com/electron/electron-rebuild) - rebuild native Node.js modules
   against the packaged Electron version
+- [electron-packager-languages](https://github.com/barinali/electron-packager-languages) - set the languages of MacOS build in order to organise the languages which are shown at the App Store
