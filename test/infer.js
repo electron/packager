@@ -8,7 +8,6 @@ const pkgUp = require('pkg-up')
 const util = require('./_util')
 
 function inferElectronVersionTest (t, opts, fixture, packageName) {
-  // Don't specify name or version
   delete opts.electronVersion
   opts.dir = util.fixtureSubdir(fixture)
 
@@ -36,6 +35,7 @@ function copyFixtureToTempDir (t, fixtureSubdir) {
 function inferFailureTest (t, opts, fixtureSubdir) {
   return copyFixtureToTempDir(t, fixtureSubdir)
     .then(dir => {
+      delete opts.name
       delete opts.electronVersion
       opts.dir = dir
 
@@ -67,6 +67,8 @@ function testInferWin32metadata (t, opts, expected, assertionMessage) {
 
 function testInferWin32metadataAuthorObject (t, opts, author, expected, assertionMessage) {
   let packageJSONFilename
+
+  delete opts.name
 
   return copyFixtureToTempDir(t, 'infer-win32metadata')
     .then(dir => {
