@@ -102,13 +102,14 @@ module.exports = {
   validateListFromOptions: function validateListFromOptions (opts, name) {
     if (opts.all) return Array.from(supported[name].values())
 
-    let list = opts[name]
+    let list
+    if (name === 'arch') {
+      list = hostArch()
+    } else {
+      list = opts[name]
+    }
     if (!list) {
-      if (name === 'arch') {
-        list = hostArch()
-      } else {
-        list = process[name]
-      }
+      list = process[name]
     } else if (list === 'all') {
       return Array.from(supported[name].values())
     }
@@ -128,7 +129,6 @@ module.exports = {
         return unsupportedListOption(name, value, supported[name])
       }
     }
-
     return list
   }
 }
