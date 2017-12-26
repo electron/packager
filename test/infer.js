@@ -83,22 +83,22 @@ function testInferWin32metadataAuthorObject (t, opts, author, expected, assertio
     .then(() => t.deepEqual(opts.win32metadata, expected, assertionMessage))
 }
 
-util.testSinglePlatform('infer using `electron-prebuilt` package', inferElectronVersionTest, 'basic', 'electron-prebuilt')
-util.testSinglePlatform('infer using `electron-prebuilt-compile` package', inferElectronVersionTest, 'infer-electron-prebuilt-compile', 'electron-prebuilt-compile')
-util.testSinglePlatform('infer using `electron` package only', inferMissingVersionTest)
-util.testSinglePlatform('infer where `electron` version is preferred over `electron-prebuilt`', inferElectronVersionTest, 'basic-renamed-to-electron', 'electron')
-util.testSinglePlatform('infer win32metadata', (t, opts) => {
+util.testSinglePlatformParallel('infer using `electron-prebuilt` package', inferElectronVersionTest, 'basic', 'electron-prebuilt')
+util.testSinglePlatformParallel('infer using `electron-prebuilt-compile` package', inferElectronVersionTest, 'infer-electron-prebuilt-compile', 'electron-prebuilt-compile')
+util.testSinglePlatformParallel('infer using `electron` package only', inferMissingVersionTest)
+util.testSinglePlatformParallel('infer where `electron` version is preferred over `electron-prebuilt`', inferElectronVersionTest, 'basic-renamed-to-electron', 'electron')
+util.testSinglePlatformParallel('infer win32metadata', (t, opts) => {
   const expected = {CompanyName: 'Foo Bar'}
 
   return testInferWin32metadata(t, opts, expected, 'win32metadata matches package.json values')
 })
-util.testSinglePlatform('do not infer win32metadata if it already exists', (t, opts) => {
+util.testSinglePlatformParallel('do not infer win32metadata if it already exists', (t, opts) => {
   opts.win32metadata = {CompanyName: 'Existing'}
   const expected = Object.assign({}, opts.win32metadata)
 
   return testInferWin32metadata(t, opts, expected, 'win32metadata did not update with package.json values')
 })
-util.testSinglePlatform('infer win32metadata when author is an object', (t, opts) => {
+util.testSinglePlatformParallel('infer win32metadata when author is an object', (t, opts) => {
   const author = {
     name: 'Foo Bar Object',
     email: 'foobar@example.com'
@@ -107,7 +107,7 @@ util.testSinglePlatform('infer win32metadata when author is an object', (t, opts
 
   return testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata did not update with package.json values')
 })
-util.testSinglePlatform('do not infer win32metadata.CompanyName when author is an object without a name', (t, opts) => {
+util.testSinglePlatformParallel('do not infer win32metadata.CompanyName when author is an object without a name', (t, opts) => {
   const author = {
     email: 'foobar@example.com'
   }
@@ -115,7 +115,7 @@ util.testSinglePlatform('do not infer win32metadata.CompanyName when author is a
 
   return testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata.CompanyName should not have been inferred')
 })
-util.testSinglePlatform('infer missing fields test', inferFailureTest, 'infer-missing-fields')
-util.testSinglePlatform('infer with bad fields test', inferFailureTest, 'infer-bad-fields')
-util.testSinglePlatform('infer with malformed JSON test', inferFailureTest, 'infer-malformed-json')
-util.testSinglePlatform('infer using a non-specific `electron-prebuilt-compile` package version', inferFailureTest, 'infer-non-specific-electron-prebuilt-compile')
+util.testSinglePlatformParallel('infer missing fields test', inferFailureTest, 'infer-missing-fields')
+util.testSinglePlatformParallel('infer with bad fields test', inferFailureTest, 'infer-bad-fields')
+util.testSinglePlatformParallel('infer with malformed JSON test', inferFailureTest, 'infer-malformed-json')
+util.testSinglePlatformParallel('infer using a non-specific `electron-prebuilt-compile` package version', inferFailureTest, 'infer-non-specific-electron-prebuilt-compile')

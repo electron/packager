@@ -99,6 +99,13 @@ test.afterEach.always(t => {
     .then(() => fs.remove(t.context.tempDir))
 })
 
+function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
+  module.exports.packagerTest(name, (t, opts) => {
+    Object.assign(opts, module.exports.singlePlatformOptions())
+    return testFunction.apply(null, [t, opts].concat(testFunctionArgs))
+  }, parallel)
+}
+
 module.exports = {
   allPlatformArchCombosCount: 8,
   areFilesEqual: function areFilesEqual (file1, file2) {
@@ -136,23 +143,32 @@ module.exports = {
         return resourcesPath
       })
   },
-  packagerTest: function packagerTest (name, testFunction) {
-    test.serial(name, t => {
-      const opts = {
+  packagerTest: function packagerTest (name, testFunction, parallel) {
+    const testDefinition = parallel ? test : test.serial
+    testDefinition(name, t => {
+      return testFunction(t, {
         name: 'packagerTest',
         out: t.context.workDir,
         tmpdir: t.context.tempDir
-      }
-      return testFunction(t, opts)
+      })
     })
   },
+  singlePlatformOptions: function singlePlatformOptions () {
+    return {
+      platform: 'linux',
+      arch: 'x64',
+      electronVersion: config.version
+    }
+  },
   // Rest parameters are added (not behind a feature flag) in Node 6
-  testSinglePlatform: function testSinglePlatform (name, testFunction /*, ...testFunctionArgs */) {
-    const args = Array.prototype.slice.call(arguments, 2)
-    module.exports.packagerTest(name, (t, opts) => {
-      Object.assign(opts, {platform: 'linux', arch: 'x64', electronVersion: config.version})
-      return testFunction.apply(null, [t, opts].concat(args))
-    })
+  testSinglePlatform: function (name, testFunction /*, ...testFunctionArgs */) {
+    const testFunctionArgs = Array.prototype.slice.call(arguments, 2)
+    return testSinglePlatform(name, testFunction, testFunctionArgs, false)
+  },
+  // Rest parameters are added (not behind a feature flag) in Node 6
+  testSinglePlatformParallel: function (name, testFunction /*, ...testFunctionArgs */) {
+    const testFunctionArgs = Array.prototype.slice.call(arguments, 2)
+    return testSinglePlatform(name, testFunction, testFunctionArgs, true)
   },
   verifyPackageExistence: function verifyPackageExistence (finalPaths) {
     return Promise.all(finalPaths.map((finalPath) => {
