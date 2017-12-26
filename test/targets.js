@@ -1,6 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
+const sinon = require('sinon')
 const targets = require('../targets')
 const test = require('ava')
 const util = require('./_util')
@@ -51,6 +52,17 @@ test('validateListFromOptions does not take non-Array/String values', t => {
   delete targets.supported.digits
 })
 
+test('validateListFromOptions works for armv7l host and target arch', t => {
+  const sandbox = sinon.createSandbox()
+
+  sandbox.stub(process, 'arch').value('arm')
+  sandbox.stub(process, 'config').value({variables: {arm_version: '7'}})
+
+  t.deepEqual(targets.validateListFromOptions({}, 'arch'), ['armv7l'])
+
+  sandbox.restore()
+})
+
 testMultiTarget('build for all available official targets', {all: true, electronVersion: '1.8.0'},
                 util.allPlatformArchCombosCount,
                 'Packages should be generated for all possible platforms')
@@ -75,6 +87,40 @@ test('fails with invalid platform', util.invalidOptionTest({
   arch: 'ia32',
   platform: 'dos'
 }))
+
+test('hostArch detects incorrectly configured armv7l Node', t => {
+  const sandbox = sinon.createSandbox()
+
+  sandbox.stub(targets, 'unameArch').returns('armv7l')
+  sandbox.stub(process, 'arch').value('arm')
+  sandbox.stub(process, 'config').value({variables: {arm_version: '6'}})
+
+  t.is(targets.hostArch(), 'armv7l')
+
+  sandbox.restore()
+})
+
+test('hostArch detects correctly configured armv7l Node', t => {
+  const sandbox = sinon.createSandbox()
+
+  sandbox.stub(process, 'arch').value('arm')
+  sandbox.stub(process, 'config').value({variables: {arm_version: '7'}})
+
+  t.is(targets.hostArch(), 'armv7l')
+
+  sandbox.restore()
+})
+
+test('hostArch cannot determine ARM version', t => {
+  const sandbox = sinon.createSandbox()
+
+  sandbox.stub(process, 'arch').value('arm')
+  sandbox.stub(process, 'config').value({variables: {arm_version: '99'}})
+
+  t.is(targets.hostArch(), 'arm')
+
+  sandbox.restore()
+})
 
 testMultiTarget('invalid official combination', {arch: 'ia32', platform: 'darwin'}, 0, 'Package should not be generated for invalid official combination')
 testMultiTarget('platform=linux and arch=arm64 with a supported official Electron version', {arch: 'arm64', platform: 'linux', electronVersion: '1.8.0'}, 1, 'Package should be generated for arm64')

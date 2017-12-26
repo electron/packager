@@ -1,5 +1,6 @@
 'use strict'
 
+const execSync = require('child_process').execSync
 const semver = require('semver')
 
 const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64']
@@ -73,9 +74,16 @@ function warnIfAllNotSpecified (opts, message) {
 }
 
 function hostArch () {
-  /* istanbul ignore if */
-  if (process.arch === 'arm' && process.config.variables.arm_version === '7') {
-    return 'armv7l'
+  if (process.arch === 'arm') {
+    switch (process.config.variables.arm_version) {
+      case '6':
+        return module.exports.unameArch()
+      case '7':
+        return 'armv7l'
+      default:
+        const common = require('./common')
+        common.warning(`Could not determine specific ARM arch. Detected ARM version: ${JSON.stringify(process.config.variables.arm_version)}`)
+    }
   }
 
   return process.arch
@@ -97,6 +105,13 @@ module.exports = {
   officialPlatforms: officialPlatforms,
   osModules: osModules,
   supported: supported,
+  /**
+   * Returns the arch name from the `uname` utility.
+   */
+  unameArch: function unameArch () {
+    /* istanbul ignore next */
+    return execSync('uname -m').toString().trim()
+  },
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or throws an Error.
   validateListFromOptions: function validateListFromOptions (opts, name) {
