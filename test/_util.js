@@ -43,7 +43,7 @@ function preDownloadElectron () {
 }
 
 function npmInstallForFixture (fixture) {
-  const fixtureDir = exports.fixtureSubdir(fixture)
+  const fixtureDir = module.exports.fixtureSubdir(fixture)
   return fs.exists(path.join(fixtureDir, 'node_modules'))
     .then(exists => {
       if (exists) {
@@ -99,74 +99,68 @@ test.afterEach.always(t => {
     .then(() => fs.remove(t.context.tempDir))
 })
 
-exports.allPlatformArchCombosCount = 8
+module.exports = {
+  allPlatformArchCombosCount: 8,
+  areFilesEqual: function areFilesEqual (file1, file2) {
+    let buffer1, buffer2
 
-exports.areFilesEqual = function areFilesEqual (file1, file2) {
-  let buffer1, buffer2
+    return fs.readFile(file1)
+      .then((data) => {
+        buffer1 = data
+        return fs.readFile(file2)
+      }).then((data) => {
+        buffer2 = data
+        return bufferEqual(buffer1, buffer2)
+      })
+  },
+  fixtureSubdir: function fixtureSubdir (subdir) {
+    return path.join(__dirname, 'fixtures', subdir)
+  },
+  generateResourcesPath: function generateResourcesPath (opts) {
+    return common.isPlatformMac(opts.platform)
+      ? path.join(opts.name + '.app', 'Contents', 'Resources')
+      : 'resources'
+  },
+  invalidOptionTest: function invalidOptionTest (opts) {
+    return t => t.throws(packager(opts))
+  },
+  packageAndEnsureResourcesPath: function packageAndEnsureResourcesPath (t, opts) {
+    let resourcesPath
 
-  return fs.readFile(file1)
-    .then((data) => {
-      buffer1 = data
-      return fs.readFile(file2)
-    }).then((data) => {
-      buffer2 = data
-      return bufferEqual(buffer1, buffer2)
+    return packager(opts)
+      .then(paths => {
+        resourcesPath = path.join(paths[0], module.exports.generateResourcesPath(opts))
+        return fs.stat(resourcesPath)
+      }).then(stats => {
+        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
+        return resourcesPath
+      })
+  },
+  packagerTest: function packagerTest (name, testFunction) {
+    test.serial(name, t => {
+      const opts = {
+        name: 'packagerTest',
+        out: t.context.workDir,
+        tmpdir: t.context.tempDir
+      }
+      return testFunction(t, opts)
     })
-}
-
-exports.fixtureSubdir = function fixtureSubdir (subdir) {
-  return path.join(__dirname, 'fixtures', subdir)
-}
-
-exports.generateResourcesPath = function generateResourcesPath (opts) {
-  return common.isPlatformMac(opts.platform)
-    ? path.join(opts.name + '.app', 'Contents', 'Resources')
-    : 'resources'
-}
-
-exports.invalidOptionTest = function invalidOptionTest (opts) {
-  return t => t.throws(packager(opts))
-}
-
-exports.packageAndEnsureResourcesPath = function packageAndEnsureResourcesPath (t, opts) {
-  let resourcesPath
-
-  return packager(opts)
-    .then(paths => {
-      resourcesPath = path.join(paths[0], exports.generateResourcesPath(opts))
-      return fs.stat(resourcesPath)
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-      return resourcesPath
+  },
+  // Rest parameters are added (not behind a feature flag) in Node 6
+  testSinglePlatform: function testSinglePlatform (name, testFunction /*, ...testFunctionArgs */) {
+    const args = Array.prototype.slice.call(arguments, 2)
+    module.exports.packagerTest(name, (t, opts) => {
+      Object.assign(opts, {platform: 'linux', arch: 'x64', electronVersion: config.version})
+      return testFunction.apply(null, [t, opts].concat(args))
     })
-}
-
-exports.packagerTest = function packagerTest (name, testFunction) {
-  test.serial(name, t => {
-    const opts = {
-      name: 'packagerTest',
-      out: t.context.workDir,
-      tmpdir: t.context.tempDir
-    }
-    return testFunction(t, opts)
-  })
-}
-
-// Rest parameters are added (not behind a feature flag) in Node 6
-exports.testSinglePlatform = function testSinglePlatform (name, testFunction /*, ...testFunctionArgs */) {
-  const args = Array.prototype.slice.call(arguments, 2)
-  exports.packagerTest(name, (t, opts) => {
-    Object.assign(opts, {platform: 'linux', arch: 'x64', electronVersion: config.version})
-    return testFunction.apply(null, [t, opts].concat(args))
-  })
-}
-
-exports.verifyPackageExistence = function verifyPackageExistence (finalPaths) {
-  return Promise.all(finalPaths.map((finalPath) => {
-    return fs.stat(finalPath)
-      .then(
-        stats => stats.isDirectory(),
-        () => false
-      )
-  }))
+  },
+  verifyPackageExistence: function verifyPackageExistence (finalPaths) {
+    return Promise.all(finalPaths.map((finalPath) => {
+      return fs.stat(finalPath)
+        .then(
+          stats => stats.isDirectory(),
+          () => false
+        )
+    }))
+  }
 }
