@@ -36,8 +36,4 @@ case "$TRAVIS_OS_NAME" in
     ;;
 esac
 
-# Force npm@5.1.0 if Node 8 (NPM ~5.0.0, ~5.3.0 have issues)
-if test "$TRAVIS_NODE_VERSION" = "8"; then
-  npm install -g npm@5.1.0
-fi
 npm install -g cnpm
