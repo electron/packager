@@ -22,6 +22,7 @@ before_install: test/ci/before_install.sh
 install:
 - npm install
 - npm update
+before_script: test/ci/_before_script.js
 after_success: npm run coveralls
 branches:
   only:

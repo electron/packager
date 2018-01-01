@@ -2,37 +2,30 @@
 
 const config = require('./config.json')
 const packager = require('..')
-const util = require('./util')
+const util = require('./_util')
 
 function createHookTest (hookName) {
-  util.packagerTest('platform=all test (one arch) (' + hookName + ' hook)', (t) => {
-    t.timeoutAfter(config.timeout * 2) // 2 packages will be built during this test
+  // 2 packages will be built during this test
+  util.packagerTest(`platform=all test (one arch) (${hookName} hook)`, (t, opts) => {
+    let hookCalled = false
+    opts.dir = util.fixtureSubdir('basic')
+    opts.electronVersion = config.version
+    opts.arch = 'ia32'
+    opts.platform = 'all'
 
-    var hookCalled = false
-    var opts = {
-      name: 'basicTest',
-      dir: util.fixtureSubdir('basic'),
-      electronVersion: config.version,
-      arch: 'ia32',
-      platform: 'all'
-    }
-
-    opts[hookName] = [function testHook (buildPath, electronVersion, platform, arch, callback) {
+    opts[hookName] = [(buildPath, electronVersion, platform, arch, callback) => {
       hookCalled = true
-      t.equal(electronVersion, opts.electronVersion, hookName + ' electronVersion should be the same as the options object')
-      t.equal(arch, opts.arch, hookName + ' arch should be the same as the options object')
+      t.is(electronVersion, opts.electronVersion, `${hookName} electronVersion should be the same as the options object`)
+      t.is(arch, opts.arch, `${hookName} arch should be the same as the options object`)
       callback()
     }]
 
-    packager(opts)
+    return packager(opts)
       .then(finalPaths => {
-        t.equal(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
+        t.is(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
         t.true(hookCalled, `${hookName} methods should have been called`)
         return util.verifyPackageExistence(finalPaths)
-      }).then(exists => {
-        t.true(exists, 'Packages should be generated for both 32-bit platforms')
-        return t.end()
-      }).catch(t.end)
+      }).then(exists => t.deepEqual(exists, [true, true], 'Packages should be generated for both 32-bit platforms'))
   })
 }
 

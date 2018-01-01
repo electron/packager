@@ -4,11 +4,11 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const test = require('tape')
-const util = require('./util')
+const test = require('ava')
+const util = require('./_util')
 const win32 = require('../win32')
 
-const baseOpts = {
+const win32Opts = {
   name: 'basicTest',
   dir: util.fixtureSubdir('basic'),
   electronVersion: config.version,
@@ -21,10 +21,8 @@ function generateRceditOptionsSansIcon (opts) {
 }
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
-  return (t) => {
-    t.timeoutAfter(config.timeout)
-
-    const opts = Object.assign({}, baseOpts, extraOpts)
+  return t => {
+    const opts = Object.assign({}, win32Opts, extraOpts)
     const rcOpts = generateRceditOptionsSansIcon(opts)
 
     metadataProperties = [].concat(metadataProperties)
@@ -35,13 +33,12 @@ function generateVersionStringTest (metadataProperties, extraOpts, expectedValue
       const msg = assertionMsgs[i]
       if (property === 'version-string') {
         for (const subkey in value) {
-          t.equal(rcOpts[property][subkey], value[subkey], `${msg} (${subkey})`)
+          t.is(rcOpts[property][subkey], value[subkey], `${msg} (${subkey})`)
         }
       } else {
-        t.equal(rcOpts[property], value, msg)
+        t.is(rcOpts[property], value, msg)
       }
     })
-    t.end()
   }
 }
 
@@ -147,78 +144,65 @@ test('better error message when wine is not found', (t) => {
   err.code = 'ENOENT'
   err.syscall = 'spawn wine'
 
-  t.equal(err.message, 'spawn wine ENOENT')
+  t.is(err.message, 'spawn wine ENOENT')
   err = win32.updateWineMissingException(err)
-  t.notEqual(err.message, 'spawn wine ENOENT')
-
-  t.end()
+  t.not(err.message, 'spawn wine ENOENT')
 })
 
-test('error message unchanged when error not about wine', (t) => {
+test('error message unchanged when error not about wine', t => {
   let errNotEnoent = Error('unchanged')
   errNotEnoent.code = 'ESOMETHINGELSE'
   errNotEnoent.syscall = 'spawn wine'
 
-  t.equal(errNotEnoent.message, 'unchanged')
+  t.is(errNotEnoent.message, 'unchanged')
   errNotEnoent = win32.updateWineMissingException(errNotEnoent)
-  t.equal(errNotEnoent.message, 'unchanged')
+  t.is(errNotEnoent.message, 'unchanged')
 
   let errNotSpawnWine = Error('unchanged')
   errNotSpawnWine.code = 'ENOENT'
   errNotSpawnWine.syscall = 'spawn foo'
 
-  t.equal(errNotSpawnWine.message, 'unchanged')
+  t.is(errNotSpawnWine.message, 'unchanged')
   errNotSpawnWine = win32.updateWineMissingException(errNotSpawnWine)
-  t.equal(errNotSpawnWine.message, 'unchanged')
-
-  t.end()
+  t.is(errNotSpawnWine.message, 'unchanged')
 })
 
-test('win32metadata defaults', (t) => {
-  const opts = {
-    name: 'Win32 App'
-  }
+test('win32metadata defaults', t => {
+  const opts = { name: 'Win32 App' }
   const rcOpts = generateRceditOptionsSansIcon(opts)
 
-  t.equal(rcOpts['version-string'].FileDescription, opts.name, 'default FileDescription')
-  t.equal(rcOpts['version-string'].InternalName, opts.name, 'default InternalName')
-  t.equal(rcOpts['version-string'].OriginalFilename, 'Win32 App.exe', 'default OriginalFilename')
-  t.equal(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
-  t.end()
+  t.is(rcOpts['version-string'].FileDescription, opts.name, 'default FileDescription')
+  t.is(rcOpts['version-string'].InternalName, opts.name, 'default InternalName')
+  t.is(rcOpts['version-string'].OriginalFilename, 'Win32 App.exe', 'default OriginalFilename')
+  t.is(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
 })
 
-util.packagerTest('win32 executable name is based on sanitized app name', (t) => {
-  const opts = Object.assign({}, baseOpts, {name: '@username/package-name'})
+util.packagerTest('win32 executable name is based on sanitized app name', (t, opts) => {
+  Object.assign(opts, win32Opts, { name: '@username/package-name' })
 
-  packager(opts)
+  return packager(opts)
     .then(paths => {
-      t.equal(1, paths.length, '1 bundle created')
+      t.is(1, paths.length, '1 bundle created')
       const appExePath = path.join(paths[0], '@username-package-name.exe')
       return fs.pathExists(appExePath)
-    }).then(exists => {
-      t.true(exists, 'The sanitized EXE filename should exist')
-      return t.end()
-    }).catch(t.end)
+    }).then(exists => t.true(exists, 'The sanitized EXE filename should exist'))
 })
 
-util.packagerTest('win32 executable name uses executableName when available', t => {
-  const opts = Object.assign({}, baseOpts, {name: 'PackageName', executableName: 'my-package'})
+util.packagerTest('win32 executable name uses executableName when available', (t, opts) => {
+  Object.assign(opts, win32Opts, { name: 'PackageName', executableName: 'my-package' })
 
-  packager(opts)
+  return packager(opts)
     .then(paths => {
-      t.equal(1, paths.length, '1 bundle created')
+      t.is(1, paths.length, '1 bundle created')
       const appExePath = path.join(paths[0], 'my-package.exe')
       return fs.pathExists(appExePath)
-    }).then(exists => {
-      t.true(exists, 'the executableName-based filename should exist')
-      return t.end()
-    }).catch(t.end)
+    }).then(exists => t.true(exists, 'the executableName-based filename should exist'))
 })
 
-util.packagerTest('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
-util.packagerTest('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
-util.packagerTest('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
-util.packagerTest('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
-util.packagerTest('win32 set CompanyName test', setCompanyNameTest('MyCompany LLC'))
-util.packagerTest('win32 set requested-execution-level test', setRequestedExecutionLevelTest('asInvoker'))
-util.packagerTest('win32 set application-manifest test', setApplicationManifestTest('/path/to/manifest.xml'))
+test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
+test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
+test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
+test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
+test('win32 set CompanyName test', setCompanyNameTest('MyCompany LLC'))
+test('win32 set requested-execution-level test', setRequestedExecutionLevelTest('asInvoker'))
+test('win32 set application-manifest test', setApplicationManifestTest('/path/to/manifest.xml'))
