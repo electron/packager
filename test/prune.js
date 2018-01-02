@@ -7,6 +7,11 @@ const test = require('ava')
 const util = require('./_util')
 const which = require('which')
 
+function assertYarnLockDoesntExist (t, resourcesPath) {
+  return fs.pathExists(path.join(resourcesPath, 'app', 'yarn.lock'))
+    .then(exists => t.false(exists, 'yarn.lock should NOT exist in packaged app'))
+}
+
 function createPruneOptionTest (t, baseOpts, prune, testMessage) {
   const opts = Object.assign({}, baseOpts, {
     name: 'pruneTest',
@@ -23,13 +28,19 @@ function createPruneOptionTest (t, baseOpts, prune, testMessage) {
     }).then(stats => {
       t.true(stats.isDirectory(), 'npm dependency should exist under app/node_modules')
       return fs.pathExists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
-    }).then(exists => t.is(!prune, exists, testMessage))
+    }).then(exists => {
+      t.is(!prune, exists, testMessage)
+      if (opts.packageManager === 'yarn') {
+        return assertYarnLockDoesntExist(t, resourcesPath)
+      }
+      return Promise.resolve()
+    })
 }
 
 test('pruneCommand returns the correct command when passing a known package manager', t => {
   t.is(prune.pruneCommand('npm'), 'npm prune --production', 'passing npm gives the npm prune command')
   t.is(prune.pruneCommand('cnpm'), 'cnpm prune --production', 'passing cnpm gives the cnpm prune command')
-  t.is(prune.pruneCommand('yarn'), 'yarn install --production --no-bin-links', 'passing yarn gives the yarn "prune command"')
+  t.is(prune.pruneCommand('yarn'), 'yarn install --production --no-bin-links --no-lockfile', 'passing yarn gives the yarn "prune command"')
 })
 
 test('pruneCommand returns undefined when the package manager is unknown', t => {
