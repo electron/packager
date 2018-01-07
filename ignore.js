@@ -50,8 +50,8 @@ function generateOutIgnores (opts) {
 }
 
 function userIgnoreFilter (opts) {
-  var ignore = opts.ignore || []
-  var ignoreFunc = null
+  let ignore = opts.ignore || []
+  let ignoreFunc = null
 
   if (typeof (ignore) === 'function') {
     ignoreFunc = file => { return !ignore(file) }
@@ -76,7 +76,7 @@ function userIgnoreFilter (opts) {
       return false
     }
 
-    var name = file.split(path.resolve(opts.dir))[1]
+    let name = file.split(path.resolve(opts.dir))[1]
 
     /* istanbul ignore if */
     if (path.sep === '\\') {
