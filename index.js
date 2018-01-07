@@ -45,8 +45,7 @@ class Packager {
     return fs.outputFile(testFile, '')
       .then(() => fs.symlink(testFile, testLink))
       .then(() => cleanup(true))
-      /* istanbul ignore next */
-      .catch(() => cleanup(false))
+      .catch(/* istanbul ignore next */ () => cleanup(false))
       .then(result => {
         this.canCreateSymlinks = result
         if (this.canCreateSymlinks) return this.checkOverwrite(comboOpts, zipPath)

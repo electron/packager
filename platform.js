@@ -127,7 +127,7 @@ class App {
 
     return fs.pathExists(iconFilename)
       .then(() => iconFilename)
-      .catch(() => null)
+      .catch(/* istanbul ignore next */ () => null)
   }
 
   prune () {
