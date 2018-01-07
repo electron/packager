@@ -70,7 +70,6 @@ class WindowsApp extends App {
     }
 
     return this.normalizeIconExtension('.ico')
-      .catch(() => Promise.resolve())
   }
 
   needsRcedit () {
@@ -78,8 +77,8 @@ class WindowsApp extends App {
   }
 
   runRcedit () {
+    /* istanbul ignore if */
     if (!this.needsRcedit()) {
-      /* istanbul ignore next */
       return Promise.resolve()
     }
 

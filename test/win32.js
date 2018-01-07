@@ -199,6 +199,17 @@ util.packagerTest('win32 executable name uses executableName when available', (t
     }).then(exists => t.true(exists, 'the executableName-based filename should exist'))
 })
 
+util.packagerTest('win32 icon set', (t, opts) => {
+  Object.assign(opts, win32Opts, { executableName: 'iconTest', arch: 'ia32', icon: path.join(__dirname, 'fixtures', 'monochrome') })
+
+  return packager(opts)
+    .then(paths => {
+      t.is(1, paths.length, '1 bundle created')
+      const appExePath = path.join(paths[0], 'iconTest.exe')
+      return fs.pathExists(appExePath)
+    }).then(exists => t.true(exists, 'the Electron executable should exist'))
+})
+
 test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
 test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
