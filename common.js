@@ -142,6 +142,12 @@ module.exports = {
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
   sanitizeAppName: sanitizeAppName,
+  /**
+   * Convert slashes to UNIX-format separators.
+   */
+  normalizePath: function normalizePath (pathToNormalize) {
+    return pathToNormalize.replace(/\\/g, '/')
+  },
 
   info: info,
   warning: warning

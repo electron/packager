@@ -76,6 +76,7 @@ function npmInstallForFixtures () {
   const fixtures = [
     'basic',
     'basic-renamed-to-electron',
+    'electron-in-dependencies',
     'infer-missing-version-only',
     'el-0374'
   ]
