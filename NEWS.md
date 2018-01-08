@@ -33,7 +33,8 @@
 * Electron Packager only officially supports Node versions that are supported by the
   NodeJS team (#747)
 * Refactor to use `Promise`s internally. This has the side effect of somewhat parallelizing
-  building two or more targets at once, via `Promise.all` (#753)
+  building two or more targets at once and/or two or more functions for a given hook, via
+  `Promise.all` (#753)
 
 ## [9.1.0] - 2017-09-15
 
