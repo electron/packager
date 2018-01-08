@@ -59,13 +59,7 @@ function userIgnoreFilter (opts) {
     if (!Array.isArray(ignore)) ignore = [ignore]
 
     ignoreFunc = function filterByRegexes (file) {
-      for (var i = 0; i < ignore.length; i++) {
-        if (file.match(ignore[i])) {
-          return false
-        }
-      }
-
-      return true
+      return !ignore.some(regex => file.match(regex))
     }
   }
 
