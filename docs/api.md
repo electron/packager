@@ -327,11 +327,14 @@ If present, signs OS X target apps when the host platform is OS X and XCode is i
 
 *Array* of *Object*​s
 
-In each Object should have:
-- `name` (*String*): The descriptive name of the URL protocol scheme(s). Maps to the `CFBundleURLName` metadata property.
-- `schemes` (*Array* of *String*s): The URL protocol scheme(s) to associate the app with. For example, specifying
-`myapp` would cause URLs such as `myapp://path` to be opened with the app. Maps
-to the `CFBundleURLSchemes` metadata property.
+One or more URL protocols associated with the Electron app.
+
+Each *Object* is required to have the following properties:
+
+- `name` (*String*): The descriptive name. Maps to the `CFBundleURLName` metadata property.
+- `schemes` (*Array* of *String*​s): One or more protocol schemes associated with the app. For
+  example, specifying `myapp` would cause URLs such as `myapp://path` to be opened with the app.
+  Maps to the `CFBundleURLSchemes` metadata property.
 
 #### Windows targets only
 
