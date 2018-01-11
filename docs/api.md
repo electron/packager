@@ -323,21 +323,18 @@ If present, signs OS X target apps when the host platform is OS X and XCode is i
 - `entitlements` (*String*): The path to the 'parent' entitlements.
 - `entitlements-inherit` (*String*): The path to the 'child' entitlements.
 
-##### `protocol`
+##### `protocols`
 
-*Array* of *String*​s
+*Array* of *Object*​s
 
-The URL protocol scheme(s) to associate the app with. For example, specifying
-`myapp` would cause URLs such as `myapp://path` to be opened with the app. Maps
-to the `CFBundleURLSchemes` metadata property. This option requires a
-corresponding `protocol-name` option to be specified.
+One or more URL protocols associated with the Electron app.
 
-##### `protocolName`
+Each *Object* is required to have the following properties:
 
-*Array* of *String*​s
-
-The descriptive name(s) of the URL protocol scheme(s) specified via the `protocol`
-option. Maps to the `CFBundleURLName` metadata property.
+- `name` (*String*): The descriptive name. Maps to the `CFBundleURLName` metadata property.
+- `schemes` (*Array* of *String*​s): One or more protocol schemes associated with the app. For
+  example, specifying `myapp` would cause URLs such as `myapp://path` to be opened with the app.
+  Maps to the `CFBundleURLSchemes` metadata property.
 
 #### Windows targets only
 
