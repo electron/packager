@@ -86,7 +86,7 @@ class App {
     debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`)
 
     return fs.move(this.templatePath, this.stagingPath, { clobber: true })
-      .then(this.copyTemplate())
+      .then(() => this.copyTemplate())
       .then(() => {
         // Support removing old default_app folder that is now an asar archive
         return fs.remove(path.join(this.originalResourcesDir, 'default_app'))
@@ -98,16 +98,15 @@ class App {
   }
 
   copyTemplate () {
-    return () =>
-      fs.copy(this.opts.dir, this.originalResourcesAppDir, {
-        filter: ignore.userIgnoreFilter(this.opts),
-        dereference: this.opts.derefSymlinks
-      }).then(() => common.promisifyHooks(this.opts.afterCopy, [
-        this.originalResourcesAppDir,
-        this.opts.electronVersion,
-        this.opts.platform,
-        this.opts.arch
-      ]))
+    return fs.copy(this.opts.dir, this.originalResourcesAppDir, {
+      filter: ignore.userIgnoreFilter(this.opts),
+      dereference: this.opts.derefSymlinks
+    }).then(() => common.promisifyHooks(this.opts.afterCopy, [
+      this.originalResourcesAppDir,
+      this.opts.electronVersion,
+      this.opts.platform,
+      this.opts.arch
+    ]))
   }
 
   /**

@@ -67,11 +67,9 @@ class Packager {
   }
 
   extractElectronZip (comboOpts, zipPath, buildDir) {
-    return () => {
-      debug(`Extracting ${zipPath} to ${buildDir}`)
-      return pify(extract)(zipPath, { dir: buildDir })
-        .then(() => common.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]))
-    }
+    debug(`Extracting ${zipPath} to ${buildDir}`)
+    return pify(extract)(zipPath, { dir: buildDir })
+      .then(() => common.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]))
   }
 
   createApp (comboOpts, zipPath) {
@@ -86,7 +84,7 @@ class Packager {
 
     debug(`Creating ${buildDir}`)
     return fs.ensureDir(buildDir)
-      .then(this.extractElectronZip(comboOpts, zipPath, buildDir))
+      .then(() => this.extractElectronZip(comboOpts, zipPath, buildDir))
       .then(() => {
         const os = require(targets.osModules[comboOpts.platform])
         const app = new os.App(comboOpts, buildDir)
