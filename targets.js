@@ -1,5 +1,6 @@
 'use strict'
 
+const common = require('./common')
 const execSync = require('child_process').execSync
 const semver = require('semver')
 
@@ -68,7 +69,6 @@ function allPlatformsOrArchsSpecified (opts) {
 
 function warnIfAllNotSpecified (opts, message) {
   if (!allPlatformsOrArchsSpecified(opts)) {
-    const common = require('./common')
     common.warning(message)
   }
 }
@@ -81,7 +81,6 @@ function hostArch () {
       case '7':
         return 'armv7l'
       default:
-        const common = require('./common')
         common.warning(`Could not determine specific ARM arch. Detected ARM version: ${JSON.stringify(process.config.variables.arm_version)}`)
     }
   }

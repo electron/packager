@@ -1,6 +1,7 @@
 'use strict'
 
 const common = require('../common')
+const download = require('../download')
 const fs = require('fs-extra')
 const hostArch = require('../targets').hostArch
 const packager = require('..')
@@ -35,8 +36,8 @@ test('setting the quiet option does not print messages', (t) => {
   console.warn = warningLog
 })
 
-test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', function (t) {
-  var opts = {
+test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', t => {
+  const opts = {
     download: {
       arch: 'ia32',
       platform: 'win32',
@@ -45,7 +46,7 @@ test('download argument test: download.{arch,platform,version} does not overwrit
     electronVersion: '0.36.0'
   }
 
-  var downloadOpts = common.createDownloadOpts(opts, 'linux', 'x64')
+  const downloadOpts = download.createDownloadOpts(opts, 'linux', 'x64')
   t.deepEqual(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0'})
 })
 

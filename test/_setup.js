@@ -1,6 +1,7 @@
 'use strict'
 
 const common = require('../common')
+const download = require('../download')
 const config = require('./config.json')
 const exec = require('mz/child_process').exec
 const fs = require('fs-extra')
@@ -14,14 +15,14 @@ function fixtureSubdir (subdir) {
 
 function downloadAll (version) {
   console.log(`Calling electron-download for ${version} before running tests...`)
-  const combinations = common.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, (platform, arch) => {
+  const combinations = download.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, (platform, arch) => {
     // Skip testing darwin/mas target on Windows since electron-packager itself skips it
     // (see https://github.com/electron-userland/electron-packager/issues/71)
     return common.isPlatformMac(platform) && process.platform === 'win32'
   })
 
   return Promise.all(combinations.map(combination => {
-    return common.downloadElectronZip(Object.assign({}, combination, {
+    return download.downloadElectronZip(Object.assign({}, combination, {
       cache: path.join(os.homedir(), '.electron'),
       quiet: !!process.env.CI,
       version: version

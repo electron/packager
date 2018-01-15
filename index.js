@@ -2,6 +2,7 @@
 
 const common = require('./common')
 const debug = require('debug')('electron-packager')
+const download = require('./download')
 const extract = require('extract-zip')
 const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('./infer')
@@ -110,7 +111,7 @@ class Packager {
   }
 
   packageForPlatformAndArch (downloadOpts) {
-    return common.downloadElectronZip(downloadOpts)
+    return download.downloadElectronZip(downloadOpts)
       .then(zipPath => {
         // Create delegated options object with specific platform and arch, for output directory naming
         const comboOpts = Object.assign({}, this.opts, {
@@ -140,7 +141,7 @@ class Packager {
 function packageAllSpecifiedCombos (opts, archs, platforms) {
   const packager = new Packager(opts)
   return packager.ensureTempDir()
-    .then(() => Promise.all(common.createDownloadCombos(opts, platforms, archs).map(
+    .then(() => Promise.all(download.createDownloadCombos(opts, platforms, archs).map(
       downloadOpts => packager.packageForPlatformAndArch(downloadOpts)
     )))
 }
