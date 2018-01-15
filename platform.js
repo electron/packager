@@ -157,7 +157,17 @@ class App {
     if (!Array.isArray(extraResources)) extraResources = [extraResources]
 
     return Promise.all(extraResources.map(
-      resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))
+      resource => {
+        if ((typeof resource) === 'object') {
+          if (resource.hasOwnProperty('from') && resource.hasOwnProperty('to')) {
+            fs.copy(resource.from, path.resolve(this.stagingPath, this.resourcesDir, resource.to))
+          } else {
+            return Promise.reject(new Error('ExtraResource object is invalid'))
+          }
+        } else {
+          fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))
+        }
+      }
     ))
   }
 

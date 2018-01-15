@@ -250,24 +250,51 @@ function createExtraResourceStringTest (t, opts, platform) {
     .then(equal => t.true(equal, 'resource file data1.txt should match'))
 }
 
+function createExtraResourceObjectTest (t, opts, platform) {
+  const extra1Base = 'data1.txt'
+  const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
+  const extra1Object = {
+    from: extra1Path,
+    to: 'test/data1.txt'
+  }
+
+  opts.name = 'extraResourceObjectTest'
+  opts.dir = util.fixtureSubdir('basic')
+  opts.out = 'dist'
+  opts.platform = platform
+  opts.extraResource = extra1Object
+
+  return util.packageAndEnsureResourcesPath(t, opts)
+    .then(resourcesPath => {
+      return util.areFilesEqual(extra1Path, path.join(resourcesPath, 'test', extra1Base))
+    })
+    .then(equal => t.true(equal, 'resource file data1.txt should match'))
+}
+
 function createExtraResourceArrayTest (t, opts, platform) {
   const extra1Base = 'data1.txt'
   const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
   const extra2Base = 'extrainfo.plist'
   const extra2Path = path.join(__dirname, 'fixtures', extra2Base)
+  const extra3Object = {
+    from: extra1Path,
+    to: 'test/data1.txt'
+  }
 
   opts.name = 'extraResourceArrayTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.out = 'dist'
   opts.platform = platform
-  opts.extraResource = [extra1Path, extra2Path]
+  opts.extraResource = [extra1Path, extra2Path, extra3Object]
 
   let extra1DistPath
+  let extra1CustomDistPath
   let extra2DistPath
 
   return util.packageAndEnsureResourcesPath(t, opts)
     .then(resourcesPath => {
       extra1DistPath = path.join(resourcesPath, extra1Base)
+      extra1CustomDistPath = path.join(resourcesPath, 'test', extra1Base)
       extra2DistPath = path.join(resourcesPath, extra2Base)
       return fs.pathExists(extra1DistPath)
     }).then(exists => {
@@ -279,11 +306,15 @@ function createExtraResourceArrayTest (t, opts, platform) {
     }).then(exists => {
       t.true(exists, 'resource file extrainfo.plist exists')
       return util.areFilesEqual(extra2Path, extra2DistPath)
-    }).then(equal => t.true(equal, 'resource file extrainfo.plist should match'))
+    }).then(equal => {
+      t.true(equal, 'resource file extrainfo.plist should match')
+      return util.areFilesEqual(extra1Path, extra1CustomDistPath)
+    }).then(equal => t.true(equal, 'resource file data1.txt in custom destination folder should match'))
 }
 
 for (const platform of ['darwin', 'linux']) {
   util.testSinglePlatform(`extraResource test: string (${platform})`, createExtraResourceStringTest, platform)
+  util.testSinglePlatform(`extraResource test: object (${platform})`, createExtraResourceObjectTest, platform)
   util.testSinglePlatform(`extraResource test: array (${platform})`, createExtraResourceArrayTest, platform)
 }
 
