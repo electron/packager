@@ -32,7 +32,7 @@ function ignoreOutDirTest (t, opts, distPath) {
   opts.dir = t.context.workDir
 
   // we don't use path.join here to avoid normalizing
-  var outDir = opts.dir + path.sep + distPath
+  const outDir = opts.dir + path.sep + distPath
   opts.out = outDir
 
   return fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {

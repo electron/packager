@@ -3,7 +3,7 @@
 Short [callback](#callback) example:
 
 ```javascript
-var packager = require('electron-packager')
+const packager = require('electron-packager')
 packager(options, function done_callback (err, appPaths) { /* … */ })
 ```
 

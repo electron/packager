@@ -8,10 +8,7 @@ const pify = require('pify')
 const resolve = require('resolve')
 
 function isMissingRequiredProperty (props) {
-  var requiredProps = props.filter(
-    (prop) => prop === 'productName' || prop === 'dependencies.electron'
-  )
-  return requiredProps.length !== 0
+  return props.some(prop => prop === 'productName' || prop === 'dependencies.electron')
 }
 
 function errorMessageForProperty (prop) {

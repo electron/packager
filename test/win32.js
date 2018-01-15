@@ -59,13 +59,9 @@ function setFileVersionTest (buildVersion) {
 }
 
 function setProductVersionTest (appVersion) {
-  var opts = {
-    appVersion: appVersion
-  }
-
   return generateVersionStringTest(
     ['product-version', 'file-version'],
-    opts,
+    { appVersion: appVersion },
     [appVersion, appVersion],
     ['Product version should match app version',
       'File version should match app version']
@@ -73,7 +69,7 @@ function setProductVersionTest (appVersion) {
 }
 
 function setCopyrightTest (appCopyright) {
-  var opts = {
+  const opts = {
     appCopyright: appCopyright
   }
 
@@ -81,7 +77,7 @@ function setCopyrightTest (appCopyright) {
 }
 
 function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
-  var opts = {
+  const opts = {
     appCopyright: appCopyright,
     win32metadata: {
       CompanyName: companyName
@@ -97,7 +93,7 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
 }
 
 function setRequestedExecutionLevelTest (requestedExecutionLevel) {
-  var opts = {
+  const opts = {
     win32metadata: {
       'requested-execution-level': requestedExecutionLevel
     }
@@ -112,7 +108,7 @@ function setRequestedExecutionLevelTest (requestedExecutionLevel) {
 }
 
 function setApplicationManifestTest (applicationManifest) {
-  var opts = {
+  const opts = {
     win32metadata: {
       'application-manifest': applicationManifest
     }

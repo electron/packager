@@ -7,7 +7,7 @@ const sanitize = require('sanitize-filename')
 const yargs = require('yargs-parser')
 
 function parseCLIArgs (argv) {
-  var args = yargs(argv, {
+  let args = yargs(argv, {
     boolean: [
       'all',
       'deref-symlinks',
@@ -30,8 +30,8 @@ function parseCLIArgs (argv) {
   args.dir = args._[0]
   args.name = args._[1]
 
-  var protocolSchemes = [].concat(args.protocol || [])
-  var protocolNames = [].concat(args.protocolName || [])
+  const protocolSchemes = [].concat(args.protocol || [])
+  const protocolNames = [].concat(args.protocolName || [])
 
   if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
     args.protocols = protocolSchemes.map(function (scheme, i) {
