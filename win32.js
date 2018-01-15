@@ -102,7 +102,7 @@ class WindowsApp extends App {
   create () {
     return this.initialize()
       .then(() => this.renameElectron())
-      .then(() => this.copyExtraResources(this.opts.extraResource))
+      .then(() => this.copyExtraResources())
       .then(() => this.runRcedit())
       .then(() => this.move())
   }

@@ -150,10 +150,10 @@ class App {
       .then(() => fs.remove(this.originalResourcesAppDir))
   }
 
-  copyExtraResources (extraResources) {
-    if (!extraResources) return Promise.resolve()
+  copyExtraResources () {
+    if (!this.opts.extraResource) return Promise.resolve()
 
-    if (!Array.isArray(extraResources)) extraResources = [extraResources]
+    const extraResources = common.ensureArray(this.opts.extraResource)
 
     return Promise.all(extraResources.map(
       resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))

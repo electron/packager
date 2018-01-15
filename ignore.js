@@ -16,8 +16,11 @@ const DEFAULT_IGNORES = [
 
 function generateIgnores (opts) {
   if (typeof (opts.ignore) !== 'function') {
-    if (opts.ignore && !Array.isArray(opts.ignore)) opts.ignore = [opts.ignore]
-    opts.ignore = opts.ignore ? opts.ignore.concat(DEFAULT_IGNORES) : [].concat(DEFAULT_IGNORES)
+    if (opts.ignore) {
+      opts.ignore = common.ensureArray(opts.ignore).concat(DEFAULT_IGNORES)
+    } else {
+      opts.ignore = [].concat(DEFAULT_IGNORES)
+    }
     if (process.platform === 'linux') {
       opts.ignore.push(common.baseTempDir(opts))
     }
@@ -56,7 +59,7 @@ function userIgnoreFilter (opts) {
   if (typeof (ignore) === 'function') {
     ignoreFunc = file => { return !ignore(file) }
   } else {
-    if (!Array.isArray(ignore)) ignore = [ignore]
+    ignore = common.ensureArray(ignore)
 
     ignoreFunc = function filterByRegexes (file) {
       return !ignore.some(regex => file.match(regex))

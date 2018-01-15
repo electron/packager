@@ -117,6 +117,9 @@ function createAsarOpts (opts) {
 module.exports = {
   parseCLIArgs: parseCLIArgs,
 
+  ensureArray: function ensureArray (value) {
+    return Array.isArray(value) ? value : [value]
+  },
   isPlatformMac: function isPlatformMac (platform) {
     return platform === 'darwin' || platform === 'mas'
   },

@@ -244,7 +244,7 @@ class MacApp extends App {
       .then(() => this.copyIcon())
       .then(() => this.renameElectron())
       .then(() => this.renameAppAndHelpers())
-      .then(() => this.copyExtraResources(this.opts.extraResource))
+      .then(() => this.copyExtraResources())
       .then(() => this.signAppIfSpecified())
       .then(() => this.move())
   }
