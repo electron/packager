@@ -12,7 +12,7 @@ function pruneCommand (packageManager) {
     case 'cnpm':
       return `${packageManager} prune --production`
     case 'yarn':
-      return `${packageManager} install --production --no-bin-links --no-lockfile`
+      return `${packageManager} install --production --no-bin-links --no-lockfile --force`
   }
 }
 

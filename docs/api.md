@@ -153,10 +153,14 @@ valid versions. If omitted, it will use the version of the nearest local install
 
 ##### `extraResource`
 
-*String* or *Array* of *String*s
+*Object*, *String* or *Array* of *String*s and/or *Object*s
 
 One or more files to be copied directly into the app's `Contents/Resources` directory for OS X
 target platforms, and the `resources` directory for other target platforms.
+
+A Object defines the files source with a custom destination, by the following properties
+- `from` (*String*): The source file
+- `to` (*String*): Destination path for the new file inlclusive the filename, relative from the `resources` directory.
 
 ##### `executableName`
 
