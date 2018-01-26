@@ -63,6 +63,7 @@ class Packager {
   }
 
   overwriteAndCreateApp (outDir, comboOpts, zipPath) {
+    debug(`Removing ${outDir} due to setting overwrite: true`)
     return fs.remove(outDir)
       .then(() => this.createApp(comboOpts, zipPath))
   }
@@ -94,7 +95,7 @@ class Packager {
   }
 
   checkOverwrite (comboOpts, zipPath) {
-    const finalPath = common.generateFinalPath(this.opts)
+    const finalPath = common.generateFinalPath(comboOpts)
     return fs.pathExists(finalPath)
       .then(exists => {
         if (exists) {

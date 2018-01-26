@@ -195,6 +195,21 @@ util.testSinglePlatform('overwrite test', (t, opts) => {
     .then(exists => t.false(exists, 'The output directory should be regenerated when overwrite is true'))
 })
 
+util.testSinglePlatform('overwrite test sans platform/arch set', (t, opts) => {
+  delete opts.platfrom
+  delete opts.arch
+  opts.dir = util.fixtureSubdir('basic')
+  opts.overwrite = true
+
+  return packager(opts)
+    .then(paths => fs.pathExists(paths[0]))
+    .then(exists => {
+      t.true(exists, 'The output directory exists')
+      return packager(opts)
+    }).then(paths => fs.pathExists(paths[0]))
+    .then(exists => t.true(exists, 'The output directory exists'))
+})
+
 util.testSinglePlatform('tmpdir test', (t, opts) => {
   opts.name = 'tmpdirTest'
   opts.dir = path.join(__dirname, 'fixtures', 'basic')
