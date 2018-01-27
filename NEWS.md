@@ -1,6 +1,16 @@
 # Changes by Version
 
-## Unreleased
+## [Unreleased]
+
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v10.1.2...master
+
+## [10.1.2] - 2018-01-26
+
+[10.1.2]: https://github.com/electron-userland/electron-packager/compare/v10.1.1...v10.1.2
+
+### Fixed
+
+* `overwrite: true` when no platform/arch is specified (#794)
 
 ## [10.1.1] - 2018-01-02
 
