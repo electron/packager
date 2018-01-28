@@ -39,7 +39,7 @@
   "devDependencies": {
     "ava": "^0.24.0",
     "buffer-equal": "^1.0.0",
-    "coveralls": "^3.0.0",
+    "codecov": "^3.0.0",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^10.0.0",
     "eslint-plugin-ava": "^4.3.0",
@@ -57,7 +57,7 @@
     "node": ">= 4.0"
   },
   "scripts": {
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "lint": "eslint .",
     "test": "npm run lint && nyc ava test/index.js"
   },
