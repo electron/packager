@@ -199,6 +199,7 @@ Linux:
 * [electron-installer-debian](https://github.com/unindented/electron-installer-debian) - creates a DEB file
 * [electron-installer-redhat](https://github.com/unindented/electron-installer-redhat) - creates an RPM
 * [electron-installer-flatpak](https://github.com/endlessm/electron-installer-flatpak) - creates a Flatpak file
+* [electron-installer-snap](https://github.com/electron-userland/electron-installer-snap) - creates a Snap file
 
 ### Plugins
 
