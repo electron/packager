@@ -4,6 +4,15 @@
 
 [Unreleased]: https://github.com/electron-userland/electron-packager/compare/v10.1.2...master
 
+### Added
+
+* `linux` platform, `mips64el` arch builds (Electron 1.8.2-beta.5 and above) (#800)
+
+### Changed
+
+* `all` or `platform=linux, arch=all` now include `arch=mips64el` if the Electron version specified
+  is 1.8.2-beta.5 or above (#800)
+
 ## [10.1.2] - 2018-01-26
 
 [10.1.2]: https://github.com/electron-userland/electron-packager/compare/v10.1.1...v10.1.2
