@@ -90,7 +90,8 @@ The release version of the application. By default the `version` property in the
 
 *String* (default: the arch of the host computer running Node)
 
-Allowed values: `ia32`, `x64`, `armv7l`, `arm64` _(Electron 1.8.0 and above)_, `all`
+Allowed values: `ia32`, `x64`, `armv7l`, `arm64` _(Electron 1.8.0 and above)_, `mips64el`
+_(Electron 1.8.2-beta.5 and above)_, `all`
 
 The target system architecture(s) to build for.
 Not required if the [`all`](#all) option is set.
