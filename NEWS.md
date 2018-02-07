@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v10.1.2...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.0.0...master
+
+## [11.0.0] - 2018-02-06
+
+[11.0.0]: https://github.com/electron-userland/electron-packager/compare/v10.1.2...v11.0.0
 
 ### Added
 
