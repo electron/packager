@@ -4,13 +4,18 @@ const common = require('./common')
 const execSync = require('child_process').execSync
 const semver = require('semver')
 
-const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64']
+const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el']
 const officialPlatforms = ['darwin', 'linux', 'mas', 'win32']
 const officialPlatformArchCombos = {
   darwin: ['x64'],
-  linux: ['ia32', 'x64', 'armv7l', 'arm64'],
+  linux: ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el'],
   mas: ['x64'],
   win32: ['ia32', 'x64']
+}
+
+const minimumLinuxArchBuildVersions = {
+  arm64: '1.8.0',
+  mips64el: '1.8.2-beta.5'
 }
 
 // Maps to module filename for each platform (lazy-required if used)
@@ -34,9 +39,12 @@ function createPlatformArchPairs (opts, selectedPlatforms, selectedArchs, ignore
         if (!validOfficialPlatformArch(opts, platform, arch)) {
           warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`)
           continue
-        } else if (platform === 'linux' && arch === 'arm64' && !officialLinuxARM64BuildExists(opts)) {
-          warnIfAllNotSpecified(opts, 'Official linux/arm64 support only exists in Electron 1.8.0 and above')
-          continue
+        } else if (platform === 'linux') {
+          const minimumBuildVersion = minimumLinuxArchBuildVersions[arch]
+          if (minimumBuildVersion && !officialLinuxBuildExists(opts, minimumBuildVersion)) {
+            warnIfAllNotSpecified(opts, `Official linux/${arch} support only exists in Electron ${minimumBuildVersion} and above`)
+            continue
+          }
         }
         if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
       }
@@ -59,8 +67,8 @@ function validOfficialPlatformArch (opts, platform, arch) {
   return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].indexOf(arch) !== -1
 }
 
-function officialLinuxARM64BuildExists (opts) {
-  return semver.gte(opts.electronVersion, '1.8.0')
+function officialLinuxBuildExists (opts, minimumBuildVersion) {
+  return semver.gte(opts.electronVersion, minimumBuildVersion)
 }
 
 function allPlatformsOrArchsSpecified (opts) {
@@ -91,8 +99,10 @@ function hostArch () {
 module.exports = {
   allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
     const archs = officialPlatformArchCombos[platform]
-    if (platform === 'linux' && !officialLinuxARM64BuildExists({electronVersion: electronVersion})) {
-      return archs.filter((arch) => arch !== 'arm64')
+    if (platform === 'linux') {
+      const excludedArchs = Object.keys(minimumLinuxArchBuildVersions)
+        .filter(arch => !officialLinuxBuildExists({electronVersion: electronVersion}, minimumLinuxArchBuildVersions[arch]))
+      return archs.filter(arch => excludedArchs.indexOf(arch) === -1)
     }
 
     return archs
