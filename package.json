@@ -34,17 +34,17 @@
     "resolve": "^1.1.6",
     "sanitize-filename": "^1.6.0",
     "semver": "^5.3.0",
-    "yargs-parser": "^8.0.0"
+    "yargs-parser": "^9.0.2"
   },
   "devDependencies": {
-    "ava": "^0.24.0",
+    "ava": "^0.25.0",
     "buffer-equal": "^1.0.0",
     "codecov": "^3.0.0",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^10.0.0",
     "eslint-plugin-ava": "^4.3.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-node": "^5.1.0",
+    "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.0",
     "nyc": "^11.0.0",
