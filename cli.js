@@ -18,13 +18,24 @@ var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
 
 var args = common.parseCLIArgs(process.argv.slice(2))
 
-if (!args.dir) {
-  // temporary fix for https://github.com/nodejs/node/issues/6456
-  if (process.stderr._handle && process.stderr._handle.setBlocking) {
-    process.stderr._handle.setBlocking(true)
+// temporary fix for https://github.com/nodejs/node/issues/6456
+var stdioWriters = [process.stdout, process.stderr]
+stdioWriters.forEach(function (stdioWriter) {
+  if (stdioWriter._handle && stdioWriter._handle.setBlocking) {
+    stdioWriter._handle.setBlocking(true)
   }
-  console.error(usage)
-  process.exit(1)
+})
+
+function printUsageAndExit (isError) {
+  var print = isError ? console.error : console.log
+  print(usage)
+  process.exit(isError ? 1 : 0)
+}
+
+if (args.help) {
+  printUsageAndExit(false)
+} else if (!args.dir) {
+  printUsageAndExit(true)
 }
 
 packager(args, function done (err, appPaths) {
