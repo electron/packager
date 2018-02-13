@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.0.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.0.1...master
+
+## [11.0.1] - 2018-02-12
+
+[11.0.1]: https://github.com/electron-userland/electron-packager/compare/v11.0.0...v11.0.1
+
+### Fixed
+
+* `rcedit` module updated to 1.0.0, which fixes some bugs (#804)
+* `--help` prints usage to stdout (#805)
 
 ## [11.0.0] - 2018-02-06
 
