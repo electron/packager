@@ -70,7 +70,10 @@
   },
   "eslintConfig": {
     "extends": [
+      "eslint:recommended",
       "plugin:ava/recommended",
+      "plugin:import/errors",
+      "plugin:import/warnings",
       "plugin:promise/recommended",
       "standard"
     ],
@@ -93,6 +96,7 @@
         }
       ],
       "ava/prefer-async-await": 0,
+      "no-console": 0,
       "strict": "error"
     }
   }
