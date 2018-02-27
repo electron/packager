@@ -13,26 +13,42 @@ function fixtureSubdir (subdir) {
   return path.join(__dirname, 'fixtures', subdir)
 }
 
+/**
+ * Skip testing darwin/mas target on Windows since Electron Packager itself skips it
+ * (see https://github.com/electron-userland/electron-packager/issues/71)
+ */
+function skipDownloadingMacZips (platform, arch) {
+  return common.isPlatformMac(platform) && process.platform === 'win32'
+}
+
 function downloadAll (version) {
   console.log(`Calling electron-download for ${version} before running tests...`)
-  const combinations = download.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, (platform, arch) => {
-    // Skip testing darwin/mas target on Windows since electron-packager itself skips it
-    // (see https://github.com/electron-userland/electron-packager/issues/71)
-    return common.isPlatformMac(platform) && process.platform === 'win32'
-  })
+  const combinations = download.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
-  return Promise.all(combinations.map(combination => {
-    return download.downloadElectronZip(Object.assign({}, combination, {
-      cache: path.join(os.homedir(), '.electron'),
-      quiet: !!process.env.CI,
-      version: version
-    }))
+  return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
+}
+
+function downloadElectronZip (version, options) {
+  return download.downloadElectronZip(Object.assign({}, options, {
+    cache: path.join(os.homedir(), '.electron'),
+    quiet: !!process.env.CI,
+    version: version
   }))
 }
 
-// Download all Electron distributions before running tests to avoid timing out due to network
-// speed. Most tests run with the config.json version, but we have some tests using 0.37.4, and an
-// electron module specific test using 1.3.1.
+function downloadMASLoginHelperElectronZip () {
+  if (process.platform !== 'win32') {
+    const version = '2.0.0-beta.1'
+    console.log(`Calling electron-download for ${version} (MAS only) before running tests...`)
+    return downloadElectronZip(version, { platform: 'mas', arch: 'x64' })
+  }
+}
+
+/**
+ * Download all Electron distributions before running tests to avoid timing out due to network
+ * speed. Most tests run with the config.json version, but we have some tests using 0.37.4, an
+ * `electron` module specific test using 1.3.1., and an MAS-specific test using 2.0.0-beta.1.
+ */
 function preDownloadElectron () {
   const versions = [
     config.version,
@@ -40,6 +56,7 @@ function preDownloadElectron () {
     '1.3.1'
   ]
   return Promise.all(versions.map(downloadAll))
+    .then(downloadMASLoginHelperElectronZip)
 }
 
 function npmInstallForFixture (fixture) {
