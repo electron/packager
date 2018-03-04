@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.0.1...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.1.0...master
+
+## [11.1.0] - 2018-03-04
+
+[11.1.0]: https://github.com/electron-userland/electron-packager/compare/v11.0.1...v11.1.0
+
+### Added
+
+* Support for MAS Login Helper (Electron 2.0.0-beta.1 and above) (#807)
 
 ## [11.0.1] - 2018-02-12
 
