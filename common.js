@@ -149,7 +149,11 @@ module.exports = {
       return Promise.resolve()
     }
 
-    return Promise.all(hooks.map(hookFn => pify(hookFn).apply(this, args)))
+    const promisified = hooks.map(hookFn => pify(hookFn).bind(this, ...args))
+
+    return promisified.reduce((previous, current) => {
+      return previous.then(() => current())
+    }, Promise.resolve())
   },
 
   info: info,
