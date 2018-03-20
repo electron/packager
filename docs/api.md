@@ -41,6 +41,32 @@ An array of functions to be called after your app directory has been copied to a
 - `arch` (*String*): The target architecture you are packaging for
 - `callback` (*Function*): Must be called once you have completed your actions
 
+By default, the functions are called in parallel (via
+[`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
+If you need the functions called serially, there is a utility function provided:
+
+```javascript
+const packager = require('electron-packager')
+const serialHooks = require('electron-packager/hooks').serialHooks
+
+packager({
+  // ...
+  afterCopy: [serialHooks([
+    (buildPath, electronVersion, platform, arch, callback) => {
+      setTimeout(() => {
+        console.log('first function')
+        callback()
+      }, 1000)
+    },
+    (buildPath, electronVersion, platform, arch, callback) => {
+      console.log('second function')
+      callback()
+    }
+  ])],
+  // ...
+})
+```
+
 ##### `afterExtract`
 
 *Array of Functions*
@@ -52,6 +78,32 @@ An array of functions to be called after Electron has been extracted to a tempor
 - `platform` (*String*): The target platform you are packaging for
 - `arch` (*String*): The target architecture you are packaging for
 - `callback` (*Function*): Must be called once you have completed your actions
+
+By default, the functions are called in parallel (via
+[`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
+If you need the functions called serially, there is a utility function provided:
+
+```javascript
+const packager = require('electron-packager')
+const serialHooks = require('electron-packager/hooks').serialHooks
+
+packager({
+  // ...
+  afterExtract: [serialHooks([
+    (buildPath, electronVersion, platform, arch, callback) => {
+      setTimeout(() => {
+        console.log('first function')
+        callback()
+      }, 1000)
+    },
+    (buildPath, electronVersion, platform, arch, callback) => {
+      console.log('second function')
+      callback()
+    }
+  ])],
+  // ...
+})
+```
 
 ##### `afterPrune`
 
@@ -67,6 +119,32 @@ in the temporary directory.  Each function is called with five parameters:
 - `callback` (*Function*): Must be called once you have completed your actions
 
 **NOTE:** None of these functions will be called if the `prune` option is `false`.
+
+By default, the functions are called in parallel (via
+[`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
+If you need the functions called serially, there is a utility function provided:
+
+```javascript
+const packager = require('electron-packager')
+const serialHooks = require('electron-packager/hooks').serialHooks
+
+packager({
+  // ...
+  afterPrune: [serialHooks([
+    (buildPath, electronVersion, platform, arch, callback) => {
+      setTimeout(() => {
+        console.log('first function')
+        callback()
+      }, 1000)
+    },
+    (buildPath, electronVersion, platform, arch, callback) => {
+      console.log('second function')
+      callback()
+    }
+  ])],
+  // ...
+})
+```
 
 ##### `all`
 

@@ -6,6 +6,7 @@ const download = require('./download')
 const extract = require('extract-zip')
 const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('./infer')
+const hooks = require('./hooks')
 const ignore = require('./ignore')
 const metadata = require('./package.json')
 const nodeify = require('nodeify')
@@ -71,7 +72,7 @@ class Packager {
   extractElectronZip (comboOpts, zipPath, buildDir) {
     debug(`Extracting ${zipPath} to ${buildDir}`)
     return pify(extract)(zipPath, { dir: buildDir })
-      .then(() => common.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]))
+      .then(() => hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]))
   }
 
   createApp (comboOpts, zipPath) {

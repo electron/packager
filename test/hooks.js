@@ -1,7 +1,9 @@
 'use strict'
 
 const config = require('./config.json')
+const hooks = require('../hooks')
 const packager = require('..')
+const test = require('ava')
 const util = require('./_util')
 
 function createHookTest (hookName) {
@@ -32,3 +34,49 @@ function createHookTest (hookName) {
 createHookTest('afterCopy')
 createHookTest('afterPrune')
 createHookTest('afterExtract')
+
+test('promisifyHooks executes functions in parallel', t => {
+  let output = '0'
+  const testHooks = [
+    done => { output += ' 1'; done() },
+    done => { setTimeout(() => { output += ' 2'; done() }, 1000) },
+    done => { output += ' 3'; done() },
+    done => { setTimeout(() => { output += ' 4'; done() }, 1000) },
+    done => { output += ' 5'; done() },
+    done => { setTimeout(() => { output += ' 6'; done() }, 1000) },
+    done => { output += ' 7'; done() },
+    done => { setTimeout(() => { output += ' 8'; done() }, 1000) },
+    done => { output += ' 9'; done() },
+    done => { setTimeout(() => { output += ' 10'; done() }, 1000) }
+  ]
+
+  return hooks.promisifyHooks(testHooks)
+    .then(() => t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order'))
+})
+
+test('serialHooks executes functions serially', t => {
+  let output = '0'
+  const timeoutFunc = number => {
+    return () => new Promise(resolve => { // eslint-disable-line promise/avoid-new
+      setTimeout(() => {
+        output += ` ${number}`
+        resolve()
+      }, 1000)
+    })
+  }
+  const testHooks = [
+    () => { output += ' 1'; return Promise.resolve() },
+    timeoutFunc(2),
+    () => { output += ' 3'; return Promise.resolve() },
+    timeoutFunc(4),
+    () => { output += ' 5'; return Promise.resolve() },
+    timeoutFunc(6),
+    () => { output += ' 7'; return Promise.resolve() },
+    timeoutFunc(8),
+    () => { output += ' 9'; return Promise.resolve() },
+    timeoutFunc(10)
+  ]
+
+  return hooks.serialHooks(testHooks)(() => output)
+    .then(result => t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order'))
+})
