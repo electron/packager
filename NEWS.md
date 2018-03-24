@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.1.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.2.0...master
+
+## [11.2.0] - 2018-03-24
+
+[11.2.0]: https://github.com/electron-userland/electron-packager/compare/v11.1.0...v11.2.0
+
+### Added
+
+* Utility function to execute hooks serially (#814)
 
 ## [11.1.0] - 2018-03-04
 
