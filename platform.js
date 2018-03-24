@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const pify = require('pify')
 
+const hooks = require('./hooks')
 const ignore = require('./ignore')
 const pruneModules = require('./prune').pruneModules
 
@@ -101,7 +102,7 @@ class App {
     return fs.copy(this.opts.dir, this.originalResourcesAppDir, {
       filter: ignore.userIgnoreFilter(this.opts),
       dereference: this.opts.derefSymlinks
-    }).then(() => common.promisifyHooks(this.opts.afterCopy, [
+    }).then(() => hooks.promisifyHooks(this.opts.afterCopy, [
       this.originalResourcesAppDir,
       this.opts.electronVersion,
       this.opts.platform,
@@ -132,7 +133,7 @@ class App {
   prune () {
     if (this.opts.prune || this.opts.prune === undefined) {
       return pruneModules(this.opts, this.originalResourcesAppDir)
-        .then(() => common.promisifyHooks(this.opts.afterPrune, [this.originalResourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch]))
+        .then(() => hooks.promisifyHooks(this.opts.afterPrune, [this.originalResourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch]))
     }
 
     return Promise.resolve()

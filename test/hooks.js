@@ -1,7 +1,9 @@
 'use strict'
 
 const config = require('./config.json')
+const hooks = require('../hooks')
 const packager = require('..')
+const test = require('ava')
 const util = require('./_util')
 
 function createHookTest (hookName) {
@@ -32,3 +34,39 @@ function createHookTest (hookName) {
 createHookTest('afterCopy')
 createHookTest('afterPrune')
 createHookTest('afterExtract')
+
+test('promisifyHooks executes functions in parallel', t => {
+  let output = '0'
+  const timeoutFunc = (number, msTimeout) => {
+    return done => {
+      setTimeout(() => {
+        output += ` ${number}`
+        done()
+      }, msTimeout)
+    }
+  }
+  const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
+    timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
+  )
+
+  return hooks.promisifyHooks(testHooks)
+    .then(() => t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order'))
+})
+
+test('serialHooks executes functions serially', t => {
+  let output = '0'
+  const timeoutFunc = (number, msTimeout) => {
+    return () => new Promise(resolve => { // eslint-disable-line promise/avoid-new
+      setTimeout(() => {
+        output += ` ${number}`
+        resolve()
+      }, msTimeout)
+    })
+  }
+  const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
+    timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
+  )
+
+  return hooks.serialHooks(testHooks)(() => output)
+    .then(result => t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order'))
+})

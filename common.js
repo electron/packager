@@ -2,7 +2,6 @@
 
 const os = require('os')
 const path = require('path')
-const pify = require('pify')
 const sanitize = require('sanitize-filename')
 const yargs = require('yargs-parser')
 
@@ -143,14 +142,6 @@ module.exports = {
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
   sanitizeAppName: sanitizeAppName,
-
-  promisifyHooks: function promisifyHooks (hooks, args) {
-    if (!hooks || !Array.isArray(hooks)) {
-      return Promise.resolve()
-    }
-
-    return Promise.all(hooks.map(hookFn => pify(hookFn).apply(this, args)))
-  },
 
   info: info,
   warning: warning
