@@ -6,16 +6,18 @@ const fs = require('fs-extra')
 const path = require('path')
 const pify = require('pify')
 
+const common = require('./common')
 const hooks = require('./hooks')
 const ignore = require('./ignore')
-const pruneModules = require('./prune').pruneModules
-
-const common = require('./common')
 
 class App {
   constructor (opts, templatePath) {
     this.opts = opts
     this.templatePath = templatePath
+
+    if (this.opts.prune === undefined) {
+      this.opts.prune = true
+    }
   }
 
   /**
@@ -94,7 +96,6 @@ class App {
       }).then(() => fs.remove(path.join(this.originalResourcesDir, 'default_app.asar')))
       // Prune and asar are performed before platform-specific logic, primarily so that
       // this.originalResourcesAppDir is predictable (e.g. before .app is renamed for mac)
-      .then(() => this.prune())
       .then(() => this.asarApp())
   }
 
@@ -107,7 +108,18 @@ class App {
       this.opts.electronVersion,
       this.opts.platform,
       this.opts.arch
-    ]))
+    ])).then(() => {
+      if (this.opts.prune) {
+        return hooks.promisifyHooks(this.opts.afterPrune, [
+          this.originalResourcesAppDir,
+          this.opts.electronVersion,
+          this.opts.platform,
+          this.opts.arch
+        ])
+      } else {
+        return true
+      }
+    })
   }
 
   /**
@@ -128,15 +140,6 @@ class App {
     return fs.pathExists(iconFilename)
       .then(() => iconFilename)
       .catch(/* istanbul ignore next */ () => null)
-  }
-
-  prune () {
-    if (this.opts.prune || this.opts.prune === undefined) {
-      return pruneModules(this.opts, this.originalResourcesAppDir)
-        .then(() => hooks.promisifyHooks(this.opts.afterPrune, [this.originalResourcesAppDir, this.opts.electronVersion, this.opts.platform, this.opts.arch]))
-    }
-
-    return Promise.resolve()
   }
 
   asarApp () {

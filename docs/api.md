@@ -313,21 +313,6 @@ The base directory where the finished package(s) are created.
 
 Whether to replace an already existing output directory for a given platform (`true`) or skip recreating it (`false`).
 
-##### `packageManager`
-
-*String* or *Boolean* (default: `npm`)
-
-The package manager used to [prune](#prune) `devDependencies` modules from the outputted Electron
-app. Supported package managers:
-
-* [`npm`](https://npmjs.com/)
-* [`cnpm`](https://github.com/cnpm/cnpm) (Does not currently work with Windows, see
-  [GitHub issue](https://github.com/electron-userland/electron-packager/issues/515#issuecomment-297604044))
-* [`yarn`](https://yarnpkg.com/)
-
-If set to `false` we will use a custom [pruning module](https://www.npmjs.com/package/pruner) to walk your dependency
-tree and prune your dependencies for you.
-
 ##### `platform`
 
 *String* (default: the arch of the host computer running Node)
@@ -345,7 +330,7 @@ is not restricted to the official set if [`download.mirror`](#download) is set.
 
 *Boolean* (default: `true`)
 
-Runs the [package manager](#packagemanager) command to remove all of the packages specified in the
+Walks the `node_modules` dependency tree to remove all of the packages specified in the
 `devDependencies` section of `package.json` from the outputted Electron app.
 
 ##### `quiet`

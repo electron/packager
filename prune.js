@@ -1,45 +1,69 @@
 'use strict'
 
-const child = require('mz/child_process')
-const debug = require('debug')('electron-packager')
-const Walker = require('pruner').Walker
+const common = require('./common')
+const galactus = require('galactus')
+const fs = require('fs-extra')
+const path = require('path')
 
-const knownPackageManagers = ['npm', 'cnpm', 'yarn']
+const ELECTRON_MODULES = [
+  'electron',
+  'electron-prebuilt',
+  'electron-prebuilt-compile'
+]
 
-function pruneCommand (packageManager) {
-  switch (packageManager) {
-    case 'npm':
-    case 'cnpm':
-      return `${packageManager} prune --production`
-    case 'yarn':
-      return `${packageManager} install --production --no-bin-links --no-lockfile`
+class Pruner {
+  constructor (dir) {
+    this.baseDir = common.normalizePath(dir)
+    this.galactus = new galactus.DestroyerOfModules({
+      rootDirectory: dir,
+      shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep)
+    })
+    this.walkedTree = false
   }
-}
 
-function pruneModules (opts, appPath) {
-  if (opts.packageManager === false) {
-    const walker = new Walker(appPath)
-    return walker.prune()
-  } else {
-    const packageManager = opts.packageManager || 'npm'
-
-    /* istanbul ignore if */
-    if (packageManager === 'cnpm' && process.platform === 'win32') {
-      return Promise.reject(new Error('cnpm support does not currently work with Windows, see: https://github.com/electron-userland/electron-packager/issues/515#issuecomment-297604044'))
+  setModuleMap (moduleMap) {
+    this.moduleMap = new Map()
+    // destructured assignments are in Node 6
+    for (const modulePair of moduleMap) {
+      const modulePath = modulePair[0]
+      const module = modulePair[1]
+      this.moduleMap.set(`/${common.normalizePath(modulePath)}`, module)
     }
+    this.walkedTree = true
+  }
 
-    const command = pruneCommand(packageManager)
-
-    if (command) {
-      debug(`Pruning modules via: ${command}`)
-      return child.exec(command, { cwd: appPath })
+  pruneModule (name) {
+    if (this.walkedTree) {
+      return this.isProductionModule(name)
     } else {
-      return Promise.reject(new Error(`Unknown package manager "${packageManager}". Known package managers: ${knownPackageManagers.join(', ')}`))
+      return this.galactus.collectKeptModules({ relativePaths: true })
+        .then(moduleMap => this.setModuleMap(moduleMap))
+        .then(() => this.isProductionModule(name))
     }
+  }
+
+  shouldKeepModule (module, isDevDep) {
+    if (isDevDep || module.depType === galactus.DepType.ROOT) {
+      return false
+    }
+
+    // Node 6 has Array.prototype.includes
+    if (ELECTRON_MODULES.indexOf(module.name) !== -1) {
+      common.warning(`Found '${module.name}' but not as a devDependency, pruning anyway`)
+      return false
+    }
+
+    return true
+  }
+
+  isProductionModule (name) {
+    return !!this.moduleMap.get(name)
   }
 }
 
 module.exports = {
-  pruneCommand: pruneCommand,
-  pruneModules: pruneModules
+  isModule: function isModule (pathToCheck) {
+    return fs.pathExists(path.join(pathToCheck, 'package.json'))
+  },
+  Pruner: Pruner
 }

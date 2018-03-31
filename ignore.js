@@ -3,12 +3,10 @@
 const common = require('./common')
 const debug = require('debug')('electron-packager')
 const path = require('path')
+const prune = require('./prune')
 const targets = require('./targets')
 
 const DEFAULT_IGNORES = [
-  '/node_modules/electron($|/)',
-  '/node_modules/electron-prebuilt(-compile)?($|/)',
-  '/node_modules/electron-packager($|/)',
   '/\\.git($|/)',
   '/node_modules/\\.bin($|/)',
   '\\.o(bj)?$'
@@ -30,8 +28,8 @@ function generateIgnores (opts) {
 }
 
 function generateOutIgnores (opts) {
-  let normalizedOut = opts.out ? path.resolve(opts.out) : null
-  let outIgnores = []
+  const normalizedOut = opts.out ? path.resolve(opts.out) : null
+  const outIgnores = []
   if (normalizedOut === null || normalizedOut === process.cwd()) {
     for (const platform of Object.keys(targets.officialPlatformArchCombos)) {
       for (const arch of targets.officialPlatformArchCombos[platform]) {
@@ -66,7 +64,8 @@ function userIgnoreFilter (opts) {
     }
   }
 
-  let outIgnores = generateOutIgnores(opts)
+  const outIgnores = generateOutIgnores(opts)
+  const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
 
   return function filter (file) {
     if (outIgnores.indexOf(file) !== -1) {
@@ -76,8 +75,12 @@ function userIgnoreFilter (opts) {
     let name = file.split(path.resolve(opts.dir))[1]
 
     if (path.sep === '\\') {
-      // convert slashes so unix-format ignores work
-      name = name.replace(/\\/g, '/')
+      name = common.normalizePath(name)
+    }
+
+    if (pruner && name.startsWith('/node_modules/')) {
+      return prune.isModule(file)
+        .then(isModule => isModule ? pruner.pruneModule(name) : ignoreFunc(name))
     }
 
     return ignoreFunc(name)
