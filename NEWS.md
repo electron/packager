@@ -2,18 +2,22 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.2.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.0.0...master
+
+## [12.0.0] - 2018-04-03
+
+[12.0.0]: https://github.com/electron-userland/electron-packager/compare/v11.2.0...v12.0.0
 
 ### Changed
 
 * `prune` exclusively utilizes the `galactus` module for pruning devDependencies, instead of
-  depending on package managers
-* `electron-packager` is no longer ignored by default
-* A warning is emitted when an Electron module is a production dependency
+  depending on package managers (#819)
+* `electron-packager` is no longer ignored by default (#819)
+* A warning is emitted when an Electron module is a production dependency (#819)
 
 ### Removed
 
-* `packageManager` option
+* `packageManager` option (#819)
 
 ## [11.2.0] - 2018-03-24
 
