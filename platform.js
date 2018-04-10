@@ -83,19 +83,18 @@ class App {
    * * Copies template into temporary directory
    * * Copies user's app into temporary directory
    * * Prunes non-production node_modules (if opts.prune is either truthy or undefined)
+   * * Remove default_app (which is either a folder or an asar file)
    * * Creates an asar (if opts.asar is set)
+   *
+   * Prune and asar are performed before platform-specific logic, primarily so that
+   * this.originalResourcesAppDir is predictable (e.g. before .app is renamed for Mac)
    */
   initialize () {
     debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`)
 
     return fs.move(this.templatePath, this.stagingPath, { clobber: true })
       .then(() => this.copyTemplate())
-      .then(() => {
-        // Support removing old default_app folder that is now an asar archive
-        return fs.remove(path.join(this.originalResourcesDir, 'default_app'))
-      }).then(() => fs.remove(path.join(this.originalResourcesDir, 'default_app.asar')))
-      // Prune and asar are performed before platform-specific logic, primarily so that
-      // this.originalResourcesAppDir is predictable (e.g. before .app is renamed for mac)
+      .then(() => this.removeDefaultApp())
       .then(() => this.asarApp())
   }
 
@@ -120,6 +119,11 @@ class App {
         return true
       }
     })
+  }
+
+  removeDefaultApp () {
+    return fs.remove(path.join(this.originalResourcesDir, 'default_app'))
+      .then(() => fs.remove(path.join(this.originalResourcesDir, 'default_app.asar')))
   }
 
   /**

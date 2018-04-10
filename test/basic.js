@@ -144,9 +144,9 @@ util.testSinglePlatform('defaults test', (t, opts) => {
       t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
       return fs.pathExists(path.join(resourcesPath, 'default_app'))
     }).then(exists => {
-      t.false(exists, 'The output directory should not contain the Electron default app directory')
+      t.false(exists, 'The output directory should not contain the Electron default_app directory')
       return fs.pathExists(path.join(resourcesPath, 'default_app.asar'))
-    }).then(exists => t.false(exists, 'The output directory should not contain the Electron default app asar file'))
+    }).then(exists => t.false(exists, 'The output directory should not contain the Electron default_app.asar file'))
 })
 
 util.testSinglePlatform('out test', (t, opts) => {
