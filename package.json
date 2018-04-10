@@ -23,7 +23,7 @@
     "electron-osx-sign": "^0.4.1",
     "extract-zip": "^1.0.3",
     "fs-extra": "^5.0.0",
-    "galactus": "^0.2.0",
+    "galactus": "^0.2.1",
     "get-package-info": "^1.0.0",
     "nodeify": "^1.0.1",
     "parse-author": "^2.0.0",
