@@ -67,6 +67,9 @@ packager({
 })
 ```
 
+**NOTE:** `afterCopy` will not be called if `prebuiltAsar` is set.
+
+
 ##### `afterExtract`
 
 *Array of Functions*
@@ -105,6 +108,7 @@ packager({
 })
 ```
 
+
 ##### `afterPrune`
 
 *Array of Functions*
@@ -118,7 +122,7 @@ in the temporary directory.  Each function is called with five parameters:
 - `arch` (*String*): The target architecture you are packaging for
 - `callback` (*Function*): Must be called once you have completed your actions
 
-**NOTE:** None of these functions will be called if the `prune` option is `false`.
+**NOTE:** None of these functions will be called if the `prune` option is `false`. In addition, `afterPrune` will not be called if `prebuiltAsar` is set.
 
 By default, the functions are called in parallel (via
 [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
@@ -145,6 +149,7 @@ packager({
   // ...
 })
 ```
+
 
 ##### `all`
 
@@ -193,6 +198,8 @@ Whether to package the application's source code into an archive, using [Electro
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`, but it will not include their subdirectories.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
+
+**NOTE:** `asar` will be ignored if `prebuiltAsar` is set.
 
 ##### `buildVersion`
 
@@ -333,6 +340,14 @@ If `platform` is set to `all`, all [supported target platforms](#supported-platf
 Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
 The non-`all` values correspond to the platform names used by [Electron releases]. This value
 is not restricted to the official set if [`download.mirror`](#download) is set.
+
+##### `prebuiltAsar`
+
+*String*: (default: `undefined`)
+
+A path to a pre-built asar file. 
+
+**NOTE:** This option circumvents many options such as `asar`, `afterCopy`, `afterPrune`, `ignore`, or `prune`. These options are for generating an app directory/asar with this tool. However, if a prebuilt asar file is provided, these options are not needed.
 
 ##### `prune`
 

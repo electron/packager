@@ -14,6 +14,7 @@ class App {
   constructor (opts, templatePath) {
     this.opts = opts
     this.templatePath = templatePath
+    this.asarOptions = common.createAsarOpts(opts)
 
     if (this.opts.prune === undefined) {
       this.opts.prune = true
@@ -80,11 +81,14 @@ class App {
   /**
    * Performs the following initial operations for an app:
    * * Creates temporary directory
-   * * Copies template into temporary directory
-   * * Copies user's app into temporary directory
-   * * Prunes non-production node_modules (if opts.prune is either truthy or undefined)
    * * Remove default_app (which is either a folder or an asar file)
-   * * Creates an asar (if opts.asar is set)
+   * * If a prebuild asar is specified:
+   * *  Copies asar into temporary directory as app.asar
+   * * Otherwise:
+   * *  Copies template into temporary directory
+   * *  Copies user's app into temporary directory
+   * *  Prunes non-production node_modules (if opts.prune is either truthy or undefined)
+   * *  Creates an asar (if opts.asar is set)
    *
    * Prune and asar are performed before platform-specific logic, primarily so that
    * this.originalResourcesAppDir is predictable (e.g. before .app is renamed for Mac)
@@ -92,33 +96,62 @@ class App {
   initialize () {
     debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`)
 
+    // this is split out because a no-nesting rule is blocking it.
+    const buildApp = () => this.copyTemplate().then(() => this.asarApp())
+
     return fs.move(this.templatePath, this.stagingPath, { clobber: true })
-      .then(() => this.copyTemplate())
       .then(() => this.removeDefaultApp())
-      .then(() => this.asarApp())
+      .then(() => {
+        if (this.opts.prebuiltAsar) {
+          if (this.asarOptions) {
+            common.warning('prebuiltAsar has been specified, all asar options will be ignored')
+          }
+
+          if (this.opts.afterCopy) {
+            throw new Error('afterCopy is incompatible with prebuiltAsar')
+          }
+
+          if (this.opts.afterPrune) {
+            throw new Error('afterPrune is incompatible with prebuiltAsar')
+          }
+
+          if (this.opts.ignore && !common.arrayEquals(this.opts.ignore, ignore.DEFAULT_IGNORES)) {
+            common.warning('prebuiltAsar and ignore are incompatible. Ignoring ignore')
+          }
+
+          if (!this.opts.prune) {
+            common.warning('prebuiltAsar and prune are incompatible. Ignoring prune')
+          }
+
+          if (!this.opts.derefSymlinks) {
+            common.warning('prebuiltAsar and derefSymlinks are incompatible. Ignoring derefSymlinks')
+          }
+          return this.copyPrebuiltAsar()
+        }
+
+        return buildApp()
+      })
   }
 
   copyTemplate () {
-    return fs.copy(this.opts.dir, this.originalResourcesAppDir, {
-      filter: ignore.userIgnoreFilter(this.opts),
-      dereference: this.opts.derefSymlinks
-    }).then(() => hooks.promisifyHooks(this.opts.afterCopy, [
+    const hookArgs = [
       this.originalResourcesAppDir,
       this.opts.electronVersion,
       this.opts.platform,
       this.opts.arch
-    ])).then(() => {
-      if (this.opts.prune) {
-        return hooks.promisifyHooks(this.opts.afterPrune, [
-          this.originalResourcesAppDir,
-          this.opts.electronVersion,
-          this.opts.platform,
-          this.opts.arch
-        ])
-      } else {
-        return true
-      }
+    ]
+
+    return fs.copy(this.opts.dir, this.originalResourcesAppDir, {
+      filter: ignore.userIgnoreFilter(this.opts),
+      dereference: this.opts.derefSymlinks
     })
+      .then(() => hooks.promisifyHooks(this.opts.afterCopy, hookArgs))
+      .then(() => {
+        if (this.opts.prune) {
+          return hooks.promisifyHooks(this.opts.afterPrune, hookArgs)
+        }
+        return true
+      })
   }
 
   removeDefaultApp () {
@@ -146,15 +179,29 @@ class App {
       .catch(/* istanbul ignore next */ () => null)
   }
 
+  copyPrebuiltAsar () {
+    const dest = path.join(this.originalResourcesDir, 'app.asar')
+    const src = path.resolve(this.opts.prebuiltAsar)
+
+    return fs.stat(src)
+      .then(stat => {
+        if (!stat.isFile()) {
+          throw new Error(`${src} must be an asar file.`)
+        }
+
+        debug(`Copying asar: ${src} to ${dest}`)
+        return fs.copy(src, dest, {overwrite: false, errorOnExist: true})
+      })
+  }
+
   asarApp () {
-    const asarOptions = common.createAsarOpts(this.opts)
-    if (!asarOptions) {
+    if (!this.asarOptions) {
       return Promise.resolve()
     }
 
     const dest = path.join(this.originalResourcesDir, 'app.asar')
-    debug(`Running asar with the options ${JSON.stringify(asarOptions)}`)
-    return pify(asar.createPackageWithOptions)(this.originalResourcesAppDir, dest, asarOptions)
+    debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`)
+    return pify(asar.createPackageWithOptions)(this.originalResourcesAppDir, dest, this.asarOptions)
       .then(() => fs.remove(this.originalResourcesAppDir))
   }
 

@@ -88,6 +88,7 @@ function userIgnoreFilter (opts) {
 }
 
 module.exports = {
+  DEFAULT_IGNORES,
   generateIgnores: generateIgnores,
   generateOutIgnores: generateOutIgnores,
   userIgnoreFilter: userIgnoreFilter

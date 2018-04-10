@@ -37,6 +37,12 @@ test.afterEach.always(t => {
     .then(() => fs.remove(t.context.tempDir))
 })
 
+test.serial.afterEach.always(() => {
+  if (console.warn.restore) {
+    console.warn.restore()
+  }
+})
+
 function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
   module.exports.packagerTest(name, (t, opts) => {
     Object.assign(opts, module.exports.singlePlatformOptions())

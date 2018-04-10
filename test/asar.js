@@ -3,6 +3,7 @@
 const common = require('../common')
 const path = require('path')
 const test = require('ava')
+const sinon = require('sinon')
 const util = require('./_util')
 
 test('asar argument test: asar is not set', t => {
@@ -48,4 +49,81 @@ util.testSinglePlatform('asar test', (t, opts) => {
         assertUnpackedAsar(t, resourcesPath)
       ])
     })
+})
+
+util.testSinglePlatform('prebuilt asar test', (t, opts) => {
+  opts.name = 'prebuiltAsarTest'
+  opts.dir = util.fixtureSubdir('asar-prebuilt')
+  opts.prebuiltAsar = path.join(opts.dir, 'app.asar')
+  opts.asar = {
+    'unpack': '*.pac',
+    'unpackDir': 'dir_to_unpack'
+  }
+  opts.ignore = ['foo']
+  opts.prune = false
+  opts.derefSymlinks = false
+  sinon.spy(console, 'warn')
+
+  let resourcesPath
+  return util.packageAndEnsureResourcesPath(t, opts)
+    .then(generatedResourcesPath => {
+      const asarOptsWarn = 'WARNING: prebuiltAsar has been specified, all asar options will be ignored'
+      const ignoreWarn = 'WARNING: prebuiltAsar and ignore are incompatible. Ignoring ignore'
+      const pruneWarn = 'WARNING: prebuiltAsar and prune are incompatible. Ignoring prune'
+      const derefWarn = 'WARNING: prebuiltAsar and derefSymlinks are incompatible. Ignoring derefSymlinks'
+
+      t.true(
+        console.warn.calledWithExactly(asarOptsWarn),
+        `console.warn should be called with: ${asarOptsWarn}`)
+      t.true(
+        console.warn.calledWithExactly(ignoreWarn),
+        `console.warn should be called with: ${ignoreWarn}`)
+      t.true(
+        console.warn.calledWithExactly(pruneWarn),
+        `console.warn should be called with: ${pruneWarn}`)
+      t.true(
+        console.warn.calledWithExactly(derefWarn),
+        `console.warn should be called with: ${derefWarn}`)
+
+      resourcesPath = generatedResourcesPath
+      return fs.stat(path.join(resourcesPath, 'app.asar'))
+    }).then(stats => {
+      t.true(stats.isFile(), 'app.asar should exist under the resources subdirectory when opts.prebuiltAsar points to a prebuilt asar')
+      return util.areFilesEqual(opts.prebuiltAsar, path.join(resourcesPath, 'app.asar'))
+    }).then(eql => {
+      t.true(eql, 'app.asar should equal the prebuilt asar')
+      return fs.pathExists(path.join(resourcesPath, 'app'))
+    }).then(exists => t.false(exists, 'app subdirectory should NOT exist when app.asar is built'))
+})
+
+util.testSinglePlatform('prebuilt asar test - fail on directory', (t, opts) => {
+  opts.name = 'prebuiltAsarFailingTest'
+  opts.dir = util.fixtureSubdir('asar-prebuilt')
+  opts.prebuiltAsar = opts.dir
+
+  return util.packageAndEnsureResourcesPath(t, opts)
+    .then(() => t.fail('Specifying a directory for prebuiltAsar should throw an exception'))
+    .catch(er => t.regex(er.message, /must be an asar file/))
+})
+
+util.testSinglePlatform('prebuilt asar test - fail if afterCopy specified', (t, opts) => {
+  opts.name = 'prebuiltAsarFailingTest'
+  opts.dir = util.fixtureSubdir('asar-prebuilt')
+  opts.prebuiltAsar = opts.dir
+  opts.afterCopy = []
+
+  return util.packageAndEnsureResourcesPath(t, opts)
+    .then(() => t.fail('Specifying prebuiltAsar and afterCopy should throw an exception'))
+    .catch(er => t.regex(er.message, /is incompatible with prebuiltAsar/))
+})
+
+util.testSinglePlatform('prebuilt asar test - fail if afterPrune specified', (t, opts) => {
+  opts.name = 'prebuiltAsarFailingTest'
+  opts.dir = util.fixtureSubdir('asar-prebuilt')
+  opts.prebuiltAsar = opts.dir
+  opts.afterPrune = []
+
+  return util.packageAndEnsureResourcesPath(t, opts)
+    .then(() => t.fail('Specifying prebuiltAsar and afterPrune should throw an exception'))
+    .catch(er => t.regex(er.message, /is incompatible with prebuiltAsar/))
 })

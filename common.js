@@ -117,6 +117,11 @@ function createAsarOpts (opts) {
 module.exports = {
   parseCLIArgs: parseCLIArgs,
 
+  arrayEquals: function arrayEquals (ar1, ar2) {
+    return Array.isArray(ar1) === Array.isArray(ar2) &&
+      ar1.length === ar2.length &&
+      ar1.every((x, i) => x === ar2[i])
+  },
   ensureArray: function ensureArray (value) {
     return Array.isArray(value) ? value : [value]
   },
