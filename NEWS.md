@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.0.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.0.1...master
+
+## [12.0.1] - 2018-04-10
+
+[12.0.1]: https://github.com/electron-userland/electron-packager/compare/v12.0.0...v12.0.1
+
+### Fixed
+
+* Upgraded `galactus` to `^0.2.1` to fix a bug with relative paths
 
 ## [12.0.0] - 2018-04-03
 
