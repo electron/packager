@@ -1,18 +1,18 @@
 # electron-packager API
 
-Short [callback](#callback) example:
-
-```javascript
-const packager = require('electron-packager')
-packager(options, function done_callback (err, appPaths) { /* … */ })
-```
-
 Short Promise example:
 
 ```javascript
 const packager = require('electron-packager')
 packager(options)
-  .then((appPaths) => { /* … */ })
+  .then(appPaths => { /* … */ })
+```
+
+Short [(deprecated) callback syntax](#callback) example:
+
+```javascript
+const packager = require('electron-packager')
+packager(options, function done_callback (err, appPaths) { /* … */ })
 ```
 
 ## `options`

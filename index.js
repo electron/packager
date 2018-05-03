@@ -180,5 +180,9 @@ function packagerPromise (opts) {
 }
 
 module.exports = function packager (opts, cb) {
+  if (cb) {
+    /* istanbul ignore next */
+    common.warning('The callback-based version of packager() is deprecated and will be removed in a future major version, please convert to the Promise version or use the nodeify module.')
+  }
   return nodeify(packagerPromise(opts), cb)
 }
