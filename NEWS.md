@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.0.1...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.0.2...master
+
+## [12.0.2] - 2018-05-02
+
+[12.0.2]: https://github.com/electron-userland/electron-packager/compare/v12.0.1...v12.0.2
+
+### Fixed
+
+* Support for Node 10 via the CLI (#835)
+
+### Deprecated
+
+* The callback version of the API (use `nodeify` if you need that syntax style) (#837)
 
 ## [12.0.1] - 2018-04-10
 
