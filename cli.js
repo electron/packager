@@ -38,13 +38,13 @@ if (args.help) {
   printUsageAndExit(true)
 }
 
-packager(args, function done (err, appPaths) {
-  if (err) {
+packager(args)
+  .then(function done (appPaths) {
+    if (appPaths.length > 1) console.error('Wrote new apps to:\n' + appPaths.join('\n'))
+    else if (appPaths.length === 1) console.error('Wrote new app to', appPaths[0])
+    return true
+  }).catch(function error (err) {
     if (err.message) console.error(err.message)
     else console.error(err, err.stack)
     process.exit(1)
-  }
-
-  if (appPaths.length > 1) console.error('Wrote new apps to:\n' + appPaths.join('\n'))
-  else if (appPaths.length === 1) console.error('Wrote new app to', appPaths[0])
-})
+  })
