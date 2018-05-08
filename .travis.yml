@@ -6,13 +6,9 @@ dist: trusty
 osx_image: xcode8
 language: node_js
 node_js:
-- '4'
 - '6'
 - '8'
-- '9'
-matrix:
-  allow_failures:
-  - node_js: '9'
+- '10'
 cache:
 - apt: true
 - directories:

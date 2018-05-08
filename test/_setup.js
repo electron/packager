@@ -3,7 +3,7 @@
 const common = require('../common')
 const download = require('../download')
 const config = require('./config.json')
-const exec = require('mz/child_process').exec
+const { exec } = require('mz/child_process')
 const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')

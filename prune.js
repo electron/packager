@@ -42,8 +42,7 @@ class Pruner {
       return false
     }
 
-    // Node 6 has Array.prototype.includes
-    if (ELECTRON_MODULES.indexOf(module.name) !== -1) {
+    if (ELECTRON_MODULES.includes(module.name)) {
       common.warning(`Found '${module.name}' but not as a devDependency, pruning anyway`)
       return false
     }
@@ -58,8 +57,7 @@ class Pruner {
 
 function isNodeModuleFolder (pathToCheck) {
   return path.basename(path.dirname(pathToCheck)) === 'node_modules' ||
-    // TODO: Change to startsWith in Node 6
-    (path.basename(path.dirname(pathToCheck))[0] === '@' && path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) === 'node_modules')
+    (path.basename(path.dirname(pathToCheck)).startsWith('@') && path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) === 'node_modules')
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
-const exec = require('mz/child_process').exec
+const { exec } = require('mz/child_process')
 const fs = require('fs-extra')
 const mac = require('../mac')
 const packager = require('..')

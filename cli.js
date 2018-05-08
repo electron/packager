@@ -2,10 +2,11 @@
 
 'use strict'
 
+var packageJSON = require('./package.json')
 var semver = require('semver')
-if (semver.lt(process.versions.node, '4.0.0')) {
+if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   console.error('CANNOT RUN WITH NODE ' + process.versions.node)
-  console.error('Electron Packager requires Node 4.0 or above.')
+  console.error('Electron Packager requires Node ' + packageJSON.engines.node + '.')
   process.exit(1)
 }
 

@@ -39,17 +39,17 @@ test('allOfficialArchsForPlatformAndVersion returns the correct arches for a kno
 })
 
 test('allOfficialArchsForPlatformAndVersion returns arm64 when the correct version is specified', t => {
-  t.not(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').indexOf('arm64'), -1,
-        'should be found when version is >= 1.8.0')
-  t.is(targets.allOfficialArchsForPlatformAndVersion('linux', '1.7.0').indexOf('arm64'), -1,
-       'should not be found when version is < 1.8.0')
+  t.true(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').includes('arm64'),
+         'should be found when version is >= 1.8.0')
+  t.false(targets.allOfficialArchsForPlatformAndVersion('linux', '1.7.0').includes('arm64'),
+          'should not be found when version is < 1.8.0')
 })
 
 test('allOfficialArchsForPlatformAndVersion returns mips64el when the correct version is specified', t => {
-  t.not(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.2').indexOf('mips64el'), -1,
-        'should be found when version is >= 1.8.2-beta.5')
-  t.is(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').indexOf('mips64el'), -1,
-       'should not be found when version is < 1.8.2-beta.5')
+  t.true(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.2').includes('mips64el'),
+         'should be found when version is >= 1.8.2-beta.5')
+  t.false(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').includes('mips64el'),
+          'should not be found when version is < 1.8.2-beta.5')
 })
 
 test('validateListFromOptions does not take non-Array/String values', t => {

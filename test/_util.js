@@ -124,14 +124,10 @@ module.exports = {
       electronVersion: config.version
     }
   },
-  // Rest parameters are added (not behind a feature flag) in Node 6
-  testSinglePlatform: function (name, testFunction /*, ...testFunctionArgs */) {
-    const testFunctionArgs = Array.prototype.slice.call(arguments, 2)
+  testSinglePlatform: function (name, testFunction, ...testFunctionArgs) {
     return testSinglePlatform(name, testFunction, testFunctionArgs, false)
   },
-  // Rest parameters are added (not behind a feature flag) in Node 6
-  testSinglePlatformParallel: function (name, testFunction /*, ...testFunctionArgs */) {
-    const testFunctionArgs = Array.prototype.slice.call(arguments, 2)
+  testSinglePlatformParallel: function (name, testFunction, ...testFunctionArgs) {
     return testSinglePlatform(name, testFunction, testFunctionArgs, true)
   },
   verifyPackageExistence: function verifyPackageExistence (finalPaths) {

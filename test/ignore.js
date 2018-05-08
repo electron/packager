@@ -64,11 +64,10 @@ test('generateIgnores ignores the generated temporary directory only on Linux', 
 
   ignore.generateIgnores(opts)
 
-  // Array.prototype.includes is added (not behind a feature flag) in Node 6
   if (process.platform === 'linux') {
-    t.false(opts.ignore.indexOf(expected) === -1, 'temporary dir in opts.ignore')
+    t.true(opts.ignore.includes(expected), 'temporary dir in opts.ignore')
   } else {
-    t.true(opts.ignore.indexOf(expected) === -1, 'temporary dir not in opts.ignore')
+    t.false(opts.ignore.includes(expected), 'temporary dir not in opts.ignore')
   }
 })
 
