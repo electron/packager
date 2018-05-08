@@ -115,7 +115,7 @@ module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
   if (props.length === 0) return Promise.resolve()
 
   // Search package.json files to infer name and version from
-  return pify(getPackageInfo)(props, dir)
+  return getPackageInfo(props, dir)
     .then(result => handleMetadata(opts, result))
     .catch(err => {
       if (err.missingProps) {
