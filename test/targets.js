@@ -60,14 +60,12 @@ test('validateListFromOptions does not take non-Array/String values', t => {
 })
 
 test('validateListFromOptions works for armv7l host and target arch', t => {
-  const sandbox = sinon.createSandbox()
-
-  sandbox.stub(process, 'arch').value('arm')
-  sandbox.stub(process, 'config').value({variables: {arm_version: '7'}})
+  sinon.stub(process, 'arch').value('arm')
+  sinon.stub(process, 'config').value({variables: {arm_version: '7'}})
 
   t.deepEqual(targets.validateListFromOptions({}, 'arch'), ['armv7l'])
 
-  sandbox.restore()
+  sinon.restore()
 })
 
 testMultiTarget('build for all available official targets', {all: true, electronVersion: '1.8.2'},
@@ -96,37 +94,31 @@ test('fails with invalid platform', util.invalidOptionTest({
 }))
 
 test('hostArch detects incorrectly configured armv7l Node', t => {
-  const sandbox = sinon.createSandbox()
-
-  sandbox.stub(targets, 'unameArch').returns('armv7l')
-  sandbox.stub(process, 'arch').value('arm')
-  sandbox.stub(process, 'config').value({variables: {arm_version: '6'}})
+  sinon.stub(targets, 'unameArch').returns('armv7l')
+  sinon.stub(process, 'arch').value('arm')
+  sinon.stub(process, 'config').value({variables: {arm_version: '6'}})
 
   t.is(targets.hostArch(), 'armv7l')
 
-  sandbox.restore()
+  sinon.restore()
 })
 
 test('hostArch detects correctly configured armv7l Node', t => {
-  const sandbox = sinon.createSandbox()
-
-  sandbox.stub(process, 'arch').value('arm')
-  sandbox.stub(process, 'config').value({variables: {arm_version: '7'}})
+  sinon.stub(process, 'arch').value('arm')
+  sinon.stub(process, 'config').value({variables: {arm_version: '7'}})
 
   t.is(targets.hostArch(), 'armv7l')
 
-  sandbox.restore()
+  sinon.restore()
 })
 
 test('hostArch cannot determine ARM version', t => {
-  const sandbox = sinon.createSandbox()
-
-  sandbox.stub(process, 'arch').value('arm')
-  sandbox.stub(process, 'config').value({variables: {arm_version: '99'}})
+  sinon.stub(process, 'arch').value('arm')
+  sinon.stub(process, 'config').value({variables: {arm_version: '99'}})
 
   t.is(targets.hostArch(), 'arm')
 
-  sandbox.restore()
+  sinon.restore()
 })
 
 testMultiTarget('invalid official combination', {arch: 'ia32', platform: 'darwin'}, 0, 'Package should not be generated for invalid official combination')
