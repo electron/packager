@@ -34,6 +34,12 @@ function printUsageAndExit (isError) {
 
 if (args.help) {
   printUsageAndExit(false)
+} else if (args.version) {
+  if (typeof args.version !== 'boolean') {
+    console.error('--version does not take an argument. Perhaps you meant --app-version or --electron-version?\n')
+  }
+  console.log(common.hostInfo())
+  process.exit(0)
 } else if (!args.dir) {
   printUsageAndExit(true)
 }

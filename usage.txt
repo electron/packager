@@ -1,16 +1,21 @@
 Usage: electron-packager <sourcedir> <appname> [options...]
 
-Required options
+Required parameters
 
 sourcedir          the base directory of the application source
 
   Examples:        electron-packager ./
                    electron-packager ./ --all
 
-Optional options
+Optional parameters
 
 appname            the name of the app, if it needs to be different from the "productName" or "name"
                    in the nearest package.json
+
+Options
+
+version            prints the version of Electron Packager and Node, plus the target platform and
+                   arch, for bug reporting purposes, and exits immediately
 
 * All platforms *
 

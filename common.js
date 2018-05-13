@@ -1,5 +1,6 @@
 'use strict'
 
+const metadata = require('./package.json')
 const os = require('os')
 const path = require('path')
 const sanitize = require('sanitize-filename')
@@ -149,6 +150,11 @@ module.exports = {
     return pathToNormalize.replace(/\\/g, '/')
   },
 
+  hostInfo: function hostInfo () {
+    return `Electron Packager ${metadata.version}\n` +
+      `Node ${process.version}\n` +
+      `Host Operating system: ${process.platform} (${process.arch})`
+  },
   info: info,
   warning: warning
 }
