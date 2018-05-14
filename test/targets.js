@@ -126,6 +126,7 @@ testMultiTarget('platform=linux and arch=arm64 with a supported official Electro
 testMultiTarget('platform=linux and arch=arm64 with an unsupported official Electron version', {arch: 'arm64', platform: 'linux'}, 0, 'Package should not be generated for arm64')
 testMultiTarget('platform=linux and arch=mips64el with a supported official Electron version', {arch: 'mips64el', platform: 'linux', electronVersion: '1.8.2-beta.5'}, 1, 'Package should be generated for mips64el')
 testMultiTarget('platform=linux and arch=mips64el with an unsupported official Electron version', {arch: 'mips64el', platform: 'linux'}, 0, 'Package should not be generated for mips64el')
+testMultiTarget('platform=linux and arch=mips64el with an unsupported official Electron version (2.0.0)', {arch: 'mips64el', platform: 'linux', electronVersion: '2.0.0'}, 0, 'Package should not be generated for mips64el')
 testMultiTarget('unofficial arch', {arch: 'z80', platform: 'linux', download: {mirror: 'mirror'}}, 1,
                 'Package should be generated for non-standard arch from non-official mirror')
 testMultiTarget('unofficial platform', {arch: 'ia32', platform: 'minix', download: {mirror: 'mirror'}}, 1,
