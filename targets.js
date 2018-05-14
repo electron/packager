@@ -13,9 +13,9 @@ const officialPlatformArchCombos = {
   win32: ['ia32', 'x64']
 }
 
-const minimumLinuxArchBuildVersions = {
-  arm64: '1.8.0',
-  mips64el: '1.8.2-beta.5'
+const linuxArchBuildVersions = {
+  arm64: '>= 1.8.0',
+  mips64el: '^1.8.2-beta.5'
 }
 
 // Maps to module filename for each platform (lazy-required if used)
@@ -40,9 +40,9 @@ function createPlatformArchPairs (opts, selectedPlatforms, selectedArchs, ignore
           warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`)
           continue
         } else if (platform === 'linux') {
-          const minimumBuildVersion = minimumLinuxArchBuildVersions[arch]
-          if (minimumBuildVersion && !officialLinuxBuildExists(opts, minimumBuildVersion)) {
-            warnIfAllNotSpecified(opts, `Official linux/${arch} support only exists in Electron ${minimumBuildVersion} and above`)
+          const buildVersion = linuxArchBuildVersions[arch]
+          if (buildVersion && !officialLinuxBuildExists(opts, buildVersion)) {
+            warnIfAllNotSpecified(opts, `Official linux/${arch} support only exists in Electron ${buildVersion}`)
             continue
           }
         }
@@ -67,8 +67,8 @@ function validOfficialPlatformArch (opts, platform, arch) {
   return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].indexOf(arch) !== -1
 }
 
-function officialLinuxBuildExists (opts, minimumBuildVersion) {
-  return semver.gte(opts.electronVersion, minimumBuildVersion)
+function officialLinuxBuildExists (opts, buildVersion) {
+  return semver.satisfies(opts.electronVersion, buildVersion)
 }
 
 function allPlatformsOrArchsSpecified (opts) {
@@ -100,8 +100,8 @@ module.exports = {
   allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
     const archs = officialPlatformArchCombos[platform]
     if (platform === 'linux') {
-      const excludedArchs = Object.keys(minimumLinuxArchBuildVersions)
-        .filter(arch => !officialLinuxBuildExists({electronVersion: electronVersion}, minimumLinuxArchBuildVersions[arch]))
+      const excludedArchs = Object.keys(linuxArchBuildVersions)
+        .filter(arch => !officialLinuxBuildExists({electronVersion: electronVersion}, linuxArchBuildVersions[arch]))
       return archs.filter(arch => excludedArchs.indexOf(arch) === -1)
     }
 
