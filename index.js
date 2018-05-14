@@ -8,16 +8,13 @@ const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
 const ignore = require('./ignore')
-const metadata = require('./package.json')
 const nodeify = require('nodeify')
 const path = require('path')
 const pify = require('pify')
 const targets = require('./targets')
 
 function debugHostInfo () {
-  debug(`Electron Packager ${metadata.version}`)
-  debug(`Node ${process.version}`)
-  debug(`Host Operating system: ${process.platform} (${process.arch})`)
+  debug(common.hostInfo())
 }
 
 class Packager {
