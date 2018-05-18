@@ -59,6 +59,7 @@ class Pruner {
 module.exports = {
   isModule: function isModule (pathToCheck) {
     return fs.pathExists(path.join(pathToCheck, 'package.json'))
+      .then(exists => exists && path.basename(path.dirname(pathToCheck)) === 'node_modules')
   },
   Pruner: Pruner
 }
