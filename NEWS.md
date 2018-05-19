@@ -2,7 +2,20 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.0.2...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.1.0...master
+
+## [12.1.0]
+
+[12.1.0]: https://github.com/electron-userland/electron-packager/compare/v12.0.2...v12.1.0
+
+### Added
+
+* `--version` shows the Packager/Node versions & host platform/arch (#841)
+
+### Fixed
+
+* `mips64el` arch is only available with Electron 1.8.x (#843)
+* better detection of node modules (#847)
 
 ## [12.0.2] - 2018-05-02
 
