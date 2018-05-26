@@ -67,8 +67,7 @@ packager({
 })
 ```
 
-**NOTE:** `afterCopy` will not be called if `prebuiltAsar` is set.
-
+**Note:** `afterCopy` will not be called if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `afterExtract`
 
@@ -108,7 +107,6 @@ packager({
 })
 ```
 
-
 ##### `afterPrune`
 
 *Array of Functions*
@@ -122,7 +120,7 @@ in the temporary directory.  Each function is called with five parameters:
 - `arch` (*String*): The target architecture you are packaging for
 - `callback` (*Function*): Must be called once you have completed your actions
 
-**NOTE:** None of these functions will be called if the `prune` option is `false`. In addition, `afterPrune` will not be called if `prebuiltAsar` is set.
+**Note:** None of these functions will be called if the `prune` option is `false` or `prebuiltAsar` is set.
 
 By default, the functions are called in parallel (via
 [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
@@ -149,7 +147,6 @@ packager({
   // ...
 })
 ```
-
 
 ##### `all`
 
@@ -199,7 +196,7 @@ Whether to package the application's source code into an archive, using [Electro
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
 
-**NOTE:** `asar` will be ignored if `prebuiltAsar` is set.
+**Note:** `asar` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `buildVersion`
 
@@ -212,6 +209,8 @@ The build version of the application. Defaults to the value of [`appVersion`](#a
 *Boolean* (default: `true`)
 
 Whether symlinks should be dereferenced during the copying of the application source.
+
+**Note:** `derefSymlinks` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `download`
 
@@ -307,6 +306,8 @@ Alternatively, this can be a predicate function that, given an absolute file pat
 the file should be ignored, or `false` if the file should be kept. *This does not use any of the
 default ignored directories listed above.*
 
+**Note:** `ignore` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+
 ##### `name`
 
 *String*
@@ -343,11 +344,19 @@ is not restricted to the official set if [`download.mirror`](#download) is set.
 
 ##### `prebuiltAsar`
 
-*String*: (default: `undefined`)
+*String*
 
-A path to a pre-built asar file. 
+The path to a prebuilt ASAR file.
 
-**NOTE:** This option circumvents many options such as `asar`, `afterCopy`, `afterPrune`, `ignore`, or `prune`. These options are for generating an app directory/asar with this tool. However, if a prebuilt asar file is provided, these options are not needed.
+**Note:** Setting this option prevents the following options from being used, as the functionality
+gets skipped over:
+
+* [`asar`](#asar)
+* [`afterCopy`](#aftercopy)
+* [`afterPrune`](#afterprune)
+* [`derefSymlinks`](#derefsymlinks)
+* [`ignore`](#ignore)
+* [`prune`](#prune)
 
 ##### `prune`
 
@@ -355,6 +364,8 @@ A path to a pre-built asar file.
 
 Walks the `node_modules` dependency tree to remove all of the packages specified in the
 `devDependencies` section of `package.json` from the outputted Electron app.
+
+**Note:** `prune` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `quiet`
 

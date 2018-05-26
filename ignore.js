@@ -13,6 +13,7 @@ const DEFAULT_IGNORES = [
 ]
 
 function generateIgnores (opts) {
+  opts.originalIgnore = opts.ignore
   if (typeof (opts.ignore) !== 'function') {
     if (opts.ignore) {
       opts.ignore = common.ensureArray(opts.ignore).concat(DEFAULT_IGNORES)
@@ -88,7 +89,6 @@ function userIgnoreFilter (opts) {
 }
 
 module.exports = {
-  DEFAULT_IGNORES,
   generateIgnores: generateIgnores,
   generateOutIgnores: generateOutIgnores,
   userIgnoreFilter: userIgnoreFilter

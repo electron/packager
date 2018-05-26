@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.2.0...master
 
+### Added
+
+* `prebuiltAsar` option to specify a prebuilt ASAR file (#823)
+
 ## [12.2.0] - 2018-10-02
 
 [12.2.0]: https://github.com/electron-userland/electron-packager/compare/v12.1.2...v12.2.0
@@ -50,10 +54,6 @@
 
 * `mips64el` arch is only available with Electron 1.8.x (#843)
 * better detection of node modules (#847)
-
-### Added
-
-* `prebuiltAsar` to support pre-built asar files (#823)
 
 ## [12.0.2] - 2018-05-02
 
