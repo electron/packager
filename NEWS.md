@@ -2,9 +2,23 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.1.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.1.1...master
 
-## [12.1.0]
+## [12.1.1] - 2018-08-18
+
+[12.1.1]: https://github.com/electron-userland/electron-packager/compare/v12.1.0...v12.1.1
+
+### Changed
+
+* Host arch utilities moved to electron-download. This is not a breaking change, as the existing API
+  has been kept the same.
+
+### Deprecated
+
+* `hostArch` and `unameArch` in `electron-packager/targets`, replaced with `host` and `uname` in
+  `electron-download/lib/arch`, respectively
+
+## [12.1.0] - 2018-05-18
 
 [12.1.0]: https://github.com/electron-userland/electron-packager/compare/v12.0.2...v12.1.0
 
