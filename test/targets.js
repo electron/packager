@@ -93,34 +93,6 @@ test('fails with invalid platform', util.invalidOptionTest({
   platform: 'dos'
 }))
 
-test('hostArch detects incorrectly configured armv7l Node', t => {
-  sinon.stub(targets, 'unameArch').returns('armv7l')
-  sinon.stub(process, 'arch').value('arm')
-  sinon.stub(process, 'config').value({variables: {arm_version: '6'}})
-
-  t.is(targets.hostArch(), 'armv7l')
-
-  sinon.restore()
-})
-
-test('hostArch detects correctly configured armv7l Node', t => {
-  sinon.stub(process, 'arch').value('arm')
-  sinon.stub(process, 'config').value({variables: {arm_version: '7'}})
-
-  t.is(targets.hostArch(), 'armv7l')
-
-  sinon.restore()
-})
-
-test('hostArch cannot determine ARM version', t => {
-  sinon.stub(process, 'arch').value('arm')
-  sinon.stub(process, 'config').value({variables: {arm_version: '99'}})
-
-  t.is(targets.hostArch(), 'arm')
-
-  sinon.restore()
-})
-
 testMultiTarget('invalid official combination', {arch: 'ia32', platform: 'darwin'}, 0, 'Package should not be generated for invalid official combination')
 testMultiTarget('platform=linux and arch=arm64 with a supported official Electron version', {arch: 'arm64', platform: 'linux', electronVersion: '1.8.0'}, 1, 'Package should be generated for arm64')
 testMultiTarget('platform=linux and arch=arm64 with an unsupported official Electron version', {arch: 'arm64', platform: 'linux'}, 0, 'Package should not be generated for arm64')

@@ -19,7 +19,7 @@
   "dependencies": {
     "asar": "^0.14.0",
     "debug": "^3.0.0",
-    "electron-download": "^4.0.0",
+    "electron-download": "^4.1.1",
     "electron-osx-sign": "^0.4.1",
     "extract-zip": "^1.0.3",
     "fs-extra": "^5.0.0",

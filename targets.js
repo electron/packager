@@ -1,7 +1,7 @@
 'use strict'
 
 const common = require('./common')
-const execSync = require('child_process').execSync
+const downloadArch = require('electron-download/lib/arch')
 const semver = require('semver')
 
 const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el']
@@ -81,21 +81,6 @@ function warnIfAllNotSpecified (opts, message) {
   }
 }
 
-function hostArch () {
-  if (process.arch === 'arm') {
-    switch (process.config.variables.arm_version) {
-      case '6':
-        return module.exports.unameArch()
-      case '7':
-        return 'armv7l'
-      default:
-        common.warning(`Could not determine specific ARM arch. Detected ARM version: ${JSON.stringify(process.config.variables.arm_version)}`)
-    }
-  }
-
-  return process.arch
-}
-
 module.exports = {
   allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
     const archs = officialPlatformArchCombos[platform]
@@ -108,19 +93,13 @@ module.exports = {
     return archs
   },
   createPlatformArchPairs: createPlatformArchPairs,
-  hostArch: hostArch,
+  hostArch: downloadArch.host,
   officialArchs: officialArchs,
   officialPlatformArchCombos: officialPlatformArchCombos,
   officialPlatforms: officialPlatforms,
   osModules: osModules,
   supported: supported,
-  /**
-   * Returns the arch name from the `uname` utility.
-   */
-  unameArch: function unameArch () {
-    /* istanbul ignore next */
-    return execSync('uname -m').toString().trim()
-  },
+  unameArch: downloadArch.uname,
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or throws an Error.
   validateListFromOptions: function validateListFromOptions (opts, name) {
@@ -129,7 +108,7 @@ module.exports = {
     let list = opts[name]
     if (!list) {
       if (name === 'arch') {
-        list = hostArch()
+        list = module.exports.hostArch()
       } else {
         list = process[name]
       }
