@@ -1,7 +1,6 @@
 'use strict'
 
 const common = require('../common')
-const fs = require('fs-extra')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
