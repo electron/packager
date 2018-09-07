@@ -57,9 +57,21 @@ module.exports = {
         return bufferEqual(buffer1, buffer2)
       })
   },
+  assertDirectory: function assertDirectory (t, pathToCheck, message) {
+    return fs.stat(pathToCheck)
+      .then(stats => t.true(stats.isDirectory(), message))
+  },
+  assertFile: function assertFile (t, pathToCheck, message) {
+    return fs.stat(pathToCheck)
+      .then(stats => t.true(stats.isFile(), message))
+  },
   assertPathNotExists: function assertPathNotExists (t, pathToCheck, message) {
     return fs.pathExists(pathToCheck)
-      .then(exists => t.false(exists))
+      .then(exists => t.false(exists, message))
+  },
+  assertSymlink: function assertFile (t, pathToCheck, message) {
+    return fs.lstat(pathToCheck)
+      .then(stats => t.true(stats.isSymbolicLink(), message))
   },
   fixtureSubdir: setup.fixtureSubdir,
   generateResourcesPath: function generateResourcesPath (opts) {
@@ -76,11 +88,8 @@ module.exports = {
     return packager(opts)
       .then(paths => {
         resourcesPath = path.join(paths[0], module.exports.generateResourcesPath(opts))
-        return fs.stat(resourcesPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-        return resourcesPath
-      })
+        return module.exports.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory')
+      }).then(() => resourcesPath)
   },
   packagerTest: function packagerTest (name, testFunction, parallel) {
     const testDefinition = parallel ? test : test.serial
@@ -110,7 +119,7 @@ module.exports = {
     return testSinglePlatform(name, testFunction, testFunctionArgs, true)
   },
   verifyPackageExistence: function verifyPackageExistence (finalPaths) {
-    return Promise.all(finalPaths.map((finalPath) => {
+    return Promise.all(finalPaths.map(finalPath => {
       return fs.stat(finalPath)
         .then(
           stats => stats.isDirectory(),

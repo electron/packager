@@ -17,8 +17,7 @@ function checkDependency (t, resourcesPath, moduleName, moduleExists) {
 
 function assertDependencyExists (t, resourcesPath, moduleName) {
   return checkDependency(t, resourcesPath, moduleName, true)
-    .then(modulePath => fs.stat(modulePath))
-    .then(stats => t.true(stats.isDirectory(), 'module is a directory'))
+    .then(modulePath => util.assertDirectory(t, modulePath, 'module is a directory'))
 }
 
 function createPruneOptionTest (t, baseOpts, prune, testMessage) {
