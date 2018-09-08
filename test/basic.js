@@ -130,15 +130,10 @@ util.testSinglePlatform('defaults test', (t, opts) => {
       }
     }).then(() => util.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory'))
     .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), 'The output directory should NOT contain devDependencies by default (prune=true)'))
-    .then(() => util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js')))
-    .then(equal => {
-      t.true(equal, 'File under packaged app directory should match source file')
-      return util.areFilesEqual(path.join(opts.dir, 'ignore', 'this.txt'),
-                                path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
-    }).then(equal => {
-      t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
-      return util.assertPathNotExists(t, path.join(resourcesPath, 'default_app'), 'The output directory should not contain the Electron default_app directory')
-    }).then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file'))
+    .then(() => util.assertFilesEqual(t, path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), 'File under packaged app directory should match source file'))
+    .then(() => util.assertFilesEqual(t, path.join(opts.dir, 'ignore', 'this.txt'), path.join(resourcesPath, 'app', 'ignore', 'this.txt'), 'File under subdirectory of packaged app directory should match source file and not be ignored by default'))
+    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app'), 'The output directory should not contain the Electron default_app directory'))
+    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file'))
 })
 
 util.testSinglePlatform('out test', (t, opts) => {
@@ -188,12 +183,9 @@ util.testSinglePlatform('overwrite test sans platform/arch set', (t, opts) => {
   opts.overwrite = true
 
   return packager(opts)
-    .then(paths => fs.pathExists(paths[0]))
-    .then(exists => {
-      t.true(exists, 'The output directory exists')
-      return packager(opts)
-    }).then(paths => fs.pathExists(paths[0]))
-    .then(exists => t.true(exists, 'The output directory exists'))
+    .then(paths => util.assertPathExists(t, paths[0], 'The output directory exists'))
+    .then(() => packager(opts))
+    .then(paths => util.assertPathExists(t, paths[0], 'The output directory exists'))
 })
 
 util.testSinglePlatform('tmpdir test', (t, opts) => {
@@ -228,11 +220,8 @@ util.testSinglePlatform('deref symlink test', (t, opts) => {
     .then(() => packager(opts))
     .then(paths => {
       const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
-      return fs.lstat(destLink)
-    }).then(stats => {
-      t.true(stats.isSymbolicLink(), 'The expected file should still be a symlink')
-      return fs.remove(dest)
-    })
+      return util.assertSymlink(t, destLink, 'The expected file should still be a symlink')
+    }).then(() => fs.remove(dest))
 })
 
 function createExtraResourceStringTest (t, opts, platform) {
@@ -246,8 +235,7 @@ function createExtraResourceStringTest (t, opts, platform) {
   opts.extraResource = extra1Path
 
   return util.packageAndEnsureResourcesPath(t, opts)
-    .then(resourcesPath => util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base)))
-    .then(equal => t.true(equal, 'resource file data1.txt should match'))
+    .then(resourcesPath => util.assertFilesEqual(t, extra1Path, path.join(resourcesPath, extra1Base), 'resource file data1.txt should match'))
 }
 
 function createExtraResourceArrayTest (t, opts, platform) {
@@ -269,17 +257,10 @@ function createExtraResourceArrayTest (t, opts, platform) {
     .then(resourcesPath => {
       extra1DistPath = path.join(resourcesPath, extra1Base)
       extra2DistPath = path.join(resourcesPath, extra2Base)
-      return fs.pathExists(extra1DistPath)
-    }).then(exists => {
-      t.true(exists, 'resource file data1.txt exists')
-      return util.areFilesEqual(extra1Path, extra1DistPath)
-    }).then(equal => {
-      t.true(equal, 'resource file data1.txt should match')
-      return fs.pathExists(extra2DistPath)
-    }).then(exists => {
-      t.true(exists, 'resource file extrainfo.plist exists')
-      return util.areFilesEqual(extra2Path, extra2DistPath)
-    }).then(equal => t.true(equal, 'resource file extrainfo.plist should match'))
+      return util.assertPathExists(t, extra1DistPath, 'resource file data1.txt exists')
+    }).then(() => util.assertFilesEqual(t, extra1Path, extra1DistPath, 'resource file data1.txt should match'))
+    .then(() => util.assertPathExists(t, extra2DistPath, 'resource file extrainfo.plist exists'))
+    .then(() => util.assertFilesEqual(t, extra2Path, extra2DistPath, 'resource file extrainfo.plist should match'))
 }
 
 for (const platform of ['darwin', 'linux']) {

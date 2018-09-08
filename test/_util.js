@@ -7,6 +7,7 @@ const config = require('./config.json')
 const fs = require('fs-extra')
 const packager = require('../index')
 const path = require('path')
+const plist = require('plist')
 const setup = require('./_setup')
 const tempy = require('tempy')
 const test = require('ava')
@@ -45,18 +46,6 @@ function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
 
 module.exports = {
   allPlatformArchCombosCount: 9,
-  areFilesEqual: function areFilesEqual (file1, file2) {
-    let buffer1, buffer2
-
-    return fs.readFile(file1)
-      .then((data) => {
-        buffer1 = data
-        return fs.readFile(file2)
-      }).then((data) => {
-        buffer2 = data
-        return bufferEqual(buffer1, buffer2)
-      })
-  },
   assertDirectory: function assertDirectory (t, pathToCheck, message) {
     return fs.stat(pathToCheck)
       .then(stats => t.true(stats.isDirectory(), message))
@@ -65,9 +54,20 @@ module.exports = {
     return fs.stat(pathToCheck)
       .then(stats => t.true(stats.isFile(), message))
   },
-  assertPathNotExists: function assertPathNotExists (t, pathToCheck, message) {
+  assertFilesEqual: function assertFilesEqual (t, file1, file2, message) {
+    return Promise.all([fs.readFile(file1), fs.readFile(file2)])
+      .then(([buffer1, buffer2]) => bufferEqual(buffer1, buffer2))
+      .then(equal => t.true(equal, message))
+  },
+  assertPathExistsCustom: function assertPathExistsCustom (t, pathToCheck, exists, message) {
     return fs.pathExists(pathToCheck)
-      .then(exists => t.false(exists, message))
+      .then(result => t.is(exists, result, message))
+  },
+  assertPathExists: function assertPathExists (t, pathToCheck, message) {
+    return module.exports.assertPathExistsCustom(t, pathToCheck, true, message)
+  },
+  assertPathNotExists: function assertPathNotExists (t, pathToCheck, message) {
+    return module.exports.assertPathExistsCustom(t, pathToCheck, false, message)
   },
   assertSymlink: function assertFile (t, pathToCheck, message) {
     return fs.lstat(pathToCheck)
@@ -100,6 +100,13 @@ module.exports = {
         tmpdir: t.context.tempDir
       })
     })
+  },
+  parsePlist: function parsePlist (t, appPath) {
+    const plistPath = path.join(appPath, 'Contents', 'Info.plist')
+
+    return module.exports.assertFile(t, plistPath, `The expected Info.plist should exist in ${path.basename(appPath)}`)
+      .then(() => fs.readFile(plistPath, 'utf8'))
+      .then(file => plist.parse(file))
   },
   singlePlatformOptions: function singlePlatformOptions () {
     return {

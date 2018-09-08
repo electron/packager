@@ -20,59 +20,41 @@ function ignoreTest (t, opts, ignorePattern, ignoredFile) {
   return fs.copy(opts.dir, targetDir, {
     dereference: false,
     filter: ignore.userIgnoreFilter(opts)
-  }).then(() => fs.pathExists(path.join(targetDir, 'package.json')))
-    .then(exists => {
-      t.true(exists, 'The expected output directory should exist and contain files')
-      return fs.pathExists(path.join(targetDir, ignoredFile))
-    }).then(exists => t.false(exists, `Ignored file '${ignoredFile}' should not exist in copied directory`))
+  }).then(() => util.assertPathExists(t, path.join(targetDir, 'package.json'), 'The expected output directory should exist and contain files'))
+    .then(() => util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`))
+}
+
+function assertOutDirIgnored (t, opts, pathPrefix, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
+  return fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
+    dereference: true,
+    stopOnErr: true,
+    filter: file => path.basename(file) !== 'node_modules'
+  }).then(() => fs.ensureDir(existingDirectoryPath))
+    // create file to ensure that directory will be not ignored because it's empty
+    .then(() => fs.writeFile(pathToIgnore, '')).then(() => packager(opts))
+    .then(() => util.assertPathNotExists(t, path.join(pathPrefix, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory'))
 }
 
 function ignoreOutDirTest (t, opts, distPath) {
-  opts.name = 'ignoreOutDirTest'
   opts.dir = t.context.workDir
+  opts.name = 'ignoreOutDirTest'
 
+  // create out dir before packager (real world issue - when second run includes unignored out dir)
   // we don't use path.join here to avoid normalizing
-  const outDir = opts.dir + path.sep + distPath
-  opts.out = outDir
+  opts.out = opts.dir + path.sep + distPath
 
-  return fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
-    dereference: true,
-    stopOnErr: true,
-    filter: file => { return path.basename(file) !== 'node_modules' }
-  }).then(() =>
-    // create out dir before packager (real world issue - when second run includes unignored out dir)
-    fs.ensureDir(outDir)
-  ).then(() =>
-    // create file to ensure that directory will be not ignored because empty
-    fs.open(path.join(outDir, 'ignoreMe'), 'w')
-  ).then(fd => fs.close(fd))
-    .then(() => packager(opts))
-    .then(() => fs.pathExists(path.join(outDir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', path.basename(outDir))))
-    .then(exists => t.false(exists, 'Out dir must not exist in output app directory'))
+  return assertOutDirIgnored(t, opts, opts.out, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
 }
 
 function ignoreImplicitOutDirTest (t, opts) {
-  opts.name = 'ignoreImplicitOutDirTest'
   opts.dir = t.context.workDir
+  opts.name = 'ignoreImplicitOutDirTest'
   delete opts.out
 
   const testFilename = 'ignoreMe'
-  let previousPackedResultDir
+  const previousPackedResultDir = path.join(opts.dir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
 
-  return fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
-    dereference: true,
-    stopOnErr: true,
-    filter: file => { return path.basename(file) !== 'node_modules' }
-  }).then(() => {
-    previousPackedResultDir = path.join(opts.dir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
-    return fs.ensureDir(previousPackedResultDir)
-  }).then(() =>
-    // create file to ensure that directory will be not ignored because empty
-    fs.open(path.join(previousPackedResultDir, testFilename), 'w')
-  ).then(fd => fs.close(fd))
-    .then(() => packager(opts))
-    .then(() => fs.pathExists(path.join(opts.dir, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', testFilename)))
-    .then(exists => t.false(exists, 'Out dir must not exist in output app directory'))
+  return assertOutDirIgnored(t, opts, opts.dir, previousPackedResultDir, path.join(previousPackedResultDir, testFilename), testFilename)
 }
 
 test('generateIgnores ignores the generated temporary directory only on Linux', t => {

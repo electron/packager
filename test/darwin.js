@@ -56,16 +56,8 @@ function getHelperExecutablePath (prefix, appName, helperSuffix) {
   return path.join(getHelperAppPath(prefix, appName, helperSuffix), 'Contents', 'MacOS', `${appName} ${helperSuffix}`)
 }
 
-function parsePlist (t, appPath) {
-  const plistPath = path.join(appPath, 'Contents', 'Info.plist')
-
-  return util.assertFile(t, plistPath, `The expected Info.plist should exist in ${path.basename(appPath)}`)
-    .then(() => fs.readFile(plistPath, 'utf8'))
-    .then(file => plist.parse(file))
-}
-
 function parseInfoPlist (t, opts, basePath) {
-  return parsePlist(t, path.join(basePath, `${opts.name}.app`))
+  return util.parsePlist(t, path.join(basePath, `${opts.name}.app`))
 }
 
 function packageAndParseInfoPlist (t, opts) {
@@ -116,9 +108,7 @@ function iconTest (t, opts, icon, iconPath) {
       resourcesPath = generatedResourcesPath
       const outputPath = resourcesPath.replace(`${path.sep}${util.generateResourcesPath(opts)}`, '')
       return parseInfoPlist(t, opts, outputPath)
-    }).then(obj => {
-      return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
-    }).then(equal => t.true(equal, 'installed icon file should be identical to the specified icon file'))
+    }).then(obj => util.assertFilesEqual(t, iconPath, path.join(resourcesPath, obj.CFBundleIconFile), 'installed icon file should be identical to the specified icon file'))
 }
 
 function extendInfoTest (t, baseOpts, extraPathOrParams) {
@@ -209,19 +199,19 @@ function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
   return packager(opts)
     .then(paths => {
       frameworksPath = path.join(paths[0], `${opts.name}.app`, 'Contents', 'Frameworks')
-      return parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
+      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
     }).then(obj => {
       assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
       assertCFBundleIdentifierValue(t, obj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
       // check helper EH
-      return parsePlist(t, path.join(frameworksPath, `${opts.name} Helper EH.app`))
+      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper EH.app`))
     }).then(obj => {
       assertPlistStringValue(t, obj, 'CFBundleName', opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
       assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
       assertPlistStringValue(t, obj, 'CFBundleExecutable', opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
       assertCFBundleIdentifierValue(t, obj, `${helperBundleIdentifier}.EH`, 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper EH app')
       // check helper NP
-      return parsePlist(t, path.join(frameworksPath, `${opts.name} Helper NP.app`))
+      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper NP.app`))
     }).then(obj => {
       assertPlistStringValue(t, obj, 'CFBundleName', opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
       assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
@@ -345,7 +335,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     opts.name = '@username/package-name'
 
     return packager(opts)
-      .then(paths => parsePlist(t, path.join(paths[0], `${expectedSanitizedName}.app`)))
+      .then(paths => util.parsePlist(t, path.join(paths[0], `${expectedSanitizedName}.app`)))
       .then(obj => {
         assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
         assertPlistStringValue(t, obj, 'CFBundleName', expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
