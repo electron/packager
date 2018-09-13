@@ -56,10 +56,13 @@ util.testSinglePlatform('prune electron in dependencies', (t, baseOpts) => {
 util.testSinglePlatform('prune: false test', createPruneOptionTest, false,
                         'package.json devDependency should exist under app/node_modules')
 
-test('isModule only detects modules inside a node_modules parent folder', t =>
+test('isModule properly detects module folders', t =>
   prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', 'module')))
     .then(isModule => {
       t.true(isModule, 'module folder should be detected as module')
       return prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', 'module', 'not-module')))
-    }).then(isModule => t.false(isModule, 'not-module folder should not be detected as module'))
+    }).then(isModule => {
+      t.false(isModule, 'not-module subfolder should not be detected as module')
+      return prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', '@user', 'namespaced')))
+    }).then(isModule => t.true(isModule, '@user/namespaced folder should be detected as module'))
 )
