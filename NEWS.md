@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.1.1...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.1.2...master
+
+## [12.1.2] - 2018-09-12
+
+[12.1.2]: https://github.com/electron-userland/electron-packager/compare/v12.1.1...v12.1.2
+
+### Fixed
+
+* Prune user-namespaced moduled (#889)
 
 ## [12.1.1] - 2018-08-18
 
