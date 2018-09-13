@@ -72,7 +72,7 @@ function setCopyrightTest (appCopyright) {
     appCopyright: appCopyright
   }
 
-  return generateVersionStringTest('version-string', opts, {LegalCopyright: appCopyright}, 'Legal copyright should match app copyright')
+  return generateVersionStringTest('version-string', opts, { LegalCopyright: appCopyright }, 'Legal copyright should match app copyright')
 }
 
 function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
@@ -86,7 +86,7 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
   return generateVersionStringTest(
     'version-string',
     opts,
-    {LegalCopyright: appCopyright, CompanyName: companyName},
+    { LegalCopyright: appCopyright, CompanyName: companyName },
     'Legal copyright should match app copyright and Company name should match win32metadata value'
   )
 }
@@ -130,7 +130,7 @@ function setCompanyNameTest (companyName) {
 
   return generateVersionStringTest('version-string',
                                    opts,
-                                   {CompanyName: companyName},
+                                   { CompanyName: companyName },
                                    `Company name should match win32metadata value`)
 }
 

@@ -60,7 +60,7 @@ function ignoreImplicitOutDirTest (t, opts) {
 test('generateIgnores ignores the generated temporary directory only on Linux', t => {
   const tmpdir = '/foo/bar'
   const expected = path.join(tmpdir, 'electron-packager')
-  let opts = {tmpdir}
+  let opts = { tmpdir }
 
   ignore.generateIgnores(opts)
 
@@ -72,7 +72,7 @@ test('generateIgnores ignores the generated temporary directory only on Linux', 
 })
 
 test('generateOutIgnores ignores all possible platform/arch permutations', (t) => {
-  const ignores = ignore.generateOutIgnores({name: 'test'})
+  const ignores = ignore.generateOutIgnores({ name: 'test' })
   t.is(ignores.length, util.allPlatformArchCombosCount)
 })
 

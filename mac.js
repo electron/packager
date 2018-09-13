@@ -324,7 +324,7 @@ function filterCFBundleIdentifier (identifier) {
 
 function createSignOpts (properties, platform, app, version, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  let signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
+  let signOpts = properties === true ? { identity: null } : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options

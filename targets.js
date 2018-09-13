@@ -86,7 +86,7 @@ module.exports = {
     const archs = officialPlatformArchCombos[platform]
     if (platform === 'linux') {
       const excludedArchs = Object.keys(linuxArchBuildVersions)
-        .filter(arch => !officialLinuxBuildExists({electronVersion: electronVersion}, linuxArchBuildVersions[arch]))
+        .filter(arch => !officialLinuxBuildExists({ electronVersion: electronVersion }, linuxArchBuildVersions[arch]))
       return archs.filter(arch => !excludedArchs.includes(arch))
     }
 

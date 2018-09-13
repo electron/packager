@@ -47,7 +47,7 @@ test('download argument test: download.{arch,platform,version} does not overwrit
   }
 
   const downloadOpts = download.createDownloadOpts(opts, 'linux', 'x64')
-  t.deepEqual(downloadOpts, {arch: 'x64', platform: 'linux', version: '0.36.0'})
+  t.deepEqual(downloadOpts, { arch: 'x64', platform: 'linux', version: '0.36.0' })
 })
 
 test('sanitize app name for use in file/directory names', t => {
