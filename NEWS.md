@@ -10,7 +10,7 @@
 
 ### Fixed
 
-* Prune user-namespaced moduled (#889)
+* Prune user-namespaced modules (#889)
 
 ## [12.1.1] - 2018-08-18
 
