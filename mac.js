@@ -31,6 +31,10 @@ class MacApp extends App {
     return this.opts.buildVersion
   }
 
+  get enableDarkMode () {
+    return this.opts.darwinDarkModeSupport
+  }
+
   get protocols () {
     return this.opts.protocols.map((protocol) => {
       return {
@@ -210,6 +214,10 @@ class MacApp extends App {
 
         if (this.appCopyright) {
           this.appPlist.NSHumanReadableCopyright = this.appCopyright
+        }
+
+        if (this.enableDarkMode) {
+          this.appPlist.NSRequiresAquaSystemAppearance = false
         }
 
         return Promise.all(plists.map(plistArgs => {

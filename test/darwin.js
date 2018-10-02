@@ -128,6 +128,20 @@ function extendInfoTest (t, baseOpts, extraPathOrParams) {
     })
 }
 
+function darkModeTest (t, baseOpts) {
+  const opts = Object.assign({}, baseOpts, {
+    appBundleId: 'com.electron.extratest',
+    appCategoryType: 'public.app-category.music',
+    buildVersion: '3.2.1',
+    darwinDarkModeSupport: true
+  })
+
+  return packageAndParseInfoPlist(t, opts)
+    .then(obj => {
+      return t.is(obj.NSRequiresAquaSystemAppearance, false, 'NSRequiresAquaSystemAppearance should be set to false')
+    })
+}
+
 function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expectedAppName) {
   const opts = Object.assign({}, baseOpts, extraOpts)
   const appName = expectedAppName || expectedExecutableName || opts.name
@@ -258,6 +272,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   darwinTest('extendInfo by filename test', extendInfoTest, extraInfoPath)
   darwinTest('extendInfo by params test', extendInfoTest, extraInfoParams)
+  darwinTest('mojave dark mode test: should enable dark mode', darkModeTest)
 
   darwinTest('protocol/protocol-name argument test', (t, opts) => {
     opts.protocols = [
