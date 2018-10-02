@@ -57,6 +57,10 @@ module.exports = {
         return bufferEqual(buffer1, buffer2)
       })
   },
+  assertPathNotExists: function assertPathNotExists (t, pathToCheck, message) {
+    return fs.pathExists(pathToCheck)
+      .then(exists => t.false(exists))
+  },
   fixtureSubdir: setup.fixtureSubdir,
   generateResourcesPath: function generateResourcesPath (opts) {
     return common.isPlatformMac(opts.platform)

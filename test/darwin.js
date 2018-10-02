@@ -44,8 +44,16 @@ function electron0374Test (testName, testFunction) {
   return testWrapper.apply(null, [testName, el0374Opts, testFunction].concat(extraArgs))
 }
 
-function getHelperExecutablePath (helperName) {
-  return path.join(`${helperName}.app`, 'Contents', 'MacOS', helperName)
+function getFrameworksPath (prefix, appName) {
+  return path.join(prefix, `${appName}.app`, 'Contents', 'Frameworks')
+}
+
+function getHelperAppPath (prefix, appName, helperSuffix) {
+  return path.join(getFrameworksPath(prefix, appName), `${appName} ${helperSuffix}.app`)
+}
+
+function getHelperExecutablePath (prefix, appName, helperSuffix) {
+  return path.join(getHelperAppPath(prefix, appName, helperSuffix), 'Contents', 'MacOS', `${appName} ${helperSuffix}`)
 }
 
 function parseInfoPlist (t, opts, basePath) {
@@ -63,9 +71,16 @@ function packageAndParseInfoPlist (t, opts) {
     .then(paths => parseInfoPlist(t, opts, paths[0]))
 }
 
+function assertHelper (t, prefix, appName, helperSuffix) {
+  return fs.stat(getHelperAppPath(prefix, appName, helperSuffix))
+    .then(stats => {
+      t.true(stats.isDirectory(), `The ${helperSuffix}.app should reflect sanitized opts.name`)
+      return fs.stat(getHelperExecutablePath(prefix, appName, helperSuffix))
+    }).then(stats => t.true(stats.isFile(), `The ${helperSuffix}.app executable should reflect sanitized opts.name`))
+}
+
 function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
   const opts = Object.assign(baseOpts, extraOpts)
-  let frameworksPath
 
   if (!expectedName) {
     expectedName = opts.name
@@ -73,22 +88,13 @@ function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
 
   return packager(opts)
     .then(paths => {
-      frameworksPath = path.join(paths[0], `${expectedName}.app`, 'Contents', 'Frameworks')
-      // main Helper.app is already tested in basic test suite; test its executable and the other helpers
-      return fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper`)))
-    }).then(stats => {
-      t.true(stats.isFile(), 'The Helper.app executable should reflect sanitized opts.name')
-      return fs.stat(path.join(frameworksPath, `${expectedName} Helper EH.app`))
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The Helper EH.app should reflect sanitized opts.name')
-      return fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper EH`)))
-    }).then(stats => {
-      t.true(stats.isFile(), 'The Helper EH.app executable should reflect sanitized opts.name')
-      return fs.stat(path.join(frameworksPath, `${expectedName} Helper NP.app`))
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The Helper NP.app should reflect sanitized opts.name')
-      return fs.stat(path.join(frameworksPath, getHelperExecutablePath(`${expectedName} Helper NP`)))
-    }).then(stats => t.true(stats.isFile(), 'The Helper NP.app executable should reflect sanitized opts.name'))
+      const helpers = [
+        'Helper',
+        'Helper EH',
+        'Helper NP'
+      ]
+      return Promise.all(helpers.map(helper => assertHelper(t, paths[0], expectedName, helper)))
+    })
 }
 
 function iconTest (t, opts, icon, iconPath) {
@@ -420,6 +426,23 @@ if (!(process.env.CI && process.platform === 'win32')) {
   darwinTest('app helpers bundle helper-bundle-id fallback to app-bundle-id test', appHelpersBundleTest, null, 'com.electron.basetest')
   darwinTest('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters) test', appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\'')
   darwinTest('app helpers bundle helper-bundle-id & app-bundle-id fallback test', appHelpersBundleTest)
+
+  darwinTest('EH/NP helpers do not exist', (t, baseOpts) => {
+    const helpers = [
+      'Helper EH',
+      'Helper NP'
+    ]
+    const opts = Object.assign({}, baseOpts, {
+      afterExtract: [(buildPath, electronVersion, platform, arch, cb) => {
+        return Promise.all(helpers.map(helper => fs.remove(getHelperAppPath(buildPath, 'Electron', helper)))).then(() => cb()) // eslint-disable-line promise/no-callback-in-promise
+      }]
+    })
+
+    return packager(opts)
+      .then(paths => {
+        return Promise.all(helpers.map(helper => util.assertPathNotExists(t, getHelperAppPath(paths[0], opts.name, helper), `${helper} should not exist`)))
+      })
+  })
 
   darwinTest('appCopyright/NSHumanReadableCopyright test', (t, baseOpts) => {
     const copyright = 'Copyright © 2003–2015 Organization. All rights reserved.'

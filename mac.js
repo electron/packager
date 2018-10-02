@@ -147,25 +147,22 @@ class MacApp extends App {
 
   determinePlistFilesToUpdate () {
     const appPlistFilename = path.join(this.contentsPath, 'Info.plist')
-    const helperPlistFilename = this.ehPlistFilename('Electron Helper.app')
-    const helperEHPlistFilename = this.ehPlistFilename('Electron Helper EH.app')
-    const helperNPPlistFilename = this.ehPlistFilename('Electron Helper NP.app')
-    const loginHelperPlistFilename = this.helperPlistFilename(this.loginHelperPath)
 
     const plists = [
       [appPlistFilename, 'appPlist'],
-      [helperPlistFilename, 'helperPlist'],
-      [helperEHPlistFilename, 'helperEHPlist'],
-      [helperNPPlistFilename, 'helperNPPlist']
+      [this.ehPlistFilename('Electron Helper.app'), 'helperPlist']
     ]
 
-    return fs.pathExists(loginHelperPlistFilename)
-      .then(exists => {
-        if (exists) {
-          plists.push([loginHelperPlistFilename, 'loginHelperPlist'])
-        }
-        return plists
-      })
+    const possiblePlists = [
+      [this.ehPlistFilename('Electron Helper EH.app'), 'helperEHPlist'],
+      [this.ehPlistFilename('Electron Helper NP.app'), 'helperNPPlist'],
+      [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist']
+    ]
+
+    return Promise.all(possiblePlists.map(item =>
+      fs.pathExists(item[0])
+        .then(exists => exists ? item : null)
+    )).then(optional => plists.concat(optional.filter(item => item)))
   }
 
   updatePlistFiles () {
@@ -182,8 +179,12 @@ class MacApp extends App {
       .then(() => {
         this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
         this.helperPlist = this.updateHelperPlist(this.helperPlist)
-        this.helperEHPlist = this.updateHelperPlist(this.helperEHPlist, 'EH')
-        this.helperNPPlist = this.updateHelperPlist(this.helperNPPlist, 'NP')
+        if (this.helperEHPlist) {
+          this.helperEHPlist = this.updateHelperPlist(this.helperEHPlist, 'EH')
+        }
+        if (this.helperNPPlist) {
+          this.helperNPPlist = this.updateHelperPlist(this.helperNPPlist, 'NP')
+        }
 
         if (this.loginHelperPlist) {
           const loginHelperName = common.sanitizeAppName(`${this.appName} Login Helper`)
@@ -229,10 +230,24 @@ class MacApp extends App {
 
   moveHelper (helperDirectory, suffix) {
     const originalBasename = `Electron${suffix}`
-    const newBasename = `${common.sanitizeAppName(this.appName)}${suffix}`
+
+    return fs.pathExists(path.join(helperDirectory, `${originalBasename}.app`))
+      .then(exists => {
+        if (exists) {
+          return this.renameHelperAndExecutable(
+            helperDirectory,
+            originalBasename,
+            `${common.sanitizeAppName(this.appName)}${suffix}`
+          )
+        } else {
+          return Promise.resolve()
+        }
+      })
+  }
+
+  renameHelperAndExecutable (helperDirectory, originalBasename, newBasename) {
     const originalAppname = `${originalBasename}.app`
     const executableBasePath = path.join(helperDirectory, originalAppname, 'Contents', 'MacOS')
-
     return this.relativeRename(executableBasePath, originalBasename, newBasename)
       .then(() => this.relativeRename(helperDirectory, originalAppname, `${newBasename}.app`))
   }
