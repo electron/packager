@@ -232,7 +232,7 @@ valid versions. If omitted, it will use the version of the nearest local install
 
 ##### `darwinDarkModeSupport`
 
-*Boolean*
+*Boolean* (default: `false`)
 
 Forces support for Mojave (macOS 10.14) dark mode in your packaged app, this sets the
 `NSRequiresAquaSystemAppearance` key to `false` in your app's `Info.plist`.  For more
