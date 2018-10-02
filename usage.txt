@@ -69,6 +69,8 @@ app-bundle-id      bundle identifier to use in the app plist
 app-category-type  the application category type
                    For example, `app-category-type=public.app-category.developer-tools` will set the
                    application category to 'Developer Tools'.
+darwin-dark-mode-support
+                   forces support for Mojave/10.14 dark mode in the packaged app
 extend-info        a plist file to merge into the app plist
 helper-bundle-id   bundle identifier to use in the app helper plist
 osx-sign           (OSX host platform only) Whether to sign the OSX app packages. You can either
