@@ -118,35 +118,22 @@ util.testSinglePlatform('defaults test', (t, opts) => {
       finalPath = paths[0]
       t.is(finalPath, path.join(t.context.workDir, common.generateFinalBasename(defaultOpts)),
            'Path should follow the expected format and be in the cwd')
-      return fs.stat(finalPath)
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The expected output directory should exist')
+      return util.assertDirectory(t, finalPath, 'The expected output directory should exist')
+    }).then(() => {
       resourcesPath = path.join(finalPath, util.generateResourcesPath(defaultOpts))
-      return fs.stat(path.join(finalPath, generateNamePath(defaultOpts)))
-    }).then(stats => {
+      const appPath = path.join(finalPath, generateNamePath(defaultOpts))
+
       if (common.isPlatformMac(defaultOpts.platform)) {
-        t.true(stats.isDirectory(), 'The Helper.app should reflect opts.name')
+        return util.assertDirectory(t, appPath, 'The Helper.app should reflect opts.name')
       } else {
-        t.true(stats.isFile(), 'The executable should reflect opts.name')
+        return util.assertFile(t, appPath, 'The executable should reflect opts.name')
       }
-      return fs.stat(resourcesPath)
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory')
-      return fs.pathExists(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))
-    }).then(exists => {
-      t.false(exists, 'The output directory should NOT contain devDependencies by default (prune=true)')
-      return util.areFilesEqual(path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'))
-    }).then(equal => {
-      t.true(equal, 'File under packaged app directory should match source file')
-      return util.areFilesEqual(path.join(opts.dir, 'ignore', 'this.txt'),
-                                path.join(resourcesPath, 'app', 'ignore', 'this.txt'))
-    }).then(equal => {
-      t.true(equal, 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
-      return fs.pathExists(path.join(resourcesPath, 'default_app'))
-    }).then(exists => {
-      t.false(exists, 'The output directory should not contain the Electron default_app directory')
-      return fs.pathExists(path.join(resourcesPath, 'default_app.asar'))
-    }).then(exists => t.false(exists, 'The output directory should not contain the Electron default_app.asar file'))
+    }).then(() => util.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory'))
+    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), 'The output directory should NOT contain devDependencies by default (prune=true)'))
+    .then(() => util.assertFilesEqual(t, path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), 'File under packaged app directory should match source file'))
+    .then(() => util.assertFilesEqual(t, path.join(opts.dir, 'ignore', 'this.txt'), path.join(resourcesPath, 'app', 'ignore', 'this.txt'), 'File under subdirectory of packaged app directory should match source file and not be ignored by default'))
+    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app'), 'The output directory should not contain the Electron default_app directory'))
+    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file'))
 })
 
 util.testSinglePlatform('out test', (t, opts) => {
@@ -161,11 +148,8 @@ util.testSinglePlatform('out test', (t, opts) => {
       finalPath = paths[0]
       t.is(finalPath, path.join('dist', common.generateFinalBasename(opts)),
            'Path should follow the expected format and be under the folder specified in `out`')
-      return fs.stat(finalPath)
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The expected output directory should exist')
-      return fs.stat(path.join(finalPath, util.generateResourcesPath(opts)))
-    }).then(stats => t.true(stats.isDirectory(), 'The output directory should contain the expected resources subdirectory'))
+      return util.assertDirectory(t, finalPath, 'The expected output directory should exist')
+    }).then(() => util.assertDirectory(t, path.join(finalPath, util.generateResourcesPath(opts)), 'The output directory should contain the expected resources subdirectory'))
 })
 
 util.testSinglePlatform('overwrite test', (t, opts) => {
@@ -178,21 +162,18 @@ util.testSinglePlatform('overwrite test', (t, opts) => {
   return packager(opts)
     .then(paths => {
       finalPath = paths[0]
-      return fs.stat(finalPath)
-    }).then(stats => {
-      t.true(stats.isDirectory(), 'The expected output directory should exist')
+      return util.assertDirectory(t, finalPath, 'The expected output directory should exist')
+    }).then(() => {
       // Create a dummy file to detect whether the output directory is replaced in subsequent runs
       testPath = path.join(finalPath, 'test.txt')
       return fs.writeFile(testPath, 'test')
     }).then(() => packager(opts)) // Run again, defaulting to overwrite false
-    .then(paths => fs.stat(testPath))
-    .then(stats => {
-      t.true(stats.isFile(), 'The existing output directory should exist as before (skipped by default)')
+    .then(paths => util.assertFile(t, testPath, 'The existing output directory should exist as before (skipped by default)'))
+    .then(() => {
       // Run a third time, explicitly setting overwrite to true
       opts.overwrite = true
       return packager(opts)
-    }).then(paths => fs.pathExists(testPath))
-    .then(exists => t.false(exists, 'The output directory should be regenerated when overwrite is true'))
+    }).then(paths => util.assertPathNotExists(t, testPath, 'The output directory should be regenerated when overwrite is true'))
 })
 
 util.testSinglePlatform('overwrite test sans platform/arch set', (t, opts) => {
@@ -202,12 +183,9 @@ util.testSinglePlatform('overwrite test sans platform/arch set', (t, opts) => {
   opts.overwrite = true
 
   return packager(opts)
-    .then(paths => fs.pathExists(paths[0]))
-    .then(exists => {
-      t.true(exists, 'The output directory exists')
-      return packager(opts)
-    }).then(paths => fs.pathExists(paths[0]))
-    .then(exists => t.true(exists, 'The output directory exists'))
+    .then(paths => util.assertPathExists(t, paths[0], 'The output directory exists'))
+    .then(() => packager(opts))
+    .then(paths => util.assertPathExists(t, paths[0], 'The output directory exists'))
 })
 
 util.testSinglePlatform('tmpdir test', (t, opts) => {
@@ -217,8 +195,7 @@ util.testSinglePlatform('tmpdir test', (t, opts) => {
   opts.tmpdir = path.join(t.context.workDir, 'tmp')
 
   return packager(opts)
-    .then(paths => fs.stat(path.join(opts.tmpdir, 'electron-packager')))
-    .then(stats => t.true(stats.isDirectory(), 'The expected temp directory should exist'))
+    .then(paths => util.assertDirectory(t, path.join(opts.tmpdir, 'electron-packager'), 'The expected temp directory should exist'))
 })
 
 util.testSinglePlatform('disable tmpdir test', (t, opts) => {
@@ -228,8 +205,7 @@ util.testSinglePlatform('disable tmpdir test', (t, opts) => {
   opts.tmpdir = false
 
   return packager(opts)
-    .then(paths => fs.stat(paths[0]))
-    .then(stats => t.true(stats.isDirectory(), 'The expected out directory should exist'))
+    .then(paths => util.assertDirectory(t, paths[0], 'The expected out directory should exist'))
 })
 
 util.testSinglePlatform('deref symlink test', (t, opts) => {
@@ -244,11 +220,8 @@ util.testSinglePlatform('deref symlink test', (t, opts) => {
     .then(() => packager(opts))
     .then(paths => {
       const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
-      return fs.lstat(destLink)
-    }).then(stats => {
-      t.true(stats.isSymbolicLink(), 'The expected file should still be a symlink')
-      return fs.remove(dest)
-    })
+      return util.assertSymlink(t, destLink, 'The expected file should still be a symlink')
+    }).then(() => fs.remove(dest))
 })
 
 function createExtraResourceStringTest (t, opts, platform) {
@@ -262,8 +235,7 @@ function createExtraResourceStringTest (t, opts, platform) {
   opts.extraResource = extra1Path
 
   return util.packageAndEnsureResourcesPath(t, opts)
-    .then(resourcesPath => util.areFilesEqual(extra1Path, path.join(resourcesPath, extra1Base)))
-    .then(equal => t.true(equal, 'resource file data1.txt should match'))
+    .then(resourcesPath => util.assertFilesEqual(t, extra1Path, path.join(resourcesPath, extra1Base), 'resource file data1.txt should match'))
 }
 
 function createExtraResourceArrayTest (t, opts, platform) {
@@ -285,17 +257,10 @@ function createExtraResourceArrayTest (t, opts, platform) {
     .then(resourcesPath => {
       extra1DistPath = path.join(resourcesPath, extra1Base)
       extra2DistPath = path.join(resourcesPath, extra2Base)
-      return fs.pathExists(extra1DistPath)
-    }).then(exists => {
-      t.true(exists, 'resource file data1.txt exists')
-      return util.areFilesEqual(extra1Path, extra1DistPath)
-    }).then(equal => {
-      t.true(equal, 'resource file data1.txt should match')
-      return fs.pathExists(extra2DistPath)
-    }).then(exists => {
-      t.true(exists, 'resource file extrainfo.plist exists')
-      return util.areFilesEqual(extra2Path, extra2DistPath)
-    }).then(equal => t.true(equal, 'resource file extrainfo.plist should match'))
+      return util.assertPathExists(t, extra1DistPath, 'resource file data1.txt exists')
+    }).then(() => util.assertFilesEqual(t, extra1Path, extra1DistPath, 'resource file data1.txt should match'))
+    .then(() => util.assertPathExists(t, extra2DistPath, 'resource file extrainfo.plist exists'))
+    .then(() => util.assertFilesEqual(t, extra2Path, extra2DistPath, 'resource file extrainfo.plist should match'))
 }
 
 for (const platform of ['darwin', 'linux']) {
@@ -310,8 +275,8 @@ util.testSinglePlatform('building for Linux target sanitizes binary name', (t, o
   return packager(opts)
     .then(paths => {
       t.is(1, paths.length, '1 bundle created')
-      return fs.stat(path.join(paths[0], '@username-package-name'))
-    }).then(stats => t.true(stats.isFile(), 'The sanitized binary filename should exist'))
+      return util.assertFile(t, path.join(paths[0], '@username-package-name'), 'The sanitized binary filename should exist')
+    })
 })
 
 util.testSinglePlatform('executableName honored when building for Linux target', (t, opts) => {
@@ -322,8 +287,8 @@ util.testSinglePlatform('executableName honored when building for Linux target',
   return packager(opts)
     .then(paths => {
       t.is(1, paths.length, '1 bundle created')
-      return fs.stat(path.join(paths[0], 'my-package'))
-    }).then(stats => t.true(stats.isFile(), 'The executableName-based filename should exist'))
+      return util.assertFile(t, path.join(paths[0], 'my-package'), 'The executableName-based filename should exist')
+    })
 })
 
 util.packagerTest('fails with invalid version', util.invalidOptionTest({

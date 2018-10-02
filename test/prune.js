@@ -1,6 +1,5 @@
 'use strict'
 
-const fs = require('fs-extra')
 const path = require('path')
 const prune = require('../prune')
 const test = require('ava')
@@ -10,15 +9,13 @@ function checkDependency (t, resourcesPath, moduleName, moduleExists) {
   const assertion = moduleExists ? 'should' : 'should NOT'
   const message = `module dependency '${moduleName}' ${assertion} exist under app/node_modules`
   const modulePath = path.join(resourcesPath, 'app', 'node_modules', moduleName)
-  return fs.pathExists(modulePath)
-    .then(exists => t.is(moduleExists, exists, message))
+  return util.assertPathExistsCustom(t, modulePath, moduleExists, message)
     .then(() => modulePath)
 }
 
 function assertDependencyExists (t, resourcesPath, moduleName) {
   return checkDependency(t, resourcesPath, moduleName, true)
-    .then(modulePath => fs.stat(modulePath))
-    .then(stats => t.true(stats.isDirectory(), 'module is a directory'))
+    .then(modulePath => util.assertDirectory(t, modulePath, 'module is a directory'))
 }
 
 function createPruneOptionTest (t, baseOpts, prune, testMessage) {

@@ -57,13 +57,7 @@ function getHelperExecutablePath (prefix, appName, helperSuffix) {
 }
 
 function parseInfoPlist (t, opts, basePath) {
-  const plistPath = path.join(basePath, `${opts.name}.app`, 'Contents', 'Info.plist')
-
-  return fs.stat(plistPath)
-    .then(stats => {
-      t.true(stats.isFile(), 'The expected Info.plist file should exist')
-      return fs.readFile(plistPath, 'utf8')
-    }).then(file => plist.parse(file))
+  return util.parsePlist(t, path.join(basePath, `${opts.name}.app`))
 }
 
 function packageAndParseInfoPlist (t, opts) {
@@ -71,12 +65,19 @@ function packageAndParseInfoPlist (t, opts) {
     .then(paths => parseInfoPlist(t, opts, paths[0]))
 }
 
+function assertPlistStringValue (t, obj, property, value, message) {
+  t.is(obj[property], value, message)
+  t.is(typeof obj[property], 'string', `${property} should be a string`)
+}
+
+function assertCFBundleIdentifierValue (t, obj, value, message) {
+  assertPlistStringValue(t, obj, 'CFBundleIdentifier', value, message)
+  t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+}
+
 function assertHelper (t, prefix, appName, helperSuffix) {
-  return fs.stat(getHelperAppPath(prefix, appName, helperSuffix))
-    .then(stats => {
-      t.true(stats.isDirectory(), `The ${helperSuffix}.app should reflect sanitized opts.name`)
-      return fs.stat(getHelperExecutablePath(prefix, appName, helperSuffix))
-    }).then(stats => t.true(stats.isFile(), `The ${helperSuffix}.app executable should reflect sanitized opts.name`))
+  return util.assertDirectory(t, getHelperAppPath(prefix, appName, helperSuffix), `The ${helperSuffix}.app should reflect sanitized opts.name`)
+    .then(() => util.assertFile(t, getHelperExecutablePath(prefix, appName, helperSuffix), `The ${helperSuffix}.app executable should reflect sanitized opts.name`))
 }
 
 function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
@@ -107,9 +108,7 @@ function iconTest (t, opts, icon, iconPath) {
       resourcesPath = generatedResourcesPath
       const outputPath = resourcesPath.replace(`${path.sep}${util.generateResourcesPath(opts)}`, '')
       return parseInfoPlist(t, opts, outputPath)
-    }).then(obj => {
-      return util.areFilesEqual(iconPath, path.join(resourcesPath, obj.CFBundleIconFile))
-    }).then(equal => t.true(equal, 'installed icon file should be identical to the specified icon file'))
+    }).then(obj => util.assertFilesEqual(t, iconPath, path.join(resourcesPath, obj.CFBundleIconFile), 'installed icon file should be identical to the specified icon file'))
 }
 
 function extendInfoTest (t, baseOpts, extraPathOrParams) {
@@ -122,15 +121,15 @@ function extendInfoTest (t, baseOpts, extraPathOrParams) {
 
   return packageAndParseInfoPlist(t, opts)
     .then(obj => {
-      t.is(obj.TestKeyString, 'String data', 'TestKeyString should come from extendInfo')
+      assertPlistStringValue(t, obj, 'TestKeyString', 'String data', 'TestKeyString should come from extendInfo')
       t.is(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
       t.is(obj.TestKeyBool, true, 'TestKeyBool should come from extendInfo')
       t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extendInfo')
       t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extendInfo')
-      t.is(obj.CFBundleVersion, opts.buildVersion, 'CFBundleVersion should reflect buildVersion argument')
-      t.is(obj.CFBundleIdentifier, 'com.electron.extratest', 'CFBundleIdentifier should reflect appBundleId argument')
-      t.is(obj.LSApplicationCategoryType, 'public.app-category.music', 'LSApplicationCategoryType should reflect appCategoryType argument')
-      return t.is(obj.CFBundlePackageType, 'APPL', 'CFBundlePackageType should be Electron default')
+      assertPlistStringValue(t, obj, 'CFBundleVersion', opts.buildVersion, 'CFBundleVersion should reflect buildVersion argument')
+      assertCFBundleIdentifierValue(t, obj, 'com.electron.extratest', 'CFBundleIdentifier should reflect appBundleId argument')
+      assertPlistStringValue(t, obj, 'LSApplicationCategoryType', 'public.app-category.music', 'LSApplicationCategoryType should reflect appCategoryType argument')
+      return assertPlistStringValue(t, obj, 'CFBundlePackageType', 'APPL', 'CFBundlePackageType should be Electron default')
     })
 }
 
@@ -153,13 +152,8 @@ function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expecte
   const appName = expectedAppName || expectedExecutableName || opts.name
   const executableName = expectedExecutableName || opts.name
 
-  let binaryPath
-
   return packager(opts)
-    .then(paths => {
-      binaryPath = path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS')
-      return fs.stat(path.join(binaryPath, executableName))
-    }).then(stats => t.true(stats.isFile(), 'The binary should reflect a sanitized opts.name'))
+    .then(paths => util.assertFile(t, path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS', executableName), 'The binary should reflect a sanitized opts.name'))
 }
 
 function appVersionTest (t, opts, appVersion, buildVersion) {
@@ -168,10 +162,8 @@ function appVersionTest (t, opts, appVersion, buildVersion) {
 
   return packageAndParseInfoPlist(t, opts)
     .then(obj => {
-      t.is(obj.CFBundleVersion, '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
-      t.is(obj.CFBundleShortVersionString, '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
-      t.is(typeof obj.CFBundleVersion, 'string', 'CFBundleVersion should be a string')
-      return t.is(typeof obj.CFBundleShortVersionString, 'string', 'CFBundleShortVersionString should be a string')
+      assertPlistStringValue(t, obj, 'CFBundleVersion', '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
+      return assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
     })
 }
 
@@ -185,18 +177,14 @@ function appBundleTest (t, opts, appBundleId) {
 
   return packageAndParseInfoPlist(t, opts)
     .then(obj => {
-      t.is(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
-      t.is(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name')
-      t.is(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
-      t.is(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string')
-      t.is(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string')
-      t.is(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string')
-      return t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+      assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
+      assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name')
+      return assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
     })
 }
 
 function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
-  let tempPath, plistPath
+  let frameworksPath
 
   if (helperBundleId) {
     opts.helperBundleId = helperBundleId
@@ -210,53 +198,25 @@ function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
 
   return packager(opts)
     .then(paths => {
-      tempPath = paths[0]
-      plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper.app', 'Contents', 'Info.plist')
-      return fs.stat(plistPath)
-    }).then(stats => {
-      t.true(stats.isFile(), 'The expected Info.plist file should exist in helper app')
-      return fs.readFile(plistPath, 'utf8')
-    }).then(file => {
-      const obj = plist.parse(file)
-      t.is(obj.CFBundleName, opts.name, 'CFBundleName should reflect opts.name in helper app')
-      t.is(obj.CFBundleIdentifier, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
-      t.is(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper app')
-      t.is(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string in helper app')
-      t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+      frameworksPath = path.join(paths[0], `${opts.name}.app`, 'Contents', 'Frameworks')
+      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
+    }).then(obj => {
+      assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+      assertCFBundleIdentifierValue(t, obj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
       // check helper EH
-      plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper EH.app', 'Contents', 'Info.plist')
-      return fs.stat(plistPath)
-    }).then(stats => {
-      t.true(stats.isFile(), 'The expected Info.plist file should exist in helper EH app')
-      return fs.readFile(plistPath, 'utf8')
-    }).then(file => {
-      const obj = plist.parse(file)
-      t.is(obj.CFBundleName, opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
-      t.is(obj.CFBundleDisplayName, opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
-      t.is(obj.CFBundleExecutable, opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
-      t.is(obj.CFBundleIdentifier, helperBundleIdentifier + '.EH', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper EH app')
-      t.is(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper EH app')
-      t.is(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string in helper EH app')
-      t.is(typeof obj.CFBundleExecutable, 'string', 'CFBundleExecutable should be a string in helper EH app')
-      t.is(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string in helper EH app')
-      t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper EH.app`))
+    }).then(obj => {
+      assertPlistStringValue(t, obj, 'CFBundleName', opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
+      assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
+      assertPlistStringValue(t, obj, 'CFBundleExecutable', opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
+      assertCFBundleIdentifierValue(t, obj, `${helperBundleIdentifier}.EH`, 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper EH app')
       // check helper NP
-      plistPath = path.join(tempPath, opts.name + '.app', 'Contents', 'Frameworks', opts.name + ' Helper NP.app', 'Contents', 'Info.plist')
-      return fs.stat(plistPath)
-    }).then(stats => {
-      t.true(stats.isFile(), 'The expected Info.plist file should exist in helper NP app')
-      return fs.readFile(plistPath, 'utf8')
-    }).then(file => {
-      const obj = plist.parse(file)
-      t.is(obj.CFBundleName, opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
-      t.is(obj.CFBundleDisplayName, opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
-      t.is(obj.CFBundleExecutable, opts.name + ' Helper NP', 'CFBundleExecutable should reflect opts.name in helper NP app')
-      t.is(obj.CFBundleIdentifier, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper NP app')
-      t.is(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string in helper NP app')
-      t.is(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string in helper NP app')
-      t.is(typeof obj.CFBundleExecutable, 'string', 'CFBundleExecutable should be a string in helper NP app')
-      t.is(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string in helper NP app')
-      return t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper NP.app`))
+    }).then(obj => {
+      assertPlistStringValue(t, obj, 'CFBundleName', opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
+      assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
+      assertPlistStringValue(t, obj, 'CFBundleExecutable', opts.name + ' Helper NP', 'CFBundleExecutable should reflect opts.name in helper NP app')
+      return assertCFBundleIdentifierValue(t, obj, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper NP app')
     })
 }
 
@@ -348,11 +308,9 @@ if (!(process.env.CI && process.platform === 'win32')) {
     return packager(opts)
       .then(paths => {
         appPath = path.join(paths[0], opts.name + '.app')
-        return fs.stat(appPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The expected .app directory should exist')
-        return exec(`codesign -v ${appPath}`)
-      }).then(
+        return util.assertDirectory(t, appPath, 'The expected .app directory should exist')
+      }).then(() => exec(`codesign -v ${appPath}`))
+      .then(
         (stdout, stderr) => t.pass('codesign should verify successfully'),
         err => {
           const notFound = err && err.code === 127
@@ -374,26 +332,14 @@ if (!(process.env.CI && process.platform === 'win32')) {
     const appBundleIdentifier = 'com.electron.username-package-name'
     const expectedSanitizedName = '@username-package-name'
 
-    let plistPath
-
     opts.name = '@username/package-name'
 
     return packager(opts)
-      .then(paths => {
-        plistPath = path.join(paths[0], `${expectedSanitizedName}.app`, 'Contents', 'Info.plist')
-        return fs.stat(plistPath)
-      }).then(stats => {
-        t.true(stats.isFile(), 'The expected Info.plist file should exist')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(file => {
-        const obj = plist.parse(file)
-        t.is(typeof obj.CFBundleDisplayName, 'string', 'CFBundleDisplayName should be a string')
-        t.is(obj.CFBundleDisplayName, opts.name, 'CFBundleDisplayName should reflect opts.name')
-        t.is(typeof obj.CFBundleName, 'string', 'CFBundleName should be a string')
-        t.is(obj.CFBundleName, expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
-        t.is(typeof obj.CFBundleIdentifier, 'string', 'CFBundleIdentifier should be a string')
-        t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
-        return t.is(obj.CFBundleIdentifier, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
+      .then(paths => util.parsePlist(t, path.join(paths[0], `${expectedSanitizedName}.app`)))
+      .then(obj => {
+        assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
+        assertPlistStringValue(t, obj, 'CFBundleName', expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
+        return assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
       })
   })
 
@@ -403,8 +349,8 @@ if (!(process.env.CI && process.platform === 'win32')) {
   darwinTest('infer app version from package.json test', (t, opts) =>
     packageAndParseInfoPlist(t, opts)
       .then(obj => {
-        t.is(obj.CFBundleVersion, '4.99.101', 'CFBundleVersion should reflect package.json version')
-        return t.is(obj.CFBundleShortVersionString, '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
+        assertPlistStringValue(t, obj, 'CFBundleVersion', '4.99.101', 'CFBundleVersion should reflect package.json version')
+        return assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
       })
   )
 
@@ -413,7 +359,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     opts.appCategoryType = appCategoryType
 
     return packageAndParseInfoPlist(t, opts)
-      .then(obj => t.is(obj.LSApplicationCategoryType, appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType'))
+      .then(obj => assertPlistStringValue(t, obj, 'LSApplicationCategoryType', appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType'))
   })
 
   darwinTest('app bundle test', appBundleTest, 'com.electron.basetest')
@@ -426,14 +372,9 @@ if (!(process.env.CI && process.platform === 'win32')) {
     return packager(opts)
       .then(paths => {
         frameworkPath = path.join(paths[0], `${opts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
-        return fs.stat(frameworkPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'Expected Electron Framework.framework to be a directory')
-        return fs.lstat(path.join(frameworkPath, 'Electron Framework'))
-      }).then(stats => {
-        t.true(stats.isSymbolicLink(), 'Expected Electron Framework.framework/Electron Framework to be a symlink')
-        return fs.lstat(path.join(frameworkPath, 'Versions', 'Current'))
-      }).then(stats => t.true(stats.isSymbolicLink(), 'Expected Electron Framework.framework/Versions/Current to be a symlink'))
+        return util.assertDirectory(t, frameworkPath, 'Expected Electron Framework.framework to be a directory')
+      }).then(() => util.assertSymlink(t, path.join(frameworkPath, 'Electron Framework'), 'Expected Electron Framework.framework/Electron Framework to be a symlink'))
+      .then(() => util.assertSymlink(t, path.join(frameworkPath, 'Versions', 'Current'), 'Expected Electron Framework.framework/Versions/Current to be a symlink'))
   })
 
   darwinTest('app helpers bundle test', appHelpersBundleTest, 'com.electron.basetest.helper')
@@ -474,10 +415,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     return packager(opts)
       .then(paths => {
         appPath = path.join(paths[0], 'Electron.app')
-        return fs.stat(appPath)
-      }).then(stats => {
-        t.true(stats.isDirectory(), 'The Electron.app folder exists')
-        return fs.stat(path.join(appPath, 'Contents', 'MacOS', 'Electron'))
-      }).then(stats => t.true(stats.isFile(), 'The Electron.app/Contents/MacOS/Electron binary exists'))
+        return util.assertDirectory(t, appPath, 'The Electron.app folder exists')
+      }).then(() => util.assertFile(t, path.join(appPath, 'Contents', 'MacOS', 'Electron'), 'The Electron.app/Contents/MacOS/Electron binary exists'))
   })
 }

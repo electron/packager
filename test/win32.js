@@ -1,7 +1,6 @@
 'use strict'
 
 const config = require('./config.json')
-const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
 const test = require('ava')
@@ -173,38 +172,38 @@ test('win32metadata defaults', t => {
   t.is(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
 })
 
-util.packagerTest('win32 executable name is based on sanitized app name', (t, opts) => {
-  Object.assign(opts, win32Opts, { name: '@username/package-name' })
+function win32Test (description, extraOpts, executableBasename, executableMessage) {
+  util.packagerTest(description, (t, opts) => {
+    Object.assign(opts, win32Opts, extraOpts)
 
-  return packager(opts)
-    .then(paths => {
-      t.is(1, paths.length, '1 bundle created')
-      const appExePath = path.join(paths[0], '@username-package-name.exe')
-      return fs.pathExists(appExePath)
-    }).then(exists => t.true(exists, 'The sanitized EXE filename should exist'))
-})
+    return packager(opts)
+      .then(paths => {
+        t.is(1, paths.length, '1 bundle created')
+        return util.assertPathExists(t, path.join(paths[0], `${executableBasename}.exe`), executableMessage)
+      })
+  })
+}
 
-util.packagerTest('win32 executable name uses executableName when available', (t, opts) => {
-  Object.assign(opts, win32Opts, { name: 'PackageName', executableName: 'my-package' })
+win32Test(
+  'win32 executable name is based on sanitized app name',
+  { name: '@username/package-name' },
+  '@username-package-name',
+  'The sanitized EXE filename should exist'
+)
 
-  return packager(opts)
-    .then(paths => {
-      t.is(1, paths.length, '1 bundle created')
-      const appExePath = path.join(paths[0], 'my-package.exe')
-      return fs.pathExists(appExePath)
-    }).then(exists => t.true(exists, 'the executableName-based filename should exist'))
-})
+win32Test(
+  'win32 executable name uses executableName when available',
+  { name: 'PackageName', executableName: 'my-package' },
+  'my-package',
+  'the executableName-based filename should exist'
+)
 
-util.packagerTest('win32 icon set', (t, opts) => {
-  Object.assign(opts, win32Opts, { executableName: 'iconTest', arch: 'ia32', icon: path.join(__dirname, 'fixtures', 'monochrome') })
-
-  return packager(opts)
-    .then(paths => {
-      t.is(1, paths.length, '1 bundle created')
-      const appExePath = path.join(paths[0], 'iconTest.exe')
-      return fs.pathExists(appExePath)
-    }).then(exists => t.true(exists, 'the Electron executable should exist'))
-})
+win32Test(
+  'win32 icon set',
+  { executableName: 'iconTest', arch: 'ia32', icon: path.join(__dirname, 'fixtures', 'monochrome') },
+  'iconTest',
+  'the Electron executable should exist'
+)
 
 test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))

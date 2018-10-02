@@ -1,9 +1,7 @@
 'use strict'
 
-const fs = require('fs-extra')
 const packager = require('..')
 const path = require('path')
-const plist = require('plist')
 const util = require('./_util')
 
 if (!(process.env.CI && process.platform === 'win32')) {
@@ -33,26 +31,20 @@ if (!(process.env.CI && process.platform === 'win32')) {
   })
 
   util.packagerTest('update Login Helper if it exists', (t, baseOpts) => {
+    let helperPath
     let contentsPath
-    let plistPath
     const helperName = `${masOpts.name} Login Helper`
     return packager(Object.assign({}, baseOpts, masOpts))
       .then(paths => {
-        contentsPath = path.join(paths[0], `${masOpts.name}.app`, 'Contents', 'Library', 'LoginItems', `${helperName}.app`, 'Contents')
-        return fs.pathExists(contentsPath)
-      }).then(exists => {
-        t.true(exists, 'renamed Login Helper app exists')
-        plistPath = path.join(contentsPath, 'Info.plist')
-        return fs.pathExists(contentsPath)
-      }).then(exists => {
-        t.true(exists, 'Login Helper Info.plist exists')
-        return fs.readFile(plistPath, 'utf8')
-      }).then(plistXML => {
-        const plistData = plist.parse(plistXML)
+        helperPath = path.join(paths[0], `${masOpts.name}.app`, 'Contents', 'Library', 'LoginItems', `${helperName}.app`)
+        contentsPath = path.join(helperPath, 'Contents')
+        return util.assertPathExists(t, helperPath, 'renamed Login Helper app exists')
+      }).then(() => util.parsePlist(t, helperPath))
+      .then(plistData => {
         t.is(plistData.CFBundleExecutable, helperName, 'CFBundleExecutable is renamed Login Helper')
         t.is(plistData.CFBundleName, helperName, 'CFBundleName is renamed Login Helper')
         t.is(plistData.CFBundleIdentifier, 'com.electron.mastest.loginhelper')
-        return fs.pathExists(path.join(contentsPath, 'MacOS', helperName))
-      }).then(exists => t.true(exists, 'renamed Login Helper executable exists'))
+        return util.assertPathExists(t, path.join(contentsPath, 'MacOS', helperName), 'renamed Login Helper executable exists')
+      })
   })
 }
