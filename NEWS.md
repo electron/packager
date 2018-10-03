@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.1.2...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.2.0...master
+
+## [12.2.0] - 2018-10-02
+
+[12.2.0]: https://github.com/electron-userland/electron-packager/compare/v12.1.2...v12.2.0
+
+### Added
+
+* darwinDarkModeSupport option to support macOS Mojave dark mode for older Electron versions (#893)
+
+### Fixed
+
+* Don't handle EH/NP Helpers if they don't exist (#894)
 
 ## [12.1.2] - 2018-09-12
 
