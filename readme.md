@@ -183,7 +183,7 @@ The `Foo Bar.app` folder generated can be executed by a system running OS X, whi
 
 Windows:
 
-* [electron-winstaller](https://github.com/electron/windows-installer) - Squirrel.Windows-based installer
+* [electron-winstaller](https://github.com/electron/windows-installer) - Squirrel.Windows-based installer from the Electron maintainers group
 * [electron-windows-store](https://github.com/felixrieseberg/electron-windows-store) - creates an AppX package for the Windows Store
 * [electron-wix-msi](https://github.com/felixrieseberg/electron-wix-msi) - creates traditional MSI installers
 * [electron-installer-windows](https://github.com/unindented/electron-installer-windows) - alternative Squirrel.Windows-based installer
