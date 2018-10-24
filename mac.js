@@ -6,6 +6,7 @@ const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
+const { notarize } = require('electron-notarize')
 const { signAsync } = require('electron-osx-sign')
 
 class MacApp extends App {
@@ -50,6 +51,10 @@ class MacApp extends App {
 
   get defaultBundleName () {
     return `com.electron.${common.sanitizeAppName(this.appName).toLowerCase()}`
+  }
+
+  get bundleName () {
+    return filterCFBundleIdentifier(this.opts.appBundleId || this.defaultBundleName)
   }
 
   get originalResourcesDir () {
@@ -172,7 +177,7 @@ class MacApp extends App {
   updatePlistFiles () {
     let plists
 
-    const appBundleIdentifier = filterCFBundleIdentifier(this.opts.appBundleId || this.defaultBundleName)
+    const appBundleIdentifier = this.bundleName
     this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts.helperBundleId || `${appBundleIdentifier}.helper`)
 
     return this.determinePlistFilesToUpdate()
@@ -292,12 +297,32 @@ class MacApp extends App {
 
     if (osxSignOpt) {
       const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.quiet)
+      if (this.opts.osxNotarize && !signOpts.hardenedRuntime) {
+        common.warning('notarization is enabled but hardenedRuntime was not enabled in ' +
+                       'signing options.  It has been enabled for you but you should ' +
+                       'enable it in your config.')
+        signOpts.hardenedRuntime = true
+      }
       debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
       return signAsync(signOpts)
         // Although not signed successfully, the application is packed.
         .catch(err => common.warning(`Code sign failed; please retry manually. ${err}`))
     } else {
       return Promise.resolve()
+    }
+  }
+
+  notarizeAppIfSpecified () {
+    let osxNotarizeOpt = this.opts.osxNotarize
+
+    if (osxNotarizeOpt) {
+      const notarizeOpts = createNotarizeOpts(
+        osxNotarizeOpt,
+        this.bundleName,
+        this.renamedAppPath,
+        this.opts.quiet
+      )
+      return notarize(notarizeOpts)
     }
   }
 
@@ -309,6 +334,7 @@ class MacApp extends App {
       .then(() => this.renameAppAndHelpers())
       .then(() => this.copyExtraResources())
       .then(() => this.signAppIfSpecified())
+      .then(() => this.notarizeAppIfSpecified())
       .then(() => this.move())
   }
 }
@@ -346,6 +372,18 @@ function createSignOpts (properties, platform, app, version, quiet) {
   }
 
   return signOpts
+}
+
+function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
+  const notarizeOpts = properties
+
+  // osx-notarize options are handed off to notarize module, but
+  // with a few additions from the main options
+  // user may think they can pass bundle ID or appPath but they will be ignored
+  common.subOptionWarning(notarizeOpts, 'osx-notarize', 'appBundleId', appBundleId, quiet)
+  common.subOptionWarning(notarizeOpts, 'osx-notarize', 'appPath', appPath, quiet)
+
+  return notarizeOpts
 }
 
 module.exports = {

@@ -58,6 +58,30 @@ function parseCLIArgs (argv) {
     args.osxSign = true
   }
 
+  let noNotarize = false
+  args.osxNotarize = args['osx-notarize']
+  if (Array.isArray(args.osxNotarize) || (args.osxNotarize && typeof args.osxNotarize !== 'object')) {
+    warning('do not use --osx-notarize, use the sub-properties (see --help)')
+    noNotarize = true
+  } else if (args.osxNotarize) {
+    if (!args.osxNotarize.appleId) {
+      warning('--osx-notarize.appleId is required when using notarization, notarize will not run (see --help)')
+      noNotarize = true
+    }
+    if (!args.osxNotarize.appleIdPassword) {
+      warning('--osx-notarize.appleIdPassword is required when using notarization, notarize will not run (see --help)')
+      noNotarize = true
+    }
+  }
+  if (!args.osxSign) {
+    warning('notarization was enabled but osx code signing was not, code signing is a requirement for notarization, notarize will not run')
+    noNotarize = true
+  }
+
+  if (noNotarize) {
+    args.osxNotarize = null
+  }
+
   // tmpdir: `String` or `false`
   if (args.tmpdir === 'false') {
     warning('--tmpdir=false is deprecated, use --no-tmpdir instead')
