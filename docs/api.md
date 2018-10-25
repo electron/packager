@@ -67,6 +67,8 @@ packager({
 })
 ```
 
+**Note:** `afterCopy` will not be called if [`prebuiltAsar`](#prebuiltasar) is set.
+
 ##### `afterExtract`
 
 *Array of Functions*
@@ -118,7 +120,7 @@ in the temporary directory.  Each function is called with five parameters:
 - `arch` (*String*): The target architecture you are packaging for
 - `callback` (*Function*): Must be called once you have completed your actions
 
-**NOTE:** None of these functions will be called if the `prune` option is `false`.
+**Note:** None of these functions will be called if the `prune` option is `false` or `prebuiltAsar` is set.
 
 By default, the functions are called in parallel (via
 [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
@@ -194,6 +196,8 @@ Whether to package the application's source code into an archive, using [Electro
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
 
+**Note:** `asar` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+
 ##### `buildVersion`
 
 *String*
@@ -205,6 +209,8 @@ The build version of the application. Defaults to the value of [`appVersion`](#a
 *Boolean* (default: `true`)
 
 Whether symlinks should be dereferenced during the copying of the application source.
+
+**Note:** `derefSymlinks` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `download`
 
@@ -300,6 +306,8 @@ Alternatively, this can be a predicate function that, given an absolute file pat
 the file should be ignored, or `false` if the file should be kept. *This does not use any of the
 default ignored directories listed above.*
 
+**Note:** `ignore` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+
 ##### `name`
 
 *String*
@@ -334,12 +342,30 @@ Arbitrary combinations of individual platforms are also supported via a comma-de
 The non-`all` values correspond to the platform names used by [Electron releases]. This value
 is not restricted to the official set if [`download.mirror`](#download) is set.
 
+##### `prebuiltAsar`
+
+*String*
+
+The path to a prebuilt ASAR file.
+
+**Note:** Setting this option prevents the following options from being used, as the functionality
+gets skipped over:
+
+* [`asar`](#asar)
+* [`afterCopy`](#aftercopy)
+* [`afterPrune`](#afterprune)
+* [`derefSymlinks`](#derefsymlinks)
+* [`ignore`](#ignore)
+* [`prune`](#prune)
+
 ##### `prune`
 
 *Boolean* (default: `true`)
 
 Walks the `node_modules` dependency tree to remove all of the packages specified in the
 `devDependencies` section of `package.json` from the outputted Electron app.
+
+**Note:** `prune` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `quiet`
 

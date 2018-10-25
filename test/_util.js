@@ -37,6 +37,12 @@ test.afterEach.always(t => {
     .then(() => fs.remove(t.context.tempDir))
 })
 
+test.serial.afterEach.always(() => {
+  if (console.warn.restore) {
+    console.warn.restore()
+  }
+})
+
 function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
   module.exports.packagerTest(name, (t, opts) => {
     Object.assign(opts, module.exports.singlePlatformOptions())
@@ -73,14 +79,17 @@ module.exports = {
     return fs.lstat(pathToCheck)
       .then(stats => t.true(stats.isSymbolicLink(), message))
   },
+  assertWarning: function assertWarning (t, message) {
+    t.true(console.warn.calledWithExactly(message), `console.warn should be called with: ${message}`)
+  },
   fixtureSubdir: setup.fixtureSubdir,
   generateResourcesPath: function generateResourcesPath (opts) {
     return common.isPlatformMac(opts.platform)
       ? path.join(opts.name + '.app', 'Contents', 'Resources')
       : 'resources'
   },
-  invalidOptionTest: function invalidOptionTest (opts) {
-    return t => t.throws(packager(opts))
+  invalidOptionTest: function invalidOptionTest (opts, err, message) {
+    return t => t.throws(packager(opts), err, message)
   },
   packageAndEnsureResourcesPath: function packageAndEnsureResourcesPath (t, opts) {
     let resourcesPath

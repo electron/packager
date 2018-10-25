@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.2.0...master
 
+### Added
+
+* `prebuiltAsar` option to specify a prebuilt ASAR file (#823)
+
 ## [12.2.0] - 2018-10-02
 
 [12.2.0]: https://github.com/electron-userland/electron-packager/compare/v12.1.2...v12.2.0

@@ -59,6 +59,8 @@ overwrite          if output directory for a platform already exists, replaces i
                    skipping it
 platform           all, or one or more of: darwin, linux, mas, win32 (comma-delimited if multiple).
                    Defaults to the host platform
+prebuilt-asar      path to a prebuilt asar file (asar, ignore, no-prune, and no-deref-symlinks
+                   options are incompatible with this option and will be ignored)
 quiet              Do not print informational or warning messages
 tmpdir             temp directory. Defaults to system temp directory, use --no-tmpdir to disable
                    use of a temporary directory.

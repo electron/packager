@@ -74,6 +74,7 @@ function npmInstallForFixture (fixture) {
 
 function npmInstallForFixtures () {
   const fixtures = [
+    'asar-prebuilt',
     'basic',
     'basic-renamed-to-electron',
     'electron-in-dependencies',
