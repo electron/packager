@@ -6,7 +6,7 @@ const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
-const sign = require('electron-osx-sign').signAsync
+const { signAsync } = require('electron-osx-sign')
 
 class MacApp extends App {
   constructor (opts, templatePath) {
@@ -293,8 +293,8 @@ class MacApp extends App {
     if (osxSignOpt) {
       const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.quiet)
       debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
-      return sign(signOpts)
-      // Although not signed successfully, the application is packed.
+      return signAsync(signOpts)
+        // Although not signed successfully, the application is packed.
         .catch(err => common.warning(`Code sign failed; please retry manually. ${err}`))
     } else {
       return Promise.resolve()
@@ -324,7 +324,7 @@ function filterCFBundleIdentifier (identifier) {
 
 function createSignOpts (properties, platform, app, version, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  let signOpts = properties === true ? {identity: null} : Object.assign({}, properties)
+  let signOpts = properties === true ? { identity: null } : Object.assign({}, properties)
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options

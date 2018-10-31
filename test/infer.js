@@ -88,12 +88,12 @@ util.testSinglePlatformParallel('infer using `electron-prebuilt-compile` package
 util.testSinglePlatformParallel('infer using `electron` package only', inferMissingVersionTest)
 util.testSinglePlatformParallel('infer where `electron` version is preferred over `electron-prebuilt`', inferElectronVersionTest, 'basic-renamed-to-electron', 'electron')
 util.testSinglePlatformParallel('infer win32metadata', (t, opts) => {
-  const expected = {CompanyName: 'Foo Bar'}
+  const expected = { CompanyName: 'Foo Bar' }
 
   return testInferWin32metadata(t, opts, expected, 'win32metadata matches package.json values')
 })
 util.testSinglePlatformParallel('do not infer win32metadata if it already exists', (t, opts) => {
-  opts.win32metadata = {CompanyName: 'Existing'}
+  opts.win32metadata = { CompanyName: 'Existing' }
   const expected = Object.assign({}, opts.win32metadata)
 
   return testInferWin32metadata(t, opts, expected, 'win32metadata did not update with package.json values')
@@ -103,7 +103,7 @@ util.testSinglePlatformParallel('infer win32metadata when author is an object', 
     name: 'Foo Bar Object',
     email: 'foobar@example.com'
   }
-  const expected = {CompanyName: 'Foo Bar Object'}
+  const expected = { CompanyName: 'Foo Bar Object' }
 
   return testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata did not update with package.json values')
 })

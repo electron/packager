@@ -12,11 +12,11 @@ test('asar argument test: asar is not set', t => {
 })
 
 test('asar argument test: asar is true', t => {
-  t.deepEqual(common.createAsarOpts({asar: true}), {})
+  t.deepEqual(common.createAsarOpts({ asar: true }), {})
 })
 
 test('asar argument test: asar is not an Object or a bool', t => {
-  t.false(common.createAsarOpts({asar: 'string'}), 'createAsarOpts returns false')
+  t.false(common.createAsarOpts({ asar: 'string' }), 'createAsarOpts returns false')
 })
 
 util.testSinglePlatform('default_app.asar removal test', (t, opts) => {

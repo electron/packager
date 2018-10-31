@@ -33,10 +33,7 @@ function errorMessageForProperty (prop) {
 }
 
 function getVersion (opts, electronProp) {
-  // Destructured assignments are added in Node 6
-  const splitProp = electronProp.prop.split('.')
-  const depType = splitProp[0]
-  const packageName = splitProp[1]
+  const [depType, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
   if (packageName === 'electron-prebuilt-compile') {
     // electron-prebuilt-compile cannot be resolved because `main` does not point
@@ -107,7 +104,7 @@ module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
     ])
   }
 
-  if (platforms.indexOf('win32') !== -1 && !(opts.win32metadata && opts.win32metadata.CompanyName)) {
+  if (platforms.includes('win32') && !(opts.win32metadata && opts.win32metadata.CompanyName)) {
     props.push('author')
   }
 

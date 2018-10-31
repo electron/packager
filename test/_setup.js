@@ -3,7 +3,7 @@
 const common = require('../common')
 const download = require('../download')
 const config = require('./config.json')
-const exec = require('mz/child_process').exec
+const { exec } = require('mz/child_process')
 const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
@@ -23,7 +23,7 @@ function skipDownloadingMacZips (platform, arch) {
 
 function downloadAll (version) {
   console.log(`Calling electron-download for ${version} before running tests...`)
-  const combinations = download.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
+  const combinations = download.createDownloadCombos({ electronVersion: config.version, all: true }, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
   return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
 }
@@ -67,7 +67,7 @@ function npmInstallForFixture (fixture) {
         return true
       } else {
         console.log(`Running npm install in fixtures/${fixture}...`)
-        return exec('npm install --no-bin-links', {cwd: fixtureDir})
+        return exec('npm install --no-bin-links', { cwd: fixtureDir })
       }
     })
 }

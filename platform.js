@@ -192,7 +192,7 @@ class App {
         }
 
         debug(`Copying asar: ${src} to ${this.appAsarPath}`)
-        return fs.copy(src, this.appAsarPath, {overwrite: false, errorOnExist: true})
+        return fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true })
       })
   }
 

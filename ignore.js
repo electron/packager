@@ -69,11 +69,11 @@ function userIgnoreFilter (opts) {
   const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
 
   return function filter (file) {
-    if (outIgnores.indexOf(file) !== -1) {
+    if (outIgnores.includes(file)) {
       return false
     }
 
-    let name = file.split(path.resolve(opts.dir))[1]
+    let name = path.resolve(file).split(path.resolve(opts.dir))[1]
 
     if (path.sep === '\\') {
       name = common.normalizePath(name)

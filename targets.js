@@ -64,7 +64,7 @@ function usingOfficialElectronPackages (opts) {
 }
 
 function validOfficialPlatformArch (opts, platform, arch) {
-  return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].indexOf(arch) !== -1
+  return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].includes(arch)
 }
 
 function officialLinuxBuildExists (opts, buildVersion) {
@@ -86,8 +86,8 @@ module.exports = {
     const archs = officialPlatformArchCombos[platform]
     if (platform === 'linux') {
       const excludedArchs = Object.keys(linuxArchBuildVersions)
-        .filter(arch => !officialLinuxBuildExists({electronVersion: electronVersion}, linuxArchBuildVersions[arch]))
-      return archs.filter(arch => excludedArchs.indexOf(arch) === -1)
+        .filter(arch => !officialLinuxBuildExists({ electronVersion: electronVersion }, linuxArchBuildVersions[arch]))
+      return archs.filter(arch => !excludedArchs.includes(arch))
     }
 
     return archs

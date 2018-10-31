@@ -1,7 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
-const exec = require('mz/child_process').exec
+const { exec } = require('mz/child_process')
 const fs = require('fs-extra')
 const mac = require('../mac')
 const packager = require('..')
@@ -222,7 +222,7 @@ function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
 
 if (!(process.env.CI && process.platform === 'win32')) {
   darwinTest('helper app paths test', helperAppPathsTest)
-  darwinTest('helper app paths test with app name needing sanitization', helperAppPathsTest, {name: '@username/package-name'}, '@username-package-name')
+  darwinTest('helper app paths test with app name needing sanitization', helperAppPathsTest, { name: '@username/package-name' }, '@username-package-name')
 
   const iconBase = path.join(__dirname, 'fixtures', 'monochrome')
   const icnsPath = `${iconBase}.icns`
@@ -267,41 +267,41 @@ if (!(process.env.CI && process.platform === 'win32')) {
   test('osxSign argument test: default args', t => {
     const args = true
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
+    t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version' })
   })
 
   test('osxSign argument test: identity=true sets autodiscovery mode', t => {
-    const args = {identity: true}
+    const args = { identity: true }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, {identity: null, app: 'out', platform: 'darwin', version: 'version'})
+    t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version' })
   })
 
   test('osxSign argument test: entitlements passed to electron-osx-sign', t => {
-    const args = {entitlements: 'path-to-entitlements'}
+    const args = { entitlements: 'path-to-entitlements' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, {app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements})
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements })
   })
 
   test('osxSign argument test: app not overwritten', t => {
-    const args = {app: 'some-other-path'}
+    const args = { app: 'some-other-path' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
   })
 
   test('osxSign argument test: platform not overwritten', t => {
-    const args = {platform: 'mas'}
+    const args = { platform: 'mas' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
   })
 
   test('osxSign argument test: binaries not set', t => {
-    const args = {binaries: ['binary1', 'binary2']}
+    const args = { binaries: ['binary1', 'binary2'] }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, {app: 'out', platform: 'darwin', version: 'version'})
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
   })
 
   darwinTest('codesign test', (t, opts) => {
-    opts.osxSign = {identity: 'Developer CodeCert'}
+    opts.osxSign = { identity: 'Developer CodeCert' }
 
     let appPath
 
@@ -325,8 +325,8 @@ if (!(process.env.CI && process.platform === 'win32')) {
   })
 
   darwinTest('binary naming test', binaryNameTest)
-  darwinTest('sanitized binary naming test', binaryNameTest, {name: '@username/package-name'}, '@username-package-name')
-  darwinTest('executableName test', binaryNameTest, {executableName: 'app-name', name: 'MyAppName'}, 'app-name', 'MyAppName')
+  darwinTest('sanitized binary naming test', binaryNameTest, { name: '@username/package-name' }, '@username-package-name')
+  darwinTest('executableName test', binaryNameTest, { executableName: 'app-name', name: 'MyAppName' }, 'app-name', 'MyAppName')
 
   darwinTest('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', (t, opts) => {
     const appBundleIdentifier = 'com.electron.username-package-name'
@@ -402,14 +402,14 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   darwinTest('appCopyright/NSHumanReadableCopyright test', (t, baseOpts) => {
     const copyright = 'Copyright © 2003–2015 Organization. All rights reserved.'
-    const opts = Object.assign({}, baseOpts, {appCopyright: copyright})
+    const opts = Object.assign({}, baseOpts, { appCopyright: copyright })
 
     return packageAndParseInfoPlist(t, opts)
       .then(info => t.is(info.NSHumanReadableCopyright, copyright, 'NSHumanReadableCopyright should reflect opts.appCopyright'))
   })
 
   darwinTest('app named Electron packaged successfully', (t, baseOpts) => {
-    const opts = Object.assign({}, baseOpts, {name: 'Electron'})
+    const opts = Object.assign({}, baseOpts, { name: 'Electron' })
     let appPath
 
     return packager(opts)

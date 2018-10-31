@@ -40,7 +40,7 @@ class WindowsApp extends App {
       ProductName: this.opts.name
     }, this.opts.win32metadata)
 
-    let rcOpts = {'version-string': win32metadata}
+    let rcOpts = { 'version-string': win32metadata }
 
     if (this.opts.appVersion) {
       rcOpts['product-version'] = rcOpts['file-version'] = this.opts.appVersion

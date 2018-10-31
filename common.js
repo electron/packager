@@ -35,7 +35,7 @@ function parseCLIArgs (argv) {
 
   if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
     args.protocols = protocolSchemes.map(function (scheme, i) {
-      return {schemes: [scheme], name: protocolNames[i]}
+      return { schemes: [scheme], name: protocolNames[i] }
     })
   }
 
@@ -68,7 +68,7 @@ function parseCLIArgs (argv) {
 }
 
 function sanitizeAppName (name) {
-  return sanitize(name, {replacement: '-'})
+  return sanitize(name, { replacement: '-' })
 }
 
 function generateFinalBasename (opts) {
