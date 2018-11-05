@@ -31,11 +31,15 @@ test.after.always(t => {
 test.beforeEach(t => {
   t.context.workDir = tempy.directory()
   t.context.tempDir = tempy.directory()
-  sinon.spy(console, 'warn')
+  if (!console.warn.restore) {
+    sinon.spy(console, 'warn')
+  }
 })
 
 test.afterEach.always(t => {
-  console.warn.restore()
+  if (console.warn.restore) {
+    console.warn.restore()
+  }
   return fs.remove(t.context.workDir)
     .then(() => fs.remove(t.context.tempDir))
 })
