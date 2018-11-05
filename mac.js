@@ -296,13 +296,7 @@ class MacApp extends App {
     }
 
     if (osxSignOpt) {
-      const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.quiet)
-      if (this.opts.osxNotarize && !signOpts.hardenedRuntime) {
-        common.warning('notarization is enabled but hardenedRuntime was not enabled in ' +
-                       'signing options.  It has been enabled for you but you should ' +
-                       'enable it in your config.')
-        signOpts.hardenedRuntime = true
-      }
+      const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.osxNotarize, this.opts.quiet)
       debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
       return signAsync(signOpts)
         // Although not signed successfully, the application is packed.
@@ -313,8 +307,9 @@ class MacApp extends App {
   }
 
   notarizeAppIfSpecified () {
-    let osxNotarizeOpt = this.opts.osxNotarize
+    const osxNotarizeOpt = this.opts.osxNotarize
 
+    /* istanbul ignore if */
     if (osxNotarizeOpt) {
       const notarizeOpts = createNotarizeOpts(
         osxNotarizeOpt,
@@ -322,7 +317,9 @@ class MacApp extends App {
         this.renamedAppPath,
         this.opts.quiet
       )
-      return notarize(notarizeOpts)
+      if (notarizeOpts) {
+        return notarize(notarizeOpts)
+      }
     }
   }
 
@@ -348,7 +345,7 @@ function filterCFBundleIdentifier (identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '')
 }
 
-function createSignOpts (properties, platform, app, version, quiet) {
+function createSignOpts (properties, platform, app, version, notarize, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
   let signOpts = properties === true ? { identity: null } : Object.assign({}, properties)
 
@@ -371,23 +368,43 @@ function createSignOpts (properties, platform, app, version, quiet) {
     signOpts.identity = null
   }
 
+  if (notarize && !signOpts.hardenedRuntime) {
+    common.warning('notarization is enabled but hardenedRuntime was not enabled in the signing ' +
+      'options. It has been enabled for you but you should enable it in your config.')
+    signOpts.hardenedRuntime = true
+  }
+
   return signOpts
 }
 
 function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
   const notarizeOpts = properties
+  let notarize = true
 
-  // osx-notarize options are handed off to notarize module, but
-  // with a few additions from the main options
-  // user may think they can pass bundle ID or appPath but they will be ignored
-  common.subOptionWarning(notarizeOpts, 'osx-notarize', 'appBundleId', appBundleId, quiet)
-  common.subOptionWarning(notarizeOpts, 'osx-notarize', 'appPath', appPath, quiet)
+  if (!notarizeOpts.appleId) {
+    common.warning('The appleId sub-property is required when using notarization, notarize will not run')
+    notarize = false
+  }
 
-  return notarizeOpts
+  if (!notarizeOpts.appleIdPassword) {
+    common.warning('The appleIdPassword sub-property is required when using notarization, notarize will not run')
+    notarize = false
+  }
+
+  if (notarize) {
+    // osxNotarize options are handed off to the electron-notarize module, but with a few
+    // additions from the main options. The user may think they can pass bundle ID or appPath,
+    // but they will be ignored.
+    common.subOptionWarning(notarizeOpts, 'osxNotarize', 'appBundleId', appBundleId, quiet)
+    common.subOptionWarning(notarizeOpts, 'osxNotarize', 'appPath', appPath, quiet)
+
+    return notarizeOpts
+  }
 }
 
 module.exports = {
   App: MacApp,
+  createNotarizeOpts: createNotarizeOpts,
   createSignOpts: createSignOpts,
   filterCFBundleIdentifier: filterCFBundleIdentifier
 }
