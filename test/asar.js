@@ -3,7 +3,6 @@
 const common = require('../common')
 const path = require('path')
 const test = require('ava')
-const sinon = require('sinon')
 const util = require('./_util')
 
 test('asar argument test: asar is not set', t => {
@@ -62,7 +61,6 @@ util.testSinglePlatform('prebuilt asar test', (t, opts) => {
   opts.ignore = ['foo']
   opts.prune = false
   opts.derefSymlinks = false
-  sinon.spy(console, 'warn')
 
   let resourcesPath
   return util.packageAndEnsureResourcesPath(t, opts)

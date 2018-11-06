@@ -412,6 +412,16 @@ Entries from `extend-info` override entries in the base plist file supplied by `
 
 The bundle identifier to use in the application helper's plist.
 
+##### `osxNotarize`
+
+*Object*
+
+**Requires [`osxSign`](#osxsign) to be set.**
+
+If present, notarizes OS X target apps when the host platform is OS X and XCode is installed.  The configuration values listed below can be customized. See [electron-notarize](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions and how to use `appleIdPassword` safely.
+- `appleId` (*String*, **required**): Your apple ID username / email
+- `appleIdPassword` (*String*, **required**): The password for your apple ID, can be a keychain reference
+
 ##### `osxSign`
 
 *Object* or *`true`*

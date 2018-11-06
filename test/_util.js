@@ -9,6 +9,7 @@ const packager = require('../index')
 const path = require('path')
 const plist = require('plist')
 const setup = require('./_setup')
+const sinon = require('sinon')
 const tempy = require('tempy')
 const test = require('ava')
 
@@ -30,17 +31,17 @@ test.after.always(t => {
 test.beforeEach(t => {
   t.context.workDir = tempy.directory()
   t.context.tempDir = tempy.directory()
+  if (!console.warn.restore) {
+    sinon.spy(console, 'warn')
+  }
 })
 
 test.afterEach.always(t => {
-  return fs.remove(t.context.workDir)
-    .then(() => fs.remove(t.context.tempDir))
-})
-
-test.serial.afterEach.always(() => {
   if (console.warn.restore) {
     console.warn.restore()
   }
+  return fs.remove(t.context.workDir)
+    .then(() => fs.remove(t.context.tempDir))
 })
 
 function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {

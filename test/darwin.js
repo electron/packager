@@ -264,6 +264,30 @@ if (!(process.env.CI && process.platform === 'win32')) {
       )
   })
 
+  test('osxNotarize argument test: missing appleId', t => {
+    const notarizeOpts = mac.createNotarizeOpts({ appleIdPassword: '' })
+    t.falsy(notarizeOpts, 'does not generate options')
+    util.assertWarning(t, 'WARNING: The appleId sub-property is required when using notarization, notarize will not run')
+  })
+
+  test('osxNotarize argument test: missing appleIdPassword', t => {
+    const notarizeOpts = mac.createNotarizeOpts({ appleId: '' })
+    t.falsy(notarizeOpts, 'does not generate options')
+    util.assertWarning(t, 'WARNING: The appleIdPassword sub-property is required when using notarization, notarize will not run')
+  })
+
+  test('osxNotarize argument test: appBundleId not overwritten', t => {
+    const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'no' }
+    const notarizeOpts = mac.createNotarizeOpts(args, 'yes', 'appPath', true)
+    t.is(notarizeOpts.appBundleId, 'yes', 'appBundleId is taken from arguments')
+  })
+
+  test('osxNotarize argument test: appPath not overwritten', t => {
+    const args = { appleId: '1', appleIdPassword: '2', appPath: 'no' }
+    const notarizeOpts = mac.createNotarizeOpts(args, 'appBundleId', 'yes', true)
+    t.is(notarizeOpts.appPath, 'yes', 'appPath is taken from arguments')
+  })
+
   test('osxSign argument test: default args', t => {
     const args = true
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
@@ -298,6 +322,11 @@ if (!(process.env.CI && process.platform === 'win32')) {
     const args = { binaries: ['binary1', 'binary2'] }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
+  })
+
+  test('force osxSign.hardenedRuntime when osxNotarize is set', t => {
+    const signOpts = mac.createSignOpts({}, 'darwin', 'out', 'version', true)
+    t.true(signOpts.hardenedRuntime, 'hardenedRuntime forced to true')
   })
 
   darwinTest('codesign test', (t, opts) => {
