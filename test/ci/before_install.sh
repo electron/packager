@@ -3,9 +3,6 @@
 
 case "$TRAVIS_OS_NAME" in
   "linux")
-    # Not using Trusty containers because it can't install wine1.6(-i386),
-    # see: https://github.com/travis-ci/travis-ci/issues/6460
-    sudo rm /etc/apt/sources.list.d/google-chrome.list
     sudo dpkg --add-architecture i386
     sudo apt-get update
     sudo apt-get install -y wine1.6
