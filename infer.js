@@ -6,6 +6,7 @@ const parseAuthor = require('parse-author')
 const path = require('path')
 const pify = require('pify')
 const resolve = require('resolve')
+const semver = require('semver')
 
 function isMissingRequiredProperty (props) {
   return props.some(prop => prop === 'productName' || prop === 'dependencies.electron')
@@ -39,21 +40,24 @@ function getVersion (opts, electronProp) {
     // electron-prebuilt-compile cannot be resolved because `main` does not point
     // to a valid JS file.
     const electronVersion = electronProp.pkg[depType][packageName]
-    if (!/^\d+\.\d+\.\d+/.test(electronVersion)) {
-      throw new Error('Using electron-prebuilt-compile with Electron Packager requires specifying an exact Electron version')
-    }
+    const versionRange = new semver.Range(electronVersion)
+    if (versionRange.intersects(new semver.Range('< 1.6.5'))) {
+      if (!/^\d+\.\d+\.\d+/.test(electronVersion)) {
+        throw new Error('Using electron-prebuilt-compile with Electron Packager requires specifying an exact Electron version')
+      }
 
-    opts.electronVersion = electronVersion
-    return Promise.resolve()
-  } else {
-    return pify(resolve, { multiArgs: true })(packageName, { basedir: path.dirname(src) })
-      .then(res => {
-        debug(`Inferring target Electron version from ${packageName} in ${src}`)
-        const pkg = res[1]
-        opts.electronVersion = pkg.version
-        return null
-      })
+      opts.electronVersion = electronVersion
+      return Promise.resolve()
+    }
   }
+
+  return pify(resolve, { multiArgs: true })(packageName, { basedir: path.dirname(src) })
+    .then(res => {
+      debug(`Inferring target Electron version from ${packageName} in ${src}`)
+      const pkg = res[1]
+      opts.electronVersion = pkg.version
+      return null
+    })
 }
 
 function handleMetadata (opts, result) {
