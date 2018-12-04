@@ -8,7 +8,6 @@ const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
 const ignore = require('./ignore')
-const nodeify = require('nodeify')
 const path = require('path')
 const pify = require('pify')
 const targets = require('./targets')
@@ -145,7 +144,7 @@ function packageAllSpecifiedCombos (opts, archs, platforms) {
     )))
 }
 
-function packagerPromise (opts) {
+module.exports = function packager (opts) {
   debugHostInfo()
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
 
@@ -174,12 +173,4 @@ function packagerPromise (opts) {
     })
     // Remove falsy entries (e.g. skipped platforms)
     .then(appPaths => appPaths.filter(appPath => appPath))
-}
-
-module.exports = function packager (opts, cb) {
-  if (cb) {
-    /* istanbul ignore next */
-    common.warning('The callback-based version of packager() is deprecated and will be removed in a future major version, please convert to the Promise version or use the nodeify module.')
-  }
-  return nodeify(packagerPromise(opts), cb)
 }
