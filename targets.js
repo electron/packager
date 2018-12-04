@@ -1,7 +1,6 @@
 'use strict'
 
 const common = require('./common')
-const downloadArch = require('electron-download/lib/arch')
 const semver = require('semver')
 
 const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el']
@@ -93,13 +92,11 @@ module.exports = {
     return archs
   },
   createPlatformArchPairs: createPlatformArchPairs,
-  hostArch: downloadArch.host,
   officialArchs: officialArchs,
   officialPlatformArchCombos: officialPlatformArchCombos,
   officialPlatforms: officialPlatforms,
   osModules: osModules,
   supported: supported,
-  unameArch: downloadArch.uname,
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or throws an Error.
   validateListFromOptions: function validateListFromOptions (opts, name) {
