@@ -26,7 +26,6 @@
     "fs-extra": "^7.0.0",
     "galactus": "^0.2.1",
     "get-package-info": "^1.0.0",
-    "nodeify": "^1.0.1",
     "parse-author": "^2.0.0",
     "pify": "^4.0.0",
     "plist": "^3.0.0",

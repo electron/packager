@@ -1,5 +1,12 @@
 # electron-packager API
 
+Short `async`/`await` example:
+
+```javascript
+const packager = require('electron-packager')
+const appPaths = await packager(options)
+```
+
 Short Promise example:
 
 ```javascript
@@ -8,12 +15,7 @@ packager(options)
   .then(appPaths => { /* … */ })
 ```
 
-Short [(deprecated) callback syntax](#callback) example:
-
-```javascript
-const packager = require('electron-packager')
-packager(options, function done_callback (err, appPaths) { /* … */ })
-```
+`appPaths` is described in the [return value](#return-value) section.
 
 ## `options`
 
@@ -461,13 +463,7 @@ Object (also known as a "hash") of application metadata to embed into the execut
 
 For more information, see the [`node-rcedit` module](https://github.com/electron/node-rcedit).
 
-## callback
-
-### `err`
-
-*Error* (or *Array*, in the case of an `copy` error)
-
-Contains errors, if any.
+## Return value
 
 ### `appPaths`
 

@@ -61,10 +61,10 @@ It generates executables/bundles for the following **target** platforms:
 This module requires Node.js 6.0 or higher to run.
 
 ```sh
-# for use in npm scripts
+# For use in npm scripts (recommended)
 npm install electron-packager --save-dev
 
-# for use from cli
+# For use from the CLI
 npm install electron-packager -g
 ```
 
