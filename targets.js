@@ -1,6 +1,7 @@
 'use strict'
 
 const common = require('./common')
+const hostArch = require('electron-download/lib/arch').host
 const semver = require('semver')
 
 const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el']
@@ -105,7 +106,7 @@ module.exports = {
     let list = opts[name]
     if (!list) {
       if (name === 'arch') {
-        list = module.exports.hostArch()
+        list = hostArch()
       } else {
         list = process[name]
       }
