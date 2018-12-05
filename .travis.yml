@@ -1,8 +1,8 @@
-sudo: required
 os:
 - linux
 - osx
-dist: trusty
+- windows
+dist: xenial
 osx_image: xcode8
 language: node_js
 node_js:
