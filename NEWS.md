@@ -2,11 +2,25 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v12.2.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.0.0...master
+
+## [13.0.0] - 2018-12-04
+
+[13.0.0]: https://github.com/electron-userland/electron-packager/compare/v12.2.0...v13.0.0
 
 ### Added
 
 * `prebuiltAsar` option to specify a prebuilt ASAR file (#823)
+* support for macOS Mojave app notarization (#899)
+
+### Changed
+
+* **Dropped support for running on Node &lt; 6.0.** (#900)
+
+### Removed
+
+* Deprecated target arch APIs (#915)
+* The callback version of the API (use `nodeify` if you need that syntax style) (#916)
 
 ## [12.2.0] - 2018-10-02
 
