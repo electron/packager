@@ -93,6 +93,7 @@ util.testSinglePlatform('ignore out dir test: unnormalized path', ignoreOutDirTe
                         './ignoredOutDir')
 util.testSinglePlatform('ignore out dir test: implicit path', ignoreImplicitOutDirTest)
 util.testSinglePlatform('ignore out dir test: relative out dir already exists', (t, opts) => {
+  const oldCWD = process.cwd()
   const appDir = path.join(t.context.workDir, 'app')
 
   opts.name = 'ignoredOutDirTest'
@@ -105,7 +106,7 @@ util.testSinglePlatform('ignore out dir test: relative out dir already exists', 
       process.chdir(appDir)
       return util.packageAndEnsureResourcesPath(t, opts)
     }).then(resourcesPath => {
-      process.chdir(t.context.workdir)
+      process.chdir(oldCWD)
       const packagedOutDirPath = path.join(resourcesPath, 'app', opts.out)
       return util.assertPathNotExists(t, packagedOutDirPath, `The out dir ${packagedOutDirPath} should not exist in the packaged app`)
     })
