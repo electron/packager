@@ -93,11 +93,12 @@ util.testSinglePlatform('ignore out dir test: unnormalized path', ignoreOutDirTe
                         './ignoredOutDir')
 util.testSinglePlatform('ignore out dir test: implicit path', ignoreImplicitOutDirTest)
 util.testSinglePlatform('ignore out dir test: relative out dir already exists', (t, opts) => {
-  const appDir = path.join(t.context.tempDir, 'app')
+  const appDir = path.join(t.context.workDir, 'app')
 
   opts.name = 'ignoredOutDirTest'
   opts.dir = '.'
   opts.out = 'dir_to_unpack' // already existing out dir
+  opts.overwrite = true
 
   return fs.copy(util.fixtureSubdir('basic'), appDir)
     .then(() => {
