@@ -105,6 +105,7 @@ util.testSinglePlatform('ignore out dir test: relative out dir already exists', 
       process.chdir(appDir)
       return util.packageAndEnsureResourcesPath(t, opts)
     }).then(resourcesPath => {
+      process.chdir(t.context.workdir)
       const packagedOutDirPath = path.join(resourcesPath, 'app', opts.out)
       return util.assertPathNotExists(t, packagedOutDirPath, `The out dir ${packagedOutDirPath} should not exist in the packaged app`)
     })
