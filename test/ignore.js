@@ -4,7 +4,6 @@ const common = require('../common')
 const fs = require('fs-extra')
 const ignore = require('../ignore')
 const path = require('path')
-const packager = require('..')
 const test = require('ava')
 const util = require('./_util')
 
@@ -24,15 +23,16 @@ function ignoreTest (t, opts, ignorePattern, ignoredFile) {
     .then(() => util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`))
 }
 
-function assertOutDirIgnored (t, opts, pathPrefix, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
+function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
   return fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
     dereference: true,
     stopOnErr: true,
     filter: file => path.basename(file) !== 'node_modules'
   }).then(() => fs.ensureDir(existingDirectoryPath))
     // create file to ensure that directory will be not ignored because it's empty
-    .then(() => fs.writeFile(pathToIgnore, '')).then(() => packager(opts))
-    .then(() => util.assertPathNotExists(t, path.join(pathPrefix, common.generateFinalBasename(opts), util.generateResourcesPath(opts), 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory'))
+    .then(() => fs.writeFile(pathToIgnore, ''))
+    .then(() => util.packageAndEnsureResourcesPath(t, opts))
+    .then(resourcesPath => util.assertPathNotExists(t, path.join(resourcesPath, 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory'))
 }
 
 function ignoreOutDirTest (t, opts, distPath) {
@@ -43,7 +43,7 @@ function ignoreOutDirTest (t, opts, distPath) {
   // we don't use path.join here to avoid normalizing
   opts.out = opts.dir + path.sep + distPath
 
-  return assertOutDirIgnored(t, opts, opts.out, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
+  return assertOutDirIgnored(t, opts, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
 }
 
 function ignoreImplicitOutDirTest (t, opts) {
@@ -54,7 +54,7 @@ function ignoreImplicitOutDirTest (t, opts) {
   const testFilename = 'ignoreMe'
   const previousPackedResultDir = path.join(opts.dir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
 
-  return assertOutDirIgnored(t, opts, opts.dir, previousPackedResultDir, path.join(previousPackedResultDir, testFilename), testFilename)
+  return assertOutDirIgnored(t, opts, previousPackedResultDir, path.join(previousPackedResultDir, testFilename), testFilename)
 }
 
 test('generateIgnores ignores the generated temporary directory only on Linux', t => {
@@ -92,3 +92,22 @@ util.testSinglePlatform('ignore out dir test', ignoreOutDirTest, 'ignoredOutDir'
 util.testSinglePlatform('ignore out dir test: unnormalized path', ignoreOutDirTest,
                         './ignoredOutDir')
 util.testSinglePlatform('ignore out dir test: implicit path', ignoreImplicitOutDirTest)
+util.testSinglePlatform('ignore out dir test: relative out dir already exists', (t, opts) => {
+  const oldCWD = process.cwd()
+  const appDir = path.join(t.context.workDir, 'app')
+
+  opts.name = 'ignoredOutDirTest'
+  opts.dir = '.'
+  opts.out = 'dir_to_unpack' // already existing out dir
+  opts.overwrite = true
+
+  return fs.copy(util.fixtureSubdir('basic'), appDir)
+    .then(() => {
+      process.chdir(appDir)
+      return util.packageAndEnsureResourcesPath(t, opts)
+    }).then(resourcesPath => {
+      process.chdir(oldCWD)
+      const packagedOutDirPath = path.join(resourcesPath, 'app', opts.out)
+      return util.assertPathNotExists(t, packagedOutDirPath, `The out dir ${packagedOutDirPath} should not exist in the packaged app`)
+    })
+})
