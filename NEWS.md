@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.0.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.0.1...master
+
+## [13.0.1] - 2018-12-12
+
+[13.0.1]: https://github.com/electron-userland/electron-packager/compare/v13.0.0...v13.0.1
+
+### Fixed
+
+* Ensure relative out dirs are correctly ignored when copying (#919)
 
 ## [13.0.0] - 2018-12-04
 
