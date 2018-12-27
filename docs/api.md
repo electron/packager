@@ -173,7 +173,7 @@ The release version of the application. By default the `version` property in the
 *String* (default: the arch of the host computer running Node)
 
 Allowed values: `ia32`, `x64`, `armv7l`, `arm64` _(Electron 1.8.0 and above)_, `mips64el`
-_(Electron 1.8.2-beta.5 and above)_, `all`
+_(Electron 1.8.2-beta.5 to 1.8.8)_, `all`
 
 The target system architecture(s) to build for.
 Not required if the [`all`](#all) option is set.
@@ -186,7 +186,7 @@ is not restricted to the official set if [`download.mirror`](#download) is set.
 
 *Boolean* or *Object* (default: `false`)
 
-Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](http://electron.atom.io/docs/v0.36.0/tutorial/application-packaging/). When the value is `true`, pass default configuration to the `asar` module. The configuration values listed below can be customized when the value is an `Object`. Supported parameters include, but are not limited to:
+Whether to package the application's source code into an archive, using [Electron's archive format](https://github.com/electron/asar). Reasons why you may want to enable this feature are described in [an application packaging tutorial in Electron's documentation](https://electronjs.org/docs/tutorial/application-packaging/). When the value is `true`, pass default configuration to the `asar` module. The configuration values listed below can be customized when the value is an `Object`. Supported parameters include, but are not limited to:
 - `ordering` (*String*): A path to an ordering file for packing files. An explanation can be found on the [Atom issue tracker](https://github.com/atom/atom/issues/10163).
 - `unpack` (*String*): A [glob expression](https://github.com/isaacs/minimatch#features), when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
 - `unpackDir` (*String*): Unpacks the dir to the `app.asar.unpacked` directory whose names exactly or pattern match this string. The `asar.unpackDir` is relative to `dir`.
@@ -198,7 +198,7 @@ Whether to package the application's source code into an archive, using [Electro
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**'` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
   - `asar.unpackDir = '**/{sub_dir1/sub_sub_dir,sub_dir2}/**/*'` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
 
-**Note:** `asar` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+**Note:** `asar` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `buildVersion`
 
@@ -212,7 +212,7 @@ The build version of the application. Defaults to the value of [`appVersion`](#a
 
 Whether symlinks should be dereferenced during the copying of the application source.
 
-**Note:** `derefSymlinks` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+**Note:** `derefSymlinks` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `download`
 
@@ -242,9 +242,9 @@ valid versions. If omitted, it will use the version of the nearest local install
 
 *Boolean* (default: `false`)
 
-Forces support for Mojave (macOS 10.14) dark mode in your packaged app, this sets the
-`NSRequiresAquaSystemAppearance` key to `false` in your app's `Info.plist`.  For more
-information see the [Apple developer documentation](https://developer.apple.com/documentation/appkit/nsappearancecustomization/choosing_a_specific_appearance_for_your_app).
+Forces support for Mojave (macOS 10.14) dark mode in your packaged app. This sets the
+`NSRequiresAquaSystemAppearance` key to `false` in your app's `Info.plist`.  For more information,
+see the [Apple developer documentation](https://developer.apple.com/documentation/appkit/nsappearancecustomization/choosing_a_specific_appearance_for_your_app).
 
 ##### `extraResource`
 
@@ -271,12 +271,12 @@ Currently you must look for conversion tools in order to supply an icon in the f
 
 - OS X: `.icns`
 - Windows: `.ico` ([See the readme](https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
-- Linux: this option is not required, as the dock/window list icon is set via
-  [the `icon` option in the `BrowserWindow` constructor](http://electron.atom.io/docs/api/browser-window/#new-browserwindowoptions).
+- Linux: this option is not supported, as the dock/window list icon is set via
+  [the `icon` option in the `BrowserWindow` constructor](https://electronjs.org/docs/api/browser-window/#new-browserwindowoptions).
   *Please note that you need to use a PNG, and not the OS X or Windows icon formats, in order for it
   to show up in the dock/window list.* Setting the icon in the file manager is not currently supported.
 
-If the file extension is omitted, it is auto-completed to the correct extension based on the platform, including when [`--platform=all`](#platform) is in effect.
+If the file extension is omitted, it is auto-completed to the correct extension based on the platform, including when [`platform: 'all'`](#platform) is in effect.
 
 ##### `ignore`
 
@@ -295,20 +295,19 @@ described after the list*):
 * `node_modules/electron`
 * `node_modules/electron-prebuilt`
 * `node_modules/electron-prebuilt-compile`
-* `node_modules/electron-packager`
 * `.git`
 * files and folders ending in `.o` and `.obj`
 
 **Please note that [glob patterns](https://en.wikipedia.org/wiki/Glob_%28programming%29) will not work.**
 
-**Note**: If you're trying to ignore Node modules specified in `devDependencies`, you may want to
-use [`prune`](#prune) instead.
+**Note**: Node modules specified in `devDependencies` are ignored by default, via the
+[`prune`](#prune) option.
 
 Alternatively, this can be a predicate function that, given an absolute file path, returns `true` if
 the file should be ignored, or `false` if the file should be kept. *This does not use any of the
 default ignored directories listed above.*
 
-**Note:** `ignore` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+**Note:** `ignore` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `name`
 
@@ -367,7 +366,7 @@ gets skipped over:
 Walks the `node_modules` dependency tree to remove all of the packages specified in the
 `devDependencies` section of `package.json` from the outputted Electron app.
 
-**Note:** `prune` will be ignored if [`prebuiltAsar`](#prebuiltasar) is set.
+**Note:** `prune` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `quiet`
 
@@ -420,9 +419,9 @@ The bundle identifier to use in the application helper's plist.
 
 **Requires [`osxSign`](#osxsign) to be set.**
 
-If present, notarizes OS X target apps when the host platform is OS X and XCode is installed.  The configuration values listed below can be customized. See [electron-notarize](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions and how to use `appleIdPassword` safely.
-- `appleId` (*String*, **required**): Your apple ID username / email
-- `appleIdPassword` (*String*, **required**): The password for your apple ID, can be a keychain reference
+If present, notarizes OS X target apps when the host platform is OS X and XCode is installed.  The configuration values listed below can be customized. See [`electron-notarize`](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions and how to use `appleIdPassword` safely.
+- `appleId` (*String*, **required**): Your Apple ID username / email
+- `appleIdPassword` (*String*, **required**): The password for your Apple ID, can be a keychain reference
 
 ##### `osxSign`
 
