@@ -63,8 +63,7 @@ module.exports = {
   },
   assertFilesEqual: function assertFilesEqual (t, file1, file2, message) {
     return Promise.all([fs.readFile(file1), fs.readFile(file2)])
-      .then(([buffer1, buffer2]) => bufferEqual(buffer1, buffer2))
-      .then(equal => t.true(equal, message))
+      .then(([buffer1, buffer2]) => t.true(bufferEqual(buffer1, buffer2), message))
   },
   assertPathExistsCustom: function assertPathExistsCustom (t, pathToCheck, exists, message) {
     return fs.pathExists(pathToCheck)
