@@ -2,9 +2,9 @@
 
 Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![Travis CI Build Status](https://travis-ci.org/electron-userland/electron-packager.svg?branch=master)](https://travis-ci.org/electron-userland/electron-packager)
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/master?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-packager)
-[![Coverage Status](https://codecov.io/gh/electron-userland/electron-packager/branch/master/graph/badge.svg)](https://codecov.io/gh/electron-userland/electron-packager)
+[![Travis CI Build Status](https://travis-ci.org/electron-userland/electron-packager.svg?branch=11.2.x)](https://travis-ci.org/electron-userland/electron-packager)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/11.2.x?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-packager)
+[![Coverage Status](https://codecov.io/gh/electron-userland/electron-packager/branch/11.2.x/graph/badge.svg)](https://codecov.io/gh/electron-userland/electron-packager)
 [![Dependency Status](https://dependencyci.com/github/electron-userland/electron-packager/badge)](https://dependencyci.com/github/electron-userland/electron-packager)
 
 [Supported Platforms](#supported-platforms) |
