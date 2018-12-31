@@ -2,17 +2,15 @@ sudo: required
 os:
 - linux
 - osx
-dist: trusty
+- windows
+dist: xenial
 osx_image: xcode8
 language: node_js
 node_js:
 - '4'
 - '6'
 - '8'
-- '9'
-matrix:
-  allow_failures:
-  - node_js: '9'
+- '10'
 cache:
 - apt: true
 - directories:
@@ -27,6 +25,7 @@ after_success: npm run codecov
 branches:
   only:
   - master
+  - 11.2.x
   - /^v\d+\.\d+\.\d+/
 env:
   global:
