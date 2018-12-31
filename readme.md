@@ -1,6 +1,6 @@
 # Electron Packager
 
-Package your [Electron](http://electron.atom.io) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
+Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
 [![Travis CI Build Status](https://travis-ci.org/electron-userland/electron-packager.svg?branch=master)](https://travis-ci.org/electron-userland/electron-packager)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/master?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-packager)
@@ -51,7 +51,7 @@ Electron Packager is known to run on the following **host** platforms:
 It generates executables/bundles for the following **target** platforms:
 
 * Windows (also known as `win32`, for both 32/64 bit)
-* OS X (also known as `darwin`) / [Mac App Store](http://electron.atom.io/docs/v0.36.0/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
+* OS X (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
 * Linux (for x86, x86_64, armv7l, arm64, and mips64el architectures)
 
 <sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*

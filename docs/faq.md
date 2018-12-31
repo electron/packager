@@ -7,7 +7,7 @@ Based on [a comment from **@MarshallOfSound**](https://github.com/electron-userl
 When you're running in "development mode" (for example, `electron /path/to/app`), Electron uses the
 `default_app` codepath to run your app, which also provides a default menubar. When the app is
 packaged, Electron runs your app directly. To have a menubar that's consistent between development
-and packaged modes, you'll need to [define it yourself](https://electron.atom.io/docs/api/menu/).
+and packaged modes, you'll need to [define it yourself](https://electronjs.org/docs/api/menu/).
 
 ## Why isn't my `ignore` option working?
 
