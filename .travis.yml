@@ -20,7 +20,6 @@ install:
 - npm install
 - npm update
 before_script: test/ci/_before_script.js
-after_success: npm run codecov
 branches:
   only:
   - master
