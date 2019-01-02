@@ -63,7 +63,12 @@
   "directories": {
     "test": "test"
   },
-  "keywords": [],
+  "keywords": [
+    "electron",
+    "packager",
+    "bundler",
+    "app"
+  ],
   "ava": {
     "timeout": "60s"
   },
