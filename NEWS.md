@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.2.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v11.2.1...master
+
+## [11.2.1] - 2019-01-02
+
+[11.2.1]: https://github.com/electron-userland/electron-packager/compare/v11.2.0...v11.2.1
+
+### Fixed
+
+* Don't handle EH/NP Helpers if they don't exist (Backport of #894)
 
 ## [11.2.0] - 2018-03-24
 
