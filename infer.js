@@ -97,6 +97,8 @@ module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
     props.push([
       'dependencies.electron',
       'devDependencies.electron',
+      'dependencies.electron-nightly',
+      'devDependencies.electron-nightly',
       'dependencies.electron-prebuilt-compile',
       'devDependencies.electron-prebuilt-compile',
       'dependencies.electron-prebuilt',
