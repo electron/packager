@@ -31,15 +31,9 @@ test.after.always(t => {
 test.beforeEach(t => {
   t.context.workDir = tempy.directory()
   t.context.tempDir = tempy.directory()
-  if (!console.warn.restore) {
-    sinon.spy(console, 'warn')
-  }
 })
 
 test.afterEach.always(t => {
-  if (console.warn.restore) {
-    console.warn.restore()
-  }
   return fs.remove(t.context.workDir)
     .then(() => fs.remove(t.context.tempDir))
 })
@@ -116,6 +110,13 @@ module.exports = {
     return module.exports.assertFile(t, plistPath, `The expected Info.plist should exist in ${path.basename(appPath)}`)
       .then(() => fs.readFile(plistPath, 'utf8'))
       .then(file => plist.parse(file))
+  },
+  setupConsoleWarnSpy: function setupConsoleWarnSpy () {
+    if (console.warn.restore) {
+      console.warn.resetHistory()
+    } else {
+      sinon.spy(console, 'warn')
+    }
   },
   singlePlatformOptions: function singlePlatformOptions () {
     return {

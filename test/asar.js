@@ -51,6 +51,7 @@ util.testSinglePlatform('asar test', (t, opts) => {
 })
 
 util.testSinglePlatform('prebuilt asar test', (t, opts) => {
+  util.setupConsoleWarnSpy()
   opts.name = 'prebuiltAsarTest'
   opts.dir = util.fixtureSubdir('asar-prebuilt')
   opts.prebuiltAsar = path.join(opts.dir, 'app.asar')

@@ -265,12 +265,14 @@ if (!(process.env.CI && process.platform === 'win32')) {
   })
 
   test('osxNotarize argument test: missing appleId', t => {
+    util.setupConsoleWarnSpy()
     const notarizeOpts = mac.createNotarizeOpts({ appleIdPassword: '' })
     t.falsy(notarizeOpts, 'does not generate options')
     util.assertWarning(t, 'WARNING: The appleId sub-property is required when using notarization, notarize will not run')
   })
 
   test('osxNotarize argument test: missing appleIdPassword', t => {
+    util.setupConsoleWarnSpy()
     const notarizeOpts = mac.createNotarizeOpts({ appleId: '' })
     t.falsy(notarizeOpts, 'does not generate options')
     util.assertWarning(t, 'WARNING: The appleIdPassword sub-property is required when using notarization, notarize will not run')

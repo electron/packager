@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const hostArch = require('electron-download/lib/arch').host
 const packager = require('..')
 const path = require('path')
+const sinon = require('sinon')
 const test = require('ava')
 const util = require('./_util')
 
@@ -21,19 +22,13 @@ function generateNamePath (opts) {
 }
 
 test('setting the quiet option does not print messages', (t) => {
-  const errorLog = console.error
-  const warningLog = console.warn
-  let output = ''
-  console.error = (message) => { output += message }
-  console.warn = (message) => { output += message }
+  util.setupConsoleWarnSpy()
+  sinon.spy(console, 'error')
 
   common.warning('warning', true)
-  t.is('', output, 'quieted common.warning should not call console.warn')
+  t.true(console.warn.notCalled, 'quieted common.warning should not call console.warn')
   common.info('info', true)
-  t.is('', output, 'quieted common.info should not call console.error')
-
-  console.error = errorLog
-  console.warn = warningLog
+  t.true(console.error.notCalled, 'quieted common.info should not call console.error')
 })
 
 test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', t => {
