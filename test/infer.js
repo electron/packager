@@ -5,6 +5,7 @@ const getMetadataFromPackageJSON = require('../infer')
 const packager = require('..')
 const path = require('path')
 const pkgUp = require('pkg-up')
+const semver = require('semver')
 const util = require('./_util')
 
 function inferElectronVersionTest (t, opts, fixture, packageName) {
@@ -14,7 +15,7 @@ function inferElectronVersionTest (t, opts, fixture, packageName) {
   return getMetadataFromPackageJSON([], opts, opts.dir)
     .then(() => {
       const packageJSON = require(path.join(opts.dir, 'package.json'))
-      return t.is(opts.electronVersion, packageJSON.devDependencies[packageName], `The version should be inferred from installed ${packageName} version`)
+      return t.true(semver.satisfies(opts.electronVersion, packageJSON.devDependencies[packageName]), `The version should be inferred from installed ${packageName} version`)
     })
 }
 
@@ -86,6 +87,7 @@ function testInferWin32metadataAuthorObject (t, opts, author, expected, assertio
 util.testSinglePlatformParallel('infer using `electron-prebuilt` package', inferElectronVersionTest, 'basic', 'electron-prebuilt')
 util.testSinglePlatformParallel('infer using `electron-nightly` package', inferElectronVersionTest, 'infer-electron-nightly', 'electron-nightly')
 util.testSinglePlatformParallel('infer using `electron-prebuilt-compile` package', inferElectronVersionTest, 'infer-electron-prebuilt-compile', 'electron-prebuilt-compile')
+util.testSinglePlatformParallel('infer using non-exact `electron-prebuilt-compile` package', inferElectronVersionTest, 'infer-non-specific-electron-prebuilt-compile', 'electron-prebuilt-compile')
 util.testSinglePlatformParallel('infer using `electron` package only', inferMissingVersionTest)
 util.testSinglePlatformParallel('infer where `electron` version is preferred over `electron-prebuilt`', inferElectronVersionTest, 'basic-renamed-to-electron', 'electron')
 util.testSinglePlatformParallel('infer win32metadata', (t, opts) => {
@@ -119,4 +121,4 @@ util.testSinglePlatformParallel('do not infer win32metadata.CompanyName when aut
 util.testSinglePlatformParallel('infer missing fields test', inferFailureTest, 'infer-missing-fields')
 util.testSinglePlatformParallel('infer with bad fields test', inferFailureTest, 'infer-bad-fields')
 util.testSinglePlatformParallel('infer with malformed JSON test', inferFailureTest, 'infer-malformed-json')
-util.testSinglePlatformParallel('infer using a non-specific `electron-prebuilt-compile` package version', inferFailureTest, 'infer-non-specific-electron-prebuilt-compile')
+util.testSinglePlatformParallel('infer using a non-specific `electron-prebuilt-compile` package version when the package did not have a main file', inferFailureTest, 'infer-invalid-non-specific-electron-prebuilt-compile')
