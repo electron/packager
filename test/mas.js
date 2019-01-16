@@ -14,20 +14,9 @@ if (!(process.env.CI && process.platform === 'win32')) {
   }
 
   util.packagerTest('warn if building for mas and not signing', (t, baseOpts) => {
-    const warningLog = console.warn
-    let output = ''
-    console.warn = message => { output += message }
-
-    const finalize = err => {
-      console.warn = warningLog
-      if (err) throw err
-    }
-
+    util.setupConsoleWarnSpy()
     return packager(Object.assign({}, baseOpts, masOpts))
-      .then(() =>
-        t.truthy(output.match(/signing is required for mas builds/), 'the correct warning is emitted')
-      ).then(finalize)
-      .catch(finalize)
+      .then(() => util.assertWarning(t, 'WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.'))
   })
 
   util.packagerTest('update Login Helper if it exists', (t, baseOpts) => {

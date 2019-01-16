@@ -39,7 +39,7 @@ function inferFailureTest (t, opts, fixtureSubdir) {
       delete opts.electronVersion
       opts.dir = dir
 
-      return t.throws(packager(opts))
+      return t.throwsAsync(packager(opts))
     })
 }
 
