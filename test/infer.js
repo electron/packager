@@ -84,6 +84,7 @@ function testInferWin32metadataAuthorObject (t, opts, author, expected, assertio
 }
 
 util.testSinglePlatformParallel('infer using `electron-prebuilt` package', inferElectronVersionTest, 'basic', 'electron-prebuilt')
+util.testSinglePlatformParallel('infer using `electron-nightly` package', inferElectronVersionTest, 'infer-electron-nightly', 'electron-nightly')
 util.testSinglePlatformParallel('infer using `electron-prebuilt-compile` package', inferElectronVersionTest, 'infer-electron-prebuilt-compile', 'electron-prebuilt-compile')
 util.testSinglePlatformParallel('infer using `electron` package only', inferMissingVersionTest)
 util.testSinglePlatformParallel('infer where `electron` version is preferred over `electron-prebuilt`', inferElectronVersionTest, 'basic-renamed-to-electron', 'electron')
