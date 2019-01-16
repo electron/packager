@@ -89,7 +89,7 @@ module.exports = {
       : 'resources'
   },
   invalidOptionTest: function invalidOptionTest (opts, err, message) {
-    return t => t.throws(packager(opts), err, message)
+    return t => t.throwsAsync(packager(opts), err || null, message)
   },
   packageAndEnsureResourcesPath: function packageAndEnsureResourcesPath (t, opts) {
     let resourcesPath
