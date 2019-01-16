@@ -1,0 +1,7 @@
+{
+  "main": "main.js",
+  "productName": "MainJS",
+  "devDependencies": {
+    "electron-nightly": "5.0.0-nightly.20190107"
+  }
+}
