@@ -126,7 +126,7 @@ Let's assume that you have made an app based on the [electron-quick-start](https
 foobar
 ├── package.json
 ├── index.html
-├── […other files, like LICENSE…]
+├── […other files, like the app's LICENSE…]
 └── script.js
 ```
 
@@ -160,12 +160,12 @@ foobar
 ├── Foo Bar-darwin-x64
 │   ├── Foo Bar.app
 │   │   └── […Mac app contents…]
-│   ├── LICENSE
+│   ├── LICENSE [the Electron license]
 │   └── version
 ├── […other application bundles, like "Foo Bar-win32-x64" (sans quotes)…]
 ├── package.json
 ├── index.html
-├── […other files, like LICENSE…]
+├── […other files, like the app's LICENSE…]
 └── script.js
 ```
 
