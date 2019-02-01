@@ -45,7 +45,8 @@ An array of functions to be called after your app directory has been copied to a
 
 By default, the functions are called in parallel (via
 [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
-If you need the functions called serially, there is a utility function provided:
+If you need the functions called serially, there is a utility function provided. Please note that
+**callback-style functions are not supported by `serialHooks`.** For example:
 
 ```javascript
 const packager = require('electron-packager')
@@ -54,15 +55,16 @@ const { serialHooks } = require('electron-packager/hooks')
 packager({
   // ...
   afterCopy: [serialHooks([
-    (buildPath, electronVersion, platform, arch, callback) => {
-      setTimeout(() => {
-        console.log('first function')
-        callback()
-      }, 1000)
+    (buildPath, electronVersion, platform, arch) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log('first function')
+          resolve()
+        }, 1000)
+      })
     },
-    (buildPath, electronVersion, platform, arch, callback) => {
+    (buildPath, electronVersion, platform, arch) => {
       console.log('second function')
-      callback()
     }
   ])],
   // ...
@@ -85,7 +87,8 @@ An array of functions to be called after Electron has been extracted to a tempor
 
 By default, the functions are called in parallel (via
 [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
-If you need the functions called serially, there is a utility function provided:
+If you need the functions called serially, there is a utility function provided. Please note that
+**callback-style functions are not supported by `serialHooks`.** For example:
 
 ```javascript
 const packager = require('electron-packager')
@@ -94,15 +97,16 @@ const { serialHooks } = require('electron-packager/hooks')
 packager({
   // ...
   afterExtract: [serialHooks([
-    (buildPath, electronVersion, platform, arch, callback) => {
-      setTimeout(() => {
-        console.log('first function')
-        callback()
-      }, 1000)
+    (buildPath, electronVersion, platform, arch) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log('first function')
+          resolve()
+        }, 1000)
+      })
     },
-    (buildPath, electronVersion, platform, arch, callback) => {
+    (buildPath, electronVersion, platform, arch) => {
       console.log('second function')
-      callback()
     }
   ])],
   // ...
@@ -126,7 +130,8 @@ in the temporary directory.  Each function is called with five parameters:
 
 By default, the functions are called in parallel (via
 [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
-If you need the functions called serially, there is a utility function provided:
+If you need the functions called serially, there is a utility function provided. Please note that
+**callback-style functions are not supported by `serialHooks`.** For example:
 
 ```javascript
 const packager = require('electron-packager')
@@ -135,15 +140,16 @@ const { serialHooks } = require('electron-packager/hooks')
 packager({
   // ...
   afterPrune: [serialHooks([
-    (buildPath, electronVersion, platform, arch, callback) => {
-      setTimeout(() => {
-        console.log('first function')
-        callback()
-      }, 1000)
+    (buildPath, electronVersion, platform, arch) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log('first function')
+          resolve()
+        }, 1000)
+      })
     },
-    (buildPath, electronVersion, platform, arch, callback) => {
+    (buildPath, electronVersion, platform, arch) => {
       console.log('second function')
-      callback()
     }
   ])],
   // ...
