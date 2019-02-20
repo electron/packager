@@ -4,7 +4,6 @@ const asar = require('asar')
 const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
-const pify = require('pify')
 
 const common = require('./common')
 const hooks = require('./hooks')
@@ -202,7 +201,7 @@ class App {
     }
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`)
-    return pify(asar.createPackageWithOptions)(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions)
+    return asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions)
       .then(() => fs.remove(this.originalResourcesAppDir))
   }
 
