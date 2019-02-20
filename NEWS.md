@@ -2,7 +2,20 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.0.1...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.1.0...master
+
+## [13.1.0] - 2019-02-19
+
+[13.1.0]: https://github.com/electron-userland/electron-packager/compare/v13.0.1...v13.1.0
+
+### Added
+
+* Support for inferring version from Electron nightlies (#931)
+
+### Fixed
+
+* Infer versions from `electron-prebuilt-compile` better (#932)
+* Upgrade `asar` to `^1.0.0`, which removes a vulnerable transitive dependency (#952)
 
 ## [13.0.1] - 2018-12-12
 
