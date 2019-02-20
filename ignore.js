@@ -9,7 +9,8 @@ const targets = require('./targets')
 const DEFAULT_IGNORES = [
   '/\\.git($|/)',
   '/node_modules/\\.bin($|/)',
-  '\\.o(bj)?$'
+  '\\.o(bj)?$',
+  '/\\.DS_Store$'
 ]
 
 function generateIgnores (opts) {
