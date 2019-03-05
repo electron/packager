@@ -52,6 +52,13 @@ test('allOfficialArchsForPlatformAndVersion returns mips64el when the correct ve
           'should not be found when version is < 1.8.2-beta.5')
 })
 
+test('allOfficialArchsForPlatformAndVersion returns ia32 when the correct version is specified', t => {
+  t.true(targets.allOfficialArchsForPlatformAndVersion('linux', '2.0.0').includes('ia32'),
+         'should be found when version is < 4.0.0')
+  t.false(targets.allOfficialArchsForPlatformAndVersion('linux', '4.0.0').includes('ia32'),
+          'should not be found when version is >= 4.0.0-beta.1')
+})
+
 test('validateListFromOptions does not take non-Array/String values', t => {
   targets.supported.digits = new Set(['64', '65'])
   t.false(targets.validateListFromOptions({ digits: 64 }, 'digits') instanceof Array,
