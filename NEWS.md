@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.1.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.1.1...master
+
+## [13.1.1] - 2019-03-04
+
+[13.1.1]: https://github.com/electron-userland/electron-packager/compare/v13.1.0...v13.1.1
+
+### Fixed
+
+* Linux/ia32 is no longer officially supported for Electron >= 4 (#957)
 
 ## [13.1.0] - 2019-02-19
 
