@@ -45,16 +45,16 @@ See [CONTRIBUTING.md](https://github.com/electron-userland/electron-packager/blo
 Electron Packager is known to run on the following **host** platforms:
 
 * Windows (32/64 bit)
-* OS X (also known as macOS)
+* macOS
 * Linux (x86/x86_64)
 
 It generates executables/bundles for the following **target** platforms:
 
 * Windows (also known as `win32`, for both 32/64 bit)
-* OS X (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
+* macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup>
 * Linux (for x86, x86_64, armv7l, arm64, and mips64el architectures)
 
-<sup>*</sup> *Note for OS X / MAS target bundles: the `.app` bundle can only be signed when building on a host OS X platform.*
+<sup>*</sup> *Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.*
 
 ## Installation
 
@@ -74,7 +74,7 @@ Building an Electron app for the Windows target platform requires editing the `E
 Currently, Electron Packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish
 this. A Windows executable is bundled in that Node package and needs to be run in order for this
 functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) 1.6 or
-later needs to be installed. On OS X, it is installable via [Homebrew](http://brew.sh/).
+later needs to be installed. On macOS, it is installable via [Homebrew](http://brew.sh/).
 
 ## Usage
 
@@ -120,7 +120,7 @@ default. You can use `--ignore` to ignore files and folders via a regular expres
 
 #### Example
 
-Let's assume that you have made an app based on the [electron-quick-start](https://github.com/electron/electron-quick-start) repository on a OS X host platform with the following file structure:
+Let's assume that you have made an app based on the [electron-quick-start](https://github.com/electron/electron-quick-start) repository on a macOS host platform with the following file structure:
 
 ```
 foobar
@@ -150,7 +150,7 @@ electron-packager .
 * Infer the `appVersion` from the `version` in `package.json`
 * Infer the `platform` and `arch` from the host, in this example, `darwin` platform and `x64` arch.
 * Download the darwin x64 build of Electron 1.4.15 (and cache the downloads in `~/.electron`)
-* Build the OS X `Foo Bar.app`
+* Build the macOS `Foo Bar.app`
 * Place `Foo Bar.app` in `foobar/Foo Bar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)
 
 The file structure now looks like:
@@ -169,7 +169,7 @@ foobar
 └── script.js
 ```
 
-The `Foo Bar.app` folder generated can be executed by a system running OS X, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
+The `Foo Bar.app` folder generated can be executed by a system running macOS, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
 
 ## Related
 
@@ -188,7 +188,7 @@ Windows:
 * [electron-wix-msi](https://github.com/felixrieseberg/electron-wix-msi) - creates traditional MSI installers
 * [electron-installer-windows](https://github.com/electron-userland/electron-installer-windows) - alternative Squirrel.Windows-based installer
 
-OS X:
+macOS:
 
 * [electron-installer-dmg](https://github.com/electron-userland/electron-installer-dmg) - creates a DMG
 
