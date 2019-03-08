@@ -64,7 +64,7 @@ function parseCLIArgs (argv) {
       warning('--osx-notarize does not take any arguments, it only has sub-properties (see --help)')
       notarize = false
     } else if (!args.osxSign) {
-      warning('Notarization was enabled but OSX code signing was not, code signing is a requirement for notarization, notarize will not run')
+      warning('Notarization was enabled but macOS code signing was not, code signing is a requirement for notarization, notarize will not run')
       notarize = false
     }
 

@@ -75,14 +75,14 @@ darwin-dark-mode-support
                    forces support for Mojave/10.14 dark mode in the packaged app
 extend-info        a plist file to merge into the app plist
 helper-bundle-id   bundle identifier to use in the app helper plist
-osx-sign           (OSX host platform only) Whether to sign the OSX app packages. You can either
+osx-sign           (macOS host platform only) Whether to sign the macOS app packages. You can either
                    pass --osx-sign by itself to use the default configuration, or use dot notation
                    to configure a list of sub-properties, e.g. --osx-sign.identity="My Name"
                    Properties supported:
                    - identity: should contain the identity to be used when running `codesign`
                    - entitlements: the path to entitlements used in signing
                    - entitlements-inherit: the path to the 'child' entitlements
-osx-notarize       (OSX host platform only, requires --osx-sign) Whether to notarize the OSX app
+osx-notarize       (macOS host platform only, requires --osx-sign) Whether to notarize the macOS app
                    packages. You must use dot notation to configure a list of sub-properties, e.g.
                    --osx-notarize.appleId="foo@example.com"
                    For info on supported values see https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid

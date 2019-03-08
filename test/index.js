@@ -13,7 +13,7 @@ require('./targets')
 require('./win32')
 
 if (process.platform !== 'win32') {
-  // Perform additional tests specific to building for OS X
+  // Perform additional tests specific to building for macOS
   require('./darwin')
   require('./mas')
 }

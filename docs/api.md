@@ -166,13 +166,13 @@ When `true`, sets both [`arch`](#arch) and [`platform`](#platform) to `all`.
 
 *String*
 
-The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on OS X.
+The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on macOS.
 
 ##### `appVersion`
 
 *String*
 
-The release version of the application. By default the `version` property in the `package.json` is used but it can be overridden with this argument. If neither are provided, the version of Electron will be used. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
+The release version of the application. By default the `version` property in the `package.json` is used but it can be overridden with this argument. If neither are provided, the version of Electron will be used. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on macOS.
 
 #### `arch`
 
@@ -210,7 +210,7 @@ Whether to package the application's source code into an archive, using [Electro
 
 *String*
 
-The build version of the application. Defaults to the value of [`appVersion`](#appversion). Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
+The build version of the application. Defaults to the value of [`appVersion`](#appversion). Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on macOS.
 
 ##### `derefSymlinks`
 
@@ -256,7 +256,7 @@ see the [Apple developer documentation](https://developer.apple.com/documentatio
 
 *String* or *Array* of *String*s
 
-One or more files to be copied directly into the app's `Contents/Resources` directory for OS X
+One or more files to be copied directly into the app's `Contents/Resources` directory for macOS
 target platforms, and the `resources` directory for other target platforms.
 
 ##### `executableName`
@@ -275,11 +275,11 @@ The local path to the icon file, if the target platform supports setting embeddi
 
 Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
 
-- OS X: `.icns`
+- macOS: `.icns`
 - Windows: `.ico` ([See the readme](https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
 - Linux: this option is not supported, as the dock/window list icon is set via
   [the `icon` option in the `BrowserWindow` constructor](https://electronjs.org/docs/api/browser-window/#new-browserwindowoptions).
-  *Please note that you need to use a PNG, and not the OS X or Windows icon formats, in order for it
+  *Please note that you need to use a PNG, and not the macOS or Windows icon formats, in order for it
   to show up in the dock/window list.* Setting the icon in the file manager is not currently supported.
 
 If the file extension is omitted, it is auto-completed to the correct extension based on the platform, including when [`platform: 'all'`](#platform) is in effect.
@@ -387,7 +387,7 @@ application. This does *not* disable errors.
 
 The base directory to use as a temp directory. Set to `false` to disable use of a temporary directory.
 
-#### OS X/Mac App Store targets only
+#### macOS/Mac App Store targets only
 
 ##### `appBundleId`
 
@@ -425,7 +425,7 @@ The bundle identifier to use in the application helper's plist.
 
 **Requires [`osxSign`](#osxsign) to be set.**
 
-If present, notarizes OS X target apps when the host platform is OS X and XCode is installed.  The configuration values listed below can be customized. See [`electron-notarize`](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions and how to use `appleIdPassword` safely.
+If present, notarizes macOS target apps when the host platform is macOS and XCode is installed.  The configuration values listed below can be customized. See [`electron-notarize`](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions and how to use `appleIdPassword` safely.
 - `appleId` (*String*, **required**): Your Apple ID username / email
 - `appleIdPassword` (*String*, **required**): The password for your Apple ID, can be a keychain reference
 
@@ -433,7 +433,7 @@ If present, notarizes OS X target apps when the host platform is OS X and XCode 
 
 *Object* or *`true`*
 
-If present, signs OS X target apps when the host platform is OS X and XCode is installed. When the value is `true`, pass default configuration to the signing module. The configuration values listed below can be customized when the value is an `Object`. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more detailed option descriptions and the defaults.
+If present, signs macOS target apps when the host platform is macOS and XCode is installed. When the value is `true`, pass default configuration to the signing module. The configuration values listed below can be customized when the value is an `Object`. See [electron-osx-sign](https://www.npmjs.com/package/electron-osx-sign#opts) for more detailed option descriptions and the defaults.
 - `identity` (*String*): The identity used when signing the package via `codesign`.
 - `entitlements` (*String*): The path to the 'parent' entitlements.
 - `entitlements-inherit` (*String*): The path to the 'child' entitlements.
