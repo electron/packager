@@ -14,16 +14,14 @@ branches:
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
-- npm install -g npm@4
-- set PATH=%APPDATA%\npm;%PATH%
-- npm install
-- npm update
+- yarn
+- yarn upgrade
 
 test_script:
 - node --version
-- npm --version
+- yarn --version
 - node test/ci/_before_script.js
-- npm test
-- npm run codecov
+- yarn test
+- yarn codecov
 
 build: off
