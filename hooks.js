@@ -1,6 +1,6 @@
 'use strict'
 
-const pify = require('pify')
+const { promisify } = require('util')
 
 module.exports = {
   promisifyHooks: function promisifyHooks (hooks, args) {
@@ -8,7 +8,7 @@ module.exports = {
       return Promise.resolve()
     }
 
-    return Promise.all(hooks.map(hookFn => pify(hookFn).apply(this, args)))
+    return Promise.all(hooks.map(hookFn => promisify(hookFn).apply(this, args)))
   },
   serialHooks: function serialHooks (hooks) {
     return function () {

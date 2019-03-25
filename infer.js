@@ -4,7 +4,6 @@ const debug = require('debug')('electron-packager')
 const getPackageInfo = require('get-package-info')
 const parseAuthor = require('parse-author')
 const path = require('path')
-const pify = require('pify')
 const resolve = require('resolve')
 const semver = require('semver')
 
@@ -33,6 +32,20 @@ function errorMessageForProperty (prop) {
     `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
 }
 
+function resolvePromise (id, options) {
+  // eslint-disable-next-line promise/param-names
+  return new Promise((accept, reject) => {
+    resolve(id, options, (err, mainPath, pkg) => {
+      if (err) {
+        /* istanbul ignore next */
+        reject(err)
+      } else {
+        accept([mainPath, pkg])
+      }
+    })
+  })
+}
+
 function getVersion (opts, electronProp) {
   const [depType, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
@@ -51,10 +64,9 @@ function getVersion (opts, electronProp) {
     }
   }
 
-  return pify(resolve, { multiArgs: true })(packageName, { basedir: path.dirname(src) })
-    .then(res => {
+  return resolvePromise(packageName, { basedir: path.dirname(src) })
+    .then(([_mainPath, pkg]) => {
       debug(`Inferring target Electron version from ${packageName} in ${src}`)
-      const pkg = res[1]
       opts.electronVersion = pkg.version
       return null
     })

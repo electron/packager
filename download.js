@@ -3,7 +3,7 @@
 const common = require('./common')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
-const pify = require('pify')
+const { promisify } = require('util')
 const semver = require('semver')
 const targets = require('./targets')
 
@@ -34,6 +34,6 @@ module.exports = {
       downloadOpts.arch = 'arm'
     }
     debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`)
-    return pify(download)(downloadOpts)
+    return promisify(download)(downloadOpts)
   }
 }

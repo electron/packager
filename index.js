@@ -9,7 +9,7 @@ const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
 const ignore = require('./ignore')
 const path = require('path')
-const pify = require('pify')
+const { promisify } = require('util')
 const targets = require('./targets')
 
 function debugHostInfo () {
@@ -67,7 +67,7 @@ class Packager {
 
   extractElectronZip (comboOpts, zipPath, buildDir) {
     debug(`Extracting ${zipPath} to ${buildDir}`)
-    return pify(extract)(zipPath, { dir: buildDir })
+    return promisify(extract)(zipPath, { dir: buildDir })
       .then(() => hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]))
   }
 

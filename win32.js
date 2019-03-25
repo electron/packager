@@ -2,7 +2,7 @@
 
 const debug = require('debug')('electron-packager')
 const path = require('path')
-const pify = require('pify')
+const { promisify } = require('util')
 
 const App = require('./platform')
 const common = require('./common')
@@ -92,7 +92,7 @@ class WindowsApp extends App {
         }
 
         debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
-        return pify(require('rcedit'))(this.electronBinaryPath, rcOpts)
+        return promisify(require('rcedit'))(this.electronBinaryPath, rcOpts)
       }).catch(err => {
         /* istanbul ignore next */
         throw updateWineMissingException(err)
