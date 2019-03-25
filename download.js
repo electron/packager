@@ -26,7 +26,7 @@ module.exports = {
     })
   },
   createDownloadOpts: createDownloadOpts,
-  downloadElectronZip: function downloadElectronZip (downloadOpts) {
+  downloadElectronZip: async function downloadElectronZip (downloadOpts) {
     // armv7l builds have only been backfilled for Electron >= 1.0.0.
     // See: https://github.com/electron/electron/pull/6986
     /* istanbul ignore if */

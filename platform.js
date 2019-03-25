@@ -72,12 +72,12 @@ class App {
     return path.join(this.originalResourcesDir, 'app.asar')
   }
 
-  relativeRename (basePath, oldName, newName) {
+  async relativeRename (basePath, oldName, newName) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
-    return fs.rename(path.join(basePath, oldName), path.join(basePath, newName))
+    await fs.rename(path.join(basePath, oldName), path.join(basePath, newName))
   }
 
-  renameElectron () {
+  async renameElectron () {
     return this.relativeRename(this.electronBinaryDir, this.originalElectronName, this.newElectronName)
   }
 
@@ -96,26 +96,24 @@ class App {
    * Prune and asar are performed before platform-specific logic, primarily so that
    * this.originalResourcesAppDir is predictable (e.g. before .app is renamed for Mac)
    */
-  initialize () {
+  async initialize () {
     debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`)
 
-    return fs.move(this.templatePath, this.stagingPath, { clobber: true })
-      .then(() => this.removeDefaultApp())
-      .then(() => {
-        if (this.opts.prebuiltAsar) {
-          return this.copyPrebuiltAsar()
-        } else {
-          return this.buildApp()
-        }
-      })
+    await fs.move(this.templatePath, this.stagingPath, { clobber: true })
+    await this.removeDefaultApp()
+    if (this.opts.prebuiltAsar) {
+      await this.copyPrebuiltAsar()
+    } else {
+      await this.buildApp()
+    }
   }
 
-  buildApp () {
-    return this.copyTemplate()
-      .then(() => this.asarApp())
+  async buildApp () {
+    await this.copyTemplate()
+    await this.asarApp()
   }
 
-  copyTemplate () {
+  async copyTemplate () {
     const hookArgs = [
       this.originalResourcesAppDir,
       this.opts.electronVersion,
@@ -123,22 +121,18 @@ class App {
       this.opts.arch
     ]
 
-    return fs.copy(this.opts.dir, this.originalResourcesAppDir, {
+    await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
       filter: ignore.userIgnoreFilter(this.opts),
       dereference: this.opts.derefSymlinks
     })
-      .then(() => hooks.promisifyHooks(this.opts.afterCopy, hookArgs))
-      .then(() => {
-        if (this.opts.prune) {
-          return hooks.promisifyHooks(this.opts.afterPrune, hookArgs)
-        }
-        return true
-      })
+    await hooks.promisifyHooks(this.opts.afterCopy, hookArgs)
+    if (this.opts.prune) {
+      await hooks.promisifyHooks(this.opts.afterPrune, hookArgs)
+    }
   }
 
-  removeDefaultApp () {
-    return fs.remove(path.join(this.originalResourcesDir, 'default_app'))
-      .then(() => fs.remove(path.join(this.originalResourcesDir, 'default_app.asar')))
+  async removeDefaultApp () {
+    await Promise.all(['default_app', 'default_app.asar'].map(async basename => fs.remove(path.join(this.originalResourcesDir, basename))))
   }
 
   /**
@@ -147,8 +141,8 @@ class App {
    *
    * This error path is used by win32 if no icon is specified.
    */
-  normalizeIconExtension (targetExt) {
-    if (!this.opts.icon) throw new Error('No filename specified to normalizeExt')
+  async normalizeIconExtension (targetExt) {
+    if (!this.opts.icon) throw new Error('No filename specified to normalizeIconExtension')
 
     let iconFilename = this.opts.icon
     const ext = path.extname(iconFilename)
@@ -156,9 +150,9 @@ class App {
       iconFilename = path.join(path.dirname(iconFilename), path.basename(iconFilename, ext) + targetExt)
     }
 
-    return fs.pathExists(iconFilename)
-      .then(() => iconFilename)
-      .catch(/* istanbul ignore next */ () => null)
+    if (await fs.pathExists(iconFilename)) {
+      return iconFilename
+    }
   }
 
   prebuiltAsarWarning (option, triggerWarning) {
@@ -167,7 +161,7 @@ class App {
     }
   }
 
-  copyPrebuiltAsar () {
+  async copyPrebuiltAsar () {
     if (this.asarOptions) {
       common.warning('prebuiltAsar has been specified, all asar options will be ignored')
     }
@@ -184,47 +178,44 @@ class App {
 
     const src = path.resolve(this.opts.prebuiltAsar)
 
-    return fs.stat(src)
-      .then(stat => {
-        if (!stat.isFile()) {
-          throw new Error(`${src} specified in prebuiltAsar must be an asar file.`)
-        }
+    const stat = await fs.stat(src)
+    if (!stat.isFile()) {
+      throw new Error(`${src} specified in prebuiltAsar must be an asar file.`)
+    }
 
-        debug(`Copying asar: ${src} to ${this.appAsarPath}`)
-        return fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true })
-      })
+    debug(`Copying asar: ${src} to ${this.appAsarPath}`)
+    await fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true })
   }
 
-  asarApp () {
+  async asarApp () {
     if (!this.asarOptions) {
       return Promise.resolve()
     }
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`)
-    return asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions)
-      .then(() => fs.remove(this.originalResourcesAppDir))
+    await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions)
+    await fs.remove(this.originalResourcesAppDir)
   }
 
-  copyExtraResources () {
+  async copyExtraResources () {
     if (!this.opts.extraResource) return Promise.resolve()
 
     const extraResources = common.ensureArray(this.opts.extraResource)
 
-    return Promise.all(extraResources.map(
+    await Promise.all(extraResources.map(
       resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))
     ))
   }
 
-  move () {
+  async move () {
     const finalPath = common.generateFinalPath(this.opts)
 
-    if (this.opts.tmpdir === false) {
-      return Promise.resolve(finalPath)
+    if (this.opts.tmpdir !== false) {
+      debug(`Moving ${this.stagingPath} to ${finalPath}`)
+      await fs.move(this.stagingPath, finalPath)
     }
 
-    debug(`Moving ${this.stagingPath} to ${finalPath}`)
-    return fs.move(this.stagingPath, finalPath)
-      .then(() => finalPath)
+    return finalPath
   }
 }
 

@@ -12,11 +12,11 @@ class LinuxApp extends App {
     return common.sanitizeAppName(this.executableName)
   }
 
-  create () {
-    return this.initialize()
-      .then(() => this.renameElectron())
-      .then(() => this.copyExtraResources())
-      .then(() => this.move())
+  async create () {
+    await this.initialize()
+    await this.renameElectron()
+    await this.copyExtraResources()
+    return this.move()
   }
 }
 

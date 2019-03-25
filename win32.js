@@ -64,7 +64,7 @@ class WindowsApp extends App {
     return rcOpts
   }
 
-  getIconPath () {
+  async getIconPath () {
     if (!this.opts.icon) {
       return Promise.resolve()
     }
@@ -76,7 +76,7 @@ class WindowsApp extends App {
     return this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion
   }
 
-  runRcedit () {
+  async runRcedit () {
     /* istanbul ignore if */
     if (!this.needsRcedit()) {
       return Promise.resolve()
@@ -84,27 +84,27 @@ class WindowsApp extends App {
 
     const rcOpts = this.generateRceditOptionsSansIcon()
 
-    return this.getIconPath()
-      .then(icon => {
-        // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
-        if (icon) {
-          rcOpts.icon = icon
-        }
+    try {
+      const icon = await this.getIconPath()
+      if (icon) {
+        rcOpts.icon = icon
+      }
 
-        debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
-        return promisify(require('rcedit'))(this.electronBinaryPath, rcOpts)
-      }).catch(err => {
-        /* istanbul ignore next */
-        throw updateWineMissingException(err)
-      })
+      debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
+      return promisify(require('rcedit'))(this.electronBinaryPath, rcOpts)
+    } catch (err) {
+      // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
+      /* istanbul ignore next */
+      throw updateWineMissingException(err)
+    }
   }
 
-  create () {
-    return this.initialize()
-      .then(() => this.renameElectron())
-      .then(() => this.copyExtraResources())
-      .then(() => this.runRcedit())
-      .then(() => this.move())
+  async create () {
+    await this.initialize()
+    await this.renameElectron()
+    await this.copyExtraResources()
+    await this.runRcedit()
+    return this.move()
   }
 }
 

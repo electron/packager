@@ -46,7 +46,7 @@ function resolvePromise (id, options) {
   })
 }
 
-function getVersion (opts, electronProp) {
+async function getVersion (opts, electronProp) {
   const [depType, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
   if (packageName === 'electron-prebuilt-compile') {
@@ -64,15 +64,13 @@ function getVersion (opts, electronProp) {
     }
   }
 
-  return resolvePromise(packageName, { basedir: path.dirname(src) })
-    .then(([_mainPath, pkg]) => {
-      debug(`Inferring target Electron version from ${packageName} in ${src}`)
-      opts.electronVersion = pkg.version
-      return null
-    })
+  const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1]
+  debug(`Inferring target Electron version from ${packageName} in ${src}`)
+  opts.electronVersion = pkg.version
+  return null
 }
 
-function handleMetadata (opts, result) {
+async function handleMetadata (opts, result) {
   if (result.values.productName) {
     debug(`Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`)
     opts.name = result.values.productName
@@ -105,7 +103,7 @@ function handleMetadata (opts, result) {
   }
 }
 
-module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
+module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir) {
   let props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts.appVersion) props.push('version')
@@ -130,26 +128,27 @@ module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
   if (props.length === 0) return Promise.resolve()
 
   // Search package.json files to infer name and version from
-  return getPackageInfo(props, dir)
-    .then(result => handleMetadata(opts, result))
-    .catch(err => {
-      if (err.missingProps) {
-        const missingProps = err.missingProps.map(prop => {
-          return Array.isArray(prop) ? prop[0] : prop
-        })
+  try {
+    const result = await getPackageInfo(props, dir)
+    return handleMetadata(opts, result)
+  } catch (err) {
+    if (err.missingProps) {
+      const missingProps = err.missingProps.map(prop => {
+        return Array.isArray(prop) ? prop[0] : prop
+      })
 
-        if (isMissingRequiredProperty(missingProps)) {
-          const messages = missingProps.map(errorMessageForProperty)
+      if (isMissingRequiredProperty(missingProps)) {
+        const messages = missingProps.map(errorMessageForProperty)
 
-          debug(err.message)
-          err.message = messages.join('\n') + '\n'
-          throw err
-        } else {
-          // Missing props not required, can continue w/ partial result
-          return handleMetadata(opts, err.result)
-        }
+        debug(err.message)
+        err.message = messages.join('\n') + '\n'
+        throw err
+      } else {
+        // Missing props not required, can continue w/ partial result
+        return handleMetadata(opts, err.result)
       }
+    }
 
-      throw err
-    })
+    throw err
+  }
 }

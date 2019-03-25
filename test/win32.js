@@ -173,14 +173,12 @@ test('win32metadata defaults', t => {
 })
 
 function win32Test (description, extraOpts, executableBasename, executableMessage) {
-  util.packagerTest(description, (t, opts) => {
+  util.packagerTest(description, async (t, opts) => {
     Object.assign(opts, win32Opts, extraOpts)
 
-    return packager(opts)
-      .then(paths => {
-        t.is(1, paths.length, '1 bundle created')
-        return util.assertPathExists(t, path.join(paths[0], `${executableBasename}.exe`), executableMessage)
-      })
+    const paths = await packager(opts)
+    t.is(1, paths.length, '1 bundle created')
+    await util.assertPathExists(t, path.join(paths[0], `${executableBasename}.exe`), executableMessage)
   })
 }
 

@@ -6,7 +6,7 @@ const packager = require('..')
 const test = require('ava')
 const util = require('./_util')
 
-function hookTest (wantHookCalled, hookName, t, opts) {
+async function hookTest (wantHookCalled, hookName, t, opts) {
   let hookCalled = false
   opts.dir = util.fixtureSubdir('basic')
   opts.electronVersion = config.version
@@ -21,24 +21,23 @@ function hookTest (wantHookCalled, hookName, t, opts) {
   }]
 
   // 2 packages will be built during this test
-  return packager(opts)
-    .then(finalPaths => {
-      t.is(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
-      t.is(wantHookCalled, hookCalled, `${hookName} methods ${wantHookCalled ? 'should' : 'should not'} have been called`)
-      return util.verifyPackageExistence(finalPaths)
-    }).then(exists => t.deepEqual(exists, [true, true], 'Packages should be generated for both 32-bit platforms'))
+  const finalPaths = await packager(opts)
+  t.is(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
+  t.is(wantHookCalled, hookCalled, `${hookName} methods ${wantHookCalled ? 'should' : 'should not'} have been called`)
+  const exists = await util.verifyPackageExistence(finalPaths)
+  t.deepEqual(exists, [true, true], 'Packages should be generated for both 32-bit platforms')
 }
 
 function createHookTest (hookName) {
   util.packagerTest(`platform=all test (one arch) (${hookName} hook)`,
-                    (t, opts) => hookTest(true, hookName, t, opts))
+                    async (t, opts) => hookTest(true, hookName, t, opts))
 }
 
 createHookTest('afterCopy')
 createHookTest('afterPrune')
 createHookTest('afterExtract')
 
-test('promisifyHooks executes functions in parallel', t => {
+test('promisifyHooks executes functions in parallel', async t => {
   let output = '0'
   const timeoutFunc = (number, msTimeout) => {
     return done => {
@@ -52,11 +51,11 @@ test('promisifyHooks executes functions in parallel', t => {
     timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
   )
 
-  return hooks.promisifyHooks(testHooks)
-    .then(() => t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order'))
+  await hooks.promisifyHooks(testHooks)
+  t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order')
 })
 
-test('serialHooks executes functions serially', t => {
+test('serialHooks executes functions serially', async t => {
   let output = '0'
   const timeoutFunc = (number, msTimeout) => {
     return () => new Promise(resolve => { // eslint-disable-line promise/avoid-new
@@ -70,8 +69,8 @@ test('serialHooks executes functions serially', t => {
     timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
   )
 
-  return hooks.serialHooks(testHooks)(() => output)
-    .then(result => t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order'))
+  const result = await hooks.serialHooks(testHooks)(() => output)
+  t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order')
 })
 
 util.packagerTest('prune hook does not get called when prune=false', (t, opts) => {
