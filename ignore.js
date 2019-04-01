@@ -32,9 +32,9 @@ function generateOutIgnores (opts) {
   const normalizedOut = opts.out ? path.resolve(opts.out) : null
   const outIgnores = []
   if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (const platform of Object.keys(targets.officialPlatformArchCombos)) {
-      for (const arch of targets.officialPlatformArchCombos[platform]) {
-        let basenameOpts = {
+    for (const [platform, archs] of Object.entries(targets.officialPlatformArchCombos)) {
+      for (const arch of archs) {
+        const basenameOpts = {
           arch: arch,
           name: opts.name,
           platform: platform
