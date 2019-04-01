@@ -20,7 +20,7 @@ async function inferElectronVersionTest (t, opts, fixture, packageName) {
 async function copyFixtureToTempDir (t, fixtureSubdir) {
   const tmpdir = path.join(t.context.tempDir, fixtureSubdir)
   const fixtureDir = util.fixtureSubdir(fixtureSubdir)
-  const tmpdirPkg = await pkgUp(path.join(tmpdir, '..'))
+  const tmpdirPkg = await pkgUp({ cwd: path.join(tmpdir, '..') })
 
   if (tmpdirPkg) {
     throw new Error(`Found package.json in parent of temp directory, which will interfere with test results. Please remove package.json at ${tmpdirPkg}`)
