@@ -7,11 +7,12 @@ const test = require('ava')
 const util = require('./_util')
 
 function createMultiTargetOptions (extraOpts) {
-  return Object.assign({
+  return {
     name: 'targetTest',
     dir: util.fixtureSubdir('basic'),
-    electronVersion: config.version
-  }, extraOpts)
+    electronVersion: config.version,
+    ...extraOpts
+  }
 }
 
 function testMultiTarget (testcaseDescription, extraOpts, expectedPackageCount, packageExistenceMessage) {

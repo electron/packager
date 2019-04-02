@@ -74,11 +74,12 @@ util.testSinglePlatform('prebuilt asar test', async (t, opts) => {
 
 function testFailedPrebuiltAsar (name, extraOpts, errorRegex) {
   const dir = util.fixtureSubdir('asar-prebuilt')
-  util.testSinglePlatform(`prebuilt asar: fail on ${name}`, util.invalidOptionTest(Object.assign({
+  util.testSinglePlatform(`prebuilt asar: fail on ${name}`, util.invalidOptionTest({
     name: 'prebuiltAsarFailingTest',
     dir: dir,
-    prebuiltAsar: path.join(dir, 'app.asar')
-  }, extraOpts), errorRegex))
+    prebuiltAsar: path.join(dir, 'app.asar'),
+    ...extraOpts
+  }, errorRegex))
 }
 
 function testIncompatibleOptionWithPrebuiltAsar (extraOpts) {

@@ -21,7 +21,7 @@ function generateRceditOptionsSansIcon (opts) {
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return t => {
-    const opts = Object.assign({}, win32Opts, extraOpts)
+    const opts = { ...win32Opts, ...extraOpts }
     const rcOpts = generateRceditOptionsSansIcon(opts)
 
     metadataProperties = [].concat(metadataProperties)

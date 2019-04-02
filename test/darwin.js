@@ -18,29 +18,26 @@ const darwinOpts = {
   platform: 'darwin'
 }
 
-const el0374Opts = Object.assign({}, darwinOpts, {
+const el0374Opts = {
+  ...darwinOpts,
   name: 'el0374Test',
   dir: util.fixtureSubdir('el-0374'),
   electronVersion: '0.37.4'
-})
+}
 
-function testWrapper (testName, extraOpts, testFunction/*, ...extraArgs */) {
-  const extraArgs = Array.prototype.slice.call(arguments, 3)
-
+function testWrapper (testName, extraOpts, testFunction, ...extraArgs) {
   util.packagerTest(testName, (t, baseOpts) => {
-    const opts = Object.assign({}, baseOpts, extraOpts)
+    const opts = { ...baseOpts, ...extraOpts }
 
     return testFunction.apply(null, [t, opts].concat(extraArgs))
   })
 }
 
-function darwinTest (testName, testFunction/*, ...extraArgs */) {
-  const extraArgs = Array.prototype.slice.call(arguments, 2)
+function darwinTest (testName, testFunction, ...extraArgs) {
   return testWrapper.apply(null, [testName, darwinOpts, testFunction].concat(extraArgs))
 }
 
-function electron0374Test (testName, testFunction) {
-  const extraArgs = Array.prototype.slice.call(arguments, 2)
+function electron0374Test (testName, testFunction, ...extraArgs) {
   return testWrapper.apply(null, [testName, el0374Opts, testFunction].concat(extraArgs))
 }
 
@@ -81,7 +78,7 @@ async function assertHelper (t, prefix, appName, helperSuffix) {
 }
 
 async function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
-  const opts = Object.assign(baseOpts, extraOpts)
+  const opts = { ...baseOpts, ...extraOpts }
 
   if (!expectedName) {
     expectedName = opts.name
@@ -106,12 +103,13 @@ async function iconTest (t, opts, icon, iconPath) {
 }
 
 async function extendInfoTest (t, baseOpts, extraPathOrParams) {
-  const opts = Object.assign({}, baseOpts, {
+  const opts = {
+    ...baseOpts,
     appBundleId: 'com.electron.extratest',
     appCategoryType: 'public.app-category.music',
     buildVersion: '3.2.1',
     extendInfo: extraPathOrParams
-  })
+  }
 
   const obj = await packageAndParseInfoPlist(t, opts)
   assertPlistStringValue(t, obj, 'TestKeyString', 'String data', 'TestKeyString should come from extendInfo')
@@ -126,19 +124,20 @@ async function extendInfoTest (t, baseOpts, extraPathOrParams) {
 }
 
 async function darkModeTest (t, baseOpts) {
-  const opts = Object.assign({}, baseOpts, {
+  const opts = {
+    ...baseOpts,
     appBundleId: 'com.electron.extratest',
     appCategoryType: 'public.app-category.music',
     buildVersion: '3.2.1',
     darwinDarkModeSupport: true
-  })
+  }
 
   const obj = await packageAndParseInfoPlist(t, opts)
   t.is(obj.NSRequiresAquaSystemAppearance, false, 'NSRequiresAquaSystemAppearance should be set to false')
 }
 
 async function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expectedAppName) {
-  const opts = Object.assign({}, baseOpts, extraOpts)
+  const opts = { ...baseOpts, ...extraOpts }
   const appName = expectedAppName || expectedExecutableName || opts.name
   const executableName = expectedExecutableName || opts.name
 
@@ -388,14 +387,15 @@ if (!(process.env.CI && process.platform === 'win32')) {
       'Helper EH',
       'Helper NP'
     ]
-    const opts = Object.assign({}, baseOpts, {
+    const opts = {
+      ...baseOpts,
       afterExtract: [(buildPath, electronVersion, platform, arch, cb) => {
         return Promise.all(helpers.map(async helper => {
           await fs.remove(getHelperAppPath(buildPath, 'Electron', helper))
           cb()
         }))
       }]
-    })
+    }
 
     const finalPath = (await packager(opts))[0]
     await Promise.all(helpers.map(helper => util.assertPathNotExists(t, getHelperAppPath(finalPath, opts.name, helper), `${helper} should not exist`)))
@@ -403,14 +403,14 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   darwinTest('appCopyright/NSHumanReadableCopyright test', async (t, baseOpts) => {
     const copyright = 'Copyright © 2003–2015 Organization. All rights reserved.'
-    const opts = Object.assign({}, baseOpts, { appCopyright: copyright })
+    const opts = { ...baseOpts, appCopyright: copyright }
 
     const info = await packageAndParseInfoPlist(t, opts)
     t.is(info.NSHumanReadableCopyright, copyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
   })
 
   darwinTest('app named Electron packaged successfully', async (t, baseOpts) => {
-    const opts = Object.assign({}, baseOpts, { name: 'Electron' })
+    const opts = { ...baseOpts, name: 'Electron' }
     const finalPath = (await packager(opts))[0]
     const appPath = path.join(finalPath, 'Electron.app')
     await util.assertDirectory(t, appPath, 'The Electron.app folder exists')

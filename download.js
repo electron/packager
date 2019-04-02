@@ -8,7 +8,7 @@ const semver = require('semver')
 const targets = require('./targets')
 
 function createDownloadOpts (opts, platform, arch) {
-  let downloadOpts = Object.assign({}, opts.download)
+  const downloadOpts = { ...opts.download }
 
   common.subOptionWarning(downloadOpts, 'download', 'platform', platform, opts.quiet)
   common.subOptionWarning(downloadOpts, 'download', 'arch', arch, opts.quiet)

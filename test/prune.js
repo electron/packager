@@ -19,11 +19,12 @@ async function assertDependencyExists (t, resourcesPath, moduleName) {
 }
 
 async function createPruneOptionTest (t, baseOpts, prune, testMessage) {
-  const opts = Object.assign({}, baseOpts, {
+  const opts = {
+    ...baseOpts,
     name: 'pruneTest',
     dir: util.fixtureSubdir('basic'),
     prune: prune
-  })
+  }
 
   const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
   await Promise.all([
@@ -39,10 +40,11 @@ util.testSinglePlatform('prune test', async (t, baseOpts) => {
 })
 
 util.testSinglePlatform('prune electron in dependencies', async (t, baseOpts) => {
-  const opts = Object.assign({}, baseOpts, {
+  const opts = {
+    ...baseOpts,
     name: 'pruneElectronTest',
     dir: util.fixtureSubdir('electron-in-dependencies')
-  })
+  }
 
   const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
   await checkDependency(t, resourcesPath, 'electron', false)

@@ -33,12 +33,13 @@ class WindowsApp extends App {
   }
 
   generateRceditOptionsSansIcon () {
-    const win32metadata = Object.assign({
+    const win32metadata = {
       FileDescription: this.opts.name,
       InternalName: this.opts.name,
       OriginalFilename: this.newElectronName,
-      ProductName: this.opts.name
-    }, this.opts.win32metadata)
+      ProductName: this.opts.name,
+      ...this.opts.win32metadata
+    }
 
     let rcOpts = { 'version-string': win32metadata }
 

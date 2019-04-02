@@ -87,7 +87,7 @@ util.testSinglePlatformParallel('infer win32metadata', async (t, opts) => {
 })
 util.testSinglePlatformParallel('do not infer win32metadata if it already exists', async (t, opts) => {
   opts.win32metadata = { CompanyName: 'Existing' }
-  const expected = Object.assign({}, opts.win32metadata)
+  const expected = { ...opts.win32metadata }
 
   return testInferWin32metadata(t, opts, expected, 'win32metadata did not update with package.json values')
 })

@@ -15,13 +15,13 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   util.packagerTest('warn if building for mas and not signing', async (t, baseOpts) => {
     util.setupConsoleWarnSpy()
-    await packager(Object.assign({}, baseOpts, masOpts))
+    await packager({ ...baseOpts, ...masOpts })
     util.assertWarning(t, 'WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.')
   })
 
   util.packagerTest('update Login Helper if it exists', async (t, baseOpts) => {
     const helperName = `${masOpts.name} Login Helper`
-    const finalPath = (await packager(Object.assign({}, baseOpts, masOpts)))[0]
+    const finalPath = (await packager({ ...baseOpts, ...masOpts }))[0]
     const helperPath = path.join(finalPath, `${masOpts.name}.app`, 'Contents', 'Library', 'LoginItems', `${helperName}.app`)
     const contentsPath = path.join(helperPath, 'Contents')
     await util.assertPathExists(t, helperPath, 'renamed Login Helper app exists')

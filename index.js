@@ -107,11 +107,12 @@ class Packager {
   async packageForPlatformAndArch (downloadOpts) {
     const zipPath = await download.downloadElectronZip(downloadOpts)
     // Create delegated options object with specific platform and arch, for output directory naming
-    const comboOpts = Object.assign({}, this.opts, {
+    const comboOpts = {
+      ...this.opts,
       arch: downloadOpts.arch,
       platform: downloadOpts.platform,
       electronVersion: downloadOpts.version
-    })
+    }
 
     if (!this.useTempDir) {
       return this.createApp(comboOpts, zipPath)
