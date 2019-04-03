@@ -2,10 +2,10 @@
 
 // Keeping this module because it handles non-buffers gracefully
 const bufferEqual = require('buffer-equal')
-const common = require('../common')
+const common = require('../src/common')
 const config = require('./config.json')
 const fs = require('fs-extra')
-const packager = require('../index')
+const packager = require('..')
 const path = require('path')
 const plist = require('plist')
 const setup = require('./_setup')

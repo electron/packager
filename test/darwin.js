@@ -3,7 +3,7 @@
 const config = require('./config.json')
 const { exec } = require('mz/child_process')
 const fs = require('fs-extra')
-const mac = require('../mac')
+const mac = require('../src/mac')
 const packager = require('..')
 const path = require('path')
 const plist = require('plist')

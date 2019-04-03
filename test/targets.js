@@ -2,7 +2,7 @@
 
 const config = require('./config.json')
 const sinon = require('sinon')
-const targets = require('../targets')
+const targets = require('../src/targets')
 const test = require('ava')
 const util = require('./_util')
 

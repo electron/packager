@@ -1,6 +1,6 @@
 'use strict'
 
-const metadata = require('./package.json')
+const metadata = require('../package.json')
 const os = require('os')
 const path = require('path')
 const sanitize = require('sanitize-filename')

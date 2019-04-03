@@ -1,6 +1,6 @@
 'use strict'
 
-const common = require('../common')
+const common = require('../src/common')
 const test = require('ava')
 
 test('CLI argument test: --electron-version populates opts.electronVersion', t => {

@@ -5,7 +5,7 @@ const packager = require('..')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
-const win32 = require('../win32')
+const win32 = require('../src/win32')
 
 const win32Opts = {
   name: 'basicTest',
