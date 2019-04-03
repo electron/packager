@@ -2,7 +2,7 @@
 
 'use strict'
 
-var packageJSON = require('./package.json')
+var packageJSON = require('../package.json')
 var semver = require('semver')
 if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   console.error('CANNOT RUN WITH NODE ' + process.versions.node)
@@ -11,11 +11,11 @@ if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
 }
 
 // Not consts so that this file can load in Node < 4.0
-var common = require('./common')
+var common = require('../common')
 var fs = require('fs')
-var packager = require('./')
+var packager = require('../')
 var path = require('path')
-var usage = fs.readFileSync(path.join(__dirname, 'usage.txt')).toString()
+var usage = fs.readFileSync(path.resolve(__dirname, '..', 'usage.txt')).toString()
 
 var args = common.parseCLIArgs(process.argv.slice(2))
 
