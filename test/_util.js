@@ -105,11 +105,8 @@ module.exports = {
     await module.exports.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory')
     return resourcesPath
   },
-  packagerTest: function packagerTest (name, testFunction, parallel) {
-    const testDefinition = parallel ? test : test.serial
-    testDefinition(name, async t => {
-      await testFunction(t, packagerTestOptions(t))
-    })
+  packagerTest: function packagerTest (testFunction) {
+    return t => testFunction(t, packagerTestOptions(t))
   },
   parsePlist: async function parsePlist (t, appPath) {
     const plistPath = path.join(appPath, 'Contents', 'Info.plist')
@@ -132,7 +129,7 @@ module.exports = {
     }
   },
   testSinglePlatform: function (testFunction, ...testFunctionArgs) {
-    return testSinglePlatform2(testFunction, testFunctionArgs)
+    return testSinglePlatform2(testFunction, ...testFunctionArgs)
   },
   testSinglePlatformParallel: function (name, testFunction, ...testFunctionArgs) {
     return testSinglePlatform(name, testFunction, testFunctionArgs, true)
