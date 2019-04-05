@@ -38,6 +38,18 @@ test.afterEach.always(async t => {
   await fs.remove(t.context.tempDir)
 })
 
+function packagerTestOptions (t) {
+  return {
+    name: 'packagerTest',
+    out: t.context.workDir,
+    tmpdir: t.context.tempDir
+  }
+}
+
+function testSinglePlatform2 (testFunction, ...testFunctionArgs) {
+  return t => testFunction(t, { ...packagerTestOptions(t), ...module.exports.singlePlatformOptions() }, ...testFunctionArgs)
+}
+
 function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
   module.exports.packagerTest(name, (t, opts) => {
     Object.assign(opts, module.exports.singlePlatformOptions())
@@ -85,7 +97,7 @@ module.exports = {
     }
   },
   invalidOptionTest: function invalidOptionTest (opts, err, message) {
-    return t => t.throwsAsync(packager(opts), err || null, message)
+    return t => t.throwsAsync(packager({ ...packagerTestOptions(t), ...opts }), err || null, message)
   },
   packageAndEnsureResourcesPath: async function packageAndEnsureResourcesPath (t, opts) {
     const paths = await packager(opts)
@@ -96,11 +108,7 @@ module.exports = {
   packagerTest: function packagerTest (name, testFunction, parallel) {
     const testDefinition = parallel ? test : test.serial
     testDefinition(name, async t => {
-      await testFunction(t, {
-        name: 'packagerTest',
-        out: t.context.workDir,
-        tmpdir: t.context.tempDir
-      })
+      await testFunction(t, packagerTestOptions(t))
     })
   },
   parsePlist: async function parsePlist (t, appPath) {
@@ -123,8 +131,8 @@ module.exports = {
       electronVersion: config.version
     }
   },
-  testSinglePlatform: function (name, testFunction, ...testFunctionArgs) {
-    return testSinglePlatform(name, testFunction, testFunctionArgs, false)
+  testSinglePlatform: function (testFunction, ...testFunctionArgs) {
+    return testSinglePlatform2(testFunction, testFunctionArgs)
   },
   testSinglePlatformParallel: function (name, testFunction, ...testFunctionArgs) {
     return testSinglePlatform(name, testFunction, testFunctionArgs, true)
