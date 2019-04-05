@@ -75,23 +75,18 @@ test('generateOutIgnores ignores all possible platform/arch permutations', (t) =
   t.is(ignores.length, util.allPlatformArchCombosCount)
 })
 
-util.testSinglePlatformParallel('ignore default test: .o files', ignoreTest, null, 'ignore.o')
-util.testSinglePlatformParallel('ignore default test: .obj files', ignoreTest, null, 'ignore.obj')
-util.testSinglePlatformParallel('ignore test: string in array', ignoreTest, ['ignorethis'],
-                                'ignorethis.txt')
-util.testSinglePlatformParallel('ignore test: string', ignoreTest, 'ignorethis', 'ignorethis.txt')
-util.testSinglePlatformParallel('ignore test: RegExp', ignoreTest, /ignorethis/, 'ignorethis.txt')
-util.testSinglePlatformParallel('ignore test: Function', ignoreTest,
-                                file => file.match(/ignorethis/), 'ignorethis.txt')
-util.testSinglePlatformParallel('ignore test: string with slash', ignoreTest, 'ignore/this',
-                                path.join('ignore', 'this.txt'))
-util.testSinglePlatformParallel('ignore test: only match subfolder of app', ignoreTest,
-                                'electron-packager', path.join('electron-packager', 'readme.txt'))
-util.testSinglePlatform('ignore out dir test', ignoreOutDirTest, 'ignoredOutDir')
-util.testSinglePlatform('ignore out dir test: unnormalized path', ignoreOutDirTest,
-                        './ignoredOutDir')
-util.testSinglePlatform('ignore out dir test: implicit path', ignoreImplicitOutDirTest)
-util.testSinglePlatform('ignore out dir test: relative out dir already exists', async (t, opts) => {
+test('ignore default: .o files', util.testSinglePlatform(ignoreTest, null, 'ignore.o'))
+test('ignore default: .obj files', util.testSinglePlatform(ignoreTest, null, 'ignore.obj'))
+test('ignore: string in array', util.testSinglePlatform(ignoreTest, ['ignorethis'], 'ignorethis.txt'))
+test('ignore: string', util.testSinglePlatform(ignoreTest, 'ignorethis', 'ignorethis.txt'))
+test('ignore: RegExp', util.testSinglePlatform(ignoreTest, /ignorethis/, 'ignorethis.txt'))
+test('ignore: Function', util.testSinglePlatform(ignoreTest, file => file.match(/ignorethis/), 'ignorethis.txt'))
+test('ignore: string with slash', util.testSinglePlatform(ignoreTest, 'ignore/this', path.join('ignore', 'this.txt')))
+test('ignore: only match subfolder of app', util.testSinglePlatform(ignoreTest, 'electron-packager', path.join('electron-packager', 'readme.txt')))
+test.serial('ignore out dir', util.testSinglePlatform(ignoreOutDirTest, 'ignoredOutDir'))
+test.serial('ignore out dir: unnormalized path', util.testSinglePlatform(ignoreOutDirTest, './ignoredOutDir'))
+test.serial('ignore out dir: implicit path', util.testSinglePlatform(ignoreImplicitOutDirTest))
+test.serial('ignore out dir: relative out dir already exists', util.testSinglePlatform(async (t, opts) => {
   const oldCWD = process.cwd()
   const appDir = path.join(t.context.workDir, 'app')
 
@@ -106,4 +101,4 @@ util.testSinglePlatform('ignore out dir test: relative out dir already exists', 
   process.chdir(oldCWD)
   const packagedOutDirPath = path.join(resourcesPath, 'app', opts.out)
   await util.assertPathNotExists(t, packagedOutDirPath, `The out dir ${packagedOutDirPath} should not exist in the packaged app`)
-})
+}))
