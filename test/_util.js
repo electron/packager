@@ -46,17 +46,6 @@ function packagerTestOptions (t) {
   }
 }
 
-function testSinglePlatform2 (testFunction, ...testFunctionArgs) {
-  return t => testFunction(t, { ...packagerTestOptions(t), ...module.exports.singlePlatformOptions() }, ...testFunctionArgs)
-}
-
-function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
-  module.exports.packagerTest(name, (t, opts) => {
-    Object.assign(opts, module.exports.singlePlatformOptions())
-    return testFunction(t, opts, ...testFunctionArgs)
-  }, parallel)
-}
-
 module.exports = {
   allPlatformArchCombosCount: 9,
   assertDirectory: async function assertDirectory (t, pathToCheck, message) {
@@ -121,18 +110,13 @@ module.exports = {
       sinon.spy(console, 'warn')
     }
   },
-  singlePlatformOptions: function singlePlatformOptions () {
-    return {
+  testSinglePlatform: function (testFunction, ...testFunctionArgs) {
+    return t => testFunction(t, {
+      ...packagerTestOptions(t),
       platform: 'linux',
       arch: 'x64',
       electronVersion: config.version
-    }
-  },
-  testSinglePlatform: function (testFunction, ...testFunctionArgs) {
-    return testSinglePlatform2(testFunction, ...testFunctionArgs)
-  },
-  testSinglePlatformParallel: function (name, testFunction, ...testFunctionArgs) {
-    return testSinglePlatform(name, testFunction, testFunctionArgs, true)
+    }, ...testFunctionArgs)
   },
   verifyPackageExistence: async function verifyPackageExistence (finalPaths) {
     return Promise.all(finalPaths.map(async finalPath => {
