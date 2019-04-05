@@ -7,6 +7,19 @@ const path = require('path')
 const test = require('ava')
 const util = require('./_util')
 
+async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
+  await fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
+    dereference: true,
+    stopOnErr: true,
+    filter: file => path.basename(file) !== 'node_modules'
+  })
+  await fs.ensureDir(existingDirectoryPath)
+  // create file to ensure that directory will be not ignored because it's empty
+  await fs.writeFile(pathToIgnore, '')
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  await util.assertPathNotExists(t, path.join(resourcesPath, 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory')
+}
+
 async function ignoreTest (t, opts, ignorePattern, ignoredFile) {
   opts.dir = util.fixtureSubdir('basic')
   if (ignorePattern) {
@@ -21,19 +34,6 @@ async function ignoreTest (t, opts, ignorePattern, ignoredFile) {
   await util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`)
 }
 
-async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
-  await fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
-    dereference: true,
-    stopOnErr: true,
-    filter: file => path.basename(file) !== 'node_modules'
-  })
-  await fs.ensureDir(existingDirectoryPath)
-  // create file to ensure that directory will be not ignored because it's empty
-  await fs.writeFile(pathToIgnore, '')
-  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
-  await util.assertPathNotExists(t, path.join(resourcesPath, 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory')
-}
-
 async function ignoreOutDirTest (t, opts, distPath) {
   opts.dir = t.context.workDir
   opts.name = 'ignoreOutDirTest'
@@ -43,17 +43,6 @@ async function ignoreOutDirTest (t, opts, distPath) {
   opts.out = opts.dir + path.sep + distPath
 
   return assertOutDirIgnored(t, opts, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
-}
-
-async function ignoreImplicitOutDirTest (t, opts) {
-  opts.dir = t.context.workDir
-  opts.name = 'ignoreImplicitOutDirTest'
-  delete opts.out
-
-  const testFilename = 'ignoreMe'
-  const previousPackedResultDir = path.join(opts.dir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
-
-  return assertOutDirIgnored(t, opts, previousPackedResultDir, path.join(previousPackedResultDir, testFilename), testFilename)
 }
 
 test('generateIgnores ignores the generated temporary directory only on Linux', t => {
@@ -85,7 +74,16 @@ test('ignore: string with slash', util.testSinglePlatform(ignoreTest, 'ignore/th
 test('ignore: only match subfolder of app', util.testSinglePlatform(ignoreTest, 'electron-packager', path.join('electron-packager', 'readme.txt')))
 test.serial('ignore out dir', util.testSinglePlatform(ignoreOutDirTest, 'ignoredOutDir'))
 test.serial('ignore out dir: unnormalized path', util.testSinglePlatform(ignoreOutDirTest, './ignoredOutDir'))
-test.serial('ignore out dir: implicit path', util.testSinglePlatform(ignoreImplicitOutDirTest))
+test.serial('ignore out dir: implicit path', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = t.context.workDir
+  opts.name = 'ignoreImplicitOutDirTest'
+  delete opts.out
+
+  const testFilename = 'ignoreMe'
+  const previousPackedResultDir = path.join(opts.dir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
+
+  return assertOutDirIgnored(t, opts, previousPackedResultDir, path.join(previousPackedResultDir, testFilename), testFilename)
+}))
 test.serial('ignore out dir: relative out dir already exists', util.testSinglePlatform(async (t, opts) => {
   const oldCWD = process.cwd()
   const appDir = path.join(t.context.workDir, 'app')

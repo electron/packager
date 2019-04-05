@@ -33,16 +33,9 @@ function darwinTest (testFunction, ...extraArgs) {
   return testWrapper(darwinOpts, testFunction, ...extraArgs)
 }
 
-function electron0374Test (testFunction, ...extraArgs) {
-  return testWrapper(el0374Opts, testFunction, ...extraArgs)
-}
-
-function getFrameworksPath (prefix, appName) {
-  return path.join(prefix, `${appName}.app`, 'Contents', 'Frameworks')
-}
-
 function getHelperAppPath (prefix, appName, helperSuffix) {
-  return path.join(getFrameworksPath(prefix, appName), `${appName} ${helperSuffix}.app`)
+  const frameworksPath = path.join(prefix, `${appName}.app`, 'Contents', 'Frameworks')
+  return path.join(frameworksPath, `${appName} ${helperSuffix}.app`)
 }
 
 function getHelperExecutablePath (prefix, appName, helperSuffix) {
@@ -119,16 +112,6 @@ async function extendInfoTest (t, baseOpts, extraPathOrParams) {
   assertPlistStringValue(t, obj, 'CFBundlePackageType', 'APPL', 'CFBundlePackageType should be Electron default')
 }
 
-async function darkModeTest (t, baseOpts) {
-  const opts = {
-    ...baseOpts,
-    darwinDarkModeSupport: true
-  }
-
-  const obj = await packageAndParseInfoPlist(t, opts)
-  t.is(obj.NSRequiresAquaSystemAppearance, false, 'NSRequiresAquaSystemAppearance should be set to false')
-}
-
 async function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expectedAppName) {
   const opts = { ...baseOpts, ...extraOpts }
   const appName = expectedAppName || expectedExecutableName || opts.name
@@ -199,7 +182,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   test.serial('macOS icon: .icns specified', darwinTest(iconTest, icnsPath, icnsPath))
   // This test exists because the .icns file basename changed as of 0.37.4
-  test.serial('macOS icon: Electron 0.37.4, .icns specified', electron0374Test(iconTest, icnsPath, icnsPath))
+  test.serial('macOS icon: Electron 0.37.4, .icns specified', testWrapper(el0374Opts, iconTest, icnsPath, icnsPath))
   test.serial('macOS icon: .ico specified (should replace with .icns)', darwinTest(iconTest, `${iconBase}.ico`, icnsPath))
   test.serial('macOS icon: basename only (should add .icns)', darwinTest(iconTest, iconBase, icnsPath))
 
@@ -208,7 +191,12 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   test.serial('extendInfo: filename', darwinTest(extendInfoTest, extraInfoPath))
   test.serial('extendInfo: params', darwinTest(extendInfoTest, extraInfoParams))
-  test.serial('darwinDarkModeSupport: should enable dark mode in macOS Mojave', darwinTest(darkModeTest))
+  test.serial('darwinDarkModeSupport: should enable dark mode in macOS Mojave', darwinTest(async (t, opts) => {
+    opts.darwinDarkModeSupport = true
+
+    const obj = await packageAndParseInfoPlist(t, opts)
+    t.false(obj.NSRequiresAquaSystemAppearance, 'NSRequiresAquaSystemAppearance should be set to false')
+  }))
 
   test.serial('protocol/protocol-name', darwinTest(async (t, opts) => {
     opts.protocols = [
