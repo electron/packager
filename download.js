@@ -19,9 +19,7 @@ function createDownloadOpts (opts, platform, arch) {
 
 module.exports = {
   createDownloadCombos: function createDownloadCombos (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map(combo => {
-      const platform = combo[0]
-      const arch = combo[1]
+    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map(([platform, arch]) => {
       return createDownloadOpts(opts, platform, arch)
     })
   },

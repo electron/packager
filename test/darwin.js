@@ -29,16 +29,16 @@ function testWrapper (testName, extraOpts, testFunction, ...extraArgs) {
   util.packagerTest(testName, (t, baseOpts) => {
     const opts = { ...baseOpts, ...extraOpts }
 
-    return testFunction.apply(null, [t, opts].concat(extraArgs))
+    return testFunction(t, opts, ...extraArgs)
   })
 }
 
 function darwinTest (testName, testFunction, ...extraArgs) {
-  return testWrapper.apply(null, [testName, darwinOpts, testFunction].concat(extraArgs))
+  return testWrapper(testName, darwinOpts, testFunction, ...extraArgs)
 }
 
 function electron0374Test (testName, testFunction, ...extraArgs) {
-  return testWrapper.apply(null, [testName, el0374Opts, testFunction].concat(extraArgs))
+  return testWrapper(testName, el0374Opts, testFunction, ...extraArgs)
 }
 
 function getFrameworksPath (prefix, appName) {

@@ -41,7 +41,7 @@ test.afterEach.always(async t => {
 function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
   module.exports.packagerTest(name, (t, opts) => {
     Object.assign(opts, module.exports.singlePlatformOptions())
-    return testFunction.apply(null, [t, opts].concat(testFunctionArgs))
+    return testFunction(t, opts, ...testFunctionArgs)
   }, parallel)
 }
 

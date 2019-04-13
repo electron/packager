@@ -177,7 +177,7 @@ class MacApp extends App {
     this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts.helperBundleId || `${appBundleIdentifier}.helper`)
 
     const plists = await this.determinePlistFilesToUpdate()
-    await Promise.all(plists.map(plistArgs => this.loadPlist.apply(this, plistArgs)))
+    await Promise.all(plists.map(plistArgs => this.loadPlist(...plistArgs)))
     await this.extendAppPlist(this.opts.extendInfo)
     this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
     this.helperPlist = this.updateHelperPlist(this.helperPlist)
