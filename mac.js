@@ -263,6 +263,7 @@ class MacApp extends App {
       icon = await this.normalizeIconExtension('.icns')
     } catch (_err) {
       // Ignore error if icon doesn't exist, in case it's only available for other OSes
+      /* istanbul ignore next */
       return Promise.resolve()
     }
     debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
