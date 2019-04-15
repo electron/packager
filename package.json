@@ -27,7 +27,6 @@
     "galactus": "^0.2.1",
     "get-package-info": "^1.0.0",
     "parse-author": "^2.0.0",
-    "pify": "^4.0.0",
     "plist": "^3.0.0",
     "rcedit": "^1.0.0",
     "resolve": "^1.1.6",
@@ -48,12 +47,12 @@
     "eslint-plugin-standard": "^4.0.0",
     "mz": "^2.6.0",
     "nyc": "^14.0.0",
-    "pkg-up": "^2.0.0",
+    "pkg-up": "^3.0.1",
     "sinon": "^7.0.0",
     "tempy": "^0.2.1"
   },
   "engines": {
-    "node": ">= 6.0"
+    "node": ">= 8.0"
   },
   "scripts": {
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",

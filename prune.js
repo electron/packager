@@ -27,13 +27,13 @@ class Pruner {
     this.walkedTree = true
   }
 
-  pruneModule (name) {
+  async pruneModule (name) {
     if (this.walkedTree) {
       return this.isProductionModule(name)
     } else {
-      return this.galactus.collectKeptModules({ relativePaths: true })
-        .then(moduleMap => this.setModules(moduleMap))
-        .then(() => this.isProductionModule(name))
+      const moduleMap = await this.galactus.collectKeptModules({ relativePaths: true })
+      this.setModules(moduleMap)
+      return this.isProductionModule(name)
     }
   }
 
@@ -61,9 +61,8 @@ function isNodeModuleFolder (pathToCheck) {
 }
 
 module.exports = {
-  isModule: function isModule (pathToCheck) {
-    return fs.pathExists(path.join(pathToCheck, 'package.json'))
-      .then(exists => exists && isNodeModuleFolder(pathToCheck))
+  isModule: async function isModule (pathToCheck) {
+    return (await fs.pathExists(path.join(pathToCheck, 'package.json'))) && isNodeModuleFolder(pathToCheck)
   },
   Pruner: Pruner
 }

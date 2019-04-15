@@ -15,17 +15,17 @@ const test = require('ava')
 
 const ORIGINAL_CWD = process.cwd()
 
-test.before(t => {
+test.before(async t => {
   if (!process.env.CI) {
-    return setup.setupTestsuite()
-      .then(() => process.chdir(setup.WORK_CWD))
+    await setup.setupTestsuite()
+    process.chdir(setup.WORK_CWD)
   }
   return Promise.resolve(process.chdir(setup.WORK_CWD))
 })
 
-test.after.always(t => {
+test.after.always(async t => {
   process.chdir(ORIGINAL_CWD)
-  return fs.remove(setup.WORK_CWD)
+  await fs.remove(setup.WORK_CWD)
 })
 
 test.beforeEach(t => {
@@ -33,83 +33,81 @@ test.beforeEach(t => {
   t.context.tempDir = tempy.directory()
 })
 
-test.afterEach.always(t => {
-  return fs.remove(t.context.workDir)
-    .then(() => fs.remove(t.context.tempDir))
+test.afterEach.always(async t => {
+  await fs.remove(t.context.workDir)
+  await fs.remove(t.context.tempDir)
 })
 
 function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
   module.exports.packagerTest(name, (t, opts) => {
     Object.assign(opts, module.exports.singlePlatformOptions())
-    return testFunction.apply(null, [t, opts].concat(testFunctionArgs))
+    return testFunction(t, opts, ...testFunctionArgs)
   }, parallel)
 }
 
 module.exports = {
   allPlatformArchCombosCount: 9,
-  assertDirectory: function assertDirectory (t, pathToCheck, message) {
-    return fs.stat(pathToCheck)
-      .then(stats => t.true(stats.isDirectory(), message))
+  assertDirectory: async function assertDirectory (t, pathToCheck, message) {
+    const stats = await fs.stat(pathToCheck)
+    t.true(stats.isDirectory(), message)
   },
-  assertFile: function assertFile (t, pathToCheck, message) {
-    return fs.stat(pathToCheck)
-      .then(stats => t.true(stats.isFile(), message))
+  assertFile: async function assertFile (t, pathToCheck, message) {
+    const stats = await fs.stat(pathToCheck)
+    t.true(stats.isFile(), message)
   },
-  assertFilesEqual: function assertFilesEqual (t, file1, file2, message) {
-    return Promise.all([fs.readFile(file1), fs.readFile(file2)])
-      .then(([buffer1, buffer2]) => t.true(bufferEqual(buffer1, buffer2), message))
+  assertFilesEqual: async function assertFilesEqual (t, file1, file2, message) {
+    const [buffer1, buffer2] = await Promise.all([fs.readFile(file1), fs.readFile(file2)])
+    t.true(bufferEqual(buffer1, buffer2), message)
   },
-  assertPathExistsCustom: function assertPathExistsCustom (t, pathToCheck, exists, message) {
-    return fs.pathExists(pathToCheck)
-      .then(result => t.is(exists, result, message))
+  assertPathExistsCustom: async function assertPathExistsCustom (t, pathToCheck, expected, message) {
+    const actual = await fs.pathExists(pathToCheck)
+    t.is(expected, actual, message)
   },
-  assertPathExists: function assertPathExists (t, pathToCheck, message) {
-    return module.exports.assertPathExistsCustom(t, pathToCheck, true, message)
+  assertPathExists: async function assertPathExists (t, pathToCheck, message) {
+    await module.exports.assertPathExistsCustom(t, pathToCheck, true, message)
   },
-  assertPathNotExists: function assertPathNotExists (t, pathToCheck, message) {
-    return module.exports.assertPathExistsCustom(t, pathToCheck, false, message)
+  assertPathNotExists: async function assertPathNotExists (t, pathToCheck, message) {
+    await module.exports.assertPathExistsCustom(t, pathToCheck, false, message)
   },
-  assertSymlink: function assertFile (t, pathToCheck, message) {
-    return fs.lstat(pathToCheck)
-      .then(stats => t.true(stats.isSymbolicLink(), message))
+  assertSymlink: async function assertFile (t, pathToCheck, message) {
+    const stats = await fs.lstat(pathToCheck)
+    t.true(stats.isSymbolicLink(), message)
   },
   assertWarning: function assertWarning (t, message) {
     t.true(console.warn.calledWithExactly(message), `console.warn should be called with: ${message}`)
   },
   fixtureSubdir: setup.fixtureSubdir,
   generateResourcesPath: function generateResourcesPath (opts) {
-    return common.isPlatformMac(opts.platform)
-      ? path.join(opts.name + '.app', 'Contents', 'Resources')
-      : 'resources'
+    if (common.isPlatformMac(opts.platform)) {
+      return path.join(opts.name + '.app', 'Contents', 'Resources')
+    } else {
+      return 'resources'
+    }
   },
   invalidOptionTest: function invalidOptionTest (opts, err, message) {
     return t => t.throwsAsync(packager(opts), err || null, message)
   },
-  packageAndEnsureResourcesPath: function packageAndEnsureResourcesPath (t, opts) {
-    let resourcesPath
-
-    return packager(opts)
-      .then(paths => {
-        resourcesPath = path.join(paths[0], module.exports.generateResourcesPath(opts))
-        return module.exports.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory')
-      }).then(() => resourcesPath)
+  packageAndEnsureResourcesPath: async function packageAndEnsureResourcesPath (t, opts) {
+    const paths = await packager(opts)
+    const resourcesPath = path.join(paths[0], module.exports.generateResourcesPath(opts))
+    await module.exports.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory')
+    return resourcesPath
   },
   packagerTest: function packagerTest (name, testFunction, parallel) {
     const testDefinition = parallel ? test : test.serial
-    testDefinition(name, t => {
-      return testFunction(t, {
+    testDefinition(name, async t => {
+      await testFunction(t, {
         name: 'packagerTest',
         out: t.context.workDir,
         tmpdir: t.context.tempDir
       })
     })
   },
-  parsePlist: function parsePlist (t, appPath) {
+  parsePlist: async function parsePlist (t, appPath) {
     const plistPath = path.join(appPath, 'Contents', 'Info.plist')
 
-    return module.exports.assertFile(t, plistPath, `The expected Info.plist should exist in ${path.basename(appPath)}`)
-      .then(() => fs.readFile(plistPath, 'utf8'))
-      .then(file => plist.parse(file))
+    await module.exports.assertFile(t, plistPath, `The expected Info.plist should exist in ${path.basename(appPath)}`)
+    return plist.parse(await fs.readFile(plistPath, 'utf8'))
   },
   setupConsoleWarnSpy: function setupConsoleWarnSpy () {
     if (console.warn.restore) {
@@ -131,13 +129,13 @@ module.exports = {
   testSinglePlatformParallel: function (name, testFunction, ...testFunctionArgs) {
     return testSinglePlatform(name, testFunction, testFunctionArgs, true)
   },
-  verifyPackageExistence: function verifyPackageExistence (finalPaths) {
-    return Promise.all(finalPaths.map(finalPath => {
-      return fs.stat(finalPath)
-        .then(
-          stats => stats.isDirectory(),
-          () => false
-        )
+  verifyPackageExistence: async function verifyPackageExistence (finalPaths) {
+    return Promise.all(finalPaths.map(async finalPath => {
+      try {
+        return (await fs.stat(finalPath)).isDirectory()
+      } catch (_err) {
+        return false
+      }
     }))
   }
 }
