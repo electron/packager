@@ -2,7 +2,7 @@
 
 const debug = require('debug')('electron-packager')
 const path = require('path')
-const pify = require('pify')
+const { promisify } = require('util')
 
 const App = require('./platform')
 const common = require('./common')
@@ -33,12 +33,13 @@ class WindowsApp extends App {
   }
 
   generateRceditOptionsSansIcon () {
-    const win32metadata = Object.assign({
+    const win32metadata = {
       FileDescription: this.opts.name,
       InternalName: this.opts.name,
       OriginalFilename: this.newElectronName,
-      ProductName: this.opts.name
-    }, this.opts.win32metadata)
+      ProductName: this.opts.name,
+      ...this.opts.win32metadata
+    }
 
     let rcOpts = { 'version-string': win32metadata }
 
@@ -64,7 +65,7 @@ class WindowsApp extends App {
     return rcOpts
   }
 
-  getIconPath () {
+  async getIconPath () {
     if (!this.opts.icon) {
       return Promise.resolve()
     }
@@ -76,7 +77,7 @@ class WindowsApp extends App {
     return this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion
   }
 
-  runRcedit () {
+  async runRcedit () {
     /* istanbul ignore if */
     if (!this.needsRcedit()) {
       return Promise.resolve()
@@ -84,27 +85,27 @@ class WindowsApp extends App {
 
     const rcOpts = this.generateRceditOptionsSansIcon()
 
-    return this.getIconPath()
-      .then(icon => {
-        // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
-        if (icon) {
-          rcOpts.icon = icon
-        }
+    try {
+      const icon = await this.getIconPath()
+      if (icon) {
+        rcOpts.icon = icon
+      }
 
-        debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
-        return pify(require('rcedit'))(this.electronBinaryPath, rcOpts)
-      }).catch(err => {
-        /* istanbul ignore next */
-        throw updateWineMissingException(err)
-      })
+      debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
+      return promisify(require('rcedit'))(this.electronBinaryPath, rcOpts)
+    } catch (err) {
+      // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
+      /* istanbul ignore next */
+      throw updateWineMissingException(err)
+    }
   }
 
-  create () {
-    return this.initialize()
-      .then(() => this.renameElectron())
-      .then(() => this.copyExtraResources())
-      .then(() => this.runRcedit())
-      .then(() => this.move())
+  async create () {
+    await this.initialize()
+    await this.renameElectron()
+    await this.copyExtraResources()
+    await this.runRcedit()
+    return this.move()
   }
 }
 
