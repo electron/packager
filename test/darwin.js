@@ -18,30 +18,27 @@ const darwinOpts = {
   platform: 'darwin'
 }
 
-const el0374Opts = Object.assign({}, darwinOpts, {
+const el0374Opts = {
+  ...darwinOpts,
   name: 'el0374Test',
   dir: util.fixtureSubdir('el-0374'),
   electronVersion: '0.37.4'
-})
+}
 
-function testWrapper (testName, extraOpts, testFunction/*, ...extraArgs */) {
-  const extraArgs = Array.prototype.slice.call(arguments, 3)
-
+function testWrapper (testName, extraOpts, testFunction, ...extraArgs) {
   util.packagerTest(testName, (t, baseOpts) => {
-    const opts = Object.assign({}, baseOpts, extraOpts)
+    const opts = { ...baseOpts, ...extraOpts }
 
-    return testFunction.apply(null, [t, opts].concat(extraArgs))
+    return testFunction(t, opts, ...extraArgs)
   })
 }
 
-function darwinTest (testName, testFunction/*, ...extraArgs */) {
-  const extraArgs = Array.prototype.slice.call(arguments, 2)
-  return testWrapper.apply(null, [testName, darwinOpts, testFunction].concat(extraArgs))
+function darwinTest (testName, testFunction, ...extraArgs) {
+  return testWrapper(testName, darwinOpts, testFunction, ...extraArgs)
 }
 
-function electron0374Test (testName, testFunction) {
-  const extraArgs = Array.prototype.slice.call(arguments, 2)
-  return testWrapper.apply(null, [testName, el0374Opts, testFunction].concat(extraArgs))
+function electron0374Test (testName, testFunction, ...extraArgs) {
+  return testWrapper(testName, el0374Opts, testFunction, ...extraArgs)
 }
 
 function getFrameworksPath (prefix, appName) {
@@ -56,13 +53,13 @@ function getHelperExecutablePath (prefix, appName, helperSuffix) {
   return path.join(getHelperAppPath(prefix, appName, helperSuffix), 'Contents', 'MacOS', `${appName} ${helperSuffix}`)
 }
 
-function parseInfoPlist (t, opts, basePath) {
+async function parseInfoPlist (t, opts, basePath) {
   return util.parsePlist(t, path.join(basePath, `${opts.name}.app`))
 }
 
-function packageAndParseInfoPlist (t, opts) {
-  return packager(opts)
-    .then(paths => parseInfoPlist(t, opts, paths[0]))
+async function packageAndParseInfoPlist (t, opts) {
+  const finalPath = (await packager(opts))[0]
+  return parseInfoPlist(t, opts, finalPath)
 }
 
 function assertPlistStringValue (t, obj, property, value, message) {
@@ -75,117 +72,102 @@ function assertCFBundleIdentifierValue (t, obj, value, message) {
   t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
 }
 
-function assertHelper (t, prefix, appName, helperSuffix) {
-  return util.assertDirectory(t, getHelperAppPath(prefix, appName, helperSuffix), `The ${helperSuffix}.app should reflect sanitized opts.name`)
-    .then(() => util.assertFile(t, getHelperExecutablePath(prefix, appName, helperSuffix), `The ${helperSuffix}.app executable should reflect sanitized opts.name`))
+async function assertHelper (t, prefix, appName, helperSuffix) {
+  await util.assertDirectory(t, getHelperAppPath(prefix, appName, helperSuffix), `The ${helperSuffix}.app should reflect sanitized opts.name`)
+  await util.assertFile(t, getHelperExecutablePath(prefix, appName, helperSuffix), `The ${helperSuffix}.app executable should reflect sanitized opts.name`)
 }
 
-function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
-  const opts = Object.assign(baseOpts, extraOpts)
+async function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
+  const opts = { ...baseOpts, ...extraOpts }
 
   if (!expectedName) {
     expectedName = opts.name
   }
 
-  return packager(opts)
-    .then(paths => {
-      const helpers = [
-        'Helper',
-        'Helper EH',
-        'Helper NP'
-      ]
-      return Promise.all(helpers.map(helper => assertHelper(t, paths[0], expectedName, helper)))
-    })
+  const finalPath = (await packager(opts))[0]
+  const helpers = [
+    'Helper',
+    'Helper EH',
+    'Helper NP'
+  ]
+  await Promise.all(helpers.map(helper => assertHelper(t, finalPath, expectedName, helper)))
 }
 
-function iconTest (t, opts, icon, iconPath) {
+async function iconTest (t, opts, icon, iconPath) {
   opts.icon = icon
 
-  let resourcesPath
-
-  return util.packageAndEnsureResourcesPath(t, opts)
-    .then(generatedResourcesPath => {
-      resourcesPath = generatedResourcesPath
-      const outputPath = resourcesPath.replace(`${path.sep}${util.generateResourcesPath(opts)}`, '')
-      return parseInfoPlist(t, opts, outputPath)
-    }).then(obj => util.assertFilesEqual(t, iconPath, path.join(resourcesPath, obj.CFBundleIconFile), 'installed icon file should be identical to the specified icon file'))
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  const outputPath = resourcesPath.replace(`${path.sep}${util.generateResourcesPath(opts)}`, '')
+  const plistObj = await parseInfoPlist(t, opts, outputPath)
+  await util.assertFilesEqual(t, iconPath, path.join(resourcesPath, plistObj.CFBundleIconFile), 'installed icon file should be identical to the specified icon file')
 }
 
-function extendInfoTest (t, baseOpts, extraPathOrParams) {
-  const opts = Object.assign({}, baseOpts, {
+async function extendInfoTest (t, baseOpts, extraPathOrParams) {
+  const opts = {
+    ...baseOpts,
     appBundleId: 'com.electron.extratest',
     appCategoryType: 'public.app-category.music',
     buildVersion: '3.2.1',
     extendInfo: extraPathOrParams
-  })
+  }
 
-  return packageAndParseInfoPlist(t, opts)
-    .then(obj => {
-      assertPlistStringValue(t, obj, 'TestKeyString', 'String data', 'TestKeyString should come from extendInfo')
-      t.is(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
-      t.is(obj.TestKeyBool, true, 'TestKeyBool should come from extendInfo')
-      t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extendInfo')
-      t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extendInfo')
-      assertPlistStringValue(t, obj, 'CFBundleVersion', opts.buildVersion, 'CFBundleVersion should reflect buildVersion argument')
-      assertCFBundleIdentifierValue(t, obj, 'com.electron.extratest', 'CFBundleIdentifier should reflect appBundleId argument')
-      assertPlistStringValue(t, obj, 'LSApplicationCategoryType', 'public.app-category.music', 'LSApplicationCategoryType should reflect appCategoryType argument')
-      return assertPlistStringValue(t, obj, 'CFBundlePackageType', 'APPL', 'CFBundlePackageType should be Electron default')
-    })
+  const obj = await packageAndParseInfoPlist(t, opts)
+  assertPlistStringValue(t, obj, 'TestKeyString', 'String data', 'TestKeyString should come from extendInfo')
+  t.is(obj.TestKeyInt, 12345, 'TestKeyInt should come from extendInfo')
+  t.is(obj.TestKeyBool, true, 'TestKeyBool should come from extendInfo')
+  t.deepEqual(obj.TestKeyArray, ['public.content', 'public.data'], 'TestKeyArray should come from extendInfo')
+  t.deepEqual(obj.TestKeyDict, { Number: 98765, CFBundleVersion: '0.0.0' }, 'TestKeyDict should come from extendInfo')
+  assertPlistStringValue(t, obj, 'CFBundleVersion', opts.buildVersion, 'CFBundleVersion should reflect buildVersion argument')
+  assertCFBundleIdentifierValue(t, obj, 'com.electron.extratest', 'CFBundleIdentifier should reflect appBundleId argument')
+  assertPlistStringValue(t, obj, 'LSApplicationCategoryType', 'public.app-category.music', 'LSApplicationCategoryType should reflect appCategoryType argument')
+  assertPlistStringValue(t, obj, 'CFBundlePackageType', 'APPL', 'CFBundlePackageType should be Electron default')
 }
 
-function darkModeTest (t, baseOpts) {
-  const opts = Object.assign({}, baseOpts, {
+async function darkModeTest (t, baseOpts) {
+  const opts = {
+    ...baseOpts,
     appBundleId: 'com.electron.extratest',
     appCategoryType: 'public.app-category.music',
     buildVersion: '3.2.1',
     darwinDarkModeSupport: true
-  })
+  }
 
-  return packageAndParseInfoPlist(t, opts)
-    .then(obj => {
-      return t.is(obj.NSRequiresAquaSystemAppearance, false, 'NSRequiresAquaSystemAppearance should be set to false')
-    })
+  const obj = await packageAndParseInfoPlist(t, opts)
+  t.is(obj.NSRequiresAquaSystemAppearance, false, 'NSRequiresAquaSystemAppearance should be set to false')
 }
 
-function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expectedAppName) {
-  const opts = Object.assign({}, baseOpts, extraOpts)
+async function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expectedAppName) {
+  const opts = { ...baseOpts, ...extraOpts }
   const appName = expectedAppName || expectedExecutableName || opts.name
   const executableName = expectedExecutableName || opts.name
 
-  return packager(opts)
-    .then(paths => util.assertFile(t, path.join(paths[0], `${appName}.app`, 'Contents', 'MacOS', executableName), 'The binary should reflect a sanitized opts.name'))
+  const finalPath = (await packager(opts))[0]
+  await util.assertFile(t, path.join(finalPath, `${appName}.app`, 'Contents', 'MacOS', executableName), 'The binary should reflect a sanitized opts.name')
 }
 
-function appVersionTest (t, opts, appVersion, buildVersion) {
+async function appVersionTest (t, opts, appVersion, buildVersion) {
   opts.appVersion = appVersion
   opts.buildVersion = buildVersion || appVersion
 
-  return packageAndParseInfoPlist(t, opts)
-    .then(obj => {
-      assertPlistStringValue(t, obj, 'CFBundleVersion', '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
-      return assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
-    })
+  const obj = await packageAndParseInfoPlist(t, opts)
+  assertPlistStringValue(t, obj, 'CFBundleVersion', '' + opts.buildVersion, 'CFBundleVersion should reflect buildVersion')
+  return assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '' + opts.appVersion, 'CFBundleShortVersionString should reflect appVersion')
 }
 
-function appBundleTest (t, opts, appBundleId) {
+async function appBundleTest (t, opts, appBundleId) {
   if (appBundleId) {
     opts.appBundleId = appBundleId
   }
 
   const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
   const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
-
-  return packageAndParseInfoPlist(t, opts)
-    .then(obj => {
-      assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
-      assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name')
-      return assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
-    })
+  const obj = await packageAndParseInfoPlist(t, opts)
+  assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
+  assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name')
+  assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
 }
 
-function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
-  let frameworksPath
-
+async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
   if (helperBundleId) {
     opts.helperBundleId = helperBundleId
   }
@@ -196,28 +178,23 @@ function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
   const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
   const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
-  return packager(opts)
-    .then(paths => {
-      frameworksPath = path.join(paths[0], `${opts.name}.app`, 'Contents', 'Frameworks')
-      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
-    }).then(obj => {
-      assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
-      assertCFBundleIdentifierValue(t, obj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
-      // check helper EH
-      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper EH.app`))
-    }).then(obj => {
-      assertPlistStringValue(t, obj, 'CFBundleName', opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
-      assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
-      assertPlistStringValue(t, obj, 'CFBundleExecutable', opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
-      assertCFBundleIdentifierValue(t, obj, `${helperBundleIdentifier}.EH`, 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper EH app')
-      // check helper NP
-      return util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper NP.app`))
-    }).then(obj => {
-      assertPlistStringValue(t, obj, 'CFBundleName', opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
-      assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
-      assertPlistStringValue(t, obj, 'CFBundleExecutable', opts.name + ' Helper NP', 'CFBundleExecutable should reflect opts.name in helper NP app')
-      return assertCFBundleIdentifierValue(t, obj, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper NP app')
-    })
+  const finalPath = (await packager(opts))[0]
+  const frameworksPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks')
+  const helperObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
+  assertPlistStringValue(t, helperObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperEHObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper EH.app`))
+  assertPlistStringValue(t, helperEHObj, 'CFBundleName', opts.name + ' Helper EH', 'CFBundleName should reflect opts.name in helper EH app')
+  assertPlistStringValue(t, helperEHObj, 'CFBundleDisplayName', opts.name + ' Helper EH', 'CFBundleDisplayName should reflect opts.name in helper EH app')
+  assertPlistStringValue(t, helperEHObj, 'CFBundleExecutable', opts.name + ' Helper EH', 'CFBundleExecutable should reflect opts.name in helper EH app')
+  assertCFBundleIdentifierValue(t, helperEHObj, `${helperBundleIdentifier}.EH`, 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper EH app')
+
+  const helperNPObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper NP.app`))
+  assertPlistStringValue(t, helperNPObj, 'CFBundleName', opts.name + ' Helper NP', 'CFBundleName should reflect opts.name in helper NP app')
+  assertPlistStringValue(t, helperNPObj, 'CFBundleDisplayName', opts.name + ' Helper NP', 'CFBundleDisplayName should reflect opts.name in helper NP app')
+  assertPlistStringValue(t, helperNPObj, 'CFBundleExecutable', opts.name + ' Helper NP', 'CFBundleExecutable should reflect opts.name in helper NP app')
+  return assertCFBundleIdentifierValue(t, helperNPObj, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper NP app')
 }
 
 if (!(process.env.CI && process.platform === 'win32')) {
@@ -240,7 +217,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
   darwinTest('extendInfo by params test', extendInfoTest, extraInfoParams)
   darwinTest('mojave dark mode test: should enable dark mode', darkModeTest)
 
-  darwinTest('protocol/protocol-name argument test', (t, opts) => {
+  darwinTest('protocol/protocol-name argument test', async (t, opts) => {
     opts.protocols = [
       {
         name: 'Foo',
@@ -252,16 +229,16 @@ if (!(process.env.CI && process.platform === 'win32')) {
       }
     ]
 
-    return packageAndParseInfoPlist(t, opts)
-      .then(obj =>
-        t.deepEqual(obj.CFBundleURLTypes, [{
-          CFBundleURLName: 'Foo',
-          CFBundleURLSchemes: ['foo']
-        }, {
-          CFBundleURLName: 'Bar',
-          CFBundleURLSchemes: ['bar', 'baz']
-        }], 'CFBundleURLTypes did not contain specified protocol schemes and names')
-      )
+    const expected = [{
+      CFBundleURLName: 'Foo',
+      CFBundleURLSchemes: ['foo']
+    }, {
+      CFBundleURLName: 'Bar',
+      CFBundleURLSchemes: ['bar', 'baz']
+    }]
+
+    const obj = await packageAndParseInfoPlist(t, opts)
+    t.deepEqual(obj.CFBundleURLTypes, expected, 'CFBundleURLTypes did not contain specified protocol schemes and names')
   })
 
   test('osxNotarize argument test: missing appleId', t => {
@@ -331,81 +308,72 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.true(signOpts.hardenedRuntime, 'hardenedRuntime forced to true')
   })
 
-  darwinTest('codesign test', (t, opts) => {
+  darwinTest('codesign test', async (t, opts) => {
     opts.osxSign = { identity: 'Developer CodeCert' }
 
-    let appPath
+    const finalPath = (await packager(opts))[0]
+    const appPath = path.join(finalPath, opts.name + '.app')
+    await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
+    try {
+      await exec(`codesign -v ${appPath}`)
+      t.pass('codesign should verify successfully')
+    } catch (err) {
+      const notFound = err && err.code === 127
 
-    return packager(opts)
-      .then(paths => {
-        appPath = path.join(paths[0], opts.name + '.app')
-        return util.assertDirectory(t, appPath, 'The expected .app directory should exist')
-      }).then(() => exec(`codesign -v ${appPath}`))
-      .then(
-        (stdout, stderr) => t.pass('codesign should verify successfully'),
-        err => {
-          const notFound = err && err.code === 127
-
-          if (notFound) {
-            console.log('codesign not installed; skipped')
-          } else {
-            throw err
-          }
-        }
-      )
+      if (notFound) {
+        console.log('codesign not installed; skipped')
+      } else {
+        throw err
+      }
+    }
   })
 
   darwinTest('binary naming test', binaryNameTest)
   darwinTest('sanitized binary naming test', binaryNameTest, { name: '@username/package-name' }, '@username-package-name')
   darwinTest('executableName test', binaryNameTest, { executableName: 'app-name', name: 'MyAppName' }, 'app-name', 'MyAppName')
 
-  darwinTest('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', (t, opts) => {
+  darwinTest('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', async (t, opts) => {
     const appBundleIdentifier = 'com.electron.username-package-name'
     const expectedSanitizedName = '@username-package-name'
 
     opts.name = '@username/package-name'
 
-    return packager(opts)
-      .then(paths => util.parsePlist(t, path.join(paths[0], `${expectedSanitizedName}.app`)))
-      .then(obj => {
-        assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
-        assertPlistStringValue(t, obj, 'CFBundleName', expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
-        return assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
-      })
+    const finalPath = (await packager(opts))[0]
+    const obj = await util.parsePlist(t, path.join(finalPath, `${expectedSanitizedName}.app`))
+    assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
+    assertPlistStringValue(t, obj, 'CFBundleName', expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
+    assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
   })
 
   darwinTest('app and build version test', appVersionTest, '1.1.0', '1.1.0.1234')
   darwinTest('app version test', appVersionTest, '1.1.0')
   darwinTest('app and build version integer test', appVersionTest, 12, 1234)
-  darwinTest('infer app version from package.json test', (t, opts) =>
-    packageAndParseInfoPlist(t, opts)
-      .then(obj => {
-        assertPlistStringValue(t, obj, 'CFBundleVersion', '4.99.101', 'CFBundleVersion should reflect package.json version')
-        return assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
-      })
-  )
+  darwinTest('infer app version from package.json test', async (t, opts) => {
+    const obj = await packageAndParseInfoPlist(t, opts)
+    assertPlistStringValue(t, obj, 'CFBundleVersion', '4.99.101', 'CFBundleVersion should reflect package.json version')
+    assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
+  })
 
-  darwinTest('app categoryType test', (t, opts) => {
+  darwinTest('app categoryType test', async (t, opts) => {
     const appCategoryType = 'public.app-category.developer-tools'
     opts.appCategoryType = appCategoryType
 
-    return packageAndParseInfoPlist(t, opts)
-      .then(obj => assertPlistStringValue(t, obj, 'LSApplicationCategoryType', appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType'))
+    const obj = await packageAndParseInfoPlist(t, opts)
+    assertPlistStringValue(t, obj, 'LSApplicationCategoryType', appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType')
   })
 
   darwinTest('app bundle test', appBundleTest, 'com.electron.basetest')
   darwinTest('app bundle (w/ special characters) test', appBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'')
   darwinTest('app bundle app-bundle-id fallback test', appBundleTest)
 
-  darwinTest('app bundle framework symlink test', (t, opts) => {
-    let frameworkPath
-
-    return packager(opts)
-      .then(paths => {
-        frameworkPath = path.join(paths[0], `${opts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
-        return util.assertDirectory(t, frameworkPath, 'Expected Electron Framework.framework to be a directory')
-      }).then(() => util.assertSymlink(t, path.join(frameworkPath, 'Electron Framework'), 'Expected Electron Framework.framework/Electron Framework to be a symlink'))
-      .then(() => util.assertSymlink(t, path.join(frameworkPath, 'Versions', 'Current'), 'Expected Electron Framework.framework/Versions/Current to be a symlink'))
+  darwinTest('app bundle framework symlink test', async (t, opts) => {
+    const finalPath = (await packager(opts))[0]
+    let frameworkPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
+    await util.assertDirectory(t, frameworkPath, 'Expected Electron Framework.framework to be a directory')
+    await Promise.all([
+      util.assertSymlink(t, path.join(frameworkPath, 'Electron Framework'), 'Expected Electron Framework.framework/Electron Framework to be a symlink'),
+      util.assertSymlink(t, path.join(frameworkPath, 'Versions', 'Current'), 'Expected Electron Framework.framework/Versions/Current to be a symlink')
+    ])
   })
 
   darwinTest('app helpers bundle test', appHelpersBundleTest, 'com.electron.basetest.helper')
@@ -414,39 +382,38 @@ if (!(process.env.CI && process.platform === 'win32')) {
   darwinTest('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters) test', appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\'')
   darwinTest('app helpers bundle helper-bundle-id & app-bundle-id fallback test', appHelpersBundleTest)
 
-  darwinTest('EH/NP helpers do not exist', (t, baseOpts) => {
+  darwinTest('EH/NP helpers do not exist', async (t, baseOpts) => {
     const helpers = [
       'Helper EH',
       'Helper NP'
     ]
-    const opts = Object.assign({}, baseOpts, {
+    const opts = {
+      ...baseOpts,
       afterExtract: [(buildPath, electronVersion, platform, arch, cb) => {
-        return Promise.all(helpers.map(helper => fs.remove(getHelperAppPath(buildPath, 'Electron', helper)))).then(() => cb()) // eslint-disable-line promise/no-callback-in-promise
+        return Promise.all(helpers.map(async helper => {
+          await fs.remove(getHelperAppPath(buildPath, 'Electron', helper))
+          cb()
+        }))
       }]
-    })
+    }
 
-    return packager(opts)
-      .then(paths => {
-        return Promise.all(helpers.map(helper => util.assertPathNotExists(t, getHelperAppPath(paths[0], opts.name, helper), `${helper} should not exist`)))
-      })
+    const finalPath = (await packager(opts))[0]
+    await Promise.all(helpers.map(helper => util.assertPathNotExists(t, getHelperAppPath(finalPath, opts.name, helper), `${helper} should not exist`)))
   })
 
-  darwinTest('appCopyright/NSHumanReadableCopyright test', (t, baseOpts) => {
+  darwinTest('appCopyright/NSHumanReadableCopyright test', async (t, baseOpts) => {
     const copyright = 'Copyright © 2003–2015 Organization. All rights reserved.'
-    const opts = Object.assign({}, baseOpts, { appCopyright: copyright })
+    const opts = { ...baseOpts, appCopyright: copyright }
 
-    return packageAndParseInfoPlist(t, opts)
-      .then(info => t.is(info.NSHumanReadableCopyright, copyright, 'NSHumanReadableCopyright should reflect opts.appCopyright'))
+    const info = await packageAndParseInfoPlist(t, opts)
+    t.is(info.NSHumanReadableCopyright, copyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
   })
 
-  darwinTest('app named Electron packaged successfully', (t, baseOpts) => {
-    const opts = Object.assign({}, baseOpts, { name: 'Electron' })
-    let appPath
-
-    return packager(opts)
-      .then(paths => {
-        appPath = path.join(paths[0], 'Electron.app')
-        return util.assertDirectory(t, appPath, 'The Electron.app folder exists')
-      }).then(() => util.assertFile(t, path.join(appPath, 'Contents', 'MacOS', 'Electron'), 'The Electron.app/Contents/MacOS/Electron binary exists'))
+  darwinTest('app named Electron packaged successfully', async (t, baseOpts) => {
+    const opts = { ...baseOpts, name: 'Electron' }
+    const finalPath = (await packager(opts))[0]
+    const appPath = path.join(finalPath, 'Electron.app')
+    await util.assertDirectory(t, appPath, 'The Electron.app folder exists')
+    await util.assertFile(t, path.join(appPath, 'Contents', 'MacOS', 'Electron'), 'The Electron.app/Contents/MacOS/Electron binary exists')
   })
 }

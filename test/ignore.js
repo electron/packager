@@ -7,7 +7,7 @@ const path = require('path')
 const test = require('ava')
 const util = require('./_util')
 
-function ignoreTest (t, opts, ignorePattern, ignoredFile) {
+async function ignoreTest (t, opts, ignorePattern, ignoredFile) {
   opts.dir = util.fixtureSubdir('basic')
   if (ignorePattern) {
     opts.ignore = ignorePattern
@@ -16,26 +16,25 @@ function ignoreTest (t, opts, ignorePattern, ignoredFile) {
   const targetDir = path.join(t.context.tempDir, 'result')
   ignore.generateIgnores(opts)
 
-  return fs.copy(opts.dir, targetDir, {
-    dereference: false,
-    filter: ignore.userIgnoreFilter(opts)
-  }).then(() => util.assertPathExists(t, path.join(targetDir, 'package.json'), 'The expected output directory should exist and contain files'))
-    .then(() => util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`))
+  await fs.copy(opts.dir, targetDir, { dereference: false, filter: ignore.userIgnoreFilter(opts) })
+  await util.assertPathExists(t, path.join(targetDir, 'package.json'), 'The expected output directory should exist and contain files')
+  await util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`)
 }
 
-function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
-  return fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
+async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore, ignoredBasenameToCheck) {
+  await fs.copy(util.fixtureSubdir('basic'), t.context.workDir, {
     dereference: true,
     stopOnErr: true,
     filter: file => path.basename(file) !== 'node_modules'
-  }).then(() => fs.ensureDir(existingDirectoryPath))
-    // create file to ensure that directory will be not ignored because it's empty
-    .then(() => fs.writeFile(pathToIgnore, ''))
-    .then(() => util.packageAndEnsureResourcesPath(t, opts))
-    .then(resourcesPath => util.assertPathNotExists(t, path.join(resourcesPath, 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory'))
+  })
+  await fs.ensureDir(existingDirectoryPath)
+  // create file to ensure that directory will be not ignored because it's empty
+  await fs.writeFile(pathToIgnore, '')
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  await util.assertPathNotExists(t, path.join(resourcesPath, 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory')
 }
 
-function ignoreOutDirTest (t, opts, distPath) {
+async function ignoreOutDirTest (t, opts, distPath) {
   opts.dir = t.context.workDir
   opts.name = 'ignoreOutDirTest'
 
@@ -46,7 +45,7 @@ function ignoreOutDirTest (t, opts, distPath) {
   return assertOutDirIgnored(t, opts, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
 }
 
-function ignoreImplicitOutDirTest (t, opts) {
+async function ignoreImplicitOutDirTest (t, opts) {
   opts.dir = t.context.workDir
   opts.name = 'ignoreImplicitOutDirTest'
   delete opts.out
@@ -92,7 +91,7 @@ util.testSinglePlatform('ignore out dir test', ignoreOutDirTest, 'ignoredOutDir'
 util.testSinglePlatform('ignore out dir test: unnormalized path', ignoreOutDirTest,
                         './ignoredOutDir')
 util.testSinglePlatform('ignore out dir test: implicit path', ignoreImplicitOutDirTest)
-util.testSinglePlatform('ignore out dir test: relative out dir already exists', (t, opts) => {
+util.testSinglePlatform('ignore out dir test: relative out dir already exists', async (t, opts) => {
   const oldCWD = process.cwd()
   const appDir = path.join(t.context.workDir, 'app')
 
@@ -101,13 +100,10 @@ util.testSinglePlatform('ignore out dir test: relative out dir already exists', 
   opts.out = 'dir_to_unpack' // already existing out dir
   opts.overwrite = true
 
-  return fs.copy(util.fixtureSubdir('basic'), appDir)
-    .then(() => {
-      process.chdir(appDir)
-      return util.packageAndEnsureResourcesPath(t, opts)
-    }).then(resourcesPath => {
-      process.chdir(oldCWD)
-      const packagedOutDirPath = path.join(resourcesPath, 'app', opts.out)
-      return util.assertPathNotExists(t, packagedOutDirPath, `The out dir ${packagedOutDirPath} should not exist in the packaged app`)
-    })
+  await fs.copy(util.fixtureSubdir('basic'), appDir)
+  process.chdir(appDir)
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  process.chdir(oldCWD)
+  const packagedOutDirPath = path.join(resourcesPath, 'app', opts.out)
+  await util.assertPathNotExists(t, packagedOutDirPath, `The out dir ${packagedOutDirPath} should not exist in the packaged app`)
 })

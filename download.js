@@ -3,12 +3,12 @@
 const common = require('./common')
 const debug = require('debug')('electron-packager')
 const download = require('electron-download')
-const pify = require('pify')
+const { promisify } = require('util')
 const semver = require('semver')
 const targets = require('./targets')
 
 function createDownloadOpts (opts, platform, arch) {
-  let downloadOpts = Object.assign({}, opts.download)
+  const downloadOpts = { ...opts.download }
 
   common.subOptionWarning(downloadOpts, 'download', 'platform', platform, opts.quiet)
   common.subOptionWarning(downloadOpts, 'download', 'arch', arch, opts.quiet)
@@ -19,14 +19,12 @@ function createDownloadOpts (opts, platform, arch) {
 
 module.exports = {
   createDownloadCombos: function createDownloadCombos (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map(combo => {
-      const platform = combo[0]
-      const arch = combo[1]
+    return targets.createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc).map(([platform, arch]) => {
       return createDownloadOpts(opts, platform, arch)
     })
   },
   createDownloadOpts: createDownloadOpts,
-  downloadElectronZip: function downloadElectronZip (downloadOpts) {
+  downloadElectronZip: async function downloadElectronZip (downloadOpts) {
     // armv7l builds have only been backfilled for Electron >= 1.0.0.
     // See: https://github.com/electron/electron/pull/6986
     /* istanbul ignore if */
@@ -34,6 +32,6 @@ module.exports = {
       downloadOpts.arch = 'arm'
     }
     debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`)
-    return pify(download)(downloadOpts)
+    return promisify(download)(downloadOpts)
   }
 }

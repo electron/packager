@@ -1,18 +1,10 @@
 # electron-packager API
 
-Short `async`/`await` example:
+Short example:
 
 ```javascript
 const packager = require('electron-packager')
 const appPaths = await packager(options)
-```
-
-Short Promise example:
-
-```javascript
-const packager = require('electron-packager')
-packager(options)
-  .then(appPaths => { /* … */ })
 ```
 
 `appPaths` is described in the [return value](#return-value) section.

@@ -32,9 +32,9 @@ function generateOutIgnores (opts) {
   const normalizedOut = opts.out ? path.resolve(opts.out) : null
   const outIgnores = []
   if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (const platform of Object.keys(targets.officialPlatformArchCombos)) {
-      for (const arch of targets.officialPlatformArchCombos[platform]) {
-        let basenameOpts = {
+    for (const [platform, archs] of Object.entries(targets.officialPlatformArchCombos)) {
+      for (const arch of archs) {
+        const basenameOpts = {
           arch: arch,
           name: opts.name,
           platform: platform
@@ -68,7 +68,7 @@ function userIgnoreFilter (opts) {
   const outIgnores = generateOutIgnores(opts)
   const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
 
-  return function filter (file) {
+  return async function filter (file) {
     const fullPath = path.resolve(file)
     if (outIgnores.includes(fullPath)) {
       return false
@@ -81,8 +81,11 @@ function userIgnoreFilter (opts) {
     }
 
     if (pruner && name.startsWith('/node_modules/')) {
-      return prune.isModule(file)
-        .then(isModule => isModule ? pruner.pruneModule(name) : ignoreFunc(name))
+      if (await prune.isModule(file)) {
+        return pruner.pruneModule(name)
+      } else {
+        return ignoreFunc(name)
+      }
     }
 
     return ignoreFunc(name)

@@ -5,61 +5,58 @@ const prune = require('../prune')
 const test = require('ava')
 const util = require('./_util')
 
-function checkDependency (t, resourcesPath, moduleName, moduleExists) {
+async function checkDependency (t, resourcesPath, moduleName, moduleExists) {
   const assertion = moduleExists ? 'should' : 'should NOT'
   const message = `module dependency '${moduleName}' ${assertion} exist under app/node_modules`
   const modulePath = path.join(resourcesPath, 'app', 'node_modules', moduleName)
-  return util.assertPathExistsCustom(t, modulePath, moduleExists, message)
-    .then(() => modulePath)
+  await util.assertPathExistsCustom(t, modulePath, moduleExists, message)
+  return modulePath
 }
 
-function assertDependencyExists (t, resourcesPath, moduleName) {
-  return checkDependency(t, resourcesPath, moduleName, true)
-    .then(modulePath => util.assertDirectory(t, modulePath, 'module is a directory'))
+async function assertDependencyExists (t, resourcesPath, moduleName) {
+  const modulePath = await checkDependency(t, resourcesPath, moduleName, true)
+  await util.assertDirectory(t, modulePath, 'module is a directory')
 }
 
-function createPruneOptionTest (t, baseOpts, prune, testMessage) {
-  const opts = Object.assign({}, baseOpts, {
+async function createPruneOptionTest (t, baseOpts, prune, testMessage) {
+  const opts = {
+    ...baseOpts,
     name: 'pruneTest',
     dir: util.fixtureSubdir('basic'),
     prune: prune
-  })
+  }
 
-  let resourcesPath
-
-  return util.packageAndEnsureResourcesPath(t, opts)
-    .then(generatedResourcesPath => {
-      resourcesPath = generatedResourcesPath
-      return assertDependencyExists(t, resourcesPath, 'run-series')
-    }).then(() => assertDependencyExists(t, resourcesPath, '@types/node'))
-    .then(() => checkDependency(t, resourcesPath, 'run-waterfall', !prune))
-    .then(() => checkDependency(t, resourcesPath, 'electron-prebuilt', !prune))
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  await Promise.all([
+    assertDependencyExists(t, resourcesPath, 'run-series'),
+    assertDependencyExists(t, resourcesPath, '@types/node'),
+    checkDependency(t, resourcesPath, 'run-waterfall', !prune),
+    checkDependency(t, resourcesPath, 'electron-prebuilt', !prune)
+  ])
 }
 
-util.testSinglePlatform('prune test', (t, baseOpts) => {
-  return createPruneOptionTest(t, baseOpts, true, 'package.json devDependency should NOT exist under app/node_modules')
+util.testSinglePlatform('prune test', async (t, baseOpts) => {
+  await createPruneOptionTest(t, baseOpts, true, 'package.json devDependency should NOT exist under app/node_modules')
 })
 
-util.testSinglePlatform('prune electron in dependencies', (t, baseOpts) => {
-  const opts = Object.assign({}, baseOpts, {
+util.testSinglePlatform('prune electron in dependencies', async (t, baseOpts) => {
+  const opts = {
+    ...baseOpts,
     name: 'pruneElectronTest',
     dir: util.fixtureSubdir('electron-in-dependencies')
-  })
+  }
 
-  return util.packageAndEnsureResourcesPath(t, opts)
-    .then(resourcesPath => checkDependency(t, resourcesPath, 'electron', false))
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  await checkDependency(t, resourcesPath, 'electron', false)
 })
 
 util.testSinglePlatform('prune: false test', createPruneOptionTest, false,
                         'package.json devDependency should exist under app/node_modules')
 
-test('isModule properly detects module folders', t =>
-  prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', 'module')))
-    .then(isModule => {
-      t.true(isModule, 'module folder should be detected as module')
-      return prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', 'module', 'not-module')))
-    }).then(isModule => {
-      t.false(isModule, 'not-module subfolder should not be detected as module')
-      return prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', '@user', 'namespaced')))
-    }).then(isModule => t.true(isModule, '@user/namespaced folder should be detected as module'))
-)
+test('isModule properly detects module folders', async t => {
+  const isModule = name => prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', name)))
+  const [mod, notMod, namespaced] = await Promise.all([isModule('module'), isModule('not-module'), isModule('@user/namespaced')])
+  t.true(mod, 'module folder should be detected as module')
+  t.false(notMod, 'not-module subfolder should not be detected as module')
+  t.true(namespaced, '@user/namespaced folder should be detected as module')
+})

@@ -58,7 +58,7 @@ It generates executables/bundles for the following **target** platforms:
 
 ## Installation
 
-This module requires Node.js 6.0 or higher to run.
+This module requires Node.js 8.0 or higher to run.
 
 ```sh
 # For use in npm scripts (recommended)

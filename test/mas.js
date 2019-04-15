@@ -13,27 +13,22 @@ if (!(process.env.CI && process.platform === 'win32')) {
     platform: 'mas'
   }
 
-  util.packagerTest('warn if building for mas and not signing', (t, baseOpts) => {
+  util.packagerTest('warn if building for mas and not signing', async (t, baseOpts) => {
     util.setupConsoleWarnSpy()
-    return packager(Object.assign({}, baseOpts, masOpts))
-      .then(() => util.assertWarning(t, 'WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.'))
+    await packager({ ...baseOpts, ...masOpts })
+    util.assertWarning(t, 'WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.')
   })
 
-  util.packagerTest('update Login Helper if it exists', (t, baseOpts) => {
-    let helperPath
-    let contentsPath
+  util.packagerTest('update Login Helper if it exists', async (t, baseOpts) => {
     const helperName = `${masOpts.name} Login Helper`
-    return packager(Object.assign({}, baseOpts, masOpts))
-      .then(paths => {
-        helperPath = path.join(paths[0], `${masOpts.name}.app`, 'Contents', 'Library', 'LoginItems', `${helperName}.app`)
-        contentsPath = path.join(helperPath, 'Contents')
-        return util.assertPathExists(t, helperPath, 'renamed Login Helper app exists')
-      }).then(() => util.parsePlist(t, helperPath))
-      .then(plistData => {
-        t.is(plistData.CFBundleExecutable, helperName, 'CFBundleExecutable is renamed Login Helper')
-        t.is(plistData.CFBundleName, helperName, 'CFBundleName is renamed Login Helper')
-        t.is(plistData.CFBundleIdentifier, 'com.electron.mastest.loginhelper')
-        return util.assertPathExists(t, path.join(contentsPath, 'MacOS', helperName), 'renamed Login Helper executable exists')
-      })
+    const finalPath = (await packager({ ...baseOpts, ...masOpts }))[0]
+    const helperPath = path.join(finalPath, `${masOpts.name}.app`, 'Contents', 'Library', 'LoginItems', `${helperName}.app`)
+    const contentsPath = path.join(helperPath, 'Contents')
+    await util.assertPathExists(t, helperPath, 'renamed Login Helper app exists')
+    const plistData = await util.parsePlist(t, helperPath)
+    t.is(plistData.CFBundleExecutable, helperName, 'CFBundleExecutable is renamed Login Helper')
+    t.is(plistData.CFBundleName, helperName, 'CFBundleName is renamed Login Helper')
+    t.is(plistData.CFBundleIdentifier, 'com.electron.mastest.loginhelper')
+    await util.assertPathExists(t, path.join(contentsPath, 'MacOS', helperName), 'renamed Login Helper executable exists')
   })
 }
