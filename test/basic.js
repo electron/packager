@@ -58,7 +58,7 @@ test('sanitize app name for use in the out directory name', t => {
   t.is('@username-package-name-linux-x64', common.generateFinalBasename(opts), 'generateFinalBasename output should be sanitized')
 })
 
-test('cannot build apps where the name ends in " Helper"', (t) => {
+test('cannot build apps where the name ends in " Helper"', async t => {
   const opts = {
     arch: 'x64',
     dir: path.join(__dirname, 'fixtures', 'el-0374'),
@@ -66,11 +66,12 @@ test('cannot build apps where the name ends in " Helper"', (t) => {
     platform: 'linux'
   }
 
-  return packager(opts)
-    .then(
-      () => { throw new Error('should not finish') },
-      (err) => t.is(err.message, 'Application names cannot end in " Helper" due to limitations on macOS')
-    )
+  try {
+    await packager(opts)
+  } catch (err) {
+    return t.is(err.message, 'Application names cannot end in " Helper" due to limitations on macOS')
+  }
+  throw new Error('should not finish')
 })
 
 test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
@@ -90,120 +91,104 @@ test('deprecatedParameter moves value in deprecated param to new param if new pa
   t.is('value', opts.new, 'new property is not overwritten')
 })
 
-util.testSinglePlatform('defaults test', (t, opts) => {
+util.testSinglePlatform('defaults test', async (t, opts) => {
   opts.name = 'defaultsTest'
   opts.dir = util.fixtureSubdir('basic')
   delete opts.platform
   delete opts.arch
 
-  let defaultOpts = {
+  const defaultOpts = {
     arch: hostArch(),
     name: opts.name,
     platform: process.platform
   }
 
-  let finalPath
-  let resourcesPath
+  const paths = await packager(opts)
+  t.true(Array.isArray(paths), 'packager call should resolve to an array')
+  t.is(paths.length, 1, 'Single-target run should resolve to a 1-item array')
 
-  return packager(opts)
-    .then(paths => {
-      t.true(Array.isArray(paths), 'packager call should resolve to an array')
-      t.is(paths.length, 1, 'Single-target run should resolve to a 1-item array')
+  const finalPath = paths[0]
+  t.is(finalPath, path.join(t.context.workDir, common.generateFinalBasename(defaultOpts)),
+       'Path should follow the expected format and be in the cwd')
+  await util.assertDirectory(t, finalPath, 'The expected output directory should exist')
+  const resourcesPath = path.join(finalPath, util.generateResourcesPath(defaultOpts))
+  const appPath = path.join(finalPath, generateNamePath(defaultOpts))
 
-      finalPath = paths[0]
-      t.is(finalPath, path.join(t.context.workDir, common.generateFinalBasename(defaultOpts)),
-           'Path should follow the expected format and be in the cwd')
-      return util.assertDirectory(t, finalPath, 'The expected output directory should exist')
-    }).then(() => {
-      resourcesPath = path.join(finalPath, util.generateResourcesPath(defaultOpts))
-      const appPath = path.join(finalPath, generateNamePath(defaultOpts))
-
-      if (common.isPlatformMac(defaultOpts.platform)) {
-        return util.assertDirectory(t, appPath, 'The Helper.app should reflect opts.name')
-      } else {
-        return util.assertFile(t, appPath, 'The executable should reflect opts.name')
-      }
-    }).then(() => util.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory'))
-    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), 'The output directory should NOT contain devDependencies by default (prune=true)'))
-    .then(() => util.assertFilesEqual(t, path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), 'File under packaged app directory should match source file'))
-    .then(() => util.assertFilesEqual(t, path.join(opts.dir, 'ignore', 'this.txt'), path.join(resourcesPath, 'app', 'ignore', 'this.txt'), 'File under subdirectory of packaged app directory should match source file and not be ignored by default'))
-    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app'), 'The output directory should not contain the Electron default_app directory'))
-    .then(() => util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file'))
+  if (common.isPlatformMac(defaultOpts.platform)) {
+    await util.assertDirectory(t, appPath, 'The Helper.app should reflect opts.name')
+  } else {
+    await util.assertFile(t, appPath, 'The executable should reflect opts.name')
+  }
+  await util.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory')
+  await util.assertPathNotExists(t, path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'), 'The output directory should NOT contain devDependencies by default (prune=true)')
+  await util.assertFilesEqual(t, path.join(opts.dir, 'main.js'), path.join(resourcesPath, 'app', 'main.js'), 'File under packaged app directory should match source file')
+  await util.assertFilesEqual(t, path.join(opts.dir, 'ignore', 'this.txt'), path.join(resourcesPath, 'app', 'ignore', 'this.txt'), 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
+  await util.assertPathNotExists(t, path.join(resourcesPath, 'default_app'), 'The output directory should not contain the Electron default_app directory')
+  await util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file')
 })
 
-util.testSinglePlatform('out test', (t, opts) => {
+util.testSinglePlatform('out test', async (t, opts) => {
   opts.name = 'outTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.out = 'dist'
 
-  let finalPath
-
-  return packager(opts)
-    .then(paths => {
-      finalPath = paths[0]
-      t.is(finalPath, path.join('dist', common.generateFinalBasename(opts)),
-           'Path should follow the expected format and be under the folder specified in `out`')
-      return util.assertDirectory(t, finalPath, 'The expected output directory should exist')
-    }).then(() => util.assertDirectory(t, path.join(finalPath, util.generateResourcesPath(opts)), 'The output directory should contain the expected resources subdirectory'))
+  const finalPath = (await packager(opts))[0]
+  t.is(finalPath, path.join('dist', common.generateFinalBasename(opts)),
+       'Path should follow the expected format and be under the folder specified in `out`')
+  await util.assertDirectory(t, finalPath, 'The expected output directory should exist')
+  await util.assertDirectory(t, path.join(finalPath, util.generateResourcesPath(opts)), 'The output directory should contain the expected resources subdirectory')
 })
 
-util.testSinglePlatform('overwrite test', (t, opts) => {
+util.testSinglePlatform('overwrite test', async (t, opts) => {
   opts.name = 'overwriteTest'
   opts.dir = util.fixtureSubdir('basic')
 
-  let finalPath
-  let testPath
-
-  return packager(opts)
-    .then(paths => {
-      finalPath = paths[0]
-      return util.assertDirectory(t, finalPath, 'The expected output directory should exist')
-    }).then(() => {
-      // Create a dummy file to detect whether the output directory is replaced in subsequent runs
-      testPath = path.join(finalPath, 'test.txt')
-      return fs.writeFile(testPath, 'test')
-    }).then(() => packager(opts)) // Run again, defaulting to overwrite false
-    .then(paths => util.assertFile(t, testPath, 'The existing output directory should exist as before (skipped by default)'))
-    .then(() => {
-      // Run a third time, explicitly setting overwrite to true
-      opts.overwrite = true
-      return packager(opts)
-    }).then(paths => util.assertPathNotExists(t, testPath, 'The output directory should be regenerated when overwrite is true'))
+  const finalPath = (await packager(opts))[0]
+  await util.assertDirectory(t, finalPath, 'The expected output directory should exist')
+  // Create a dummy file to detect whether the output directory is replaced in subsequent runs
+  const testPath = path.join(finalPath, 'test.txt')
+  await fs.writeFile(testPath, 'test')
+  await packager(opts) // Run again, defaulting to overwrite false
+  await util.assertFile(t, testPath, 'The existing output directory should exist as before (skipped by default)')
+  // Run a third time, explicitly setting overwrite to true
+  opts.overwrite = true
+  await packager(opts)
+  await util.assertPathNotExists(t, testPath, 'The output directory should be regenerated when overwrite is true')
 })
 
-util.testSinglePlatform('overwrite test sans platform/arch set', (t, opts) => {
+util.testSinglePlatform('overwrite test sans platform/arch set', async (t, opts) => {
   delete opts.platfrom
   delete opts.arch
   opts.dir = util.fixtureSubdir('basic')
   opts.overwrite = true
 
-  return packager(opts)
-    .then(paths => util.assertPathExists(t, paths[0], 'The output directory exists'))
-    .then(() => packager(opts))
-    .then(paths => util.assertPathExists(t, paths[0], 'The output directory exists'))
+  const roundOnePaths = await packager(opts)
+  await util.assertPathExists(t, roundOnePaths[0], 'The output directory exists')
+  const roundTwoPaths = await packager(opts)
+  await util.assertPathExists(t, roundTwoPaths[0], 'The output directory exists')
 })
 
-util.testSinglePlatform('tmpdir test', (t, opts) => {
+util.testSinglePlatform('tmpdir test', async (t, opts) => {
   opts.name = 'tmpdirTest'
   opts.dir = path.join(__dirname, 'fixtures', 'basic')
   opts.out = 'dist'
   opts.tmpdir = path.join(t.context.workDir, 'tmp')
 
-  return packager(opts)
-    .then(paths => util.assertDirectory(t, path.join(opts.tmpdir, 'electron-packager'), 'The expected temp directory should exist'))
+  await packager(opts)
+  await util.assertDirectory(t, path.join(opts.tmpdir, 'electron-packager'), 'The expected temp directory should exist')
 })
 
-util.testSinglePlatform('disable tmpdir test', (t, opts) => {
+util.testSinglePlatform('disable tmpdir test', async (t, opts) => {
   opts.name = 'disableTmpdirTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.out = 'dist'
   opts.tmpdir = false
 
-  return packager(opts)
-    .then(paths => util.assertDirectory(t, paths[0], 'The expected out directory should exist'))
+  const finalPath = (await packager(opts))[0]
+  await util.assertDirectory(t, finalPath, 'The expected out directory should exist')
 })
 
-util.testSinglePlatform('deref symlink test', (t, opts) => {
+util.testSinglePlatform('deref symlink test', async (t, opts) => {
   opts.name = 'disableSymlinkDerefTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.derefSymlinks = false
@@ -211,15 +196,14 @@ util.testSinglePlatform('deref symlink test', (t, opts) => {
   const src = path.join(opts.dir, 'main.js')
   const dest = path.join(opts.dir, 'main-link.js')
 
-  return fs.ensureSymlink(src, dest)
-    .then(() => packager(opts))
-    .then(paths => {
-      const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js')
-      return util.assertSymlink(t, destLink, 'The expected file should still be a symlink')
-    }).then(() => fs.remove(dest))
+  await fs.ensureSymlink(src, dest)
+  const finalPath = (await packager(opts))[0]
+  const destLink = path.join(finalPath, 'resources', 'app', 'main-link.js')
+  await util.assertSymlink(t, destLink, 'The expected file should still be a symlink')
+  await fs.remove(dest)
 })
 
-function createExtraResourceStringTest (t, opts, platform) {
+async function createExtraResourceStringTest (t, opts, platform) {
   const extra1Base = 'data1.txt'
   const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
 
@@ -229,11 +213,11 @@ function createExtraResourceStringTest (t, opts, platform) {
   opts.platform = platform
   opts.extraResource = extra1Path
 
-  return util.packageAndEnsureResourcesPath(t, opts)
-    .then(resourcesPath => util.assertFilesEqual(t, extra1Path, path.join(resourcesPath, extra1Base), 'resource file data1.txt should match'))
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  await util.assertFilesEqual(t, extra1Path, path.join(resourcesPath, extra1Base), 'resource file data1.txt should match')
 }
 
-function createExtraResourceArrayTest (t, opts, platform) {
+async function createExtraResourceArrayTest (t, opts, platform) {
   const extra1Base = 'data1.txt'
   const extra1Path = path.join(__dirname, 'fixtures', extra1Base)
   const extra2Base = 'extrainfo.plist'
@@ -245,17 +229,13 @@ function createExtraResourceArrayTest (t, opts, platform) {
   opts.platform = platform
   opts.extraResource = [extra1Path, extra2Path]
 
-  let extra1DistPath
-  let extra2DistPath
-
-  return util.packageAndEnsureResourcesPath(t, opts)
-    .then(resourcesPath => {
-      extra1DistPath = path.join(resourcesPath, extra1Base)
-      extra2DistPath = path.join(resourcesPath, extra2Base)
-      return util.assertPathExists(t, extra1DistPath, 'resource file data1.txt exists')
-    }).then(() => util.assertFilesEqual(t, extra1Path, extra1DistPath, 'resource file data1.txt should match'))
-    .then(() => util.assertPathExists(t, extra2DistPath, 'resource file extrainfo.plist exists'))
-    .then(() => util.assertFilesEqual(t, extra2Path, extra2DistPath, 'resource file extrainfo.plist should match'))
+  const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
+  const extra1DistPath = path.join(resourcesPath, extra1Base)
+  const extra2DistPath = path.join(resourcesPath, extra2Base)
+  await util.assertPathExists(t, extra1DistPath, 'resource file data1.txt exists')
+  await util.assertFilesEqual(t, extra1Path, extra1DistPath, 'resource file data1.txt should match')
+  await util.assertPathExists(t, extra2DistPath, 'resource file extrainfo.plist exists')
+  await util.assertFilesEqual(t, extra2Path, extra2DistPath, 'resource file extrainfo.plist should match')
 }
 
 for (const platform of ['darwin', 'linux']) {
@@ -263,27 +243,23 @@ for (const platform of ['darwin', 'linux']) {
   util.testSinglePlatform(`extraResource test: array (${platform})`, createExtraResourceArrayTest, platform)
 }
 
-util.testSinglePlatform('building for Linux target sanitizes binary name', (t, opts) => {
+util.testSinglePlatform('building for Linux target sanitizes binary name', async (t, opts) => {
   opts.name = '@username/package-name'
   opts.dir = util.fixtureSubdir('basic')
 
-  return packager(opts)
-    .then(paths => {
-      t.is(1, paths.length, '1 bundle created')
-      return util.assertFile(t, path.join(paths[0], '@username-package-name'), 'The sanitized binary filename should exist')
-    })
+  const paths = await packager(opts)
+  t.is(1, paths.length, '1 bundle created')
+  await util.assertFile(t, path.join(paths[0], '@username-package-name'), 'The sanitized binary filename should exist')
 })
 
-util.testSinglePlatform('executableName honored when building for Linux target', (t, opts) => {
+util.testSinglePlatform('executableName honored when building for Linux target', async (t, opts) => {
   opts.name = 'PackageName'
   opts.executableName = 'my-package'
   opts.dir = util.fixtureSubdir('basic')
 
-  return packager(opts)
-    .then(paths => {
-      t.is(1, paths.length, '1 bundle created')
-      return util.assertFile(t, path.join(paths[0], 'my-package'), 'The executableName-based filename should exist')
-    })
+  const paths = await packager(opts)
+  t.is(1, paths.length, '1 bundle created')
+  await util.assertFile(t, path.join(paths[0], 'my-package'), 'The executableName-based filename should exist')
 })
 
 util.packagerTest('fails with invalid version', util.invalidOptionTest({
@@ -297,11 +273,11 @@ util.packagerTest('fails with invalid version', util.invalidOptionTest({
   }
 }))
 
-util.testSinglePlatform('dir argument test: should work with relative path', (t, opts) => {
+util.testSinglePlatform('dir argument test: should work with relative path', async (t, opts) => {
   opts.name = 'ElectronTest'
   opts.dir = path.join('..', 'fixtures', 'el-0374')
   opts.electronVersion = '0.37.4'
 
-  return packager(opts)
-    .then(paths => t.is(path.join(t.context.workDir, 'ElectronTest-linux-x64'), paths[0], 'paths returned'))
+  const finalPath = (await packager(opts))[0]
+  t.is(path.join(t.context.workDir, 'ElectronTest-linux-x64'), finalPath, 'paths returned')
 })

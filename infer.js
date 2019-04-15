@@ -4,7 +4,6 @@ const debug = require('debug')('electron-packager')
 const getPackageInfo = require('get-package-info')
 const parseAuthor = require('parse-author')
 const path = require('path')
-const pify = require('pify')
 const resolve = require('resolve')
 const semver = require('semver')
 
@@ -33,7 +32,21 @@ function errorMessageForProperty (prop) {
     `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
 }
 
-function getVersion (opts, electronProp) {
+function resolvePromise (id, options) {
+  // eslint-disable-next-line promise/param-names
+  return new Promise((accept, reject) => {
+    resolve(id, options, (err, mainPath, pkg) => {
+      if (err) {
+        /* istanbul ignore next */
+        reject(err)
+      } else {
+        accept([mainPath, pkg])
+      }
+    })
+  })
+}
+
+async function getVersion (opts, electronProp) {
   const [depType, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
   if (packageName === 'electron-prebuilt-compile') {
@@ -51,16 +64,13 @@ function getVersion (opts, electronProp) {
     }
   }
 
-  return pify(resolve, { multiArgs: true })(packageName, { basedir: path.dirname(src) })
-    .then(res => {
-      debug(`Inferring target Electron version from ${packageName} in ${src}`)
-      const pkg = res[1]
-      opts.electronVersion = pkg.version
-      return null
-    })
+  const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1]
+  debug(`Inferring target Electron version from ${packageName} in ${src}`)
+  opts.electronVersion = pkg.version
+  return null
 }
 
-function handleMetadata (opts, result) {
+async function handleMetadata (opts, result) {
   if (result.values.productName) {
     debug(`Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`)
     opts.name = result.values.productName
@@ -93,7 +103,7 @@ function handleMetadata (opts, result) {
   }
 }
 
-module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
+module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir) {
   let props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts.appVersion) props.push('version')
@@ -118,26 +128,27 @@ module.exports = function getMetadataFromPackageJSON (platforms, opts, dir) {
   if (props.length === 0) return Promise.resolve()
 
   // Search package.json files to infer name and version from
-  return getPackageInfo(props, dir)
-    .then(result => handleMetadata(opts, result))
-    .catch(err => {
-      if (err.missingProps) {
-        const missingProps = err.missingProps.map(prop => {
-          return Array.isArray(prop) ? prop[0] : prop
-        })
+  try {
+    const result = await getPackageInfo(props, dir)
+    return handleMetadata(opts, result)
+  } catch (err) {
+    if (err.missingProps) {
+      const missingProps = err.missingProps.map(prop => {
+        return Array.isArray(prop) ? prop[0] : prop
+      })
 
-        if (isMissingRequiredProperty(missingProps)) {
-          const messages = missingProps.map(errorMessageForProperty)
+      if (isMissingRequiredProperty(missingProps)) {
+        const messages = missingProps.map(errorMessageForProperty)
 
-          debug(err.message)
-          err.message = messages.join('\n') + '\n'
-          throw err
-        } else {
-          // Missing props not required, can continue w/ partial result
-          return handleMetadata(opts, err.result)
-        }
+        debug(err.message)
+        err.message = messages.join('\n') + '\n'
+        throw err
+      } else {
+        // Missing props not required, can continue w/ partial result
+        return handleMetadata(opts, err.result)
       }
+    }
 
-      throw err
-    })
+    throw err
+  }
 }

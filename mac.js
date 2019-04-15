@@ -124,26 +124,25 @@ class MacApp extends App {
     return this.updatePlist(base, `${this.appName} ${helperSuffix}`, identifier, name)
   }
 
-  extendAppPlist (propsOrFilename) {
+  async extendAppPlist (propsOrFilename) {
     if (!propsOrFilename) {
       return Promise.resolve()
     }
 
     if (typeof propsOrFilename === 'string') {
-      return this.loadPlist(propsOrFilename)
-        .then(plist => Object.assign(this.appPlist, plist))
+      const plist = await this.loadPlist(propsOrFilename)
+      return Object.assign(this.appPlist, plist)
     } else {
-      return Promise.resolve(Object.assign(this.appPlist, propsOrFilename))
+      return Object.assign(this.appPlist, propsOrFilename)
     }
   }
 
-  loadPlist (filename, propName) {
-    return fs.readFile(filename)
-      .then(buffer => plist.parse(buffer.toString()))
-      .then(plist => {
-        if (propName) this[propName] = plist
-        return plist
-      })
+  async loadPlist (filename, propName) {
+    const loadedPlist = plist.parse((await fs.readFile(filename)).toString())
+    if (propName) {
+      this[propName] = loadedPlist
+    }
+    return loadedPlist
   }
 
   ehPlistFilename (helper) {
@@ -154,7 +153,7 @@ class MacApp extends App {
     return path.join(helperApp, 'Contents', 'Info.plist')
   }
 
-  determinePlistFilesToUpdate () {
+  async determinePlistFilesToUpdate () {
     const appPlistFilename = path.join(this.contentsPath, 'Info.plist')
 
     const plists = [
@@ -168,123 +167,115 @@ class MacApp extends App {
       [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist']
     ]
 
-    return Promise.all(possiblePlists.map(item =>
-      fs.pathExists(item[0])
-        .then(exists => exists ? item : null)
-    )).then(optional => plists.concat(optional.filter(item => item)))
+    const optional = await Promise.all(possiblePlists.map(async item =>
+      (await fs.pathExists(item[0])) ? item : null))
+    return plists.concat(optional.filter(item => item))
   }
 
-  updatePlistFiles () {
-    let plists
-
+  async updatePlistFiles () {
     const appBundleIdentifier = this.bundleName
     this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts.helperBundleId || `${appBundleIdentifier}.helper`)
 
-    return this.determinePlistFilesToUpdate()
-      .then(plistsToUpdate => {
-        plists = plistsToUpdate
-        return Promise.all(plists.map(plistArgs => this.loadPlist.apply(this, plistArgs)))
-      }).then(() => this.extendAppPlist(this.opts.extendInfo))
-      .then(() => {
-        this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
-        this.helperPlist = this.updateHelperPlist(this.helperPlist)
-        if (this.helperEHPlist) {
-          this.helperEHPlist = this.updateHelperPlist(this.helperEHPlist, 'EH')
-        }
-        if (this.helperNPPlist) {
-          this.helperNPPlist = this.updateHelperPlist(this.helperNPPlist, 'NP')
-        }
+    const plists = await this.determinePlistFilesToUpdate()
+    await Promise.all(plists.map(plistArgs => this.loadPlist(...plistArgs)))
+    await this.extendAppPlist(this.opts.extendInfo)
+    this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
+    this.helperPlist = this.updateHelperPlist(this.helperPlist)
+    if (this.helperEHPlist) {
+      this.helperEHPlist = this.updateHelperPlist(this.helperEHPlist, 'EH')
+    }
+    if (this.helperNPPlist) {
+      this.helperNPPlist = this.updateHelperPlist(this.helperNPPlist, 'NP')
+    }
 
-        if (this.loginHelperPlist) {
-          const loginHelperName = common.sanitizeAppName(`${this.appName} Login Helper`)
-          this.loginHelperPlist.CFBundleExecutable = loginHelperName
-          this.loginHelperPlist.CFBundleIdentifier = `${appBundleIdentifier}.loginhelper`
-          this.loginHelperPlist.CFBundleName = loginHelperName
-        }
+    if (this.loginHelperPlist) {
+      const loginHelperName = common.sanitizeAppName(`${this.appName} Login Helper`)
+      this.loginHelperPlist.CFBundleExecutable = loginHelperName
+      this.loginHelperPlist.CFBundleIdentifier = `${appBundleIdentifier}.loginhelper`
+      this.loginHelperPlist.CFBundleName = loginHelperName
+    }
 
-        if (this.appVersion) {
-          this.appPlist.CFBundleShortVersionString = this.appPlist.CFBundleVersion = '' + this.appVersion
-        }
+    if (this.appVersion) {
+      this.appPlist.CFBundleShortVersionString = this.appPlist.CFBundleVersion = '' + this.appVersion
+    }
 
-        if (this.buildVersion) {
-          this.appPlist.CFBundleVersion = '' + this.buildVersion
-        }
+    if (this.buildVersion) {
+      this.appPlist.CFBundleVersion = '' + this.buildVersion
+    }
 
-        if (this.opts.protocols && this.opts.protocols.length) {
-          this.appPlist.CFBundleURLTypes = this.protocols
-        }
+    if (this.opts.protocols && this.opts.protocols.length) {
+      this.appPlist.CFBundleURLTypes = this.protocols
+    }
 
-        if (this.appCategoryType) {
-          this.appPlist.LSApplicationCategoryType = this.appCategoryType
-        }
+    if (this.appCategoryType) {
+      this.appPlist.LSApplicationCategoryType = this.appCategoryType
+    }
 
-        if (this.appCopyright) {
-          this.appPlist.NSHumanReadableCopyright = this.appCopyright
-        }
+    if (this.appCopyright) {
+      this.appPlist.NSHumanReadableCopyright = this.appCopyright
+    }
 
-        if (this.enableDarkMode) {
-          this.appPlist.NSRequiresAquaSystemAppearance = false
-        }
+    if (this.enableDarkMode) {
+      this.appPlist.NSRequiresAquaSystemAppearance = false
+    }
 
-        return Promise.all(plists.map(plistArgs => {
-          const filename = plistArgs[0]
-          const varName = plistArgs[1]
-          return fs.writeFile(filename, plist.build(this[varName]))
-        }))
-      })
+    await Promise.all(plists.map(([filename, varName]) =>
+      fs.writeFile(filename, plist.build(this[varName]))))
   }
 
-  moveHelpers () {
+  async moveHelpers () {
     const helpers = [' Helper', ' Helper EH', ' Helper NP']
-    return Promise.all(helpers.map(suffix => this.moveHelper(this.frameworksPath, suffix)))
-      .then(() => fs.pathExists(this.loginItemsPath))
-      .then(exists => exists ? this.moveHelper(this.loginItemsPath, ' Login Helper') : null)
+    await Promise.all(helpers.map(suffix => this.moveHelper(this.frameworksPath, suffix)))
+    if (await fs.pathExists(this.loginItemsPath)) {
+      await this.moveHelper(this.loginItemsPath, ' Login Helper')
+    }
   }
 
-  moveHelper (helperDirectory, suffix) {
+  async moveHelper (helperDirectory, suffix) {
     const originalBasename = `Electron${suffix}`
 
-    return fs.pathExists(path.join(helperDirectory, `${originalBasename}.app`))
-      .then(exists => {
-        if (exists) {
-          return this.renameHelperAndExecutable(
-            helperDirectory,
-            originalBasename,
-            `${common.sanitizeAppName(this.appName)}${suffix}`
-          )
-        } else {
-          return Promise.resolve()
-        }
-      })
+    if (await fs.pathExists(path.join(helperDirectory, `${originalBasename}.app`))) {
+      return this.renameHelperAndExecutable(
+        helperDirectory,
+        originalBasename,
+        `${common.sanitizeAppName(this.appName)}${suffix}`
+      )
+    } else {
+      return Promise.resolve()
+    }
   }
 
-  renameHelperAndExecutable (helperDirectory, originalBasename, newBasename) {
+  async renameHelperAndExecutable (helperDirectory, originalBasename, newBasename) {
     const originalAppname = `${originalBasename}.app`
     const executableBasePath = path.join(helperDirectory, originalAppname, 'Contents', 'MacOS')
-    return this.relativeRename(executableBasePath, originalBasename, newBasename)
-      .then(() => this.relativeRename(helperDirectory, originalAppname, `${newBasename}.app`))
+    await this.relativeRename(executableBasePath, originalBasename, newBasename)
+    await this.relativeRename(helperDirectory, originalAppname, `${newBasename}.app`)
   }
 
-  copyIcon () {
+  async copyIcon () {
     if (!this.opts.icon) {
       return Promise.resolve()
     }
 
-    return this.normalizeIconExtension('.icns')
-      // Ignore error if icon doesn't exist, in case it's only available for other OS
-      .catch(Promise.resolve)
-      .then(icon => {
-        debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
-        return fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist.CFBundleIconFile))
-      })
+    let icon
+
+    try {
+      icon = await this.normalizeIconExtension('.icns')
+    } catch (_err) {
+      // Ignore error if icon doesn't exist, in case it's only available for other OSes
+      /* istanbul ignore next */
+      return Promise.resolve()
+    }
+    debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
+    await fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist.CFBundleIconFile))
   }
 
-  renameAppAndHelpers () {
-    return this.moveHelpers()
-      .then(() => fs.rename(this.electronAppPath, this.renamedAppPath))
+  async renameAppAndHelpers () {
+    await this.moveHelpers()
+    await fs.rename(this.electronAppPath, this.renamedAppPath)
   }
 
-  signAppIfSpecified () {
+  async signAppIfSpecified () {
     let osxSignOpt = this.opts.osxSign
     let platform = this.opts.platform
     let version = this.opts.electronVersion
@@ -298,15 +289,18 @@ class MacApp extends App {
     if (osxSignOpt) {
       const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.osxNotarize, this.opts.quiet)
       debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
-      return signAsync(signOpts)
+      try {
+        await signAsync(signOpts)
+      } catch (err) {
         // Although not signed successfully, the application is packed.
-        .catch(err => common.warning(`Code sign failed; please retry manually. ${err}`))
+        common.warning(`Code sign failed; please retry manually. ${err}`)
+      }
     } else {
       return Promise.resolve()
     }
   }
 
-  notarizeAppIfSpecified () {
+  async notarizeAppIfSpecified () {
     const osxNotarizeOpt = this.opts.osxNotarize
 
     /* istanbul ignore if */
@@ -323,16 +317,16 @@ class MacApp extends App {
     }
   }
 
-  create () {
-    return this.initialize()
-      .then(() => this.updatePlistFiles())
-      .then(() => this.copyIcon())
-      .then(() => this.renameElectron())
-      .then(() => this.renameAppAndHelpers())
-      .then(() => this.copyExtraResources())
-      .then(() => this.signAppIfSpecified())
-      .then(() => this.notarizeAppIfSpecified())
-      .then(() => this.move())
+  async create () {
+    await this.initialize()
+    await this.updatePlistFiles()
+    await this.copyIcon()
+    await this.renameElectron()
+    await this.renameAppAndHelpers()
+    await this.copyExtraResources()
+    await this.signAppIfSpecified()
+    await this.notarizeAppIfSpecified()
+    return this.move()
   }
 }
 
@@ -347,7 +341,7 @@ function filterCFBundleIdentifier (identifier) {
 
 function createSignOpts (properties, platform, app, version, notarize, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  let signOpts = properties === true ? { identity: null } : Object.assign({}, properties)
+  let signOpts = properties === true ? { identity: null } : { ...properties }
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options

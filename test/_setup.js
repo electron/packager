@@ -21,22 +21,23 @@ function skipDownloadingMacZips (platform, arch) {
   return common.isPlatformMac(platform) && process.platform === 'win32'
 }
 
-function downloadAll (version) {
+async function downloadAll (version) {
   console.log(`Calling electron-download for ${version} before running tests...`)
   const combinations = download.createDownloadCombos({ electronVersion: config.version, all: true }, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
   return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
 }
 
-function downloadElectronZip (version, options) {
-  return download.downloadElectronZip(Object.assign({}, options, {
+async function downloadElectronZip (version, options) {
+  return download.downloadElectronZip({
+    ...options,
     cache: path.join(os.homedir(), '.electron'),
     quiet: !!process.env.CI,
     version: version
-  }))
+  })
 }
 
-function downloadMASLoginHelperElectronZip () {
+async function downloadMASLoginHelperElectronZip () {
   if (process.platform !== 'win32') {
     const version = '2.0.0-beta.1'
     console.log(`Calling electron-download for ${version} (MAS only) before running tests...`)
@@ -49,30 +50,27 @@ function downloadMASLoginHelperElectronZip () {
  * speed. Most tests run with the config.json version, but we have some tests using 0.37.4, an
  * `electron` module specific test using 1.3.1., and an MAS-specific test using 2.0.0-beta.1.
  */
-function preDownloadElectron () {
+async function preDownloadElectron () {
   const versions = [
     config.version,
     '0.37.4',
     '1.3.1'
   ]
-  return Promise.all(versions.map(downloadAll))
-    .then(downloadMASLoginHelperElectronZip)
+  await Promise.all(versions.map(downloadAll))
+  await downloadMASLoginHelperElectronZip()
 }
 
-function npmInstallForFixture (fixture) {
+async function npmInstallForFixture (fixture) {
   const fixtureDir = fixtureSubdir(fixture)
-  return fs.exists(path.join(fixtureDir, 'node_modules'))
-    .then(exists => {
-      if (exists) {
-        return true
-      } else {
-        console.log(`Running npm install in fixtures/${fixture}...`)
-        return exec('npm install --no-bin-links', { cwd: fixtureDir })
-      }
-    })
+  if (await fs.pathExists(path.join(fixtureDir, 'node_modules'))) {
+    return true
+  } else {
+    console.log(`Running npm install in fixtures/${fixture}...`)
+    return exec('npm install --no-bin-links', { cwd: fixtureDir })
+  }
 }
 
-function npmInstallForFixtures () {
+async function npmInstallForFixtures () {
   const fixtures = [
     'asar-prebuilt',
     'basic',
@@ -86,21 +84,22 @@ function npmInstallForFixtures () {
 
 const WORK_CWD = path.join(__dirname, 'work')
 
-function ensureEmptyWorkDirExists () {
-  return fs.remove(WORK_CWD)
-    .then(() => fs.mkdirs(WORK_CWD))
+async function ensureEmptyWorkDirExists () {
+  await fs.remove(WORK_CWD)
+  await fs.mkdirs(WORK_CWD)
 }
 
 module.exports = {
   fixtureSubdir: fixtureSubdir,
-  setupTestsuite: function setupTestsuite () {
-    return preDownloadElectron()
-      .then(npmInstallForFixtures)
-      .catch(error => {
-        console.error(error.stack || error)
-        return process.exit(1)
-      })
-      .then(ensureEmptyWorkDirExists)
+  setupTestsuite: async function setupTestsuite () {
+    try {
+      await preDownloadElectron()
+      await npmInstallForFixtures()
+    } catch (error) {
+      console.error(error.stack || error)
+      return process.exit(1)
+    }
+    await ensureEmptyWorkDirExists()
   },
   WORK_CWD: WORK_CWD
 }

@@ -9,7 +9,7 @@ const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
 const ignore = require('./ignore')
 const path = require('path')
-const pify = require('pify')
+const { promisify } = require('util')
 const targets = require('./targets')
 
 function debugHostInfo () {
@@ -24,33 +24,34 @@ class Packager {
     this.canCreateSymlinks = undefined
   }
 
-  ensureTempDir () {
+  async ensureTempDir () {
     if (this.useTempDir) {
-      return fs.remove(this.tempBase)
+      await fs.remove(this.tempBase)
     } else {
       return Promise.resolve()
     }
   }
 
-  testSymlink (comboOpts, zipPath) {
+  async testSymlink (comboOpts, zipPath) {
     const testPath = path.join(this.tempBase, 'symlink-test')
     const testFile = path.join(testPath, 'test')
     const testLink = path.join(testPath, 'testlink')
 
-    const cleanup = (symlinksWork) =>
-      fs.remove(testPath).then(() => symlinksWork)
+    this.canCreateSymlinks = false
+    try {
+      await fs.outputFile(testFile, '')
+      await fs.symlink(testFile, testLink)
+      this.canCreateSymlinks = true
+    } finally {
+      await fs.remove(testPath)
+    }
 
-    return fs.outputFile(testFile, '')
-      .then(() => fs.symlink(testFile, testLink))
-      .then(() => cleanup(true))
-      .catch(/* istanbul ignore next */ () => cleanup(false))
-      .then(result => {
-        this.canCreateSymlinks = result
-        if (this.canCreateSymlinks) return this.checkOverwrite(comboOpts, zipPath)
+    if (this.canCreateSymlinks) {
+      return this.checkOverwrite(comboOpts, zipPath)
+    }
 
-        /* istanbul ignore next */
-        return this.skipHostPlatformSansSymlinkSupport(comboOpts)
-      })
+    /* istanbul ignore next */
+    return this.skipHostPlatformSansSymlinkSupport(comboOpts)
   }
 
   /* istanbul ignore next */
@@ -59,19 +60,19 @@ class Packager {
     return Promise.resolve()
   }
 
-  overwriteAndCreateApp (outDir, comboOpts, zipPath) {
+  async overwriteAndCreateApp (outDir, comboOpts, zipPath) {
     debug(`Removing ${outDir} due to setting overwrite: true`)
-    return fs.remove(outDir)
-      .then(() => this.createApp(comboOpts, zipPath))
+    await fs.remove(outDir)
+    return this.createApp(comboOpts, zipPath)
   }
 
-  extractElectronZip (comboOpts, zipPath, buildDir) {
+  async extractElectronZip (comboOpts, zipPath, buildDir) {
     debug(`Extracting ${zipPath} to ${buildDir}`)
-    return pify(extract)(zipPath, { dir: buildDir })
-      .then(() => hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]))
+    await promisify(extract)(zipPath, { dir: buildDir })
+    await hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch])
   }
 
-  createApp (comboOpts, zipPath) {
+  async createApp (comboOpts, zipPath) {
     let buildParentDir
     if (this.useTempDir) {
       buildParentDir = this.tempBase
@@ -82,69 +83,63 @@ class Packager {
     common.info(`Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`, this.opts.quiet)
 
     debug(`Creating ${buildDir}`)
-    return fs.ensureDir(buildDir)
-      .then(() => this.extractElectronZip(comboOpts, zipPath, buildDir))
-      .then(() => {
-        const os = require(targets.osModules[comboOpts.platform])
-        const app = new os.App(comboOpts, buildDir)
-        return app.create()
-      })
+    await fs.ensureDir(buildDir)
+    await this.extractElectronZip(comboOpts, zipPath, buildDir)
+    const os = require(targets.osModules[comboOpts.platform])
+    const app = new os.App(comboOpts, buildDir)
+    return app.create()
   }
 
-  checkOverwrite (comboOpts, zipPath) {
+  async checkOverwrite (comboOpts, zipPath) {
     const finalPath = common.generateFinalPath(comboOpts)
-    return fs.pathExists(finalPath)
-      .then(exists => {
-        if (exists) {
-          if (this.opts.overwrite) {
-            return this.overwriteAndCreateApp(finalPath, comboOpts, zipPath)
-          } else {
-            common.info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, this.opts.quiet)
-            return true
-          }
-        } else {
-          return this.createApp(comboOpts, zipPath)
-        }
-      })
+    if (await fs.pathExists(finalPath)) {
+      if (this.opts.overwrite) {
+        return this.overwriteAndCreateApp(finalPath, comboOpts, zipPath)
+      } else {
+        common.info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, this.opts.quiet)
+        return true
+      }
+    } else {
+      return this.createApp(comboOpts, zipPath)
+    }
   }
 
-  packageForPlatformAndArch (downloadOpts) {
-    return download.downloadElectronZip(downloadOpts)
-      .then(zipPath => {
-        // Create delegated options object with specific platform and arch, for output directory naming
-        const comboOpts = Object.assign({}, this.opts, {
-          arch: downloadOpts.arch,
-          platform: downloadOpts.platform,
-          electronVersion: downloadOpts.version
-        })
+  async packageForPlatformAndArch (downloadOpts) {
+    const zipPath = await download.downloadElectronZip(downloadOpts)
+    // Create delegated options object with specific platform and arch, for output directory naming
+    const comboOpts = {
+      ...this.opts,
+      arch: downloadOpts.arch,
+      platform: downloadOpts.platform,
+      electronVersion: downloadOpts.version
+    }
 
-        if (!this.useTempDir) {
-          return this.createApp(comboOpts, zipPath)
-        }
+    if (!this.useTempDir) {
+      return this.createApp(comboOpts, zipPath)
+    }
 
-        if (common.isPlatformMac(comboOpts.platform)) {
-          /* istanbul ignore else */
-          if (this.canCreateSymlinks === undefined) {
-            return this.testSymlink(comboOpts, zipPath)
-          } else if (!this.canCreateSymlinks) {
-            return this.skipHostPlatformSansSymlinkSupport(comboOpts)
-          }
-        }
+    if (common.isPlatformMac(comboOpts.platform)) {
+      /* istanbul ignore else */
+      if (this.canCreateSymlinks === undefined) {
+        return this.testSymlink(comboOpts, zipPath)
+      } else if (!this.canCreateSymlinks) {
+        return this.skipHostPlatformSansSymlinkSupport(comboOpts)
+      }
+    }
 
-        return this.checkOverwrite(comboOpts, zipPath)
-      })
+    return this.checkOverwrite(comboOpts, zipPath)
   }
 }
 
-function packageAllSpecifiedCombos (opts, archs, platforms) {
+async function packageAllSpecifiedCombos (opts, archs, platforms) {
   const packager = new Packager(opts)
-  return packager.ensureTempDir()
-    .then(() => Promise.all(download.createDownloadCombos(opts, platforms, archs).map(
-      downloadOpts => packager.packageForPlatformAndArch(downloadOpts)
-    )))
+  await packager.ensureTempDir()
+  return Promise.all(download.createDownloadCombos(opts, platforms, archs).map(
+    downloadOpts => packager.packageForPlatformAndArch(downloadOpts)
+  ))
 }
 
-module.exports = function packager (opts) {
+module.exports = async function packager (opts) {
   debugHostInfo()
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`)
 
@@ -158,19 +153,17 @@ module.exports = function packager (opts) {
 
   const packageJSONDir = path.resolve(process.cwd(), opts.dir) || process.cwd()
 
-  return getMetadataFromPackageJSON(platforms, opts, packageJSONDir)
-    .then(() => {
-      if (opts.name.endsWith(' Helper')) {
-        throw new Error('Application names cannot end in " Helper" due to limitations on macOS')
-      }
+  await getMetadataFromPackageJSON(platforms, opts, packageJSONDir)
+  if (opts.name.endsWith(' Helper')) {
+    throw new Error('Application names cannot end in " Helper" due to limitations on macOS')
+  }
 
-      debug(`Application name: ${opts.name}`)
-      debug(`Target Electron version: ${opts.electronVersion}`)
+  debug(`Application name: ${opts.name}`)
+  debug(`Target Electron version: ${opts.electronVersion}`)
 
-      ignore.generateIgnores(opts)
+  ignore.generateIgnores(opts)
 
-      return packageAllSpecifiedCombos(opts, archs, platforms)
-    })
-    // Remove falsy entries (e.g. skipped platforms)
-    .then(appPaths => appPaths.filter(appPath => appPath))
+  const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms)
+  // Remove falsy entries (e.g. skipped platforms)
+  return appPaths.filter(appPath => appPath)
 }
