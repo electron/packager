@@ -1,7 +1,7 @@
 'use strict'
 
-const common = require('../common')
-const download = require('../download')
+const common = require('../src/common')
+const download = require('../src/download')
 const fs = require('fs-extra')
 const hostArch = require('electron-download/lib/arch').host
 const packager = require('..')
