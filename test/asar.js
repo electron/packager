@@ -1,6 +1,6 @@
 'use strict'
 
-const common = require('../common')
+const common = require('../src/common')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
