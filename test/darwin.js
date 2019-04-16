@@ -25,28 +25,17 @@ const el0374Opts = {
   electronVersion: '0.37.4'
 }
 
-function testWrapper (testName, extraOpts, testFunction, ...extraArgs) {
-  util.packagerTest(testName, (t, baseOpts) => {
-    const opts = { ...baseOpts, ...extraOpts }
-
-    return testFunction(t, opts, ...extraArgs)
-  })
+function testWrapper (extraOpts, testFunction, ...extraArgs) {
+  return util.packagerTest((t, baseOpts) => testFunction(t, { ...baseOpts, ...extraOpts }, ...extraArgs))
 }
 
-function darwinTest (testName, testFunction, ...extraArgs) {
-  return testWrapper(testName, darwinOpts, testFunction, ...extraArgs)
-}
-
-function electron0374Test (testName, testFunction, ...extraArgs) {
-  return testWrapper(testName, el0374Opts, testFunction, ...extraArgs)
-}
-
-function getFrameworksPath (prefix, appName) {
-  return path.join(prefix, `${appName}.app`, 'Contents', 'Frameworks')
+function darwinTest (testFunction, ...extraArgs) {
+  return testWrapper(darwinOpts, testFunction, ...extraArgs)
 }
 
 function getHelperAppPath (prefix, appName, helperSuffix) {
-  return path.join(getFrameworksPath(prefix, appName), `${appName} ${helperSuffix}.app`)
+  const frameworksPath = path.join(prefix, `${appName}.app`, 'Contents', 'Frameworks')
+  return path.join(frameworksPath, `${appName} ${helperSuffix}.app`)
 }
 
 function getHelperExecutablePath (prefix, appName, helperSuffix) {
@@ -123,19 +112,6 @@ async function extendInfoTest (t, baseOpts, extraPathOrParams) {
   assertPlistStringValue(t, obj, 'CFBundlePackageType', 'APPL', 'CFBundlePackageType should be Electron default')
 }
 
-async function darkModeTest (t, baseOpts) {
-  const opts = {
-    ...baseOpts,
-    appBundleId: 'com.electron.extratest',
-    appCategoryType: 'public.app-category.music',
-    buildVersion: '3.2.1',
-    darwinDarkModeSupport: true
-  }
-
-  const obj = await packageAndParseInfoPlist(t, opts)
-  t.is(obj.NSRequiresAquaSystemAppearance, false, 'NSRequiresAquaSystemAppearance should be set to false')
-}
-
 async function binaryNameTest (t, baseOpts, extraOpts, expectedExecutableName, expectedAppName) {
   const opts = { ...baseOpts, ...extraOpts }
   const appName = expectedAppName || expectedExecutableName || opts.name
@@ -198,26 +174,31 @@ async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
 }
 
 if (!(process.env.CI && process.platform === 'win32')) {
-  darwinTest('helper app paths test', helperAppPathsTest)
-  darwinTest('helper app paths test with app name needing sanitization', helperAppPathsTest, { name: '@username/package-name' }, '@username-package-name')
+  test.serial('helper app paths', darwinTest(helperAppPathsTest))
+  test.serial('helper app paths test with app name needing sanitization', darwinTest(helperAppPathsTest, { name: '@username/package-name' }, '@username-package-name'))
 
   const iconBase = path.join(__dirname, 'fixtures', 'monochrome')
   const icnsPath = `${iconBase}.icns`
 
-  darwinTest('icon test: .icns specified', iconTest, icnsPath, icnsPath)
+  test.serial('macOS icon: .icns specified', darwinTest(iconTest, icnsPath, icnsPath))
   // This test exists because the .icns file basename changed as of 0.37.4
-  electron0374Test('icon test: Electron 0.37.4, .icns specified', iconTest, icnsPath, icnsPath)
-  darwinTest('icon test: .ico specified (should replace with .icns)', iconTest, `${iconBase}.ico`, icnsPath)
-  darwinTest('icon test: basename only (should add .icns)', iconTest, iconBase, icnsPath)
+  test.serial('macOS icon: Electron 0.37.4, .icns specified', testWrapper(el0374Opts, iconTest, icnsPath, icnsPath))
+  test.serial('macOS icon: .ico specified (should replace with .icns)', darwinTest(iconTest, `${iconBase}.ico`, icnsPath))
+  test.serial('macOS icon: basename only (should add .icns)', darwinTest(iconTest, iconBase, icnsPath))
 
   const extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
   const extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString())
 
-  darwinTest('extendInfo by filename test', extendInfoTest, extraInfoPath)
-  darwinTest('extendInfo by params test', extendInfoTest, extraInfoParams)
-  darwinTest('mojave dark mode test: should enable dark mode', darkModeTest)
+  test.serial('extendInfo: filename', darwinTest(extendInfoTest, extraInfoPath))
+  test.serial('extendInfo: params', darwinTest(extendInfoTest, extraInfoParams))
+  test.serial('darwinDarkModeSupport: should enable dark mode in macOS Mojave', darwinTest(async (t, opts) => {
+    opts.darwinDarkModeSupport = true
 
-  darwinTest('protocol/protocol-name argument test', async (t, opts) => {
+    const obj = await packageAndParseInfoPlist(t, opts)
+    t.false(obj.NSRequiresAquaSystemAppearance, 'NSRequiresAquaSystemAppearance should be set to false')
+  }))
+
+  test.serial('protocol/protocol-name', darwinTest(async (t, opts) => {
     opts.protocols = [
       {
         name: 'Foo',
@@ -239,65 +220,65 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
     const obj = await packageAndParseInfoPlist(t, opts)
     t.deepEqual(obj.CFBundleURLTypes, expected, 'CFBundleURLTypes did not contain specified protocol schemes and names')
-  })
+  }))
 
-  test('osxNotarize argument test: missing appleId', t => {
+  test('osxNotarize: missing appleId', t => {
     util.setupConsoleWarnSpy()
     const notarizeOpts = mac.createNotarizeOpts({ appleIdPassword: '' })
     t.falsy(notarizeOpts, 'does not generate options')
     util.assertWarning(t, 'WARNING: The appleId sub-property is required when using notarization, notarize will not run')
   })
 
-  test('osxNotarize argument test: missing appleIdPassword', t => {
+  test('osxNotarize: missing appleIdPassword', t => {
     util.setupConsoleWarnSpy()
     const notarizeOpts = mac.createNotarizeOpts({ appleId: '' })
     t.falsy(notarizeOpts, 'does not generate options')
     util.assertWarning(t, 'WARNING: The appleIdPassword sub-property is required when using notarization, notarize will not run')
   })
 
-  test('osxNotarize argument test: appBundleId not overwritten', t => {
+  test('osxNotarize: appBundleId not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'no' }
     const notarizeOpts = mac.createNotarizeOpts(args, 'yes', 'appPath', true)
     t.is(notarizeOpts.appBundleId, 'yes', 'appBundleId is taken from arguments')
   })
 
-  test('osxNotarize argument test: appPath not overwritten', t => {
+  test('osxNotarize: appPath not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appPath: 'no' }
     const notarizeOpts = mac.createNotarizeOpts(args, 'appBundleId', 'yes', true)
     t.is(notarizeOpts.appPath, 'yes', 'appPath is taken from arguments')
   })
 
-  test('osxSign argument test: default args', t => {
+  test('osxSign: default args', t => {
     const args = true
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version' })
   })
 
-  test('osxSign argument test: identity=true sets autodiscovery mode', t => {
+  test('osxSign: identity=true sets autodiscovery mode', t => {
     const args = { identity: true }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version' })
   })
 
-  test('osxSign argument test: entitlements passed to electron-osx-sign', t => {
+  test('osxSign: entitlements passed to electron-osx-sign', t => {
     const args = { entitlements: 'path-to-entitlements' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', entitlements: args.entitlements })
   })
 
-  test('osxSign argument test: app not overwritten', t => {
+  test('osxSign: app not overwritten', t => {
     const args = { app: 'some-other-path' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
   })
 
-  test('osxSign argument test: platform not overwritten', t => {
+  test('osxSign: platform not overwritten', t => {
     const args = { platform: 'mas' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
   })
 
-  test('osxSign argument test: binaries not set', t => {
+  test('osxSign: binaries not set', t => {
     const args = { binaries: ['binary1', 'binary2'] }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
@@ -308,7 +289,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.true(signOpts.hardenedRuntime, 'hardenedRuntime forced to true')
   })
 
-  darwinTest('codesign test', async (t, opts) => {
+  test.serial('end-to-end codesign', darwinTest(async (t, opts) => {
     opts.osxSign = { identity: 'Developer CodeCert' }
 
     const finalPath = (await packager(opts))[0]
@@ -326,13 +307,13 @@ if (!(process.env.CI && process.platform === 'win32')) {
         throw err
       }
     }
-  })
+  }))
 
-  darwinTest('binary naming test', binaryNameTest)
-  darwinTest('sanitized binary naming test', binaryNameTest, { name: '@username/package-name' }, '@username-package-name')
-  darwinTest('executableName test', binaryNameTest, { executableName: 'app-name', name: 'MyAppName' }, 'app-name', 'MyAppName')
+  test.serial('macOS: binary naming', darwinTest(binaryNameTest))
+  test.serial('macOS: sanitized binary naming', darwinTest(binaryNameTest, { name: '@username/package-name' }, '@username-package-name'))
+  test.serial('executableName', darwinTest(binaryNameTest, { executableName: 'app-name', name: 'MyAppName' }, 'app-name', 'MyAppName'))
 
-  darwinTest('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', async (t, opts) => {
+  test.serial('CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name', darwinTest(async (t, opts) => {
     const appBundleIdentifier = 'com.electron.username-package-name'
     const expectedSanitizedName = '@username-package-name'
 
@@ -343,30 +324,30 @@ if (!(process.env.CI && process.platform === 'win32')) {
     assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
     assertPlistStringValue(t, obj, 'CFBundleName', expectedSanitizedName, 'CFBundleName should reflect a sanitized opts.name')
     assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleIdentifier should reflect the sanitized opts.name')
-  })
+  }))
 
-  darwinTest('app and build version test', appVersionTest, '1.1.0', '1.1.0.1234')
-  darwinTest('app version test', appVersionTest, '1.1.0')
-  darwinTest('app and build version integer test', appVersionTest, 12, 1234)
-  darwinTest('infer app version from package.json test', async (t, opts) => {
+  test.serial('app version', darwinTest(appVersionTest, '1.1.0'))
+  test.serial('app and build versions are strings', darwinTest(appVersionTest, '1.1.0', '1.1.0.1234'))
+  test.serial('app and build version are integers', darwinTest(appVersionTest, 12, 1234))
+  test.serial('infer app version from package.json', darwinTest(async (t, opts) => {
     const obj = await packageAndParseInfoPlist(t, opts)
     assertPlistStringValue(t, obj, 'CFBundleVersion', '4.99.101', 'CFBundleVersion should reflect package.json version')
     assertPlistStringValue(t, obj, 'CFBundleShortVersionString', '4.99.101', 'CFBundleShortVersionString should reflect package.json version')
-  })
+  }))
 
-  darwinTest('app categoryType test', async (t, opts) => {
+  test.serial('app categoryType', darwinTest(async (t, opts) => {
     const appCategoryType = 'public.app-category.developer-tools'
     opts.appCategoryType = appCategoryType
 
     const obj = await packageAndParseInfoPlist(t, opts)
     assertPlistStringValue(t, obj, 'LSApplicationCategoryType', appCategoryType, 'LSApplicationCategoryType should reflect opts.appCategoryType')
-  })
+  }))
 
-  darwinTest('app bundle test', appBundleTest, 'com.electron.basetest')
-  darwinTest('app bundle (w/ special characters) test', appBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'')
-  darwinTest('app bundle app-bundle-id fallback test', appBundleTest)
+  test.serial('app bundle', darwinTest(appBundleTest, 'com.electron.basetest'))
+  test.serial('app bundle (w/ special characters)', darwinTest(appBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\''))
+  test.serial('app bundle app-bundle-id fallback', darwinTest(appBundleTest))
 
-  darwinTest('app bundle framework symlink test', async (t, opts) => {
+  test.serial('app bundle framework symlink', darwinTest(async (t, opts) => {
     const finalPath = (await packager(opts))[0]
     let frameworkPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
     await util.assertDirectory(t, frameworkPath, 'Expected Electron Framework.framework to be a directory')
@@ -374,15 +355,15 @@ if (!(process.env.CI && process.platform === 'win32')) {
       util.assertSymlink(t, path.join(frameworkPath, 'Electron Framework'), 'Expected Electron Framework.framework/Electron Framework to be a symlink'),
       util.assertSymlink(t, path.join(frameworkPath, 'Versions', 'Current'), 'Expected Electron Framework.framework/Versions/Current to be a symlink')
     ])
-  })
+  }))
 
-  darwinTest('app helpers bundle test', appHelpersBundleTest, 'com.electron.basetest.helper')
-  darwinTest('app helpers bundle (w/ special characters) test', appHelpersBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr')
-  darwinTest('app helpers bundle helper-bundle-id fallback to app-bundle-id test', appHelpersBundleTest, null, 'com.electron.basetest')
-  darwinTest('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters) test', appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\'')
-  darwinTest('app helpers bundle helper-bundle-id & app-bundle-id fallback test', appHelpersBundleTest)
+  test.serial('app helpers bundle', darwinTest(appHelpersBundleTest, 'com.electron.basetest.helper'))
+  test.serial('app helpers bundle (w/ special characters)', darwinTest(appHelpersBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
+  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleTest, null, 'com.electron.basetest'))
+  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
+  test.serial('app helpers bundle helper-bundle-id & app-bundle-id fallback', darwinTest(appHelpersBundleTest))
 
-  darwinTest('EH/NP helpers do not exist', async (t, baseOpts) => {
+  test.serial('EH/NP helpers do not exist', darwinTest(async (t, baseOpts) => {
     const helpers = [
       'Helper EH',
       'Helper NP'
@@ -399,21 +380,21 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
     const finalPath = (await packager(opts))[0]
     await Promise.all(helpers.map(helper => util.assertPathNotExists(t, getHelperAppPath(finalPath, opts.name, helper), `${helper} should not exist`)))
-  })
+  }))
 
-  darwinTest('appCopyright/NSHumanReadableCopyright test', async (t, baseOpts) => {
+  test.serial('appCopyright maps to NSHumanReadableCopyright', darwinTest(async (t, baseOpts) => {
     const copyright = 'Copyright © 2003–2015 Organization. All rights reserved.'
     const opts = { ...baseOpts, appCopyright: copyright }
 
     const info = await packageAndParseInfoPlist(t, opts)
     t.is(info.NSHumanReadableCopyright, copyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
-  })
+  }))
 
-  darwinTest('app named Electron packaged successfully', async (t, baseOpts) => {
+  test.serial('app named Electron packaged successfully', darwinTest(async (t, baseOpts) => {
     const opts = { ...baseOpts, name: 'Electron' }
     const finalPath = (await packager(opts))[0]
     const appPath = path.join(finalPath, 'Electron.app')
     await util.assertDirectory(t, appPath, 'The Electron.app folder exists')
     await util.assertFile(t, path.join(appPath, 'Contents', 'MacOS', 'Electron'), 'The Electron.app/Contents/MacOS/Electron binary exists')
-  })
+  }))
 }

@@ -21,7 +21,7 @@ function generateNamePath (opts) {
   return opts.name + (opts.platform === 'win32' ? '.exe' : '')
 }
 
-test('setting the quiet option does not print messages', (t) => {
+test('setting the quiet option does not print messages', t => {
   util.setupConsoleWarnSpy()
   sinon.spy(console, 'error')
 
@@ -91,7 +91,7 @@ test('deprecatedParameter moves value in deprecated param to new param if new pa
   t.is('value', opts.new, 'new property is not overwritten')
 })
 
-util.testSinglePlatform('defaults test', async (t, opts) => {
+test.serial('defaults', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'defaultsTest'
   opts.dir = util.fixtureSubdir('basic')
   delete opts.platform
@@ -125,9 +125,9 @@ util.testSinglePlatform('defaults test', async (t, opts) => {
   await util.assertFilesEqual(t, path.join(opts.dir, 'ignore', 'this.txt'), path.join(resourcesPath, 'app', 'ignore', 'this.txt'), 'File under subdirectory of packaged app directory should match source file and not be ignored by default')
   await util.assertPathNotExists(t, path.join(resourcesPath, 'default_app'), 'The output directory should not contain the Electron default_app directory')
   await util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file')
-})
+}))
 
-util.testSinglePlatform('out test', async (t, opts) => {
+test.serial('out', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'outTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.out = 'dist'
@@ -137,9 +137,9 @@ util.testSinglePlatform('out test', async (t, opts) => {
        'Path should follow the expected format and be under the folder specified in `out`')
   await util.assertDirectory(t, finalPath, 'The expected output directory should exist')
   await util.assertDirectory(t, path.join(finalPath, util.generateResourcesPath(opts)), 'The output directory should contain the expected resources subdirectory')
-})
+}))
 
-util.testSinglePlatform('overwrite test', async (t, opts) => {
+test.serial('overwrite', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'overwriteTest'
   opts.dir = util.fixtureSubdir('basic')
 
@@ -154,9 +154,9 @@ util.testSinglePlatform('overwrite test', async (t, opts) => {
   opts.overwrite = true
   await packager(opts)
   await util.assertPathNotExists(t, testPath, 'The output directory should be regenerated when overwrite is true')
-})
+}))
 
-util.testSinglePlatform('overwrite test sans platform/arch set', async (t, opts) => {
+test.serial('overwrite test sans platform/arch set', util.testSinglePlatform(async (t, opts) => {
   delete opts.platfrom
   delete opts.arch
   opts.dir = util.fixtureSubdir('basic')
@@ -166,9 +166,9 @@ util.testSinglePlatform('overwrite test sans platform/arch set', async (t, opts)
   await util.assertPathExists(t, roundOnePaths[0], 'The output directory exists')
   const roundTwoPaths = await packager(opts)
   await util.assertPathExists(t, roundTwoPaths[0], 'The output directory exists')
-})
+}))
 
-util.testSinglePlatform('tmpdir test', async (t, opts) => {
+test.serial('tmpdir', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'tmpdirTest'
   opts.dir = path.join(__dirname, 'fixtures', 'basic')
   opts.out = 'dist'
@@ -176,9 +176,9 @@ util.testSinglePlatform('tmpdir test', async (t, opts) => {
 
   await packager(opts)
   await util.assertDirectory(t, path.join(opts.tmpdir, 'electron-packager'), 'The expected temp directory should exist')
-})
+}))
 
-util.testSinglePlatform('disable tmpdir test', async (t, opts) => {
+test.serial('tmpdir disabled', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'disableTmpdirTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.out = 'dist'
@@ -186,9 +186,9 @@ util.testSinglePlatform('disable tmpdir test', async (t, opts) => {
 
   const finalPath = (await packager(opts))[0]
   await util.assertDirectory(t, finalPath, 'The expected out directory should exist')
-})
+}))
 
-util.testSinglePlatform('deref symlink test', async (t, opts) => {
+test.serial('deref symlink', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'disableSymlinkDerefTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.derefSymlinks = false
@@ -201,7 +201,7 @@ util.testSinglePlatform('deref symlink test', async (t, opts) => {
   const destLink = path.join(finalPath, 'resources', 'app', 'main-link.js')
   await util.assertSymlink(t, destLink, 'The expected file should still be a symlink')
   await fs.remove(dest)
-})
+}))
 
 async function createExtraResourceStringTest (t, opts, platform) {
   const extra1Base = 'data1.txt'
@@ -239,20 +239,20 @@ async function createExtraResourceArrayTest (t, opts, platform) {
 }
 
 for (const platform of ['darwin', 'linux']) {
-  util.testSinglePlatform(`extraResource test: string (${platform})`, createExtraResourceStringTest, platform)
-  util.testSinglePlatform(`extraResource test: array (${platform})`, createExtraResourceArrayTest, platform)
+  test.serial(`extraResource: string (${platform})`, util.testSinglePlatform(createExtraResourceStringTest, platform))
+  test.serial(`extraResource: array (${platform})`, util.testSinglePlatform(createExtraResourceArrayTest, platform))
 }
 
-util.testSinglePlatform('building for Linux target sanitizes binary name', async (t, opts) => {
+test.serial('building for Linux target sanitizes binary name', util.testSinglePlatform(async (t, opts) => {
   opts.name = '@username/package-name'
   opts.dir = util.fixtureSubdir('basic')
 
   const paths = await packager(opts)
   t.is(1, paths.length, '1 bundle created')
   await util.assertFile(t, path.join(paths[0], '@username-package-name'), 'The sanitized binary filename should exist')
-})
+}))
 
-util.testSinglePlatform('executableName honored when building for Linux target', async (t, opts) => {
+test.serial('executableName honored when building for Linux target', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'PackageName'
   opts.executableName = 'my-package'
   opts.dir = util.fixtureSubdir('basic')
@@ -260,9 +260,9 @@ util.testSinglePlatform('executableName honored when building for Linux target',
   const paths = await packager(opts)
   t.is(1, paths.length, '1 bundle created')
   await util.assertFile(t, path.join(paths[0], 'my-package'), 'The executableName-based filename should exist')
-})
+}))
 
-util.packagerTest('fails with invalid version', util.invalidOptionTest({
+test('fails with invalid version', util.invalidOptionTest({
   name: 'invalidElectronTest',
   dir: util.fixtureSubdir('el-0374'),
   electronVersion: '0.0.1',
@@ -273,11 +273,11 @@ util.packagerTest('fails with invalid version', util.invalidOptionTest({
   }
 }))
 
-util.testSinglePlatform('dir argument test: should work with relative path', async (t, opts) => {
+test.serial('dir: relative path', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'ElectronTest'
   opts.dir = path.join('..', 'fixtures', 'el-0374')
   opts.electronVersion = '0.37.4'
 
   const finalPath = (await packager(opts))[0]
   t.is(path.join(t.context.workDir, 'ElectronTest-linux-x64'), finalPath, 'paths returned')
-})
+}))

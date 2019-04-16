@@ -172,8 +172,8 @@ test('win32metadata defaults', t => {
   t.is(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
 })
 
-function win32Test (description, extraOpts, executableBasename, executableMessage) {
-  util.packagerTest(description, async (t, opts) => {
+function win32Test (extraOpts, executableBasename, executableMessage) {
+  return util.packagerTest(async (t, opts) => {
     Object.assign(opts, win32Opts, extraOpts)
 
     const paths = await packager(opts)
@@ -182,26 +182,23 @@ function win32Test (description, extraOpts, executableBasename, executableMessag
   })
 }
 
-win32Test(
-  'win32 executable name is based on sanitized app name',
+test.serial('win32 executable name is based on sanitized app name', win32Test(
   { name: '@username/package-name' },
   '@username-package-name',
   'The sanitized EXE filename should exist'
-)
+))
 
-win32Test(
-  'win32 executable name uses executableName when available',
+test.serial('win32 executable name uses executableName when available', win32Test(
   { name: 'PackageName', executableName: 'my-package' },
   'my-package',
   'the executableName-based filename should exist'
-)
+))
 
-win32Test(
-  'win32 icon set',
+test.serial('win32 icon set', win32Test(
   { executableName: 'iconTest', arch: 'ia32', icon: path.join(__dirname, 'fixtures', 'monochrome') },
   'iconTest',
   'the Electron executable should exist'
-)
+))
 
 test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
