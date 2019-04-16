@@ -100,7 +100,6 @@
           "SwitchCase": 1
         }
       ],
-      "ava/prefer-async-await": 0,
       "no-console": 0,
       "strict": "error"
     }
