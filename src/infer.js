@@ -46,16 +46,24 @@ function resolvePromise (id, options) {
   })
 }
 
+function rangeFromElectronVersion (electronVersion) {
+  try {
+    return new semver.Range(electronVersion)
+  } catch (error) {
+    return null
+  }
+}
+
 async function getVersion (opts, electronProp) {
   const [depType, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
   if (packageName === 'electron-prebuilt-compile') {
-    // electron-prebuilt-compile cannot be resolved because `main` does not point
-    // to a valid JS file.
     const electronVersion = electronProp.pkg[depType][packageName]
-    const versionRange = new semver.Range(electronVersion)
-    if (versionRange.intersects(new semver.Range('< 1.6.5'))) {
+    const versionRange = rangeFromElectronVersion(electronVersion)
+    if (versionRange !== null && versionRange.intersects(new semver.Range('< 1.6.5'))) {
       if (!/^\d+\.\d+\.\d+/.test(electronVersion)) {
+        // electron-prebuilt-compile cannot be resolved because `main` does not point
+        // to a valid JS file.
         throw new Error('Using electron-prebuilt-compile with Electron Packager requires specifying an exact Electron version')
       }
 
