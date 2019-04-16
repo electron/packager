@@ -1,86 +1,9 @@
 'use strict'
 
-const metadata = require('./package.json')
+const metadata = require('../package.json')
 const os = require('os')
 const path = require('path')
 const sanitize = require('sanitize-filename')
-const yargs = require('yargs-parser')
-
-function parseCLIArgs (argv) {
-  let args = yargs(argv, {
-    boolean: [
-      'all',
-      'deref-symlinks',
-      'download.strictSSL',
-      'overwrite',
-      'prune',
-      'quiet'
-    ],
-    default: {
-      'deref-symlinks': true,
-      'download.strictSSL': true,
-      prune: true
-    },
-    string: [
-      'electron-version',
-      'out'
-    ]
-  })
-
-  args.dir = args._[0]
-  args.name = args._[1]
-
-  const protocolSchemes = [].concat(args.protocol || [])
-  const protocolNames = [].concat(args.protocolName || [])
-
-  if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
-    args.protocols = protocolSchemes.map(function (scheme, i) {
-      return { schemes: [scheme], name: protocolNames[i] }
-    })
-  }
-
-  if (args.out === '') {
-    warning('Specifying --out= without a value is the same as the default value')
-    args.out = null
-  }
-
-  // Overrides for multi-typed arguments, because minimist doesn't support it
-
-  // asar: `Object` or `true`
-  if (args.asar === 'true' || args.asar instanceof Array) {
-    warning('--asar does not take any arguments, it only has sub-properties (see --help)')
-    args.asar = true
-  }
-
-  // osx-sign: `Object` or `true`
-  if (args.osxSign === 'true') {
-    warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)')
-    args.osxSign = true
-  }
-
-  if (args.osxNotarize) {
-    let notarize = true
-    if (typeof args.osxNotarize !== 'object' || Array.isArray(args.osxNotarize)) {
-      warning('--osx-notarize does not take any arguments, it only has sub-properties (see --help)')
-      notarize = false
-    } else if (!args.osxSign) {
-      warning('Notarization was enabled but macOS code signing was not, code signing is a requirement for notarization, notarize will not run')
-      notarize = false
-    }
-
-    if (!notarize) {
-      args.osxNotarize = null
-    }
-  }
-
-  // tmpdir: `String` or `false`
-  if (args.tmpdir === 'false') {
-    warning('--tmpdir=false is deprecated, use --no-tmpdir instead')
-    args.tmpdir = false
-  }
-
-  return args
-}
 
 function sanitizeAppName (name) {
   return sanitize(name, { replacement: '-' })
@@ -130,8 +53,6 @@ function createAsarOpts (opts) {
 }
 
 module.exports = {
-  parseCLIArgs: parseCLIArgs,
-
   ensureArray: function ensureArray (value) {
     return Array.isArray(value) ? value : [value]
   },

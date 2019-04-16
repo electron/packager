@@ -1,7 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
-const hooks = require('../hooks')
+const hooks = require('../src/hooks')
 const packager = require('..')
 const test = require('ava')
 const util = require('./_util')

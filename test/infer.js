@@ -1,7 +1,7 @@
 'use strict'
 
 const fs = require('fs-extra')
-const getMetadataFromPackageJSON = require('../infer')
+const getMetadataFromPackageJSON = require('../src/infer')
 const packager = require('..')
 const path = require('path')
 const pkgUp = require('pkg-up')

@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const prune = require('../prune')
+const prune = require('../src/prune')
 const test = require('ava')
 const util = require('./_util')
 
