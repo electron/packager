@@ -38,11 +38,12 @@ test.afterEach.always(async t => {
   await fs.remove(t.context.tempDir)
 })
 
-function testSinglePlatform (name, testFunction, testFunctionArgs, parallel) {
-  module.exports.packagerTest(name, (t, opts) => {
-    Object.assign(opts, module.exports.singlePlatformOptions())
-    return testFunction(t, opts, ...testFunctionArgs)
-  }, parallel)
+function packagerTestOptions (t) {
+  return {
+    name: 'packagerTest',
+    out: t.context.workDir,
+    tmpdir: t.context.tempDir
+  }
 }
 
 module.exports = {
@@ -85,7 +86,7 @@ module.exports = {
     }
   },
   invalidOptionTest: function invalidOptionTest (opts, err, message) {
-    return t => t.throwsAsync(packager(opts), err || null, message)
+    return t => t.throwsAsync(packager({ ...packagerTestOptions(t), ...opts }), err || null, message)
   },
   packageAndEnsureResourcesPath: async function packageAndEnsureResourcesPath (t, opts) {
     const paths = await packager(opts)
@@ -93,15 +94,8 @@ module.exports = {
     await module.exports.assertDirectory(t, resourcesPath, 'The output directory should contain the expected resources subdirectory')
     return resourcesPath
   },
-  packagerTest: function packagerTest (name, testFunction, parallel) {
-    const testDefinition = parallel ? test : test.serial
-    testDefinition(name, async t => {
-      await testFunction(t, {
-        name: 'packagerTest',
-        out: t.context.workDir,
-        tmpdir: t.context.tempDir
-      })
-    })
+  packagerTest: function packagerTest (testFunction) {
+    return t => testFunction(t, packagerTestOptions(t))
   },
   parsePlist: async function parsePlist (t, appPath) {
     const plistPath = path.join(appPath, 'Contents', 'Info.plist')
@@ -116,18 +110,13 @@ module.exports = {
       sinon.spy(console, 'warn')
     }
   },
-  singlePlatformOptions: function singlePlatformOptions () {
-    return {
+  testSinglePlatform: function (testFunction, ...testFunctionArgs) {
+    return t => testFunction(t, {
+      ...packagerTestOptions(t),
       platform: 'linux',
       arch: 'x64',
       electronVersion: config.version
-    }
-  },
-  testSinglePlatform: function (name, testFunction, ...testFunctionArgs) {
-    return testSinglePlatform(name, testFunction, testFunctionArgs, false)
-  },
-  testSinglePlatformParallel: function (name, testFunction, ...testFunctionArgs) {
-    return testSinglePlatform(name, testFunction, testFunctionArgs, true)
+    }, ...testFunctionArgs)
   },
   verifyPackageExistence: async function verifyPackageExistence (finalPaths) {
     return Promise.all(finalPaths.map(async finalPath => {
