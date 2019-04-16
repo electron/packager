@@ -29,13 +29,12 @@ async function hookTest (wantHookCalled, hookName, t, opts) {
 }
 
 function createHookTest (hookName) {
-  util.packagerTest(`platform=all test (one arch) (${hookName} hook)`,
-                    async (t, opts) => hookTest(true, hookName, t, opts))
+  return util.packagerTest(async (t, opts) => hookTest(true, hookName, t, opts))
 }
 
-createHookTest('afterCopy')
-createHookTest('afterPrune')
-createHookTest('afterExtract')
+test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
+test.serial('platform=all (one arch) for afterPrune hook', createHookTest('afterPrune'))
+test.serial('platform=all (one arch) for afterExtract hook', createHookTest('afterExtract'))
 
 test('promisifyHooks executes functions in parallel', async t => {
   let output = '0'
@@ -73,7 +72,7 @@ test('serialHooks executes functions serially', async t => {
   t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order')
 })
 
-util.packagerTest('prune hook does not get called when prune=false', (t, opts) => {
+test.serial('prune hook does not get called when prune=false', util.packagerTest((t, opts) => {
   opts.prune = false
   return hookTest(false, 'afterPrune', t, opts)
-})
+}))

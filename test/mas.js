@@ -2,6 +2,7 @@
 
 const packager = require('..')
 const path = require('path')
+const test = require('ava')
 const util = require('./_util')
 
 if (!(process.env.CI && process.platform === 'win32')) {
@@ -13,13 +14,13 @@ if (!(process.env.CI && process.platform === 'win32')) {
     platform: 'mas'
   }
 
-  util.packagerTest('warn if building for mas and not signing', async (t, baseOpts) => {
+  test.serial('warn if building for mas and not signing', util.packagerTest(async (t, baseOpts) => {
     util.setupConsoleWarnSpy()
     await packager({ ...baseOpts, ...masOpts })
     util.assertWarning(t, 'WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.')
-  })
+  }))
 
-  util.packagerTest('update Login Helper if it exists', async (t, baseOpts) => {
+  test.serial('update Login Helper if it exists', util.packagerTest(async (t, baseOpts) => {
     const helperName = `${masOpts.name} Login Helper`
     const finalPath = (await packager({ ...baseOpts, ...masOpts }))[0]
     const helperPath = path.join(finalPath, `${masOpts.name}.app`, 'Contents', 'Library', 'LoginItems', `${helperName}.app`)
@@ -30,5 +31,5 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.is(plistData.CFBundleName, helperName, 'CFBundleName is renamed Login Helper')
     t.is(plistData.CFBundleIdentifier, 'com.electron.mastest.loginhelper')
     await util.assertPathExists(t, path.join(contentsPath, 'MacOS', helperName), 'renamed Login Helper executable exists')
-  })
+  }))
 }
