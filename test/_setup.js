@@ -1,13 +1,13 @@
 'use strict'
 
-const common = require('../common')
-const download = require('../download')
+const common = require('../src/common')
+const download = require('../src/download')
 const config = require('./config.json')
 const { exec } = require('mz/child_process')
 const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
-const targets = require('../targets')
+const targets = require('../src/targets')
 
 function fixtureSubdir (subdir) {
   return path.join(__dirname, 'fixtures', subdir)

@@ -2,9 +2,9 @@
   "name": "electron-packager",
   "version": "13.1.1",
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
-  "main": "index.js",
+  "main": "src/index.js",
   "bin": {
-    "electron-packager": "cli.js"
+    "electron-packager": "bin/electron-packager.js"
   },
   "repository": {
     "type": "git",
