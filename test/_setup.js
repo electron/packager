@@ -3,11 +3,14 @@
 const common = require('../src/common')
 const download = require('../src/download')
 const config = require('./config.json')
-const { exec } = require('mz/child_process')
+const childProcess = require('child_process')
 const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
+const { promisify } = require('util')
 const targets = require('../src/targets')
+
+childProcess.exec = promisify(childProcess.exec)
 
 function fixtureSubdir (subdir) {
   return path.join(__dirname, 'fixtures', subdir)
@@ -66,7 +69,7 @@ async function npmInstallForFixture (fixture) {
     return true
   } else {
     console.log(`Running npm install in fixtures/${fixture}...`)
-    return exec('npm install --no-bin-links', { cwd: fixtureDir })
+    return childProcess.exec('npm install --no-bin-links', { cwd: fixtureDir })
   }
 }
 

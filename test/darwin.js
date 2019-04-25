@@ -1,14 +1,17 @@
 'use strict'
 
 const config = require('./config.json')
-const { exec } = require('mz/child_process')
+const childProcess = require('child_process')
 const fs = require('fs-extra')
 const mac = require('../src/mac')
 const packager = require('..')
 const path = require('path')
 const plist = require('plist')
+const { promisify } = require('util')
 const test = require('ava')
 const util = require('./_util')
+
+childProcess.exec = promisify(childProcess.exec)
 
 const darwinOpts = {
   name: 'darwinTest',
@@ -296,7 +299,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     const appPath = path.join(finalPath, opts.name + '.app')
     await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
     try {
-      await exec(`codesign -v ${appPath}`)
+      await childProcess.exec(`codesign -v ${appPath}`)
       t.pass('codesign should verify successfully')
     } catch (err) {
       const notFound = err && err.code === 127
