@@ -29,7 +29,6 @@ feature. Known modules include:
 * `electron-download`
 * `electron-osx-sign`
 * `electron-packager` (always use this one before filing an issue)
-* `extract-zip`
 * `get-package-info`
 
 We use the [`debug`](https://www.npmjs.com/package/debug#usage) module for this functionality. It
