@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/electron-userland/electron-packager",
   "dependencies": {
-    "asar": "^1.0.0",
+    "asar": "^2.0.0",
     "debug": "^4.0.1",
     "electron-download": "^4.1.1",
     "electron-notarize": "^0.0.5",
