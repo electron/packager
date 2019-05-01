@@ -54,9 +54,11 @@
     "node": ">= 8.0"
   },
   "scripts": {
+    "ava": "ava test/index.js",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "coverage": "nyc npm run ava",
     "lint": "eslint .",
-    "test": "npm run lint && nyc ava test/index.js"
+    "test": "npm run lint && npm run coverage"
   },
   "directories": {
     "test": "test"
