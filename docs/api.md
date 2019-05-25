@@ -4,7 +4,11 @@ Short example:
 
 ```javascript
 const packager = require('electron-packager')
-const appPaths = await packager(options)
+
+async function bundleElectronApp(options) {
+  const appPaths = await packager(options)
+  console.log(`Electron app bundles created:\n${appPaths.join("\n")}`)
+}
 ```
 
 `appPaths` is described in the [return value](#return-value) section.
