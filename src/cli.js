@@ -20,7 +20,7 @@ module.exports = {
       boolean: [
         'all',
         'deref-symlinks',
-        'download.strictSSL',
+        'download.rejectUnauthorized',
         'junk',
         'overwrite',
         'prune',
@@ -28,7 +28,7 @@ module.exports = {
       ],
       default: {
         'deref-symlinks': true,
-        'download.strictSSL': true,
+        'download.rejectUnauthorized': true,
         junk: true,
         prune: true
       },
