@@ -2,7 +2,6 @@
 
 const debug = require('debug')('electron-packager')
 const path = require('path')
-const { promisify } = require('util')
 
 const App = require('./platform')
 const common = require('./common')
@@ -92,7 +91,7 @@ class WindowsApp extends App {
       }
 
       debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
-      return promisify(require('rcedit'))(this.electronBinaryPath, rcOpts)
+      return require('rcedit')(this.electronBinaryPath, rcOpts)
     } catch (err) {
       // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
       /* istanbul ignore next */
