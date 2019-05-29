@@ -3,7 +3,6 @@
 const common = require('./common')
 const debug = require('debug')('electron-packager')
 const download = require('./download')
-const extract = require('extract-zip')
 const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
@@ -11,6 +10,9 @@ const ignore = require('./ignore')
 const path = require('path')
 const { promisify } = require('util')
 const targets = require('./targets')
+const zip = require('cross-zip')
+
+const unzip = promisify(zip.unzip)
 
 function debugHostInfo () {
   debug(common.hostInfo())
@@ -68,7 +70,7 @@ class Packager {
 
   async extractElectronZip (comboOpts, zipPath, buildDir) {
     debug(`Extracting ${zipPath} to ${buildDir}`)
-    await promisify(extract)(zipPath, { dir: buildDir })
+    await unzip(zipPath, buildDir)
     await hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch])
   }
 
