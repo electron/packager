@@ -2,6 +2,7 @@
 
 const common = require('./common')
 const debug = require('debug')('electron-packager')
+const junk = require('junk')
 const path = require('path')
 const prune = require('./prune')
 const targets = require('./targets')
@@ -72,6 +73,12 @@ function userIgnoreFilter (opts) {
     const fullPath = path.resolve(file)
     if (outIgnores.includes(fullPath)) {
       return false
+    }
+
+    if (opts.junk !== false) { // defaults to true
+      if (junk.is(path.basename(fullPath))) {
+        return false
+      }
     }
 
     let name = fullPath.split(path.resolve(opts.dir))[1]

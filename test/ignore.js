@@ -20,18 +20,30 @@ async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore
   await util.assertPathNotExists(t, path.join(resourcesPath, 'app', ignoredBasenameToCheck), 'Out dir must not exist in output app directory')
 }
 
+async function copyDirToTempDirWithIgnores (t, opts) {
+  ignore.generateIgnores(opts)
+  const targetDir = path.join(t.context.tempDir, 'result')
+  await fs.copy(opts.dir, targetDir, { dereference: false, filter: ignore.userIgnoreFilter(opts) })
+  return targetDir
+}
+
+async function assertFileIgnored (t, targetDir, ignoredFile) {
+  await util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`)
+}
+
+async function assertFileNotIgnored (t, targetDir, notIgnoredFile) {
+  await util.assertPathExists(t, path.join(targetDir, notIgnoredFile), `The expected output directory should exist and contain ${notIgnoredFile}`)
+}
+
 async function ignoreTest (t, opts, ignorePattern, ignoredFile) {
   opts.dir = util.fixtureSubdir('basic')
   if (ignorePattern) {
     opts.ignore = ignorePattern
   }
 
-  const targetDir = path.join(t.context.tempDir, 'result')
-  ignore.generateIgnores(opts)
-
-  await fs.copy(opts.dir, targetDir, { dereference: false, filter: ignore.userIgnoreFilter(opts) })
-  await util.assertPathExists(t, path.join(targetDir, 'package.json'), 'The expected output directory should exist and contain files')
-  await util.assertPathNotExists(t, path.join(targetDir, ignoredFile), `Ignored file '${ignoredFile}' should not exist in copied directory`)
+  const targetDir = await copyDirToTempDirWithIgnores(t, opts)
+  await assertFileIgnored(t, targetDir, ignoredFile)
+  await assertFileNotIgnored(t, targetDir, 'package.json')
 }
 
 async function ignoreOutDirTest (t, opts, distPath) {
@@ -72,6 +84,19 @@ test('ignore: RegExp', util.testSinglePlatform(ignoreTest, /ignorethis/, 'ignore
 test('ignore: Function', util.testSinglePlatform(ignoreTest, file => file.match(/ignorethis/), 'ignorethis.txt'))
 test('ignore: string with slash', util.testSinglePlatform(ignoreTest, 'ignore/this', path.join('ignore', 'this.txt')))
 test('ignore: only match subfolder of app', util.testSinglePlatform(ignoreTest, 'electron-packager', path.join('electron-packager', 'readme.txt')))
+
+test('ignore: junk by default', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = util.fixtureSubdir('ignore-junk')
+  const targetDir = await copyDirToTempDirWithIgnores(t, opts)
+  await assertFileIgnored(t, targetDir, 'subfolder/Thumbs.db')
+}))
+test('ignore: not junk when junk: false', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = util.fixtureSubdir('ignore-junk')
+  opts.junk = false
+  const targetDir = await copyDirToTempDirWithIgnores(t, opts)
+  await assertFileNotIgnored(t, targetDir, 'subfolder/Thumbs.db')
+}))
+
 test.serial('ignore out dir', util.testSinglePlatform(ignoreOutDirTest, 'ignoredOutDir'))
 test.serial('ignore out dir: unnormalized path', util.testSinglePlatform(ignoreOutDirTest, './ignoredOutDir'))
 test.serial('ignore out dir: implicit path', util.testSinglePlatform(async (t, opts) => {
