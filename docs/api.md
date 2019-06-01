@@ -307,9 +307,18 @@ described after the list*):
 
 Alternatively, this can be a predicate function that, given an absolute file path, returns `true` if
 the file should be ignored, or `false` if the file should be kept. *This does not use any of the
-default ignored directories listed above.*
+default ignored files/directories listed above.*
 
 **Note:** `ignore` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
+
+##### `junk`
+
+*Boolean* (default: `true`)
+
+Ignores [system junk files](https://github.com/sindresorhus/junk) when copying the Electron app,
+regardless of the [`ignore`](#ignore) option.
+
+**Note:** `junk` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `name`
 
@@ -359,6 +368,7 @@ gets skipped over:
 * [`afterPrune`](#afterprune)
 * [`derefSymlinks`](#derefsymlinks)
 * [`ignore`](#ignore)
+* [`junk`](#junk)
 * [`prune`](#prune)
 
 ##### `prune`

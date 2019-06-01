@@ -21,6 +21,7 @@ module.exports = {
         'all',
         'deref-symlinks',
         'download.strictSSL',
+        'junk',
         'overwrite',
         'prune',
         'quiet'
@@ -28,6 +29,7 @@ module.exports = {
       default: {
         'deref-symlinks': true,
         'download.strictSSL': true,
+        junk: true,
         prune: true
       },
       string: [
