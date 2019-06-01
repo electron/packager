@@ -34,17 +34,17 @@ test('CLI argument test: --osx-sign=true', t => {
 
 test('CLI argument test: --osx-notarize=true', t => {
   const args = cli.parseArgs(['--osx-notarize=true'])
-  t.falsy(args.osxNotarize, null)
+  t.falsy(args.osxNotarize, '')
 })
 
 test('CLI argument test: --osx-notarize is array', t => {
   const args = cli.parseArgs(['--osx-notarize=1', '--osx-notarize=2'])
-  t.falsy(args.osxNotarize, null)
+  t.falsy(args.osxNotarize, '')
 })
 
 test('CLI argument test: --osx-notarize without --osx-sign', t => {
   const args = cli.parseArgs(['--osx-notarize.appleId=myid'])
-  t.falsy(args.osxNotarize, null)
+  t.falsy(args.osxNotarize, '')
 })
 
 test('CLI argument test: --tmpdir=false', t => {
