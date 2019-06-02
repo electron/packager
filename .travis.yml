@@ -9,14 +9,12 @@ node_js:
 - '8'
 - '10'
 cache:
-- apt: true
 - directories:
-  - "node_modules"
   - "$HOME/.electron"
+- npm: true
+- yarn: true
 before_install: test/ci/before_install.sh
-install:
-- npm install
-- npm update
+install: if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then yarn; else npm install && npm update; fi
 before_script: test/ci/_before_script.js
 after_success: npm run codecov
 branches:
@@ -25,6 +23,7 @@ branches:
   - /^v\d+\.\d+\.\d+/
 env:
   global:
+    - YARN_GPG=no
     # prevent wine popup dialogs about installing additional packages
     - WINEDLLOVERRIDES="mscoree,mshtml="
     - WINEDEBUG="-all"
