@@ -63,28 +63,6 @@ async function preDownloadElectron () {
   await downloadMASLoginHelperElectronZip()
 }
 
-async function npmInstallForFixture (fixture) {
-  const fixtureDir = fixtureSubdir(fixture)
-  if (await fs.pathExists(path.join(fixtureDir, 'node_modules'))) {
-    return true
-  } else {
-    console.log(`Running npm install in fixtures/${fixture}...`)
-    return childProcess.exec('npm install --no-bin-links', { cwd: fixtureDir })
-  }
-}
-
-async function npmInstallForFixtures () {
-  const fixtures = [
-    'asar-prebuilt',
-    'basic',
-    'basic-renamed-to-electron',
-    'electron-in-dependencies',
-    'infer-missing-version-only',
-    'el-0374'
-  ]
-  return Promise.all(fixtures.map(npmInstallForFixture))
-}
-
 const WORK_CWD = path.join(__dirname, 'work')
 
 async function ensureEmptyWorkDirExists () {
@@ -97,7 +75,6 @@ module.exports = {
   setupTestsuite: async function setupTestsuite () {
     try {
       await preDownloadElectron()
-      await npmInstallForFixtures()
     } catch (error) {
       console.error(error.stack || error)
       return process.exit(1)
