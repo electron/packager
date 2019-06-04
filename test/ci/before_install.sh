@@ -9,9 +9,9 @@ case "$TRAVIS_OS_NAME" in
     ;;
   "osx")
     "$(dirname $0)"/codesign/import-testing-cert-ci.sh
-    npm install --no-save wine-darwin@1.9.17-1
+    brew install wine
     # Setup ~/.wine by running a command
-    ./node_modules/.bin/wine hostname
+    wine hostname
     if [[ -n "$TRAVIS" ]]; then
         npm install -g yarn
     fi
