@@ -297,7 +297,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
       opts.osxSign = { identity: 'codesign.electronjs.org' }
 
       const debug = require('debug')
-      debug.enable('electron-packager,electron-osx-sign*')
+      debug.enable('electron*')
       const finalPath = (await packager(opts))[0]
       console.log('Finished Packager')
       const appPath = path.join(finalPath, opts.name + '.app')
