@@ -22,8 +22,8 @@ openssl x509 -inform PEM -in "$dir"/certificate.pem -outform DER -out "$dir"/cer
 rm -f "$dir"/certificate.pem
 
 # Import Certs
-security import "$dir"/certificate.cer -k $KEY_CHAIN
-security import "$dir"/private.pem -k $KEY_CHAIN
+security import "$dir"/certificate.cer -k $KEY_CHAIN -T /usr/bin/codesign
+security import "$dir"/private.pem -k $KEY_CHAIN -T /usr/bin/codesign
 
 # Generate Trust Settings
 node "$(dirname $0)"/gen-trust.js "$dir"/certificate.cer "$dir"/trust.xml
