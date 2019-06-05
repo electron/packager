@@ -13,8 +13,8 @@ security set-keychain-settings -t 3600 -u $KEY_CHAIN
 echo "Add keychain to keychain-list"
 security list-keychains -s mac-build.keychain
 
-echo "Setting key partition list"
-security set-key-partition-list -S apple-tool:,apple: -s -k $KEYCHAIN_PASSWORD $KEY_CHAIN
-
 echo Generating Identity
 "$(dirname $0)"/generate-identity.sh
+
+echo "Setting key partition list"
+security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEY_CHAIN
