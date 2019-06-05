@@ -26,6 +26,7 @@ branches:
   - /^v\d+\.\d+\.\d+/
 env:
   global:
+    - DEBUG="electron-osx-sign"
     # prevent wine popup dialogs about installing additional packages
     - WINEDLLOVERRIDES="mscoree,mshtml="
     - WINEDEBUG="-all"
