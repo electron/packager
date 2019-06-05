@@ -296,10 +296,13 @@ if (!(process.env.CI && process.platform === 'win32')) {
     test.serial('end-to-end codesign', darwinTest(async (t, opts) => {
       opts.osxSign = { identity: 'codesign.electronjs.org' }
 
+      console.log('Running Packager')
       const finalPath = (await packager(opts))[0]
+      console.log('Finished Packager')
       const appPath = path.join(finalPath, opts.name + '.app')
       await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
-      await exec(`codesign -v ${appPath}`)
+      console.log(`Verifying with \`codesign --verify ${appPath}\``)
+      await exec(`codesign --verify --verbose ${appPath}`)
       t.pass('codesign should verify successfully')
     }))
   }
