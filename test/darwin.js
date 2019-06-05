@@ -296,7 +296,8 @@ if (!(process.env.CI && process.platform === 'win32')) {
     test.serial('end-to-end codesign', darwinTest(async (t, opts) => {
       opts.osxSign = { identity: 'codesign.electronjs.org' }
 
-      console.log('Running Packager')
+      const debug = require('debug')
+      debug.enable('electron-packager,electron-osx-sign')
       const finalPath = (await packager(opts))[0]
       console.log('Finished Packager')
       const appPath = path.join(finalPath, opts.name + '.app')
