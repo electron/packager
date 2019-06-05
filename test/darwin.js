@@ -299,7 +299,6 @@ if (!(process.env.CI && process.platform === 'win32')) {
       const finalPath = (await packager(opts))[0]
       const appPath = path.join(finalPath, opts.name + '.app')
       await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
-      console.log(`Verifying with \`codesign --verify ${appPath}\``)
       await exec(`codesign --verify --verbose ${appPath}`)
       t.pass('codesign should verify successfully')
     }))
