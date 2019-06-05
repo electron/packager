@@ -11,7 +11,7 @@ const { promisify } = require('util')
 const test = require('ava')
 const util = require('./_util')
 
-childProcess.exec = promisify(childProcess.exec)
+const exec = promisify(childProcess.exec)
 
 const darwinOpts = {
   name: 'darwinTest',
@@ -292,25 +292,17 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.true(signOpts.hardenedRuntime, 'hardenedRuntime forced to true')
   })
 
-  test.serial('end-to-end codesign', darwinTest(async (t, opts) => {
-    opts.osxSign = { identity: 'Developer CodeCert' }
+  if (process.platform === 'darwin') {
+    test.serial('end-to-end codesign', darwinTest(async (t, opts) => {
+      opts.osxSign = { identity: 'codesign.electronjs.org' }
 
-    const finalPath = (await packager(opts))[0]
-    const appPath = path.join(finalPath, opts.name + '.app')
-    await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
-    try {
-      await childProcess.exec(`codesign -v ${appPath}`)
+      const finalPath = (await packager(opts))[0]
+      const appPath = path.join(finalPath, opts.name + '.app')
+      await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
+      await exec(`codesign --verify --verbose ${appPath}`)
       t.pass('codesign should verify successfully')
-    } catch (err) {
-      const notFound = err && err.code === 127
-
-      if (notFound) {
-        console.log('codesign not installed; skipped')
-      } else {
-        throw err
-      }
-    }
-  }))
+    }))
+  }
 
   test.serial('macOS: binary naming', darwinTest(binaryNameTest))
   test.serial('macOS: sanitized binary naming', darwinTest(binaryNameTest, { name: '@username/package-name' }, '@username-package-name'))

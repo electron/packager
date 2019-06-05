@@ -295,8 +295,6 @@ class MacApp extends App {
         // Although not signed successfully, the application is packed.
         common.warning(`Code sign failed; please retry manually. ${err}`)
       }
-    } else {
-      return Promise.resolve()
     }
   }
 
