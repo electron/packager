@@ -294,7 +294,6 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   if (process.platform === 'darwin') {
     test.serial('end-to-end codesign', darwinTest(async (t, opts) => {
-      t.timeout(600000) // eslint-disable-line ava/use-t-well
       opts.osxSign = { identity: 'codesign.electronjs.org', verbose: 4 }
 
       const finalPath = (await packager(opts))[0]

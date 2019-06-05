@@ -73,7 +73,7 @@
   "ava": {
     "babel": false,
     "compileEnhancements": false,
-    "timeout": "60s"
+    "timeout": "5m"
   },
   "eslintConfig": {
     "extends": [
