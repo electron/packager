@@ -20,8 +20,7 @@ test('asar argument test: asar is not an Object or a bool', t => {
 
 test.serial('default_app.asar removal test', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'default_appASARTest'
-  opts.dir = util.fixtureSubdir('el-0374')
-  opts.electronVersion = '0.37.4'
+  opts.dir = util.fixtureSubdir('basic')
 
   const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
   await util.assertPathNotExists(t, path.join(resourcesPath, 'default_app.asar'), 'The output directory should not contain the Electron default_app.asar file')

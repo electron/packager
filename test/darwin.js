@@ -21,13 +21,6 @@ const darwinOpts = {
   platform: 'darwin'
 }
 
-const el0374Opts = {
-  ...darwinOpts,
-  name: 'el0374Test',
-  dir: util.fixtureSubdir('el-0374'),
-  electronVersion: '0.37.4'
-}
-
 function testWrapper (extraOpts, testFunction, ...extraArgs) {
   return util.packagerTest((t, baseOpts) => testFunction(t, { ...baseOpts, ...extraOpts }, ...extraArgs))
 }
@@ -184,8 +177,6 @@ if (!(process.env.CI && process.platform === 'win32')) {
   const icnsPath = `${iconBase}.icns`
 
   test.serial('macOS icon: .icns specified', darwinTest(iconTest, icnsPath, icnsPath))
-  // This test exists because the .icns file basename changed as of 0.37.4
-  test.serial('macOS icon: Electron 0.37.4, .icns specified', testWrapper(el0374Opts, iconTest, icnsPath, icnsPath))
   test.serial('macOS icon: .ico specified (should replace with .icns)', darwinTest(iconTest, `${iconBase}.ico`, icnsPath))
   test.serial('macOS icon: basename only (should add .icns)', darwinTest(iconTest, iconBase, icnsPath))
 
