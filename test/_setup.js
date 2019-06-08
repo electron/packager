@@ -25,7 +25,7 @@ function skipDownloadingMacZips (platform, arch) {
 }
 
 async function downloadAll (version) {
-  console.log(`Calling electron-download for ${version} before running tests...`)
+  console.log(`Downloading Electron v${version} before running tests...`)
   const combinations = download.createDownloadCombos({ electronVersion: config.version, all: true }, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
   return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
@@ -40,27 +40,15 @@ async function downloadElectronZip (version, options) {
   })
 }
 
-async function downloadMASLoginHelperElectronZip () {
-  if (process.platform !== 'win32') {
-    const version = '2.0.0-beta.1'
-    console.log(`Calling electron-download for ${version} (MAS only) before running tests...`)
-    return downloadElectronZip(version, { platform: 'mas', arch: 'x64' })
-  }
-}
-
 /**
- * Download all Electron distributions before running tests to avoid timing out due to network
- * speed. Most tests run with the config.json version, but we have some tests using 0.37.4, an
- * `electron` module specific test using 1.3.1., and an MAS-specific test using 2.0.0-beta.1.
+ * Download all Electron distributions before running tests to avoid timing out due to
+ * network speed.
  */
 async function preDownloadElectron () {
   const versions = [
-    config.version,
-    '0.37.4',
-    '1.3.1'
+    config.version
   ]
   await Promise.all(versions.map(downloadAll))
-  await downloadMASLoginHelperElectronZip()
 }
 
 const WORK_CWD = path.join(__dirname, 'work')

@@ -61,7 +61,7 @@ test('sanitize app name for use in the out directory name', t => {
 test('cannot build apps where the name ends in " Helper"', async t => {
   const opts = {
     arch: 'x64',
-    dir: path.join(__dirname, 'fixtures', 'el-0374'),
+    dir: util.fixtureSubdir('basic'),
     name: 'Bad Helper',
     platform: 'linux'
   }
@@ -264,7 +264,6 @@ test.serial('executableName honored when building for Linux target', util.testSi
 
 test('fails with invalid version', util.invalidOptionTest({
   name: 'invalidElectronTest',
-  dir: util.fixtureSubdir('el-0374'),
   electronVersion: '0.0.1',
   arch: 'x64',
   platform: 'linux',
@@ -275,8 +274,7 @@ test('fails with invalid version', util.invalidOptionTest({
 
 test.serial('dir: relative path', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'ElectronTest'
-  opts.dir = path.join('..', 'fixtures', 'el-0374')
-  opts.electronVersion = '0.37.4'
+  opts.dir = path.join('..', 'fixtures', 'basic')
 
   const finalPath = (await packager(opts))[0]
   t.is(path.join(t.context.workDir, 'ElectronTest-linux-x64'), finalPath, 'paths returned')
