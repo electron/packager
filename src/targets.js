@@ -1,7 +1,7 @@
 'use strict'
 
 const common = require('./common')
-const hostArch = require('electron-download/lib/arch').host
+const { getHostArch } = require('@electron/get')
 const semver = require('semver')
 
 const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el']
@@ -61,7 +61,7 @@ function unsupportedListOption (name, value, supported) {
 }
 
 function usingOfficialElectronPackages (opts) {
-  return !opts.download || !opts.download.hasOwnProperty('mirror')
+  return !opts.download || !opts.download.hasOwnProperty('mirrorOptions')
 }
 
 function validOfficialPlatformArch (opts, platform, arch) {
@@ -107,7 +107,7 @@ module.exports = {
     let list = opts[name]
     if (!list) {
       if (name === 'arch') {
-        list = hostArch()
+        list = getHostArch()
       } else {
         list = process[name]
       }
