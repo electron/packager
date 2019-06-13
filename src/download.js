@@ -2,8 +2,7 @@
 
 const common = require('./common')
 const debug = require('debug')('electron-packager')
-const download = require('electron-download')
-const { promisify } = require('util')
+const { downloadArtifact } = require('@electron/get')
 const semver = require('semver')
 const targets = require('./targets')
 
@@ -13,6 +12,7 @@ function createDownloadOpts (opts, platform, arch) {
   common.subOptionWarning(downloadOpts, 'download', 'platform', platform, opts.quiet)
   common.subOptionWarning(downloadOpts, 'download', 'arch', arch, opts.quiet)
   common.subOptionWarning(downloadOpts, 'download', 'version', opts.electronVersion, opts.quiet)
+  common.subOptionWarning(downloadOpts, 'download', 'artifactName', 'electron', opts.quiet)
 
   return downloadOpts
 }
@@ -32,6 +32,6 @@ module.exports = {
       downloadOpts.arch = 'arm'
     }
     debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`)
-    return promisify(download)(downloadOpts)
+    return downloadArtifact(downloadOpts)
   }
 }

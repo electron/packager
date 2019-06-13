@@ -10,9 +10,9 @@ test('CLI argument test: --electron-version populates opts.electronVersion', t =
   t.is(args.electronVersion, '1.2.3')
 })
 
-test('CLI argument test: --download.strictSSL default', t => {
+test('CLI argument test: --download.rejectUnauthorized default', t => {
   const args = cli.parseArgs([])
-  t.true(args.download.strictSSL, 'default for --download.strictSSL is true')
+  t.true(args.download.rejectUnauthorized, 'default for --download.rejectUnauthorized is true')
 })
 
 test('CLI argument test: --asar=true', t => {

@@ -34,9 +34,9 @@ async function downloadAll (version) {
 async function downloadElectronZip (version, options) {
   return download.downloadElectronZip({
     ...options,
-    cache: path.join(os.homedir(), '.electron'),
-    quiet: !!process.env.CI,
-    version: version
+    artifactName: 'electron',
+    cacheRoot: path.join(os.homedir(), '.electron'),
+    version
   })
 }
 

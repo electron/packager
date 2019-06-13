@@ -3,7 +3,7 @@
 const common = require('../src/common')
 const download = require('../src/download')
 const fs = require('fs-extra')
-const hostArch = require('electron-download/lib/arch').host
+const { getHostArch } = require('@electron/get')
 const packager = require('..')
 const path = require('path')
 const sinon = require('sinon')
@@ -31,18 +31,19 @@ test('setting the quiet option does not print messages', t => {
   t.true(console.error.notCalled, 'quieted common.info should not call console.error')
 })
 
-test('download argument test: download.{arch,platform,version} does not overwrite {arch,platform,version}', t => {
+test('download argument test: download.{arch,platform,version,artifactName} does not overwrite {arch,platform,version,artifactName}', t => {
   const opts = {
     download: {
       arch: 'ia32',
       platform: 'win32',
-      version: '0.30.0'
+      version: '0.30.0',
+      artifactName: 'ffmpeg'
     },
     electronVersion: '0.36.0'
   }
 
   const downloadOpts = download.createDownloadOpts(opts, 'linux', 'x64')
-  t.deepEqual(downloadOpts, { arch: 'x64', platform: 'linux', version: '0.36.0' })
+  t.deepEqual(downloadOpts, { arch: 'x64', platform: 'linux', version: '0.36.0', artifactName: 'electron' })
 })
 
 test('sanitize app name for use in file/directory names', t => {
@@ -98,7 +99,7 @@ test.serial('defaults', util.testSinglePlatform(async (t, opts) => {
   delete opts.arch
 
   const defaultOpts = {
-    arch: hostArch(),
+    arch: getHostArch(),
     name: opts.name,
     platform: process.platform
   }
