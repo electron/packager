@@ -93,12 +93,12 @@ module.exports = {
 
     return archs
   },
-  createPlatformArchPairs: createPlatformArchPairs,
-  officialArchs: officialArchs,
-  officialPlatformArchCombos: officialPlatformArchCombos,
-  officialPlatforms: officialPlatforms,
-  osModules: osModules,
-  supported: supported,
+  createPlatformArchPairs,
+  officialArchs,
+  officialPlatformArchCombos,
+  officialPlatforms,
+  osModules,
+  supported,
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or throws an Error.
   validateListFromOptions: function validateListFromOptions (opts, name) {
