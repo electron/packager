@@ -15,7 +15,6 @@ const officialPlatformArchCombos = {
 
 const linuxArchBuildVersions = {
   arm64: '>= 1.8.0',
-  ia32: '< 4.0.0-beta.1',
   mips64el: '^1.8.2-beta.5'
 }
 

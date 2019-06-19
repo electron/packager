@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/electron-userland/electron-packager",
   "dependencies": {
-    "@electron/get": "^1.2.0",
+    "@electron/get": "^1.3.0",
     "asar": "^2.0.1",
     "cross-zip": "^2.1.5",
     "debug": "^4.0.1",
