@@ -26,10 +26,9 @@ calling electron-packager. This will print debug information from the specified 
 value of the environment variable is a comma-separated list of modules which support this logging
 feature. Known modules include:
 
-* `electron-download`
+* `@electron/get:*`
 * `electron-osx-sign`
 * `electron-packager` (always use this one before filing an issue)
-* `extract-zip`
 * `get-package-info`
 
 We use the [`debug`](https://www.npmjs.com/package/debug#usage) module for this functionality. It

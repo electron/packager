@@ -5,7 +5,7 @@ const packager = require('..')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
-const win32 = require('../win32')
+const win32 = require('../src/win32')
 
 const win32Opts = {
   name: 'basicTest',
@@ -21,7 +21,7 @@ function generateRceditOptionsSansIcon (opts) {
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return t => {
-    const opts = Object.assign({}, win32Opts, extraOpts)
+    const opts = { ...win32Opts, ...extraOpts }
     const rcOpts = generateRceditOptionsSansIcon(opts)
 
     metadataProperties = [].concat(metadataProperties)
@@ -172,38 +172,33 @@ test('win32metadata defaults', t => {
   t.is(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
 })
 
-function win32Test (description, extraOpts, executableBasename, executableMessage) {
-  util.packagerTest(description, (t, opts) => {
+function win32Test (extraOpts, executableBasename, executableMessage) {
+  return util.packagerTest(async (t, opts) => {
     Object.assign(opts, win32Opts, extraOpts)
 
-    return packager(opts)
-      .then(paths => {
-        t.is(1, paths.length, '1 bundle created')
-        return util.assertPathExists(t, path.join(paths[0], `${executableBasename}.exe`), executableMessage)
-      })
+    const paths = await packager(opts)
+    t.is(1, paths.length, '1 bundle created')
+    await util.assertPathExists(t, path.join(paths[0], `${executableBasename}.exe`), executableMessage)
   })
 }
 
-win32Test(
-  'win32 executable name is based on sanitized app name',
+test.serial('win32 executable name is based on sanitized app name', win32Test(
   { name: '@username/package-name' },
   '@username-package-name',
   'The sanitized EXE filename should exist'
-)
+))
 
-win32Test(
-  'win32 executable name uses executableName when available',
+test.serial('win32 executable name uses executableName when available', win32Test(
   { name: 'PackageName', executableName: 'my-package' },
   'my-package',
   'the executableName-based filename should exist'
-)
+))
 
-win32Test(
-  'win32 icon set',
+test.serial('win32 icon set', win32Test(
   { executableName: 'iconTest', arch: 'ia32', icon: path.join(__dirname, 'fixtures', 'monochrome') },
   'iconTest',
   'the Electron executable should exist'
-)
+))
 
 test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
 test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))

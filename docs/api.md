@@ -1,18 +1,14 @@
 # electron-packager API
 
-Short `async`/`await` example:
+Short example:
 
 ```javascript
 const packager = require('electron-packager')
-const appPaths = await packager(options)
-```
 
-Short Promise example:
-
-```javascript
-const packager = require('electron-packager')
-packager(options)
-  .then(appPaths => { /* … */ })
+async function bundleElectronApp(options) {
+  const appPaths = await packager(options)
+  console.log(`Electron app bundles created:\n${appPaths.join("\n")}`)
+}
 ```
 
 `appPaths` is described in the [return value](#return-value) section.
@@ -186,7 +182,7 @@ Not required if the [`all`](#all) option is set.
 If `arch` is set to `all`, all supported architectures for the target platforms specified by [`platform`](#platform) will be built.
 Arbitrary combinations of individual architectures are also supported via a comma-delimited string or array of strings.
 The non-`all` values correspond to the architecture names used by [Electron releases]. This value
-is not restricted to the official set if [`download.mirror`](#download) is set.
+is not restricted to the official set if [`download.mirrorOptions`](#download) is set.
 
 ##### `asar`
 
@@ -224,14 +220,13 @@ Whether symlinks should be dereferenced during the copying of the application so
 
 *Object*
 
-If present, passes custom options to [`electron-download`](https://www.npmjs.com/package/electron-download)
+If present, passes custom options to [`@electron/get`](https://npm.im/@electron/get)
 (see the link for more detailed option descriptions and the defaults). Supported parameters include,
 but are not limited to:
-- `cache` (*String*): The directory where prebuilt, pre-packaged Electron downloads are cached.
-- `mirror` (*String*): The URL to override the default Electron download location.
-- `quiet` (*Boolean* - default: `false`): Whether to show a progress bar when downloading Electron.
-- `strictSSL` (*Boolean* - default: `true`): Whether SSL certificates are required to be valid when
-  downloading Electron.
+- `cacheRoot` (*String*): The directory where prebuilt, pre-packaged Electron downloads are cached.
+- `mirrorOptions` (*Object*): Options to override the default Electron download location.
+- `rejectUnauthorized` (*Boolean* - default: `true`): Whether SSL certificates are required to be
+  valid when downloading Electron.
 
 
 ##### `electronVersion`
@@ -311,9 +306,18 @@ described after the list*):
 
 Alternatively, this can be a predicate function that, given an absolute file path, returns `true` if
 the file should be ignored, or `false` if the file should be kept. *This does not use any of the
-default ignored directories listed above.*
+default ignored files/directories listed above.*
 
 **Note:** `ignore` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
+
+##### `junk`
+
+*Boolean* (default: `true`)
+
+Ignores [system junk files](https://github.com/sindresorhus/junk) when copying the Electron app,
+regardless of the [`ignore`](#ignore) option.
+
+**Note:** `junk` will have no effect if [`prebuiltAsar`](#prebuiltasar) is set.
 
 ##### `name`
 
@@ -347,7 +351,7 @@ Not required if the [`all`](#all) option is set.
 If `platform` is set to `all`, all [supported target platforms](#supported-platforms) for the target architectures specified by [`arch`](#arch) will be built.
 Arbitrary combinations of individual platforms are also supported via a comma-delimited string or array of strings.
 The non-`all` values correspond to the platform names used by [Electron releases]. This value
-is not restricted to the official set if [`download.mirror`](#download) is set.
+is not restricted to the official set if [`download.mirrorOptions`](#download) is set.
 
 ##### `prebuiltAsar`
 
@@ -363,6 +367,7 @@ gets skipped over:
 * [`afterPrune`](#afterprune)
 * [`derefSymlinks`](#derefsymlinks)
 * [`ignore`](#ignore)
+* [`junk`](#junk)
 * [`prune`](#prune)
 
 ##### `prune`
