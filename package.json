@@ -16,6 +16,14 @@
     "url": "https://github.com/electron-userland/electron-packager/issues"
   },
   "homepage": "https://github.com/electron-userland/electron-packager",
+  "files": [
+    "collaborators.md",
+    "bin",
+    "docs/*.md",
+    "NEWS.md",
+    "src",
+    "usage.txt"
+  ],
   "dependencies": {
     "@electron/get": "^1.3.0",
     "asar": "^2.0.1",
