@@ -4,6 +4,30 @@
 
 [Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.1.1...master
 
+### Added
+
+* Ignore system junk files by default (#1005)
+
+### Fixed
+
+* Handle inference when `electron-prebuilt-compile` points to a non-version (#978)
+
+### Changed
+
+* Replace `extract-zip` with `cross-zip` - on macOS/Linux, the `zip` binary is required; on Windows,
+  a relatively recent Powershell and .NET runtime is required, see `cross-zip` for details (#984)
+* Convert from `electron-download` to `@electron/get` (#1002). Drops support for versions of Electron
+  &lt; 1.3.2, plus all of the `download` options have changed, notably:
+  * `cache` is now `cacheRoot`
+  * `strictSSL` is now `rejectUnauthorized`
+  * The `mirror` URL string is now a set of options defined by `mirrorOptions`
+  * `quiet` is removed as the default downloader no longer has a progress bar
+* Linux/ia32 support for Electron >= 4 is downgraded to a warning from `@electron/get` (#1016)
+
+### Removed
+
+* Node &lt; 8 support (#973)
+
 ## [13.1.1] - 2019-03-04
 
 [13.1.1]: https://github.com/electron-userland/electron-packager/compare/v13.1.0...v13.1.1
