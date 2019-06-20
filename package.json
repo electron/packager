@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/electron-userland/electron-packager.git"
   },
-  "author": "max ogden",
+  "author": "Mark Lee",
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/electron-userland/electron-packager/issues"
