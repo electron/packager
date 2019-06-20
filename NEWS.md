@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v13.1.1...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v14.0.0...master
+
+## [14.0.0] - 2019-06-20
+
+[14.0.0]: https://github.com/electron-userland/electron-packager/compare/v13.1.1...v14.0.0
 
 ### Added
 
