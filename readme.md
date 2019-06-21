@@ -58,7 +58,7 @@ It generates executables/bundles for the following **target** platforms:
 
 ## Installation
 
-This module requires Node.js 8.0 or higher to run.
+This module requires Node.js 8.0 or higher to run. On macOS/Linux, the `unzip` program is required. On Windows, both [.NET Framework 4.5 or higher and Powershell 3 or higher are required](https://github.com/feross/cross-zip#windows-users).
 
 ```sh
 # For use in npm scripts (recommended)
