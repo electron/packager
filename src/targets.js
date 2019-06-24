@@ -60,7 +60,7 @@ function unsupportedListOption (name, value, supported) {
 }
 
 function usingOfficialElectronPackages (opts) {
-  return !opts.download || !opts.download.hasOwnProperty('mirrorOptions')
+  return !opts.download || !Object.prototype.hasOwnProperty.call(opts.download, 'mirrorOptions')
 }
 
 function validOfficialPlatformArch (opts, platform, arch) {
