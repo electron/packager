@@ -30,7 +30,7 @@ function warning (message, quiet) {
 }
 
 function subOptionWarning (properties, optionName, parameter, value, quiet) {
-  if (properties.hasOwnProperty(parameter)) {
+  if (Object.prototype.hasOwnProperty.call(properties, parameter)) {
     warning(`${optionName}.${parameter} will be inferred from the main options`, quiet)
   }
   properties[parameter] = value
@@ -63,9 +63,9 @@ module.exports = {
   createAsarOpts: createAsarOpts,
 
   deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName) {
-    if (properties.hasOwnProperty(oldName)) {
+    if (Object.prototype.hasOwnProperty.call(properties, oldName)) {
       warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`)
-      if (!properties.hasOwnProperty(newName)) {
+      if (!Object.prototype.hasOwnProperty.call(properties, newName)) {
         properties[newName] = properties[oldName]
       }
       delete properties[oldName]

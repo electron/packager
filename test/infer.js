@@ -33,41 +33,34 @@ async function copyFixtureToTempDir (t, fixtureSubdir) {
 }
 
 async function inferFailureTest (t, opts, fixtureSubdir) {
-  const dir = await copyFixtureToTempDir(t, fixtureSubdir)
+  opts.dir = await copyFixtureToTempDir(t, fixtureSubdir)
   delete opts.name
   delete opts.electronVersion
-  opts.dir = dir
 
   return t.throwsAsync(packager(opts))
 }
 
 async function inferMissingVersionTest (t, opts) {
-  const dir = await copyFixtureToTempDir(t, 'infer-missing-version-only')
+  opts.dir = await copyFixtureToTempDir(t, 'infer-missing-version-only')
   delete opts.electronVersion
-  opts.dir = dir
 
-  await getMetadataFromPackageJSON([], opts, dir)
+  await getMetadataFromPackageJSON([], opts, opts.dir)
   const packageJSON = await fs.readJson(path.join(opts.dir, 'package.json'))
   t.is(opts.electronVersion, packageJSON.devDependencies['electron'], 'The version should be inferred from installed electron module version')
 }
 
 async function testInferWin32metadata (t, opts, expected, assertionMessage) {
-  const dir = await copyFixtureToTempDir(t, 'infer-win32metadata')
-  opts.dir = dir
+  opts.dir = await copyFixtureToTempDir(t, 'infer-win32metadata')
 
-  await getMetadataFromPackageJSON(['win32'], opts, dir)
+  await getMetadataFromPackageJSON(['win32'], opts, opts.dir)
   t.deepEqual(opts.win32metadata, expected, assertionMessage)
 }
 
 async function testInferWin32metadataAuthorObject (t, opts, author, expected, assertionMessage) {
-  let packageJSONFilename
-
+  opts.dir = await copyFixtureToTempDir(t, 'infer-win32metadata')
   delete opts.name
 
-  const dir = await copyFixtureToTempDir(t, 'infer-win32metadata')
-  opts.dir = dir
-
-  packageJSONFilename = path.join(dir, 'package.json')
+  const packageJSONFilename = path.join(opts.dir, 'package.json')
   const packageJSON = await fs.readJson(packageJSONFilename)
   packageJSON.author = author
   await fs.writeJson(packageJSONFilename, packageJSON)
@@ -118,5 +111,15 @@ test('do not infer win32metadata.CompanyName when author is an object without a 
 }))
 test('infer missing fields test', util.testSinglePlatform(inferFailureTest, 'infer-missing-fields'))
 test('infer with bad fields test', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields'))
-test('infer with malformed JSON test', util.testSinglePlatform(inferFailureTest, 'infer-malformed-json'))
+test('infer with malformed JSON test', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = await copyFixtureToTempDir(t, 'infer-malformed-json')
+  delete opts.name
+  delete opts.electronVersion
+
+  const packageJSONFilename = path.join(opts.dir, 'package.json')
+  const content = `${await fs.readFile(packageJSONFilename)}invalid`
+  await fs.writeFile(packageJSONFilename, content)
+
+  return t.throwsAsync(packager(opts), /^Unexpected token/)
+}))
 test('infer using a non-specific `electron-prebuilt-compile` package version when the package did not have a main file', util.testSinglePlatform(inferFailureTest, 'infer-invalid-non-specific-electron-prebuilt-compile'))

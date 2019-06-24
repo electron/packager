@@ -81,14 +81,14 @@ test('deprecatedParameter moves value in deprecated param to new param if new pa
   }
   common.deprecatedParameter(opts, 'old', 'new', 'new-value')
 
-  t.false(opts.hasOwnProperty('old'), 'old property is not set')
-  t.true(opts.hasOwnProperty('new'), 'new property is set')
+  t.false(Object.prototype.hasOwnProperty.call(opts, 'old'), 'old property is not set')
+  t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
 
   opts.not_overwritten_old = 'another'
   common.deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value')
 
-  t.false(opts.hasOwnProperty('not_overwritten_old'), 'not_overwritten_old property is not set')
-  t.true(opts.hasOwnProperty('new'), 'new property is set')
+  t.false(Object.prototype.hasOwnProperty.call(opts, 'not_overwritten_old'), 'not_overwritten_old property is not set')
+  t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
   t.is('value', opts.new, 'new property is not overwritten')
 })
 
@@ -152,8 +152,7 @@ test.serial('overwrite', util.testSinglePlatform(async (t, opts) => {
   await packager(opts) // Run again, defaulting to overwrite false
   await util.assertFile(t, testPath, 'The existing output directory should exist as before (skipped by default)')
   // Run a third time, explicitly setting overwrite to true
-  opts.overwrite = true
-  await packager(opts)
+  await packager({ ...opts, overwrite: true })
   await util.assertPathNotExists(t, testPath, 'The output directory should be regenerated when overwrite is true')
 }))
 
