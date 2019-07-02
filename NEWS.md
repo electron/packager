@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v14.0.0...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v14.0.1...master
+
+## [14.0.1] - 2019-07-02
+
+[14.0.1]: https://github.com/electron-userland/electron-packager/compare/v14.0.0...v14.0.1
+
+### Changed
+
+* Upgrade `fs-extra` to `^8.1.0` (#993)
+
+### Fixed
+
+* Host info shows OS release
 
 ## [14.0.0] - 2019-06-20
 
