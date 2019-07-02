@@ -89,7 +89,7 @@ module.exports = {
   hostInfo: function hostInfo () {
     return `Electron Packager ${metadata.version}\n` +
       `Node ${process.version}\n` +
-      `Host Operating system: ${process.platform} (${process.arch})`
+      `Host Operating system: ${process.platform} ${os.release()} (${process.arch})`
   },
   info: info,
   warning: warning
