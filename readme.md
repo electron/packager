@@ -34,12 +34,6 @@ application is approximately the same size as the zipped prebuilt binary for a g
 platform, target arch, and [Electron version](https://github.com/electron/electron/releases)
 _(files named `electron-v${version}-${platform}-${arch}.zip`)_.
 
-### Electron Packager is an [OPEN Open Source Project](http://openopensource.org/)
-
-Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
-
-See [CONTRIBUTING.md](https://github.com/electron-userland/electron-packager/blob/master/CONTRIBUTING.md) and [openopensource.org](http://openopensource.org/) for more details.
-
 ## Supported Platforms
 
 Electron Packager is known to run on the following **host** platforms:
