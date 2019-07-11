@@ -276,9 +276,9 @@ class MacApp extends App {
   }
 
   async signAppIfSpecified () {
-    let osxSignOpt = this.opts.osxSign
-    let platform = this.opts.platform
-    let version = this.opts.electronVersion
+    const osxSignOpt = this.opts.osxSign
+    const platform = this.opts.platform
+    const version = this.opts.electronVersion
 
     if ((platform === 'all' || platform === 'mas') &&
         osxSignOpt === undefined) {
@@ -339,7 +339,7 @@ function filterCFBundleIdentifier (identifier) {
 
 function createSignOpts (properties, platform, app, version, notarize, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  let signOpts = properties === true ? { identity: null } : { ...properties }
+  const signOpts = properties === true ? { identity: null } : { ...properties }
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options

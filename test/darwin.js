@@ -335,7 +335,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   test.serial('app bundle framework symlink', darwinTest(async (t, opts) => {
     const finalPath = (await packager(opts))[0]
-    let frameworkPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
+    const frameworkPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks', 'Electron Framework.framework')
     await util.assertDirectory(t, frameworkPath, 'Expected Electron Framework.framework to be a directory')
     await Promise.all([
       util.assertSymlink(t, path.join(frameworkPath, 'Electron Framework'), 'Expected Electron Framework.framework/Electron Framework to be a symlink'),

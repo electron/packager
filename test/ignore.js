@@ -60,7 +60,7 @@ async function ignoreOutDirTest (t, opts, distPath) {
 test('generateIgnores ignores the generated temporary directory only on Linux', t => {
   const tmpdir = '/foo/bar'
   const expected = path.join(tmpdir, 'electron-packager')
-  let opts = { tmpdir }
+  const opts = { tmpdir }
 
   ignore.generateIgnores(opts)
 

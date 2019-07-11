@@ -51,7 +51,7 @@ test('sanitize app name for use in file/directory names', t => {
 })
 
 test('sanitize app name for use in the out directory name', t => {
-  let opts = {
+  const opts = {
     arch: 'x64',
     name: '@username/package-name',
     platform: 'linux'
@@ -76,7 +76,7 @@ test('cannot build apps where the name ends in " Helper"', async t => {
 })
 
 test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
-  let opts = {
+  const opts = {
     old: 'value'
   }
   common.deprecatedParameter(opts, 'old', 'new', 'new-value')

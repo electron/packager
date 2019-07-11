@@ -49,8 +49,8 @@ test.serial('asar test', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'asarTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.asar = {
-    'unpack': '*.pac',
-    'unpackDir': 'dir_to_unpack'
+    unpack: '*.pac',
+    unpackDir: 'dir_to_unpack'
   }
 
   const resourcesPath = await util.packageAndEnsureResourcesPath(t, opts)
@@ -67,8 +67,8 @@ test.serial('prebuilt asar test', util.testSinglePlatform(async (t, opts) => {
   opts.dir = util.fixtureSubdir('asar-prebuilt')
   opts.prebuiltAsar = path.join(opts.dir, 'app.asar')
   opts.asar = {
-    'unpack': '*.pac',
-    'unpackDir': 'dir_to_unpack'
+    unpack: '*.pac',
+    unpackDir: 'dir_to_unpack'
   }
   opts.ignore = ['foo']
   opts.prune = false

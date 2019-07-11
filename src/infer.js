@@ -112,7 +112,7 @@ async function handleMetadata (opts, result) {
 }
 
 module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir) {
-  let props = []
+  const props = []
   if (!opts.name) props.push(['productName', 'name'])
   if (!opts.appVersion) props.push('version')
   if (!opts.electronVersion) {
