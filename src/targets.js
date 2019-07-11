@@ -32,7 +32,7 @@ const supported = {
 }
 
 function createPlatformArchPairs (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-  let combinations = []
+  const combinations = []
   for (const arch of selectedArchs) {
     for (const platform of selectedPlatforms) {
       if (usingOfficialElectronPackages(opts)) {
@@ -124,7 +124,7 @@ module.exports = {
 
     const officialElectronPackages = usingOfficialElectronPackages(opts)
 
-    for (let value of list) {
+    for (const value of list) {
       if (officialElectronPackages && !supported[name].has(value)) {
         return unsupportedListOption(name, value, supported[name])
       }

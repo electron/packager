@@ -16,7 +16,7 @@ async function printUsageAndExit (isError) {
 
 module.exports = {
   parseArgs: function parseArgs (argv) {
-    let args = yargs(argv, {
+    const args = yargs(argv, {
       boolean: [
         'all',
         'deref-symlinks',
