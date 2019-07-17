@@ -8,11 +8,8 @@ const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
 const ignore = require('./ignore')
 const path = require('path')
-const { promisify } = require('util')
 const targets = require('./targets')
-const zip = require('cross-zip')
-
-const unzip = promisify(zip.unzip)
+const unzip = require('./unzip')
 
 function debugHostInfo () {
   debug(common.hostInfo())
