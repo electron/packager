@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v14.0.1...master
+[Unreleased]: https://github.com/electron-userland/electron-packager/compare/v14.0.2...master
+
+## [14.0.2] - 2019-07-18
+
+[14.0.2]: https://github.com/electron-userland/electron-packager/compare/v14.0.1...v14.0.2
+
+### Fixed
+
+* Warn Windows 7 users of the unzip dependencies (#1030)
 
 ## [14.0.1] - 2019-07-02
 
