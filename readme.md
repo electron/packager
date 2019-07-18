@@ -2,20 +2,20 @@
 
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![Travis CI Build Status](https://travis-ci.org/electron-userland/electron-packager.svg?branch=master)](https://travis-ci.org/electron-userland/electron-packager)
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/master?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-packager)
-[![Coverage Status](https://codecov.io/gh/electron-userland/electron-packager/branch/master/graph/badge.svg)](https://codecov.io/gh/electron-userland/electron-packager)
-[![Dependency Status](https://dependencyci.com/github/electron-userland/electron-packager/badge)](https://dependencyci.com/github/electron-userland/electron-packager)
+[![Travis CI Build Status](https://travis-ci.org/electron/electron-packager.svg?branch=master)](https://travis-ci.org/electron/electron-packager)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/master?svg=true)](https://ci.appveyor.com/project/electron/electron-packager)
+[![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/master/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
+[![Dependency Status](https://dependencyci.com/github/electron/electron-packager/badge)](https://dependencyci.com/github/electron/electron-packager)
 
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
 [Usage](#usage) |
-[API](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md) |
-[Contributing](https://github.com/electron-userland/electron-packager/blob/master/CONTRIBUTING.md) |
-[Support](https://github.com/electron-userland/electron-packager/blob/master/SUPPORT.md) |
+[API](https://github.com/electron/electron-packager/blob/master/docs/api.md) |
+[Contributing](https://github.com/electron/electron-packager/blob/master/CONTRIBUTING.md) |
+[Support](https://github.com/electron/electron-packager/blob/master/SUPPORT.md) |
 [Related Apps/Libraries](#related) |
-[FAQ](https://github.com/electron-userland/electron-packager/blob/master/docs/faq.md) |
-[Release Notes](https://github.com/electron-userland/electron-packager/blob/master/NEWS.md)
+[FAQ](https://github.com/electron/electron-packager/blob/master/docs/faq.md) |
+[Release Notes](https://github.com/electron/electron-packager/blob/master/NEWS.md)
 
 ----
 
@@ -72,7 +72,7 @@ later needs to be installed. On macOS, it is installable via [Homebrew](http://b
 
 ## Usage
 
-JavaScript API usage can be found in the [API documentation](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
+JavaScript API usage can be found in the [API documentation](https://github.com/electron/electron-packager/blob/master/docs/api.md).
 
 ### From the Command Line
 
@@ -94,8 +94,8 @@ This will:
 * Otherwise, a single bundle for the host platform/architecture will be created.
 
 For an overview of the other optional flags, run `electron-packager --help` or see
-[usage.txt](https://github.com/electron-userland/electron-packager/blob/master/usage.txt). For
-detailed descriptions, see the [API documentation](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
+[usage.txt](https://github.com/electron/electron-packager/blob/master/usage.txt). For
+detailed descriptions, see the [API documentation](https://github.com/electron/electron-packager/blob/master/docs/api.md).
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 

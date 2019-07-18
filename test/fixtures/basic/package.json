@@ -6,7 +6,7 @@
     "@types/node": "^8.0.0",
     "run-series": "^1.1.1"
   },
-  "//": "ncp used to test https://github.com/electron-userland/electron-packager/pull/186",
+  "//": "ncp used to test https://github.com/electron/electron-packager/pull/186",
   "///": "(a module (with zero dependencies) that creates a file in node_modules/.bin)",
   "devDependencies": {
     "ncp": "^2.0.0",

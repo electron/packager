@@ -12,7 +12,7 @@ function updateWineMissingException (err) {
       'Wine is required to use the appCopyright, appVersion, buildVersion, icon, and \n' +
       'win32metadata parameters for Windows targets.\n\n' +
       'Make sure that the "wine" executable is in your PATH.\n\n' +
-      'See https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms for details.'
+      'See https://github.com/electron/electron-packager#building-windows-apps-from-non-windows-platforms for details.'
   }
 
   return err

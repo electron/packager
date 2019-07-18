@@ -53,7 +53,7 @@ extra-resource     a file to copy into the app's resources directory
 icon               the local path to an icon file to use as the icon for the app.
                    Note: Format depends on platform.
 ignore             do not copy files into app whose filenames RegExp.match this string. See also:
-                   https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#ignore
+                   https://github.com/electron/electron-packager/blob/master/docs/api.md#ignore
                    and --no-prune. Can be specified multiple times
 no-deref-symlinks  make sure symlinks are not dereferenced within the app source
 no-junk            do not ignore system junk files from the packaged app

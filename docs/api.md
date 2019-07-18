@@ -271,7 +271,7 @@ The local path to the icon file, if the target platform supports setting embeddi
 Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
 
 - macOS: `.icns`
-- Windows: `.ico` ([See the readme](https://github.com/electron-userland/electron-packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
+- Windows: `.ico` ([See the readme](https://github.com/electron/electron-packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
 - Linux: this option is not supported, as the dock/window list icon is set via
   [the `icon` option in the `BrowserWindow` constructor](https://electronjs.org/docs/api/browser-window/#new-browserwindowoptions).
   *Please note that you need to use a PNG, and not the macOS or Windows icon formats, in order for it

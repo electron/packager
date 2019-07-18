@@ -29,7 +29,7 @@ function errorMessageForProperty (prop) {
 
   return `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
     'For more information, please see\n' +
-    `https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#${hash}\n`
+    `https://github.com/electron/electron-packager/blob/master/docs/api.md#${hash}\n`
 }
 
 function resolvePromise (id, options) {

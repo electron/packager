@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-userland/electron-packager.git"
+    "url": "git+https://github.com/electron/electron-packager.git"
   },
   "author": "Mark Lee",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/electron-userland/electron-packager/issues"
+    "url": "https://github.com/electron/electron-packager/issues"
   },
-  "homepage": "https://github.com/electron-userland/electron-packager",
+  "homepage": "https://github.com/electron/electron-packager",
   "files": [
     "collaborators.md",
     "bin",
