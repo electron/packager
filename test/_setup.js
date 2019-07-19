@@ -2,6 +2,7 @@
 
 const common = require('../src/common')
 const download = require('../src/download')
+const { downloadArtifact } = require('@electron/get')
 const config = require('./config.json')
 const childProcess = require('child_process')
 const fs = require('fs-extra')
@@ -28,7 +29,16 @@ async function downloadAll (version) {
   console.log(`Downloading Electron v${version} before running tests...`)
   const combinations = download.createDownloadCombos({ electronVersion: config.version, all: true }, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
+  await downloadElectronChecksum(version)
   return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
+}
+
+async function downloadElectronChecksum (version) {
+  return downloadArtifact({
+    isGeneric: true,
+    version,
+    artifactName: 'SHASUMS256.txt'
+  })
 }
 
 async function downloadElectronZip (version, options) {
