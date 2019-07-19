@@ -3,7 +3,7 @@
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
 [![Travis CI Build Status](https://travis-ci.org/electron/electron-packager.svg?branch=master)](https://travis-ci.org/electron/electron-packager)
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/master?svg=true)](https://ci.appveyor.com/project/electron/electron-packager)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/m51mlf6ntd138555/branch/master?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-packager)
 [![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/master/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
 [![Dependency Status](https://dependencyci.com/github/electron/electron-packager/badge)](https://dependencyci.com/github/electron/electron-packager)
 
