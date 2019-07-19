@@ -71,6 +71,10 @@ jobs:
     docker:
       - image: circleci/node:8
     <<: *steps-linux
+  test-linux-10:
+    docker:
+      - image: circleci/node:10
+    <<: *steps-linux
   test-linux-12:
     docker:
       - image: circleci/node:12
