@@ -169,6 +169,27 @@ async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
   return assertCFBundleIdentifierValue(t, helperNPObj, helperBundleIdentifier + '.NP', 'CFBundleName should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper NP app')
 }
 
+async function appHelpersBundleElectron6Test (t, opts) {
+  opts.electronVersion = '6.0.0-beta.15'
+  const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
+  const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+  const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
+
+  const finalPath = (await packager(opts))[0]
+  const frameworksPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks')
+  const helperObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
+  assertPlistStringValue(t, helperObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperPluginObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Plugin).app`))
+  assertPlistStringValue(t, helperPluginObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperPluginObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperRendererObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Renderer).app`))
+  assertPlistStringValue(t, helperRendererObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperRendererObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+}
+
 if (!(process.env.CI && process.platform === 'win32')) {
   test.serial('helper app paths', darwinTest(helperAppPathsTest))
   test.serial('helper app paths test with app name needing sanitization', darwinTest(helperAppPathsTest, { name: '@username/package-name' }, '@username-package-name'))
@@ -348,6 +369,8 @@ if (!(process.env.CI && process.platform === 'win32')) {
   test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleTest, null, 'com.electron.basetest'))
   test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
   test.serial('app helpers bundle helper-bundle-id & app-bundle-id fallback', darwinTest(appHelpersBundleTest))
+
+  test.serial('app helpers bundle with renderer/plugin helpers', darwinTest(appHelpersBundleElectron6Test))
 
   test.serial('EH/NP helpers do not exist', darwinTest(async (t, baseOpts) => {
     const helpers = [

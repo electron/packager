@@ -162,6 +162,8 @@ class MacApp extends App {
     ]
 
     const possiblePlists = [
+      [this.ehPlistFilename('Electron Helper (Renderer).app'), 'helperPlist'],
+      [this.ehPlistFilename('Electron Helper (Plugin).app'), 'helperPlist'],
       [this.ehPlistFilename('Electron Helper EH.app'), 'helperEHPlist'],
       [this.ehPlistFilename('Electron Helper NP.app'), 'helperNPPlist'],
       [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist']
@@ -224,7 +226,7 @@ class MacApp extends App {
   }
 
   async moveHelpers () {
-    const helpers = [' Helper', ' Helper EH', ' Helper NP']
+    const helpers = [' Helper', ' Helper EH', ' Helper NP', ' Helper (Renderer)', ' Helper (Plugin)']
     await Promise.all(helpers.map(suffix => this.moveHelper(this.frameworksPath, suffix)))
     if (await fs.pathExists(this.loginItemsPath)) {
       await this.moveHelper(this.loginItemsPath, ' Login Helper')
