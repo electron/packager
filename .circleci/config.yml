@@ -1,0 +1,93 @@
+step-env: &step-env
+  run:
+    # prevent Wine popup dialogs about installing additional packages
+    name: Setup Environment Variables
+    command: |
+      echo 'export WINEDLLOVERRIDES="mscoree,mshtml="' >> $BASH_ENV
+      echo 'export WINEDEBUG="-all"' >> $BASH_ENV
+
+step-restore-electron-cache: &step-restore-electron-cache
+  restore_cache:
+    name: Restoring Electron cache
+    paths:
+      - $HOME/.cache/electron
+    keys:
+      - v1-electron-cache-{{ arch }}
+
+step-save-electron-cache: &step-save-electron-cache
+  save_cache:
+    name: Persisting Electron cache
+    paths:
+      - $HOME/.cache/electron
+    key: v1-electron-cache-{{ arch }}
+
+step-restore-brew-cache: &step-restore-brew-cache
+  restore_cache:
+    name: Restoring Homebrew cache
+    paths:
+      - /usr/local/Homebrew
+    keys:
+      - v1-brew-cache-{{ arch }}
+
+step-save-brew-cache: &step-save-brew-cache
+  save_cache:
+    name: Persisting Homebrew cache
+    paths:
+      - /usr/local/Homebrew
+    key: v1-brew-cache-{{ arch }}
+
+step-before-install: &step-before-install
+  run: test/ci/before_install.sh
+
+steps-linux: &steps-linux
+  steps:
+    - checkout
+    - *step-env
+    - *step-before-install
+    - run: npm install
+    - *step-restore-electron-cache
+    - run: test/ci/_before_script.js
+    - *step-save-electron-cache
+    - run: npm test
+    - run: npm run codecov
+
+steps-mac: &steps-mac
+  steps:
+    - checkout
+    - *step-env
+    - *step-restore-brew-cache
+    - *step-before-install
+    - *step-save-brew-cache
+    - run: npm install
+    - *step-restore-electron-cache
+    - run: test/ci/_before_script.js
+    - *step-save-electron-cache
+    - run: npm test
+    - run: npm run codecov
+
+version: 2
+jobs:
+  test-linux-8:
+    docker:
+      - image: circleci/node:8
+    <<: *steps-linux
+  test-linux-10:
+    docker:
+      - image: circleci/node:10
+    <<: *steps-linux
+  test-linux-12:
+    docker:
+      - image: circleci/node:12
+    <<: *steps-linux
+  test-mac:
+    macos:
+      xcode: "10.2.0"
+    <<: *steps-mac
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-linux-8
+      - test-linux-12
+      - test-mac

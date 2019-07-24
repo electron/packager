@@ -94,20 +94,12 @@ attribution of the original author(s) and continue the work in subsequent commit
 
 ### Running tests
 
-To run the test suite on your local machine, you'll first need to do a little
-setup.
+To run the test suite on your local machine, you may first need to do a little setup.
 
-If you're using macOS:
-
-```sh
-TRAVIS_OS_NAME=osx ./test/ci/before_install.sh
-```
-
-If you're using a Debian/Ubuntu-derived distribution of Linux with x86_64
-architecture:
+If you're using macOS or a Debian/Ubuntu-derived distribution of Linux with x86_64 architecture:
 
 ```sh
-TRAVIS_OS_NAME=linux ./test/ci/before_install.sh
+./test/ci/before_install.sh
 ```
 
 Then you can install dependencies and run the suite:
