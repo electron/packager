@@ -30,7 +30,14 @@ async function downloadAll (version) {
   const combinations = download.createDownloadCombos({ electronVersion: config.version, all: true }, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
   await downloadElectronChecksum(version)
-  return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
+  return Promise.all(
+    [
+      ...combinations.map(combination => downloadElectronZip(version, combination)),
+      downloadElectronZip('6.0.0-beta.15', {
+        platform: 'darwin'
+      })
+    ]
+  )
 }
 
 async function downloadElectronChecksum (version) {
