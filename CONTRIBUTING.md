@@ -46,8 +46,8 @@ We use the label [`help wanted`](https://github.com/electron/electron-packager/i
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
 
-* Travis CI is used to make sure that the project builds packages as expected on the supported
-  platforms, using supported Node.js versions.
+* CircleCI and AppVeyor are used to make sure that the project builds packages as expected on the
+  supported platforms, using supported Node.js versions.
 * Unless it's impractical, please write tests for your changes. This will help us so that we can
   spot regressions much easier.
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
