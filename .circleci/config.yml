@@ -89,5 +89,6 @@ workflows:
   test:
     jobs:
       - test-linux-8
+      - test-linux-10
       - test-linux-12
       - test-mac
