@@ -6,12 +6,12 @@
 
 ## [14.0.3] - 2019-07-18
 
-[14.0.2]: https://github.com/electron/electron-packager/compare/v14.0.1...v14.0.2
+[14.0.3]: https://github.com/electron/electron-packager/compare/v14.0.2...v14.0.3
 
 ### Fixed
 
 * Packaging Electron 6 based apps now correctly renames and packages the new
-Electron Helper bundles (#1033)
+  Electron Helper bundles (#1033)
 
 ## [14.0.2] - 2019-07-18
 
