@@ -170,7 +170,7 @@ async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
 }
 
 async function appHelpersBundleElectron6Test (t, opts) {
-  opts.electronVersion = '6.0.0-beta.15'
+  opts.electronVersion = '6.0.0'
   const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
   const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
   const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')

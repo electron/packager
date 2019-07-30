@@ -33,7 +33,7 @@ async function downloadAll (version) {
   return Promise.all(
     [
       ...combinations.map(combination => downloadElectronZip(version, combination)),
-      downloadElectronZip('6.0.0-beta.15', {
+      downloadElectronZip('6.0.0', {
         platform: 'darwin'
       })
     ]
