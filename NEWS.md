@@ -2,7 +2,14 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.3...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.4...master
+
+## [14.0.4] - 2019-07-30
+
+[14.0.4]: https://github.com/electron/electron-packager/compare/v14.0.3...v14.0.4
+
+* Packaging apps based on Electron 6.0.0 now correctly renames and packages the new
+  Electron GPU Helper bundles (#1036)
 
 ## [14.0.3] - 2019-07-18
 
