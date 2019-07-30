@@ -226,7 +226,7 @@ class MacApp extends App {
   }
 
   async moveHelpers () {
-    const helpers = [' Helper', ' Helper EH', ' Helper NP', ' Helper (Renderer)', ' Helper (Plugin)', ' Helper']
+    const helpers = [' Helper', ' Helper EH', ' Helper NP', ' Helper (Renderer)', ' Helper (Plugin)', ' Helper (GPU)']
     await Promise.all(helpers.map(suffix => this.moveHelper(this.frameworksPath, suffix)))
     if (await fs.pathExists(this.loginItemsPath)) {
       await this.moveHelper(this.loginItemsPath, ' Login Helper')
