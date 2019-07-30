@@ -164,6 +164,7 @@ class MacApp extends App {
     const possiblePlists = [
       [this.ehPlistFilename('Electron Helper (Renderer).app'), 'helperPlist'],
       [this.ehPlistFilename('Electron Helper (Plugin).app'), 'helperPlist'],
+      [this.ehPlistFilename('Electron Helper (GPU).app'), 'helperPlist'],
       [this.ehPlistFilename('Electron Helper EH.app'), 'helperEHPlist'],
       [this.ehPlistFilename('Electron Helper NP.app'), 'helperNPPlist'],
       [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist']

@@ -188,6 +188,10 @@ async function appHelpersBundleElectron6Test (t, opts) {
   const helperRendererObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Renderer).app`))
   assertPlistStringValue(t, helperRendererObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
   assertCFBundleIdentifierValue(t, helperRendererObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperGPUObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (GPU).app`))
+  assertPlistStringValue(t, helperGPUObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperGPUObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
 }
 
 if (!(process.env.CI && process.platform === 'win32')) {
