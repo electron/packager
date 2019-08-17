@@ -39,7 +39,7 @@ step-save-brew-cache: &step-save-brew-cache
 step-before-install: &step-before-install
   run: test/ci/before_install.sh
 
-steps-linux: &steps-linux
+steps-linux-windows: &steps-linux-windows
   steps:
     - checkout
     - *step-env
@@ -65,24 +65,31 @@ steps-mac: &steps-mac
     - run: npm test
     - run: npm run codecov
 
-version: 2
+version: 2.1
+orbs:
+  win: circleci/windows@1.0.0
 jobs:
   test-linux-8:
     docker:
       - image: circleci/node:8
-    <<: *steps-linux
+    <<: *steps-linux-windows
   test-linux-10:
     docker:
       - image: circleci/node:10
-    <<: *steps-linux
+    <<: *steps-linux-windows
   test-linux-12:
     docker:
       - image: circleci/node:12
-    <<: *steps-linux
+    <<: *steps-linux-windows
   test-mac:
     macos:
       xcode: "10.2.0"
     <<: *steps-mac
+  test-windows:
+    executor:
+      name: win/vs2019
+      shell: bash.exe
+    <<: *steps-linux-windows
 
 workflows:
   version: 2
@@ -92,3 +99,4 @@ workflows:
       - test-linux-10
       - test-linux-12
       - test-mac
+      - test-windows
