@@ -688,7 +688,7 @@
 ### Changed
 
 * [win32] `rcedit` dependency updated to 0.4.x. **A new DLL is required to run the new version
-  of rcedit, please see [the documentation](https://github.com/electron/electron-packager/blob/master/readme.md#building-windows-apps-from-non-windows-platforms)
+  of rcedit, please see [the documentation](https://github.com/electron/electron-packager/blob/master/README.md#building-windows-apps-from-non-windows-platforms)
   for details**
 * API documentation moved from readme.md to docs/api.md (#296)
 

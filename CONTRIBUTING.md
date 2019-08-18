@@ -51,7 +51,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 * Unless it's impractical, please write tests for your changes. This will help us so that we can
   spot regressions much easier.
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
-  the package's documentation. Files that will likely need to be updated include `readme.md`,
+  the package's documentation. Files that will likely need to be updated include `README.md`,
   `docs/api.md`, and `usage.txt`.
 * This project uses the [JavaScript Standard Style](https://standardjs.com/) as a coding convention.
   CI will fail if the PR does not conform to this standard.
