@@ -131,7 +131,7 @@ function setCompanyNameTest (companyName) {
   return generateVersionStringTest('version-string',
                                    opts,
                                    { CompanyName: companyName },
-                                   `Company name should match win32metadata value`)
+                                   'Company name should match win32metadata value')
 }
 
 test('better error message when wine is not found', (t) => {
