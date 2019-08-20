@@ -46,7 +46,7 @@ async function inferMissingVersionTest (t, opts) {
 
   await getMetadataFromPackageJSON([], opts, opts.dir)
   const packageJSON = await fs.readJson(path.join(opts.dir, 'package.json'))
-  t.is(opts.electronVersion, packageJSON.devDependencies['electron'], 'The version should be inferred from installed electron module version')
+  t.is(opts.electronVersion, packageJSON.devDependencies.electron, 'The version should be inferred from installed electron module version')
 }
 
 async function testInferWin32metadata (t, opts, expected, assertionMessage) {
