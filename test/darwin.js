@@ -182,15 +182,18 @@ async function appHelpersBundleElectron6Test (t, opts) {
   assertCFBundleIdentifierValue(t, helperObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
 
   const helperPluginObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Plugin).app`))
-  assertPlistStringValue(t, helperPluginObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperPluginObj, 'CFBundleName', `${opts.name} Helper (Plugin)`, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperPluginObj, 'CFBundleExecutable', `${opts.name} Helper (Plugin)`, 'CFBundleExecutable should reflect opts.name in helper app')
   assertCFBundleIdentifierValue(t, helperPluginObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
 
   const helperRendererObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Renderer).app`))
-  assertPlistStringValue(t, helperRendererObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperRendererObj, 'CFBundleName', `${opts.name} Helper (Renderer)`, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperRendererObj, 'CFBundleExecutable', `${opts.name} Helper (Renderer)`, 'CFBundleExecutable should reflect opts.name in helper app')
   assertCFBundleIdentifierValue(t, helperRendererObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
 
   const helperGPUObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (GPU).app`))
-  assertPlistStringValue(t, helperGPUObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperGPUObj, 'CFBundleName', `${opts.name} Helper (GPU)`, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperGPUObj, 'CFBundleExecutable', `${opts.name} Helper (GPU)`, 'CFBundleExecutable should reflect opts.name in helper app')
   assertCFBundleIdentifierValue(t, helperGPUObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
 }
 
