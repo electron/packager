@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.4...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.5...master
+
+## [14.0.5] - 2019-08-28
+
+[14.0.5]: https://github.com/electron/electron-packager/compare/v14.0.4...v14.0.5
 
 ## [14.0.4] - 2019-07-30
 
