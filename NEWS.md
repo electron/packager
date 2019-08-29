@@ -8,6 +8,10 @@
 
 [14.0.5]: https://github.com/electron/electron-packager/compare/v14.0.4...v14.0.5
 
+### Fixed
+
+* ensure that CFBundleExecutable and friends are correct for helper apps (#1046)
+
 ## [14.0.4] - 2019-07-30
 
 [14.0.4]: https://github.com/electron/electron-packager/compare/v14.0.3...v14.0.4
