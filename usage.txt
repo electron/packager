@@ -98,6 +98,10 @@ protocol           URL protocol scheme to register the app as an opener of.
                    URLs such as `myapp://path`. This argument requires a `--protocol-name`
                    argument to also be specified.
 protocol-name      Descriptive name of URL protocol scheme specified via `--protocol`
+usage-description  Human-readable descriptions of how the app uses certain macOS features. Displayed
+                   in the App Store. A non-exhaustive list of properties supported:
+                   - Camera
+                   - Microphone
 
 * win32 target platform only *
 

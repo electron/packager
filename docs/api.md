@@ -456,6 +456,17 @@ Each *Object* is required to have the following properties:
   example, specifying `myapp` would cause URLs such as `myapp://path` to be opened with the app.
   Maps to the `CFBundleURLSchemes` metadata property.
 
+##### `usageDescription`
+
+Human-readable descriptions of how the Electron app uses certain macOS features. These are displayed
+in the App Store. A non-exhaustive list of available properties:
+
+* `Camera` - required for media access API usage in macOS Catalina
+* `Microphone` - required for media access API usage in macOS Catalina
+
+Valid properties are the [Cocoa keys for MacOS](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html)
+of the pattern `NS(.*)UsageDescription`, where the captured group is the key to use.
+
 #### Windows targets only
 
 ##### `win32metadata`
