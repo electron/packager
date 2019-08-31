@@ -37,6 +37,17 @@ test('CLI argument: --osx-sign=true', t => {
   t.true(args.osxSign)
 })
 
+test('CLI argument: --osx-sign is object', t => {
+  const args = cli.parseArgs([
+    '--osx-sign.identity=identity',
+    '--osx-sign.entitlements-inherit=path',
+    '--osx-sign.hardenedRuntime'
+  ])
+  t.is(args.osxSign.identity, 'identity')
+  t.is(args.osxSign['entitlements-inherit'], 'path')
+  t.true(args.osxSign.hardenedRuntime)
+})
+
 test('CLI argument: --osx-notarize=true', t => {
   const args = cli.parseArgs(['--osx-notarize=true'])
   t.falsy(args.osxNotarize, '')
