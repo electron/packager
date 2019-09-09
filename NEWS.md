@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.5...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.6...master
+
+## [14.0.6] - 2019-09-09
+
+[14.0.6]: https://github.com/electron/electron-packager/compare/v14.0.5...v14.0.6
+
+### Fixed
+
+* Send the properly formatted options from the CLI to electron-osx-sign (#1047)
 
 ## [14.0.5] - 2019-08-28
 
@@ -10,7 +18,7 @@
 
 ### Fixed
 
-* ensure that CFBundleExecutable and friends are correct for helper apps (#1046)
+* Ensure that CFBundleExecutable and friends are correct for helper apps (#1046)
 
 ## [14.0.4] - 2019-07-30
 
