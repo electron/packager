@@ -458,6 +458,8 @@ Each *Object* is required to have the following properties:
 
 ##### `usageDescription`
 
+*Object*
+
 Human-readable descriptions of how the Electron app uses certain macOS features. These are displayed
 in the App Store. A non-exhaustive list of available properties:
 
@@ -466,6 +468,17 @@ in the App Store. A non-exhaustive list of available properties:
 
 Valid properties are the [Cocoa keys for MacOS](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html)
 of the pattern `NS(.*)UsageDescription`, where the captured group is the key to use.
+
+Example:
+
+```javascript
+{
+  usageDescription: {
+    Camera: "Needed for video calls",
+    Microphone: 'Needed for voice calls'
+  }
+}
+```
 
 #### Windows targets only
 
