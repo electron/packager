@@ -474,7 +474,7 @@ Example:
 ```javascript
 {
   usageDescription: {
-    Camera: "Needed for video calls",
+    Camera: 'Needed for video calls',
     Microphone: 'Needed for voice calls'
   }
 }
