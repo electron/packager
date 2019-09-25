@@ -39,18 +39,25 @@ test('allOfficialArchsForPlatformAndVersion returns the correct arches for a kno
   t.deepEqual(targets.allOfficialArchsForPlatformAndVersion('darwin', '1.0.0'), ['x64'])
 })
 
-test('allOfficialArchsForPlatformAndVersion returns arm64 when the correct version is specified', t => {
+test('allOfficialArchsForPlatformAndVersion returns linux/arm64 when the correct version is specified', t => {
   t.true(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').includes('arm64'),
          'should be found when version is >= 1.8.0')
   t.false(targets.allOfficialArchsForPlatformAndVersion('linux', '1.7.0').includes('arm64'),
           'should not be found when version is < 1.8.0')
 })
 
-test('allOfficialArchsForPlatformAndVersion returns mips64el when the correct version is specified', t => {
+test('allOfficialArchsForPlatformAndVersion returns linux/mips64el when the correct version is specified', t => {
   t.true(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.2').includes('mips64el'),
          'should be found when version is >= 1.8.2-beta.5')
   t.false(targets.allOfficialArchsForPlatformAndVersion('linux', '1.8.0').includes('mips64el'),
           'should not be found when version is < 1.8.2-beta.5')
+})
+
+test('allOfficialArchsForPlatformAndVersion returns win32/arm64 when the correct version is specified', t => {
+  t.true(targets.allOfficialArchsForPlatformAndVersion('win32', '6.0.8').includes('arm64'),
+         'should be found when version is >= 6.0.8')
+  t.false(targets.allOfficialArchsForPlatformAndVersion('win32', '5.0.0').includes('arm64'),
+          'should not be found when version is < 6.0.8')
 })
 
 test('validateListFromOptions does not take non-Array/String values', t => {
@@ -70,11 +77,11 @@ test('validateListFromOptions works for armv7l host and target arch', t => {
 })
 
 test('build for all available official targets',
-     testMultiTarget({ all: true, electronVersion: '1.8.2' }, util.allPlatformArchCombosCount,
-                     'Packages should be generated for all possible platforms'))
+     testMultiTarget({ all: true, electronVersion: '1.8.2' }, util.allPlatformArchCombosCount - 1,
+                     'Packages should be generated for all possible platforms (except win32/arm64)'))
 test('build for all available official targets for a version without arm64 or mips64el support',
-     testMultiTarget({ all: true }, util.allPlatformArchCombosCount - 2,
-                     'Packages should be generated for all possible platforms (except arm64 and mips64el)'))
+     testMultiTarget({ all: true }, util.allPlatformArchCombosCount - 3,
+                     'Packages should be generated for all possible platforms (except linux/arm64, linux/mips64el, or win32/arm64)'))
 test('platform=all (one arch)',
      testMultiTarget({ arch: 'ia32', platform: 'all' }, 2, 'Packages should be generated for both 32-bit platforms'))
 test('arch=all test (one platform)',
@@ -94,11 +101,17 @@ test('fails with invalid platform', util.invalidOptionTest({
 }))
 
 test('invalid official combination', testMultiTarget({ arch: 'ia32', platform: 'darwin' }, 0, 'Package should not be generated for invalid official combination'))
-test('platform=linux and arch=arm64 with a supported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux', electronVersion: '1.8.0' }, 1, 'Package should be generated for arm64'))
-test('platform=linux and arch=arm64 with an unsupported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux' }, 0, 'Package should not be generated for arm64'))
+
+test('platform=linux and arch=arm64 with a supported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux', electronVersion: '1.8.0' }, 1, 'Package should be generated for linux/arm64'))
+test('platform=linux and arch=arm64 with an unsupported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux' }, 0, 'Package should not be generated for linux/arm64'))
+
 test('platform=linux and arch=mips64el with a supported official Electron version', testMultiTarget({ arch: 'mips64el', platform: 'linux', electronVersion: '1.8.2-beta.5' }, 1, 'Package should be generated for mips64el'))
-test('platform=linux and arch=mips64el with an unsupported official Electron version', testMultiTarget({ arch: 'mips64el', platform: 'linux' }, 0, 'Package should not be generated for mips64el'))
-test('platform=linux and arch=mips64el with an unsupported official Electron version (2.0.0)', testMultiTarget({ arch: 'mips64el', platform: 'linux', electronVersion: '2.0.0' }, 0, 'Package should not be generated for mips64el'))
+test('platform=linux and arch=mips64el with an unsupported official Electron version', testMultiTarget({ arch: 'mips64el', platform: 'linux' }, 0, 'Package should not be generated for linux/mips64el'))
+test('platform=linux and arch=mips64el with an unsupported official Electron version (2.0.0)', testMultiTarget({ arch: 'mips64el', platform: 'linux', electronVersion: '2.0.0' }, 0, 'Package should not be generated for linux/mips64el'))
+
+test('platform=win32 and arch=arm64 with a supported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'win32', electronVersion: '6.0.8' }, 1, 'Package should be generated for win32/arm64'))
+test('platform=win32 and arch=arm64 with an unsupported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'win32' }, 0, 'Package should not be generated for win32/arm64'))
+
 test('unofficial arch', testMultiTarget({ arch: 'z80', platform: 'linux', download: { mirrorOptions: { mirror: 'mirror' } } }, 1,
                                         'Package should be generated for non-standard arch from non-official mirror'))
 test('unofficial platform', testMultiTarget({ arch: 'ia32', platform: 'minix', download: { mirrorOptions: { mirror: 'mirror' } } }, 1,

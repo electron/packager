@@ -7,6 +7,7 @@
 ### Added
 
 * (darwin/mas only) `usageDescription` option
+* Support for official win32/arm64 builds
 
 ## [14.0.6] - 2019-09-09
 

@@ -47,7 +47,7 @@ function packagerTestOptions (t) {
 }
 
 module.exports = {
-  allPlatformArchCombosCount: 9,
+  allPlatformArchCombosCount: 10,
   assertDirectory: async function assertDirectory (t, pathToCheck, message) {
     const stats = await fs.stat(pathToCheck)
     t.true(stats.isDirectory(), message)
