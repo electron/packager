@@ -406,6 +406,13 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.is(info.NSHumanReadableCopyright, copyright, 'NSHumanReadableCopyright should reflect opts.appCopyright')
   }))
 
+  test.serial('usageDescription fills the correct keys', darwinTest(async (t, baseOpts) => {
+    const description = 'I am a Karaoke app'
+    const opts = { ...baseOpts, usageDescription: { Microphone: description } }
+    const info = await packageAndParseInfoPlist(t, opts)
+    t.is(info.NSMicrophoneUsageDescription, description, 'NSMicrophoneUsageDescription should reflect opts.usageDescription.Microphone')
+  }))
+
   test.serial('app named Electron packaged successfully', darwinTest(async (t, baseOpts) => {
     const opts = { ...baseOpts, name: 'Electron' }
     const finalPath = (await packager(opts))[0]

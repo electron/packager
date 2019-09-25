@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.6...master
 
+### Added
+
+* (darwin/mas only) `usageDescription` option
+
 ## [14.0.6] - 2019-09-09
 
 [14.0.6]: https://github.com/electron/electron-packager/compare/v14.0.5...v14.0.6

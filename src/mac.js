@@ -36,6 +36,10 @@ class MacApp extends App {
     return this.opts.darwinDarkModeSupport
   }
 
+  get usageDescription () {
+    return this.opts.usageDescription
+  }
+
   get protocols () {
     return this.opts.protocols.map((protocol) => {
       return {
@@ -229,6 +233,12 @@ class MacApp extends App {
 
     if (this.enableDarkMode) {
       this.appPlist.NSRequiresAquaSystemAppearance = false
+    }
+
+    if (this.usageDescription) {
+      for (const [type, description] of Object.entries(this.usageDescription)) {
+        this.appPlist[`NS${type}UsageDescription`] = description
+      }
     }
 
     await Promise.all(plists.map(([filename, varName]) =>
