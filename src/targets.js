@@ -10,12 +10,17 @@ const officialPlatformArchCombos = {
   darwin: ['x64'],
   linux: ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el'],
   mas: ['x64'],
-  win32: ['ia32', 'x64']
+  win32: ['ia32', 'x64', 'arm64']
 }
 
-const linuxArchBuildVersions = {
-  arm64: '>= 1.8.0',
-  mips64el: '^1.8.2-beta.5'
+const buildVersions = {
+  linux: {
+    arm64: '>= 1.8.0',
+    mips64el: '^1.8.2-beta.5'
+  },
+  win32: {
+    arm64: '>= 6.0.8'
+  }
 }
 
 // Maps to module filename for each platform (lazy-required if used)
@@ -39,10 +44,10 @@ function createPlatformArchPairs (opts, selectedPlatforms, selectedArchs, ignore
         if (!validOfficialPlatformArch(opts, platform, arch)) {
           warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`)
           continue
-        } else if (platform === 'linux') {
-          const buildVersion = linuxArchBuildVersions[arch]
-          if (buildVersion && !officialLinuxBuildExists(opts, buildVersion)) {
-            warnIfAllNotSpecified(opts, `Official linux/${arch} support only exists in Electron ${buildVersion}`)
+        } else if (buildVersions[platform] && buildVersions[platform][arch]) {
+          const buildVersion = buildVersions[platform][arch]
+          if (buildVersion && !officialBuildExists(opts, buildVersion)) {
+            warnIfAllNotSpecified(opts, `Official ${platform}/${arch} support only exists in Electron ${buildVersion}`)
             continue
           }
         }
@@ -67,7 +72,7 @@ function validOfficialPlatformArch (opts, platform, arch) {
   return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].includes(arch)
 }
 
-function officialLinuxBuildExists (opts, buildVersion) {
+function officialBuildExists (opts, buildVersion) {
   return semver.satisfies(opts.electronVersion, buildVersion)
 }
 
@@ -84,9 +89,9 @@ function warnIfAllNotSpecified (opts, message) {
 module.exports = {
   allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
     const archs = officialPlatformArchCombos[platform]
-    if (platform === 'linux') {
-      const excludedArchs = Object.keys(linuxArchBuildVersions)
-        .filter(arch => !officialLinuxBuildExists({ electronVersion: electronVersion }, linuxArchBuildVersions[arch]))
+    if (buildVersions[platform]) {
+      const excludedArchs = Object.keys(buildVersions[platform])
+        .filter(arch => !officialBuildExists({ electronVersion: electronVersion }, buildVersions[platform][arch]))
       return archs.filter(arch => !excludedArchs.includes(arch))
     }
 
