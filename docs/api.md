@@ -221,8 +221,8 @@ Whether symlinks should be dereferenced during the copying of the application so
 *Object*
 
 If present, passes custom options to [`@electron/get`](https://npm.im/@electron/get)
-(see the link for more detailed option descriptions and the defaults). Supported parameters include,
-but are not limited to:
+(see the link for more detailed option descriptions, proxy support, and the defaults). Supported
+parameters include, but are not limited to:
 - `cacheRoot` (*String*): The directory where prebuilt, pre-packaged Electron downloads are cached.
 - `mirrorOptions` (*Object*): Options to override the default Electron download location.
 - `rejectUnauthorized` (*Boolean* - default: `true`): Whether SSL certificates are required to be
