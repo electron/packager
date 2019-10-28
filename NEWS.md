@@ -2,12 +2,16 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.0.6...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.1.0...master
+
+## [14.1.0] - 2019-10-28
+
+[14.1.0]: https://github.com/electron/electron-packager/compare/v14.0.6...v14.1.0
 
 ### Added
 
-* (darwin/mas only) `usageDescription` option
-* Support for official win32/arm64 builds
+* (darwin/mas only) `usageDescription` option (#1049)
+* Support for official win32/arm64 builds (#1053)
 
 ## [14.0.6] - 2019-09-09
 
