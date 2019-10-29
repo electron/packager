@@ -46,7 +46,7 @@ If you need the functions called serially, there is a utility function provided.
 
 ```javascript
 const packager = require('electron-packager')
-const { serialHooks } = require('electron-packager/hooks')
+const { serialHooks } = require('electron-packager/src/hooks')
 
 packager({
   // ...
@@ -88,7 +88,7 @@ If you need the functions called serially, there is a utility function provided.
 
 ```javascript
 const packager = require('electron-packager')
-const { serialHooks } = require('electron-packager/hooks')
+const { serialHooks } = require('electron-packager/src/hooks')
 
 packager({
   // ...
@@ -131,7 +131,7 @@ If you need the functions called serially, there is a utility function provided.
 
 ```javascript
 const packager = require('electron-packager')
-const { serialHooks } = require('electron-packager/hooks')
+const { serialHooks } = require('electron-packager/src/hooks')
 
 packager({
   // ...
