@@ -36,11 +36,12 @@ class Packager {
     const testFile = path.join(testPath, 'test')
     const testLink = path.join(testPath, 'testlink')
 
-    this.canCreateSymlinks = false
     try {
       await fs.outputFile(testFile, '')
       await fs.symlink(testFile, testLink)
       this.canCreateSymlinks = true
+    } catch (e) {
+      this.canCreateSymlinks = false
     } finally {
       await fs.remove(testPath)
     }

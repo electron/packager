@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v14.1.0...master
 
+### Fixed
+
+* Regression that caused the symlink test on Windows to not work as intended
+
 ## [14.1.0] - 2019-10-28
 
 [14.1.0]: https://github.com/electron/electron-packager/compare/v14.0.6...v14.1.0
