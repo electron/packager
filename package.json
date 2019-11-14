@@ -37,7 +37,7 @@
     "junk": "^3.1.0",
     "parse-author": "^2.0.0",
     "plist": "^3.0.0",
-    "rcedit": "^2.0.0",
+    "rcedit": "^2.1.0",
     "resolve": "^1.1.6",
     "sanitize-filename": "^1.6.0",
     "semver": "^6.0.0",
