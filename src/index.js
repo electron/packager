@@ -41,6 +41,7 @@ class Packager {
       await fs.symlink(testFile, testLink)
       this.canCreateSymlinks = true
     } catch (e) {
+      /* istanbul ignore next */
       this.canCreateSymlinks = false
     } finally {
       await fs.remove(testPath)
