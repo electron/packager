@@ -9,8 +9,5 @@ case "$(uname -s)" in
     ;;
   "Darwin")
     "$(dirname $0)"/codesign/import-testing-cert-ci.sh
-    brew install wine
-    # Setup ~/.wine by running a command
-    wine hostname
     ;;
 esac
