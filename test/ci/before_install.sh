@@ -11,6 +11,6 @@ case "$(uname -s)" in
     "$(dirname $0)"/codesign/import-testing-cert-ci.sh
     brew cask install xquartz wine-stable
     # Setup ~/.wine by running a command
-    wine hostname
+    WINEDEBUG=warn+all wine hostname
     ;;
 esac
