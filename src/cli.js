@@ -2,6 +2,7 @@
 
 const { hostInfo, warning } = require('./common')
 const fs = require('fs-extra')
+const { initializeProxy } = require('@electron/get')
 const packager = require('..')
 const path = require('path')
 const yargs = require('yargs-parser')
@@ -116,6 +117,8 @@ module.exports = {
     } else if (!args.dir) {
       await printUsageAndExit(true)
     }
+
+    initializeProxy()
 
     try {
       const appPaths = await packager(args)
