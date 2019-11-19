@@ -88,6 +88,7 @@ test('infer win32metadata', util.testSinglePlatform(async (t, opts) => {
 }))
 test('do not infer win32metadata if it already exists', util.testSinglePlatform(async (t, opts) => {
   opts.win32metadata = { CompanyName: 'Existing' }
+  opts.appVersion = '1.0.0'
   const expected = { ...opts.win32metadata }
 
   return testInferWin32metadata(t, opts, expected, 'win32metadata did not update with package.json values')
