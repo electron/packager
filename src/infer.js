@@ -115,6 +115,23 @@ async function handleMetadata (opts, result) {
   }
 }
 
+function handleMissingProperties (opts, err) {
+  const missingProps = err.missingProps.map(prop => {
+    return Array.isArray(prop) ? prop[0] : prop
+  })
+
+  if (isMissingRequiredProperty(missingProps)) {
+    const messages = missingProps.map(errorMessageForProperty)
+
+    debug(err.message)
+    err.message = messages.join('\n') + '\n'
+    throw err
+  } else {
+    // Missing props not required, can continue w/ partial result
+    return handleMetadata(opts, err.result)
+  }
+}
+
 module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir) {
   const props = []
   if (!opts.name) props.push(['productName', 'name'])
@@ -145,19 +162,11 @@ module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir
     return handleMetadata(opts, result)
   } catch (err) {
     if (err.missingProps) {
-      const missingProps = err.missingProps.map(prop => {
-        return Array.isArray(prop) ? prop[0] : prop
-      })
-
-      if (isMissingRequiredProperty(missingProps)) {
-        const messages = missingProps.map(errorMessageForProperty)
-
+      if (err.missingProps.length === props.length) {
         debug(err.message)
-        err.message = messages.join('\n') + '\n'
-        throw err
+        err.message = `Could not locate a package.json file in "${path.resolve(opts.dir)}" or its parent directories for an Electron app.`
       } else {
-        // Missing props not required, can continue w/ partial result
-        return handleMetadata(opts, err.result)
+        return handleMissingProperties(opts, err)
       }
     }
 
