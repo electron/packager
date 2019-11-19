@@ -22,9 +22,13 @@ function errorMessageForProperty (prop) {
       hash = 'electronversion'
       propDescription = 'Electron version'
       break
+    case 'version':
+      hash = 'appversion'
+      propDescription = 'application version'
+      break
     default:
       hash = ''
-      propDescription = '[Unknown Property]'
+      propDescription = `[Unknown Property (${prop})]`
   }
 
   return `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
