@@ -9,8 +9,5 @@ case "$(uname -s)" in
     ;;
   "Darwin")
     "$(dirname $0)"/codesign/import-testing-cert-ci.sh
-    brew cask install xquartz wine-stable
-    # Setup ~/.wine by running a command
-    wineconsole hostname
     ;;
 esac
