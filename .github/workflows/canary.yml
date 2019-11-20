@@ -16,7 +16,7 @@ jobs:
         with:
           repository: electron/electron-quick-start
           ref: refs/heads/master
-          path: {{ env.HOME }}/electron-quick-start
+          path: ${{ env.HOME }}/electron-quick-start
       - name: Use Node.js 8.x
         uses: actions/setup-node@v1
         with:
