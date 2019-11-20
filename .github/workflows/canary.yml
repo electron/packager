@@ -16,16 +16,19 @@ jobs:
         with:
           repository: electron/electron-quick-start
           ref: refs/heads/master
+          path: {{ env.HOME }}/electron-quick-start
       - name: Use Node.js 8.x
         uses: actions/setup-node@v1
         with:
           node-version: 8.x
       - name: Replace electron with electron-nightly
         run: |
+          cd $HOME/electron-quick-start
           npm uninstall --save-dev electron
           npm install --save-dev electron-nightly@latest
-      - name: Install
-        run: npm install --save-dev electron-packager
+        shell: bash
+      - name: Install Electron Packager
+        run: npm install --save-dev electron-packager@electron/electron-packager
       - name: Package
-        run: node_modules/.bin/electron-packager .
+        run: node_modules/.bin/electron-packager $HOME/electron-quick-start
         shell: bash
