@@ -1,0 +1,29 @@
+name: Canary
+
+on: [push]
+  # schedule:
+  #   - cron: '15 8 * * *'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v1
+        with: electron/electron-quick-start
+      - name: Use Node.js 8.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 8.x
+      - name: Replace electron with electron-nightly
+        run: |
+          npm uninstall --save-dev electron
+          npm install --save-dev electron-nightly@latest
+      - name: Install
+        run: npm install --save-dev electron-packager
+      - name: Package
+        run: node_modules/.bin/electron-packager .
+        shell: bash
