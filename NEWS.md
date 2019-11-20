@@ -2,11 +2,22 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.1.0...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.1.1...master
+
+## [14.1.1] - 2019-11-19
+
+[14.1.1]: https://github.com/electron/electron-packager/compare/v14.1.0...v14.1.1
 
 ### Fixed
 
-* Regression that caused the symlink test on Windows to not work as intended
+* Regression that caused the symlink test on Windows to not work as intended (#1071)
+* Always initialize proxy support when running the CLI (#1077)
+* Clarify the error message when infer cannot find a package.json file (#1079)
+* Handle a missing inferred app version better (#1079)
+
+### Chores
+
+* Upgrade `electron-notarize` to `^0.2.0` (#1069)
 
 ## [14.1.0] - 2019-10-28
 
