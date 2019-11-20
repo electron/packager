@@ -23,12 +23,12 @@ jobs:
           node-version: 8.x
       - name: Replace electron with electron-nightly
         run: |
-          cd $HOME/electron-quick-start
+          cd $GITHUB_WORKSPACE/../electron-quick-start
           npm uninstall --save-dev electron
           npm install --save-dev electron-nightly@latest
         shell: bash
       - name: Install Electron Packager
         run: npm install --save-dev electron-packager@electron/electron-packager
       - name: Package
-        run: node_modules/.bin/electron-packager $HOME/electron-quick-start
+        run: node_modules/.bin/electron-packager $GITHUB_WORKSPACE/../electron-quick-start
         shell: bash
