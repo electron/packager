@@ -13,7 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-        with: electron/electron-quick-start
+        with:
+          repository: electron/electron-quick-start
       - name: Use Node.js 8.x
         uses: actions/setup-node@v1
         with:
