@@ -28,7 +28,11 @@ jobs:
           npm install --save-dev electron-nightly@latest
         shell: bash
       - name: Install Electron Packager
-        run: npm install --save-dev electron-packager@electron/electron-packager
+        run: |
+          cd $GITHUB_WORKSPACE/../electron-quick-start
+          npm install --save-dev electron-packager@electron/electron-packager
       - name: Package
-        run: node_modules/.bin/electron-packager $GITHUB_WORKSPACE/../electron-quick-start
+        run: |
+          cd $GITHUB_WORKSPACE/../electron-quick-start
+          node_modules/.bin/electron-packager . --arch=all
         shell: bash
