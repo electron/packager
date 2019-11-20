@@ -35,4 +35,3 @@ jobs:
         run: |
           cd ../electron-quick-start
           node_modules/.bin/electron-packager . --arch=all
-        shell: bash
