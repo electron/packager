@@ -1,8 +1,8 @@
 name: Canary
 
-on: [push]
-  # schedule:
-  #   - cron: '15 8 * * *'
+on:
+  schedule:
+    - cron: '15 8 * * *'
 
 jobs:
   build:
