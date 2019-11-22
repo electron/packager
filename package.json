@@ -27,10 +27,10 @@
   "dependencies": {
     "@electron/get": "^1.6.0",
     "asar": "^2.0.1",
-    "cross-zip": "^2.1.5",
     "debug": "^4.0.1",
     "electron-notarize": "^0.2.0",
     "electron-osx-sign": "^0.4.11",
+    "extract-zip": "^1.6.7",
     "fs-extra": "^8.1.0",
     "galactus": "^0.2.1",
     "get-package-info": "^1.0.0",
