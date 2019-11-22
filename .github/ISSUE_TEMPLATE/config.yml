@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: Electron Community
+  - name: Question
     url: https://electronjs.org/community
     about: Please ask questions about using Electron Packager in one of the community-driven sites.
