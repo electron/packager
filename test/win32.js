@@ -134,17 +134,19 @@ function setCompanyNameTest (companyName) {
                                    'Company name should match win32metadata value')
 }
 
-test('better error message when wine is not found', (t) => {
-  let err = Error('spawn wine ENOENT')
-  err.code = 'ENOENT'
-  err.syscall = 'spawn wine'
+for (const wineBinary of ['wine', 'wine64']) {
+  test(`better error message when ${wineBinary} is not found`, t => {
+    let err = Error(`spawn ${wineBinary} ENOENT`)
+    err.code = 'ENOENT'
+    err.syscall = `spawn ${wineBinary}`
 
-  t.is(err.message, 'spawn wine ENOENT')
-  err = win32.updateWineMissingException(err)
-  t.not(err.message, 'spawn wine ENOENT')
-})
+    t.is(err.message, `spawn ${wineBinary} ENOENT`)
+    err = win32.updateWineMissingException(err)
+    t.not(err.message, `spawn ${wineBinary} ENOENT`)
+  })
+}
 
-test('error message unchanged when error not about wine', t => {
+test('error message unchanged when error not about wine/wine64', t => {
   let errNotEnoent = Error('unchanged')
   errNotEnoent.code = 'ESOMETHINGELSE'
   errNotEnoent.syscall = 'spawn wine'
