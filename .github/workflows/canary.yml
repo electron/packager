@@ -1,0 +1,37 @@
+name: electron-nightly Canary
+
+on:
+  schedule:
+    - cron: '15 8 * * *'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          repository: electron/electron-quick-start
+          ref: refs/heads/master
+          path: electron-quick-start
+      - name: Use Node.js 8.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 8.x
+      - name: Replace electron with electron-nightly
+        run: |
+          cd $GITHUB_WORKSPACE/../electron-quick-start
+          npm uninstall --save-dev electron
+          npm install --save-dev electron-nightly@latest
+        shell: bash
+      - name: Install Electron Packager
+        run: |
+          cd ../electron-quick-start
+          npm install --save-dev electron-packager@electron/electron-packager
+      - name: Package
+        run: |
+          cd ../electron-quick-start
+          node_modules/.bin/electron-packager . --arch=all
