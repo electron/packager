@@ -7,12 +7,11 @@ const App = require('./platform')
 const common = require('./common')
 
 function updateWineMissingException (err) {
-  if (err && err.code === 'ENOENT' && ['spawn wine', 'spawn wine64'].includes(err.syscall)) {
-    const binary = err.syscall.split(' ')[1]
-    err.message = `Could not find "${binary}" on your system.\n\n` +
+  if (err && err.code === 'ENOENT' && err.syscall === 'spawn wine') {
+    err.message = 'Could not find "wine" on your system.\n\n' +
       'Wine is required to use the appCopyright, appVersion, buildVersion, icon, and \n' +
       'win32metadata parameters for Windows targets.\n\n' +
-      `Make sure that the "${binary}" executable is in your PATH.\n\n` +
+      'Make sure that the "wine" executable is in your PATH.\n\n' +
       'See https://github.com/electron/electron-packager#building-windows-apps-from-non-windows-platforms for details.'
   }
 
