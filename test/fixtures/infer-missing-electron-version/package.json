@@ -1,0 +1,7 @@
+{
+  "name": "Missing electron version",
+  "version": "0.0.1",
+  "dependencies": {
+    "run-series": "^1.1.1"
+  }
+}

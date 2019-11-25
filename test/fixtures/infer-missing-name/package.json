@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "electron": "6.0.0",
     "run-series": "^1.1.1"
   }
 }
