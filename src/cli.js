@@ -68,9 +68,13 @@ module.exports = {
     if (args.osxSign === 'true') {
       warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)')
       args.osxSign = true
-    } else if (typeof args.osxSign === 'object' && !Array.isArray(args.osxSign)) {
-      // Keep kebab case of sub properties
-      args.osxSign = args['osx-sign']
+    } else if (typeof args['osx-sign'] === 'object') {
+      if (Array.isArray(args['osx-sign'])) {
+        warning('Remove --osx-sign (the bare flag) from the command line, only specify sub-properties (see --help)')
+      } else {
+        // Keep kebab case of sub properties
+        args.osxSign = args['osx-sign']
+      }
     }
 
     if (args.osxNotarize) {

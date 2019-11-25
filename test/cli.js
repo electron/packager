@@ -2,6 +2,7 @@
 
 const cli = require('../src/cli')
 const test = require('ava')
+const util = require('./_util')
 
 test('CLI argument: --electron-version populates opts.electronVersion', t => {
   let args = cli.parseArgs([])
@@ -35,6 +36,12 @@ test('CLI argument: using --asar overrides other --asar.options', t => {
 test('CLI argument: --osx-sign=true', t => {
   const args = cli.parseArgs(['--osx-sign=true'])
   t.true(args.osxSign)
+})
+
+test('CLI argument: --osx-sign and --osx-sign subproperties should not be mixed', t => {
+  util.setupConsoleWarnSpy()
+  cli.parseArgs(['--osx-sign', '--osx-sign.identity=identity'])
+  util.assertWarning(t, 'WARNING: Remove --osx-sign (the bare flag) from the command line, only specify sub-properties (see --help)')
 })
 
 test('CLI argument: --osx-sign is object', t => {
