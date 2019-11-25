@@ -239,14 +239,6 @@ valid versions. If omitted, it will use the version of the nearest local install
 `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, defined in `package.json` in either
 `dependencies` or `devDependencies`.
 
-##### `darwinDarkModeSupport`
-
-*Boolean* (default: `false`)
-
-Forces support for Mojave (macOS 10.14) dark mode in your packaged app. This sets the
-`NSRequiresAquaSystemAppearance` key to `false` in your app's `Info.plist`.  For more information,
-see the [Apple developer documentation](https://developer.apple.com/documentation/appkit/nsappearancecustomization/choosing_a_specific_appearance_for_your_app).
-
 ##### `extraResource`
 
 *String* or *Array* of *String*s
@@ -409,6 +401,14 @@ The application category type, as shown in the Finder via *View → Arrange by A
 For example, `app-category-type=public.app-category.developer-tools` will set the application category to *Developer Tools*.
 
 Valid values are listed in [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8).
+
+##### `darwinDarkModeSupport`
+
+*Boolean* (default: `false`)
+
+Forces support for Mojave (macOS 10.14) dark mode in your packaged app. This sets the
+`NSRequiresAquaSystemAppearance` key to `false` in your app's `Info.plist`.  For more information,
+see the [Apple developer documentation](https://developer.apple.com/documentation/appkit/nsappearancecustomization/choosing_a_specific_appearance_for_your_app).
 
 ##### `extendInfo`
 
