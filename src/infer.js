@@ -109,6 +109,7 @@ async function handleMetadata (opts, result) {
     }
   }
 
+  // eslint-disable-next-line no-prototype-builtins
   if (result.values.hasOwnProperty('dependencies.electron')) {
     return getVersion(opts, result.source['dependencies.electron'])
   } else {
