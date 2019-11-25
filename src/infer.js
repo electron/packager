@@ -26,6 +26,7 @@ function errorMessageForProperty (prop) {
       hash = 'appversion'
       propDescription = 'application version'
       break
+    /* istanbul ignore next */
     default:
       hash = ''
       propDescription = `[Unknown Property (${prop})]`
@@ -108,7 +109,8 @@ async function handleMetadata (opts, result) {
     }
   }
 
-  if (result.values['dependencies.electron']) {
+  // eslint-disable-next-line no-prototype-builtins
+  if (result.values.hasOwnProperty('dependencies.electron')) {
     return getVersion(opts, result.source['dependencies.electron'])
   } else {
     return Promise.resolve()

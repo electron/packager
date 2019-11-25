@@ -32,12 +32,12 @@ async function copyFixtureToTempDir (t, fixtureSubdir) {
   return tmpdir
 }
 
-async function inferFailureTest (t, opts, fixtureSubdir) {
+async function inferFailureTest (t, opts, fixtureSubdir, errorMatcher) {
   opts.dir = await copyFixtureToTempDir(t, fixtureSubdir)
   delete opts.name
   delete opts.electronVersion
 
-  return t.throwsAsync(packager(opts))
+  return t.throwsAsync(packager(opts), errorMatcher)
 }
 
 async function inferMissingVersionTest (t, opts) {
@@ -110,9 +110,11 @@ test('do not infer win32metadata.CompanyName when author is an object without a 
 
   return testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata.CompanyName should not have been inferred')
 }))
-test('infer missing fields test', util.testSinglePlatform(inferFailureTest, 'infer-missing-fields'))
-test('infer with bad fields test', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields'))
-test('infer with malformed JSON test', util.testSinglePlatform(async (t, opts) => {
+test('missing name from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-name', /^Unable to determine application name/))
+test('missing Electron version from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-electron-version', /^Unable to determine Electron version/))
+test('missing package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-package-json', /^Could not locate a package\.json file/))
+test('infer with bad fields', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields', /^Cannot find module/))
+test('infer with malformed JSON', util.testSinglePlatform(async (t, opts) => {
   opts.dir = await copyFixtureToTempDir(t, 'infer-malformed-json')
   delete opts.name
   delete opts.electronVersion
@@ -123,4 +125,4 @@ test('infer with malformed JSON test', util.testSinglePlatform(async (t, opts) =
 
   return t.throwsAsync(packager(opts), /^Unexpected token/)
 }))
-test('infer using a non-specific `electron-prebuilt-compile` package version when the package did not have a main file', util.testSinglePlatform(inferFailureTest, 'infer-invalid-non-specific-electron-prebuilt-compile'))
+test('infer using a non-specific `electron-prebuilt-compile` package version when the package did not have a main file', util.testSinglePlatform(inferFailureTest, 'infer-invalid-non-specific-electron-prebuilt-compile', /^Using electron-prebuilt-compile/))
