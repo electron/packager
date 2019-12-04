@@ -32,7 +32,7 @@ class Packager {
   }
 
   async testSymlink (comboOpts, zipPath) {
-    const testPath = path.join(this.tempBase, 'symlink-test')
+    const testPath = path.join(this.tempBase, `symlink-test-${comboOpts.platform}-${comboOpts.arch}`)
     const testFile = path.join(testPath, 'test')
     const testLink = path.join(testPath, 'testlink')
 
