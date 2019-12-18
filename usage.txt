@@ -48,6 +48,7 @@ download           a list of sub-options to pass to @electron/get. They are spec
                      checks.
 electron-version   the version of Electron that is being packaged, see
                    https://github.com/electron/electron/releases
+electron-zip-dir   the local path to a directory containing Electron ZIP files
 executable-name    the name of the executable file, sans file extension. Defaults to appname
 extra-resource     a file to copy into the app's resources directory
 icon               the local path to an icon file to use as the icon for the app.

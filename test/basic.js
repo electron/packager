@@ -67,12 +67,7 @@ test('cannot build apps where the name ends in " Helper"', async t => {
     platform: 'linux'
   }
 
-  try {
-    await packager(opts)
-  } catch (err) {
-    return t.is(err.message, 'Application names cannot end in " Helper" due to limitations on macOS')
-  }
-  throw new Error('should not finish')
+  await t.throwsAsync(async () => packager(opts), 'Application names cannot end in " Helper" due to limitations on macOS')
 })
 
 test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
@@ -278,4 +273,33 @@ test.serial('dir: relative path', util.testSinglePlatform(async (t, opts) => {
 
   const finalPath = (await packager(opts))[0]
   t.is(path.join(t.context.workDir, 'ElectronTest-linux-x64'), finalPath, 'paths returned')
+}))
+
+test.serial('electronZipDir success', util.testSinglePlatform(async (t, opts) => {
+  const customDir = path.join(t.context.tempDir, 'download')
+  opts.dir = util.fixtureSubdir('basic')
+  opts.electronZipDir = customDir
+  await fs.ensureDir(customDir)
+  const zipPath = await download.downloadElectronZip(download.createDownloadOpts(opts, 'linux', 'x64'))
+  await fs.copy(zipPath, path.join(customDir, path.basename(zipPath)))
+
+  const paths = await packager(opts)
+  t.is(1, paths.length, '1 bundle created')
+}))
+
+test.serial('electronZipDir does not exist', util.testSinglePlatform(async (t, opts) => {
+  const customDir = path.join(t.context.tempDir, 'does-not-exist')
+  opts.dir = util.fixtureSubdir('basic')
+  opts.electronZipDir = customDir
+
+  await t.throwsAsync(async () => packager(opts), /Electron ZIP directory does not exist/)
+}))
+
+test.serial('electronZipDir: ZIP file does not exist', util.testSinglePlatform(async (t, opts) => {
+  const customDir = path.join(t.context.tempDir, 'download')
+  opts.dir = util.fixtureSubdir('basic')
+  opts.electronZipDir = customDir
+  await fs.ensureDir(customDir)
+
+  await t.throwsAsync(async () => packager(opts), /Electron ZIP file does not exist/)
 }))

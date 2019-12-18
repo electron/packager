@@ -228,6 +228,7 @@ parameters include, but are not limited to:
 - `rejectUnauthorized` (*Boolean* - default: `true`): Whether SSL certificates are required to be
   valid when downloading Electron.
 
+**Note:** `download` sub-options will have no effect if [`electronZipDir`](#electronzipdir) is set.
 
 ##### `electronVersion`
 
@@ -238,6 +239,17 @@ The Electron version with which the app is built (without the leading 'v') - for
 valid versions. If omitted, it will use the version of the nearest local installation of
 `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, defined in `package.json` in either
 `dependencies` or `devDependencies`.
+
+##### `electronZipDir`
+
+*String*
+
+The local path to a directory containing Electron ZIP files for Electron Packager to unzip, instead
+of downloading them. The ZIP filenames should be in the same format as the ones downloaded from the
+Electron releases site.
+
+**Note:** Setting this option prevents the [`download`](#download) sub-options from being used, as
+the functionality gets skipped over.
 
 ##### `extraResource`
 
