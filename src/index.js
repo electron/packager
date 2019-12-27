@@ -105,8 +105,28 @@ class Packager {
     }
   }
 
+  async getElectronZipPath (downloadOpts) {
+    if (this.opts.electronZipDir) {
+      if (await fs.pathExists(this.opts.electronZipDir)) {
+        const zipPath = path.resolve(
+          this.opts.electronZipDir,
+          `electron-v${downloadOpts.version}-${downloadOpts.platform}-${downloadOpts.arch}.zip`
+        )
+        if (!await fs.pathExists(zipPath)) {
+          throw new Error(`The specified Electron ZIP file does not exist: ${zipPath}`)
+        }
+
+        return zipPath
+      }
+
+      throw new Error(`The specified Electron ZIP directory does not exist: ${this.opts.electronZipDir}`)
+    } else {
+      return download.downloadElectronZip(downloadOpts)
+    }
+  }
+
   async packageForPlatformAndArch (downloadOpts) {
-    const zipPath = await download.downloadElectronZip(downloadOpts)
+    const zipPath = await this.getElectronZipPath(downloadOpts)
     // Create delegated options object with specific platform and arch, for output directory naming
     const comboOpts = {
       ...this.opts,
