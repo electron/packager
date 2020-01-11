@@ -9,7 +9,7 @@ const targets = require('./targets')
 
 const DEFAULT_IGNORES = [
   '/\\.git($|/)',
-  '/node_modules/\\.bin($|/)',
+  'node_modules/\\.bin($|/)',
   '\\.o(bj)?$'
 ]
 
