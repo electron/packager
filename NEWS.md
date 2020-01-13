@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.1.1...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.2.0...master
+
+## [14.2.0] - 2020-01-13
+
+[14.2.0]: https://github.com/electron/electron-packager/compare/v14.1.1...v14.2.0
+
+### Added
+
+* `electronZipDir` option (#1094)
 
 ## [14.1.1] - 2019-11-19
 
