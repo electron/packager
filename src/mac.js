@@ -288,8 +288,10 @@ class MacApp extends App {
       /* istanbul ignore next */
       return Promise.resolve()
     }
-    debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
-    await fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist.CFBundleIconFile))
+    if (icon) {
+      debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`)
+      await fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist.CFBundleIconFile))
+    }
   }
 
   async renameAppAndHelpers () {
