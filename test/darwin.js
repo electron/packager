@@ -2,6 +2,7 @@
 
 const config = require('./config.json')
 const childProcess = require('child_process')
+const crypto = require('crypto')
 const fs = require('fs-extra')
 const mac = require('../src/mac')
 const packager = require('..')
@@ -207,6 +208,23 @@ if (!(process.env.CI && process.platform === 'win32')) {
   test.serial('macOS icon: .icns specified', darwinTest(iconTest, icnsPath, icnsPath))
   test.serial('macOS icon: .ico specified (should replace with .icns)', darwinTest(iconTest, `${iconBase}.ico`, icnsPath))
   test.serial('macOS icon: basename only (should add .icns)', darwinTest(iconTest, iconBase, icnsPath))
+  test.serial('macOS icon: invalid icon path should skip copy', darwinTest(async (t, opts) => {
+    let expectedChecksum
+    opts.icon = path.join(__dirname, 'fixtures', 'nonexistent')
+    opts.afterExtract = [
+      async (extractPath, _electronVersion, _platform, _arch, callback) => {
+        const hash = crypto.createHash('sha256')
+        hash.update(await fs.readFile(path.join(extractPath, 'Electron.app', 'Contents', 'Resources', 'electron.icns')))
+        expectedChecksum = hash.digest('hex')
+        callback()
+      }
+    ]
+
+    const finalPath = (await packager(opts))[0]
+    const hash = crypto.createHash('sha256')
+    hash.update(await fs.readFile(path.join(finalPath, `${opts.name}.app`, 'Contents', 'Resources', 'electron.icns')))
+    return t.is(hash.digest('hex'), expectedChecksum, 'Icon should not have been overwritten')
+  }))
 
   const extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist')
   const extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString())

@@ -152,6 +152,9 @@ class App {
 
     if (await fs.pathExists(iconFilename)) {
       return iconFilename
+    } else {
+      /* istanbul ignore next */
+      common.warning(`Could not find icon "${iconFilename}", not updating app icon`)
     }
   }
 
