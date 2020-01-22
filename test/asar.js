@@ -5,20 +5,20 @@ const path = require('path')
 const test = require('ava')
 const util = require('./_util')
 
-test('asar argument test: asar is not set', t => {
+test('asar argument: asar is not set', t => {
   const asarOpts = common.createAsarOpts({})
   t.false(asarOpts, 'createAsarOpts returns false')
 })
 
-test('asar argument test: asar is true', t => {
+test('asar argument: asar is true', t => {
   t.deepEqual(common.createAsarOpts({ asar: true }), {})
 })
 
-test('asar argument test: asar is not an Object or a bool', t => {
+test('asar argument: asar is not an Object or a bool', t => {
   t.false(common.createAsarOpts({ asar: 'string' }), 'createAsarOpts returns false')
 })
 
-test.serial('default_app.asar removal test', util.testSinglePlatform(async (t, opts) => {
+test.serial('default_app.asar removal', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'default_appASARTest'
   opts.dir = util.fixtureSubdir('basic')
 
@@ -45,7 +45,7 @@ function incompatibleOptionWithPrebuiltAsarTest (extraOpts) {
   return failedPrebuiltAsarTest(extraOpts, /is incompatible with prebuiltAsar/)
 }
 
-test.serial('asar test', util.testSinglePlatform(async (t, opts) => {
+test.serial('asar', util.testSinglePlatform(async (t, opts) => {
   opts.name = 'asarTest'
   opts.dir = util.fixtureSubdir('basic')
   opts.asar = {
@@ -61,7 +61,7 @@ test.serial('asar test', util.testSinglePlatform(async (t, opts) => {
   ])
 }))
 
-test.serial('prebuilt asar test', util.testSinglePlatform(async (t, opts) => {
+test.serial('prebuilt asar', util.testSinglePlatform(async (t, opts) => {
   util.setupConsoleWarnSpy()
   opts.name = 'prebuiltAsarTest'
   opts.dir = util.fixtureSubdir('asar-prebuilt')

@@ -185,29 +185,29 @@ function win32Test (extraOpts, executableBasename, executableMessage) {
 }
 
 if (!(process.env.CI && process.platform === 'darwin')) {
-  test.serial('win32 executable name is based on sanitized app name', win32Test(
+  test.serial('win32: executable name is based on sanitized app name', win32Test(
     { name: '@username/package-name' },
     '@username-package-name',
     'The sanitized EXE filename should exist'
   ))
 
-  test.serial('win32 executable name uses executableName when available', win32Test(
+  test.serial('win32: executable name uses executableName when available', win32Test(
     { name: 'PackageName', executableName: 'my-package' },
     'my-package',
     'the executableName-based filename should exist'
   ))
 
-  test.serial('win32 icon set', win32Test(
+  test.serial('win32: set icon', win32Test(
     { executableName: 'iconTest', arch: 'ia32', icon: path.join(__dirname, 'fixtures', 'monochrome') },
     'iconTest',
     'the Electron executable should exist'
   ))
 
-  test('win32 build version sets FileVersion test', setFileVersionTest('2.3.4.5'))
-  test('win32 app version sets ProductVersion test', setProductVersionTest('5.4.3.2'))
-  test('win32 app copyright sets LegalCopyright test', setCopyrightTest('Copyright Bar'))
-  test('win32 set LegalCopyright and CompanyName test', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
-  test('win32 set CompanyName test', setCompanyNameTest('MyCompany LLC'))
-  test('win32 set requested-execution-level test', setRequestedExecutionLevelTest('asInvoker'))
-  test('win32 set application-manifest test', setApplicationManifestTest('/path/to/manifest.xml'))
+  test('win32: build version sets FileVersion', setFileVersionTest('2.3.4.5'))
+  test('win32: app version sets ProductVersion', setProductVersionTest('5.4.3.2'))
+  test('win32: app copyright sets LegalCopyright', setCopyrightTest('Copyright Bar'))
+  test('win32: set LegalCopyright and CompanyName', setCopyrightAndCompanyNameTest('Copyright Bar', 'MyCompany LLC'))
+  test('win32: set CompanyName', setCompanyNameTest('MyCompany LLC'))
+  test('win32: set requested-execution-level', setRequestedExecutionLevelTest('asInvoker'))
+  test('win32: set application-manifest', setApplicationManifestTest('/path/to/manifest.xml'))
 }

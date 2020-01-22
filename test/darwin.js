@@ -200,7 +200,7 @@ async function appHelpersBundleElectron6Test (t, opts) {
 
 if (!(process.env.CI && process.platform === 'win32')) {
   test.serial('helper app paths', darwinTest(helperAppPathsTest))
-  test.serial('helper app paths test with app name needing sanitization', darwinTest(helperAppPathsTest, { name: '@username/package-name' }, '@username-package-name'))
+  test.serial('helper app paths with app name needing sanitization', darwinTest(helperAppPathsTest, { name: '@username/package-name' }, '@username-package-name'))
 
   const iconBase = path.join(__dirname, 'fixtures', 'monochrome')
   const icnsPath = `${iconBase}.icns`

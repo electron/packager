@@ -35,7 +35,7 @@ async function createPruneOptionTest (t, baseOpts, prune, testMessage) {
   ])
 }
 
-test.serial('prune test', util.testSinglePlatform(async (t, baseOpts) => {
+test.serial('prune: true', util.testSinglePlatform(async (t, baseOpts) => {
   await createPruneOptionTest(t, baseOpts, true, 'package.json devDependency should NOT exist under app/node_modules')
 }))
 
@@ -50,7 +50,7 @@ test.serial('prune electron in dependencies', util.testSinglePlatform(async (t, 
   await checkDependency(t, resourcesPath, 'electron', false)
 }))
 
-test.serial('prune: false test', util.testSinglePlatform(createPruneOptionTest, false, 'package.json devDependency should exist under app/node_modules'))
+test.serial('prune: false', util.testSinglePlatform(createPruneOptionTest, false, 'package.json devDependency should exist under app/node_modules'))
 
 test('isModule properly detects module folders', async t => {
   const isModule = name => prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', name)))

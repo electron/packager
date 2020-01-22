@@ -31,7 +31,7 @@ test('setting the quiet option does not print messages', t => {
   t.true(console.error.notCalled, 'quieted common.info should not call console.error')
 })
 
-test('download argument test: download.{arch,platform,version,artifactName} does not overwrite {arch,platform,version,artifactName}', t => {
+test('download argument: download.{arch,platform,version,artifactName} does not overwrite {arch,platform,version,artifactName}', t => {
   const opts = {
     download: {
       arch: 'ia32',
@@ -151,7 +151,7 @@ test.serial('overwrite', util.testSinglePlatform(async (t, opts) => {
   await util.assertPathNotExists(t, testPath, 'The output directory should be regenerated when overwrite is true')
 }))
 
-test.serial('overwrite test sans platform/arch set', util.testSinglePlatform(async (t, opts) => {
+test.serial('overwrite sans platform/arch set', util.testSinglePlatform(async (t, opts) => {
   delete opts.platfrom
   delete opts.arch
   opts.dir = util.fixtureSubdir('basic')

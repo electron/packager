@@ -84,7 +84,7 @@ test('build for all available official targets for a version without arm64 or mi
                      'Packages should be generated for all possible platforms (except linux/arm64, linux/mips64el, or win32/arm64)'))
 test('platform=all (one arch)',
      testMultiTarget({ arch: 'ia32', platform: 'all' }, 2, 'Packages should be generated for both 32-bit platforms'))
-test('arch=all test (one platform)',
+test('arch=all (one platform)',
      testMultiTarget({ arch: 'all', platform: 'linux' }, 3, 'Packages should be generated for all expected architectures'))
 
 testCombinations('multi-platform / multi-arch test, from arrays', ['ia32', 'x64'], ['linux', 'win32'])
