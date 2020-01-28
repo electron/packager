@@ -420,7 +420,8 @@ Valid values are listed in [Apple's documentation](https://developer.apple.com/l
 
 Forces support for Mojave (macOS 10.14) dark mode in your packaged app. This sets the
 `NSRequiresAquaSystemAppearance` key to `false` in your app's `Info.plist`.  For more information,
-see the [Apple developer documentation](https://developer.apple.com/documentation/appkit/nsappearancecustomization/choosing_a_specific_appearance_for_your_app).
+see the [Electron documentation](https://www.electronjs.org/docs/tutorial/mojave-dark-mode-guide)
+and the [Apple developer documentation](https://developer.apple.com/documentation/appkit/nsappearancecustomization/choosing_a_specific_appearance_for_your_app).
 
 ##### `extendInfo`
 
