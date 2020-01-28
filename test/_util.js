@@ -5,12 +5,12 @@ const bufferEqual = require('buffer-equal')
 const common = require('../src/common')
 const config = require('./config.json')
 const fs = require('fs-extra')
+const os = require('os')
 const packager = require('..')
 const path = require('path')
 const plist = require('plist')
 const setup = require('./_setup')
 const sinon = require('sinon')
-const tempy = require('tempy')
 const test = require('ava')
 
 const ORIGINAL_CWD = process.cwd()
@@ -28,9 +28,9 @@ test.after.always(async t => {
   await fs.remove(setup.WORK_CWD)
 })
 
-test.beforeEach(t => {
-  t.context.workDir = tempy.directory()
-  t.context.tempDir = tempy.directory()
+test.beforeEach(async t => {
+  t.context.workDir = await fs.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-'))
+  t.context.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-'))
 })
 
 test.afterEach.always(async t => {
