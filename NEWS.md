@@ -1,8 +1,17 @@
-# Changes by Version
+# Electron Packager: Changes by Version
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.2.0...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v14.2.1...master
+
+## [14.2.1] - 2020-02-07
+
+[14.2.1]: https://github.com/electron/electron-packager/compare/v14.2.0...v14.2.1
+
+### Fixed
+
+* mac: don't fail if the icon path doesn't exist (#1101)
+* win32: correctly catch missing wine exceptions (#1117)
 
 ## [14.2.0] - 2020-01-13
 
