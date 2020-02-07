@@ -118,5 +118,8 @@
       "no-console": 0,
       "strict": "error"
     }
+  },
+  "funding": {
+    "url": "https://github.com/electron/electron-packager?sponsor=1"
   }
 }
