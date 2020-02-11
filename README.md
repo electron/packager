@@ -4,7 +4,8 @@ Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.
 
 [![CircleCI Build Status](https://circleci.com/gh/electron/electron-packager/tree/master.svg?style=svg)](https://circleci.com/gh/electron/electron-packager/tree/master)
 [![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/master/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
-[![Dependency Status](https://dependencyci.com/github/electron/electron-packager/badge)](https://dependencyci.com/github/electron/electron-packager)
+[![NPM](https://badgen.net/npm/v/electron-packager)](https://npm.im/electron-packager)
+![Dependabot Status](https://flat.badgen.net/dependabot/electron/electron-packager?icon=dependabot)
 
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
