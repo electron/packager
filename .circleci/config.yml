@@ -24,24 +24,12 @@ step-save-electron-cache: &step-save-electron-cache
 step-before-install: &step-before-install
   run: test/ci/before_install.sh
 
-steps-linux-windows: &steps-linux-windows
+steps-ci: &steps-ci
   steps:
     - checkout
     - *step-env
     - *step-before-install
-    - run: npm install
-    - *step-restore-electron-cache
-    - run: test/ci/_before_script.js
-    - *step-save-electron-cache
-    - run: npm test
-    - run: npm run codecov
-
-steps-mac: &steps-mac
-  steps:
-    - checkout
-    - *step-env
-    - *step-before-install
-    - run: npm install --engine-strict
+    - run: npm install --engine-strict --no-lockfile
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
@@ -55,20 +43,20 @@ jobs:
   test-linux-10:
     docker:
       - image: circleci/node:10
-    <<: *steps-linux-windows
+    <<: *steps-ci
   test-linux-12:
     docker:
       - image: circleci/node:12
-    <<: *steps-linux-windows
+    <<: *steps-ci
   test-mac:
     macos:
       xcode: "11.3.1"
-    <<: *steps-mac
+    <<: *steps-ci
   test-windows:
     executor:
       name: win/vs2019
       shell: bash.exe
-    <<: *steps-linux-windows
+    <<: *steps-ci
 
 workflows:
   version: 2
