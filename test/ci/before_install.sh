@@ -9,5 +9,7 @@ case "$(uname -s)" in
     ;;
   "Darwin")
     "$(dirname $0)"/codesign/import-testing-cert-ci.sh
+    brew install node@10
+    brew link --force node@10
     ;;
 esac
