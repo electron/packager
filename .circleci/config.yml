@@ -38,7 +38,7 @@ steps-ci: &steps-ci
 
 version: 2.1
 orbs:
-  win: circleci/windows@1.0.0
+  win: circleci/windows@2.4.0
 jobs:
   test-linux-10:
     docker:
@@ -54,7 +54,6 @@ jobs:
     <<: *steps-ci
   test-windows:
     executor:
-      name: win/vs2019
       shell: bash.exe
     <<: *steps-ci
 
