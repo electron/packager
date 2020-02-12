@@ -21,44 +21,19 @@ step-save-electron-cache: &step-save-electron-cache
       - $HOME/.cache/electron
     key: v1-electron-cache-{{ arch }}
 
-step-restore-brew-cache: &step-restore-brew-cache
-  restore_cache:
-    name: Restoring Homebrew cache
-    paths:
-      - /usr/local/Homebrew
-    keys:
-      - v1-brew-cache-{{ arch }}
-
-step-save-brew-cache: &step-save-brew-cache
-  save_cache:
-    name: Persisting Homebrew cache
-    paths:
-      - /usr/local/Homebrew
-    key: v1-brew-cache-{{ arch }}
-
 step-before-install: &step-before-install
   run: test/ci/before_install.sh
 
-steps-linux-windows: &steps-linux-windows
+steps-ci: &steps-ci
   steps:
     - checkout
     - *step-env
     - *step-before-install
-    - run: npm install
-    - *step-restore-electron-cache
-    - run: test/ci/_before_script.js
-    - *step-save-electron-cache
-    - run: npm test
-    - run: npm run codecov
-
-steps-mac: &steps-mac
-  steps:
-    - checkout
-    - *step-env
-    - *step-restore-brew-cache
-    - *step-before-install
-    - *step-save-brew-cache
-    - run: npm install
+    - run: |
+        case "$(uname -s)" in
+          "Darwin"|"Linux") npm install --engine-strict --no-lockfile ;;
+          *) npm install --no-lockfile ;;
+        esac
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
@@ -67,35 +42,30 @@ steps-mac: &steps-mac
 
 version: 2.1
 orbs:
-  win: circleci/windows@1.0.0
+  win: circleci/windows@2.4.0
 jobs:
-  test-linux-8:
-    docker:
-      - image: circleci/node:8
-    <<: *steps-linux-windows
   test-linux-10:
     docker:
       - image: circleci/node:10
-    <<: *steps-linux-windows
+    <<: *steps-ci
   test-linux-12:
     docker:
       - image: circleci/node:12
-    <<: *steps-linux-windows
+    <<: *steps-ci
   test-mac:
     macos:
-      xcode: "10.2.0"
-    <<: *steps-mac
+      xcode: "11.3.1"
+    <<: *steps-ci
   test-windows:
     executor:
-      name: win/vs2019
+      name: win/default
       shell: bash.exe
-    <<: *steps-linux-windows
+    <<: *steps-ci
 
 workflows:
   version: 2
   test:
     jobs:
-      - test-linux-8
       - test-linux-10
       - test-linux-12
       - test-mac

@@ -44,7 +44,7 @@
     "yargs-parser": "^17.0.0"
   },
   "devDependencies": {
-    "ava": "^2.0.0",
+    "ava": "^3.3.0",
     "buffer-equal": "^1.0.0",
     "codecov": "^3.0.0",
     "eslint": "^6.0.0",
@@ -59,7 +59,7 @@
     "sinon": "^8.0.1"
   },
   "engines": {
-    "node": ">= 8.0"
+    "node": ">= 10.0"
   },
   "scripts": {
     "ava": "ava test/index.js",
@@ -78,12 +78,6 @@
     "app"
   ],
   "ava": {
-    "babel": false,
-    "compileEnhancements": false,
-    "helpers": [
-      "test/config.json",
-      "test/fixtures/**/*"
-    ],
     "timeout": "60s"
   },
   "eslintConfig": {
@@ -99,8 +93,7 @@
       "sourceType": "script"
     },
     "plugins": [
-      "ava",
-      "promise"
+      "ava"
     ],
     "rules": {
       "ava/no-import-test-files": 0,
