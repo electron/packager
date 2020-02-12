@@ -67,7 +67,7 @@ test('cannot build apps where the name ends in " Helper"', async t => {
     platform: 'linux'
   }
 
-  await t.throwsAsync(async () => packager(opts), 'Application names cannot end in " Helper" due to limitations on macOS')
+  await t.throwsAsync(async () => packager(opts), { message: 'Application names cannot end in " Helper" due to limitations on macOS' })
 })
 
 test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
@@ -292,7 +292,7 @@ test.serial('electronZipDir does not exist', util.testSinglePlatform(async (t, o
   opts.dir = util.fixtureSubdir('basic')
   opts.electronZipDir = customDir
 
-  await t.throwsAsync(async () => packager(opts), /Electron ZIP directory does not exist/)
+  await t.throwsAsync(async () => packager(opts), { message: /Electron ZIP directory does not exist/ })
 }))
 
 test.serial('electronZipDir: ZIP file does not exist', util.testSinglePlatform(async (t, opts) => {
@@ -301,5 +301,5 @@ test.serial('electronZipDir: ZIP file does not exist', util.testSinglePlatform(a
   opts.electronZipDir = customDir
   await fs.ensureDir(customDir)
 
-  await t.throwsAsync(async () => packager(opts), /Electron ZIP file does not exist/)
+  await t.throwsAsync(async () => packager(opts), { message: /Electron ZIP file does not exist/ })
 }))

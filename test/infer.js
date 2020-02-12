@@ -37,7 +37,7 @@ async function inferFailureTest (t, opts, fixtureSubdir, errorMatcher) {
   delete opts.name
   delete opts.electronVersion
 
-  return t.throwsAsync(packager(opts), errorMatcher)
+  return t.throwsAsync(packager(opts), { message: errorMatcher })
 }
 
 async function inferMissingVersionTest (t, opts) {
@@ -123,6 +123,6 @@ test('infer with malformed JSON', util.testSinglePlatform(async (t, opts) => {
   const content = `${await fs.readFile(packageJSONFilename)}invalid`
   await fs.writeFile(packageJSONFilename, content)
 
-  return t.throwsAsync(packager(opts), /^Unexpected token/)
+  return t.throwsAsync(packager(opts), { message: /^Unexpected token/ })
 }))
 test('infer using a non-specific `electron-prebuilt-compile` package version when the package did not have a main file', util.testSinglePlatform(inferFailureTest, 'infer-invalid-non-specific-electron-prebuilt-compile', /^Using electron-prebuilt-compile/))

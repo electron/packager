@@ -86,7 +86,8 @@ module.exports = {
     }
   },
   invalidOptionTest: function invalidOptionTest (opts, err, message) {
-    return t => t.throwsAsync(packager({ ...packagerTestOptions(t), ...opts }), err || null, message)
+    const expectation = err ? { message: err } : null
+    return t => t.throwsAsync(packager({ ...packagerTestOptions(t), ...opts }), expectation, message)
   },
   packageAndEnsureResourcesPath: async function packageAndEnsureResourcesPath (t, opts) {
     const paths = await packager(opts)
