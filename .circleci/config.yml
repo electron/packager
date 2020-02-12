@@ -58,7 +58,7 @@ steps-mac: &steps-mac
     - *step-restore-brew-cache
     - *step-before-install
     - *step-save-brew-cache
-    - run: npm install
+    - run: npm install --engine-strict
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
