@@ -54,6 +54,7 @@ jobs:
     <<: *steps-ci
   test-windows:
     executor:
+      name: win/default
       shell: bash.exe
     <<: *steps-ci
 
