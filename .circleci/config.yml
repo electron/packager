@@ -29,7 +29,11 @@ steps-ci: &steps-ci
     - checkout
     - *step-env
     - *step-before-install
-    - run: npm install --engine-strict --no-lockfile
+    - run: |
+        case "$(uname -s)" in
+          "Darwin"|"Linux") npm install --engine-strict --no-lockfile ;;
+          *) npm install --no-lockfile ;;
+        esac
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
