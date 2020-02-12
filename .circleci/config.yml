@@ -21,21 +21,6 @@ step-save-electron-cache: &step-save-electron-cache
       - $HOME/.cache/electron
     key: v1-electron-cache-{{ arch }}
 
-step-restore-brew-cache: &step-restore-brew-cache
-  restore_cache:
-    name: Restoring Homebrew cache
-    paths:
-      - /usr/local/Homebrew
-    keys:
-      - v1-brew-cache-{{ arch }}
-
-step-save-brew-cache: &step-save-brew-cache
-  save_cache:
-    name: Persisting Homebrew cache
-    paths:
-      - /usr/local/Homebrew
-    key: v1-brew-cache-{{ arch }}
-
 step-before-install: &step-before-install
   run: test/ci/before_install.sh
 
@@ -55,9 +40,7 @@ steps-mac: &steps-mac
   steps:
     - checkout
     - *step-env
-    - *step-restore-brew-cache
     - *step-before-install
-    - *step-save-brew-cache
     - run: npm install --engine-strict
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
