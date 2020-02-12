@@ -283,7 +283,7 @@ class MacApp extends App {
 
     try {
       icon = await this.normalizeIconExtension('.icns')
-    } catch (_err) {
+    } catch {
       // Ignore error if icon doesn't exist, in case it's only available for other OSes
       /* istanbul ignore next */
       return Promise.resolve()

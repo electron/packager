@@ -122,7 +122,7 @@ module.exports = {
     return Promise.all(finalPaths.map(async finalPath => {
       try {
         return (await fs.stat(finalPath)).isDirectory()
-      } catch (_err) {
+      } catch {
         return false
       }
     }))

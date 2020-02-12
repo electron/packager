@@ -69,10 +69,6 @@ version: 2.1
 orbs:
   win: circleci/windows@1.0.0
 jobs:
-  test-linux-8:
-    docker:
-      - image: circleci/node:8
-    <<: *steps-linux-windows
   test-linux-10:
     docker:
       - image: circleci/node:10
@@ -95,7 +91,6 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-linux-8
       - test-linux-10
       - test-linux-12
       - test-mac

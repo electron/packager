@@ -59,7 +59,7 @@
     "sinon": "^8.0.1"
   },
   "engines": {
-    "node": ">= 8.0"
+    "node": ">= 10.0"
   },
   "scripts": {
     "ava": "ava test/index.js",
