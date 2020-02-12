@@ -44,7 +44,7 @@
     "yargs-parser": "^17.0.0"
   },
   "devDependencies": {
-    "ava": "^2.0.0",
+    "ava": "^3.3.0",
     "buffer-equal": "^1.0.0",
     "codecov": "^3.0.0",
     "eslint": "^6.0.0",
