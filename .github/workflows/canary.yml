@@ -29,9 +29,9 @@ jobs:
         shell: bash
       - name: Install Electron Packager
         run: |
-          cd ../electron-quick-start
+          cd $GITHUB_WORKSPACE/electron-quick-start
           npm install --save-dev electron-packager@electron/electron-packager
       - name: Package
         run: |
-          cd ../electron-quick-start
+          cd $GITHUB_WORKSPACE/electron-quick-start
           node_modules/.bin/electron-packager . --arch=all
