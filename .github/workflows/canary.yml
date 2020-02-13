@@ -12,15 +12,15 @@ jobs:
         os: [windows-latest, macOS-latest, ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           repository: electron/electron-quick-start
           ref: refs/heads/master
           path: electron-quick-start
-      - name: Use Node.js 8.x
+      - name: Use Node.js 10.x
         uses: actions/setup-node@v1
         with:
-          node-version: 8.x
+          node-version: 10.x
       - name: Replace electron with electron-nightly
         run: |
           cd $GITHUB_WORKSPACE/../electron-quick-start
