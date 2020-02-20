@@ -94,6 +94,8 @@ osx-notarize       (macOS host platform only, requires --osx-sign) Whether to no
                    Properties supported:
                    - appleId: should contain your apple ID username / email
                    - appleIdPassword: should contain the password for the provided apple ID
+                   - appleApiKey: should contain an App Store Connect API key
+                   - appleApiIssuer: should contain the API key's issuer
 protocol           URL protocol scheme to register the app as an opener of.
                    For example, `--protocol=myapp` would register the app to open
                    URLs such as `myapp://path`. This argument requires a `--protocol-name`

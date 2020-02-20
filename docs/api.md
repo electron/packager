@@ -443,9 +443,15 @@ The bundle identifier to use in the application helper's plist.
 
 **Requires [`osxSign`](#osxsign) to be set.**
 
-If present, notarizes macOS target apps when the host platform is macOS and XCode is installed.  The configuration values listed below can be customized. See [`electron-notarize`](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions and how to use `appleIdPassword` safely.
-- `appleId` (*String*, **required**): Your Apple ID username / email
-- `appleIdPassword` (*String*, **required**): The password for your Apple ID, can be a keychain reference
+If present, notarizes macOS target apps when the host platform is macOS and XCode is installed.  The configuration values listed below can be customized. See [`electron-notarize`](https://github.com/electron-userland/electron-notarize#method-notarizeopts-promisevoid) for more detailed option descriptions, like how to use `appleIdPassword` safely or obtain an API key.
+
+Required notarization credentials can be provided in 2 forms:
+* Apple ID and password
+  - `appleId` (*String*, **required**): Your Apple ID username / email
+  - `appleIdPassword` (*String*, **required**): The password for your Apple ID, can be a keychain reference
+* *or* API key and issuer
+  - `appleApiKey` (*String*, **required**) - App Store Connect API key, also requires [special file handling](https://github.com/electron/electron-notarize#notes-on-jwt-authentication)
+  - `appleApiIssuer` (*String*, **required**) - Issuer ID for the API key
 
 ##### `osxSign`
 
