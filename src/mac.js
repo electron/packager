@@ -396,39 +396,6 @@ function createSignOpts (properties, platform, app, version, notarize, quiet) {
 function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
   const notarizeOpts = properties
 
-  const idOrPassword = notarizeOpts.appleId || notarizeOpts.appleIdPassword
-  const apiKeyOrIssuer = notarizeOpts.appleApiKey || notarizeOpts.appleApiIssuer
-  if (!idOrPassword && !apiKeyOrIssuer) {
-    common.warning('No authentication sub-properties provided (e.g. appleId, appleApiKey), notarize will not run')
-    return
-  }
-  if (idOrPassword && apiKeyOrIssuer) {
-    common.warning('Mixed authentication sub-properties appleId and appleApiKey, notarize will not run')
-    return
-  }
-  if (idOrPassword) {
-    if (!notarizeOpts.appleId) {
-      common.warning('The appleId sub-property is required when using notarization with appleIdPassword, notarize will not run')
-      return
-    }
-
-    if (!notarizeOpts.appleIdPassword) {
-      common.warning('The appleIdPassword sub-property is required when using notarization with appleId, notarize will not run')
-      return
-    }
-  }
-  if (apiKeyOrIssuer) {
-    if (!notarizeOpts.appleApiKey) {
-      common.warning('The appleApiKey sub-property is required when using notarization with appleApiIssuer, notarize will not run')
-      return
-    }
-
-    if (!notarizeOpts.appleApiIssuer) {
-      common.warning('The appleApiIssuer sub-property is required when using notarization with appleApiKey, notarize will not run')
-      return
-    }
-  }
-
   // osxNotarize options are handed off to the electron-notarize module, but with a few
   // additions from the main options. The user may think they can pass bundle ID or appPath,
   // but they will be ignored.

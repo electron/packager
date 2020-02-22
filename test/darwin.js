@@ -262,48 +262,6 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.deepEqual(obj.CFBundleURLTypes, expected, 'CFBundleURLTypes did not contain specified protocol schemes and names')
   }))
 
-  test('osxNotarize: missing appleId and appleApiKey', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({})
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: No authentication sub-properties provided (e.g. appleId, appleApiKey), notarize will not run')
-  })
-
-  test('osxNotarize: mixed appleId and appleApiKey', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({ appleId: 'some value', appleApiIssuer: 'some value' })
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: Mixed authentication sub-properties appleId and appleApiKey, notarize will not run')
-  })
-
-  test('osxNotarize: missing appleId', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({ appleIdPassword: 'some value' })
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: The appleId sub-property is required when using notarization with appleIdPassword, notarize will not run')
-  })
-
-  test('osxNotarize: missing appleIdPassword', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({ appleId: 'some value' })
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: The appleIdPassword sub-property is required when using notarization with appleId, notarize will not run')
-  })
-
-  test('osxNotarize: missing appleApiKey', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({ appleApiIssuer: 'some value' })
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: The appleApiKey sub-property is required when using notarization with appleApiIssuer, notarize will not run')
-  })
-
-  test('osxNotarize: missing appleApiIssuer', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({ appleApiKey: 'some value' })
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: The appleApiIssuer sub-property is required when using notarization with appleApiKey, notarize will not run')
-  })
-
   test('osxNotarize: appBundleId not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'no' }
     const notarizeOpts = mac.createNotarizeOpts(args, 'yes', 'appPath', true)
