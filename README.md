@@ -10,7 +10,7 @@ Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
 [Usage](#usage) |
-[API](https://github.com/electron/electron-packager/blob/master/docs/api.md) |
+[API](https://electron.github.io/electron-packager/master/) |
 [Contributing](https://github.com/electron/electron-packager/blob/master/CONTRIBUTING.md) |
 [Support](https://github.com/electron/electron-packager/blob/master/SUPPORT.md) |
 [Related Apps/Libraries](#related) |
@@ -72,7 +72,7 @@ later needs to be installed. On macOS, it is installable via [Homebrew](http://b
 
 ## Usage
 
-JavaScript API usage can be found in the [API documentation](https://github.com/electron/electron-packager/blob/master/docs/api.md).
+JavaScript API usage can be found in the [API documentation](https://electron.github.io/electron-packager/master/modules/electronpackager.html).
 
 ### From the Command Line
 
@@ -95,7 +95,7 @@ This will:
 
 For an overview of the other optional flags, run `electron-packager --help` or see
 [usage.txt](https://github.com/electron/electron-packager/blob/master/usage.txt). For
-detailed descriptions, see the [API documentation](https://github.com/electron/electron-packager/blob/master/docs/api.md).
+detailed descriptions, see the [API documentation](https://electron.github.io/electron-packager/master/modules/electronpackager.html).
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 

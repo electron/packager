@@ -3,6 +3,7 @@
   "version": "14.2.1",
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "bin": {
     "electron-packager": "bin/electron-packager.js"
   },
@@ -22,11 +23,12 @@
     "docs/*.md",
     "NEWS.md",
     "src",
+    "src/index.d.ts",
     "usage.txt"
   ],
   "dependencies": {
     "@electron/get": "^1.6.0",
-    "asar": "^2.0.1",
+    "asar": "^2.1.0",
     "cross-zip": "^3.0.0",
     "debug": "^4.0.1",
     "electron-notarize": "^0.2.0",
@@ -44,6 +46,8 @@
     "yargs-parser": "^17.0.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
     "ava": "^3.3.0",
     "buffer-equal": "^1.0.0",
     "codecov": "^3.0.0",
@@ -56,7 +60,10 @@
     "eslint-plugin-standard": "^4.0.0",
     "nyc": "^15.0.0",
     "pkg-up": "^3.0.1",
-    "sinon": "^9.0.0"
+    "sinon": "^9.0.0",
+    "tsd": "^0.11.0",
+    "typedoc": "^0.16.10",
+    "typescript": "^3.7.5"
   },
   "engines": {
     "node": ">= 10.0"
@@ -65,8 +72,12 @@
     "ava": "ava test/index.js",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "coverage": "nyc npm run ava",
-    "lint": "eslint .",
-    "test": "npm run lint && npm run coverage"
+    "docs:build": "node test/ci/build_docs.js",
+    "lint": "npm run lint:js && npm run lint:ts",
+    "lint:js": "eslint .",
+    "lint:ts": "eslint --config .eslintrc.typescript.js --ext .ts .",
+    "test": "npm run lint && npm run tsd && npm run coverage",
+    "tsd": "tsd"
   },
   "directories": {
     "test": "test"
@@ -80,37 +91,8 @@
   "ava": {
     "timeout": "60s"
   },
-  "eslintConfig": {
-    "extends": [
-      "eslint:recommended",
-      "plugin:ava/recommended",
-      "plugin:import/errors",
-      "plugin:import/warnings",
-      "plugin:promise/recommended",
-      "standard"
-    ],
-    "parserOptions": {
-      "sourceType": "script"
-    },
-    "plugins": [
-      "ava"
-    ],
-    "rules": {
-      "ava/no-import-test-files": 0,
-      "ava/no-ignored-test-files": 0,
-      "indent": [
-        "error",
-        2,
-        {
-          "CallExpression": {
-            "arguments": "first"
-          },
-          "SwitchCase": 1
-        }
-      ],
-      "no-console": 0,
-      "strict": "error"
-    }
+  "tsd": {
+    "directory": "test"
   },
   "funding": {
     "url": "https://github.com/electron/electron-packager?sponsor=1"

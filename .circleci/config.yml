@@ -37,7 +37,9 @@ steps-ci: &steps-ci
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
-    - run: npm test
+    - run: npm run lint
+    - run: npm run tsd
+    - run: npm run coverage
     - run: npm run codecov
 
 version: 2.1
