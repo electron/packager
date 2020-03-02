@@ -1,0 +1,523 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>electronPackager | electron-packager</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">electron-packager</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="electronpackager.html">electronPackager</a>
+				</li>
+			</ul>
+			<h1>Module electronPackager</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel">
+				<h3 class="tsd-before-signature">Callable</h3>
+				<ul class="tsd-signatures tsd-kind-module">
+					<li class="tsd-signature tsd-kind-icon">electron<wbr>Packager<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/electronpackager.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in index.d.ts:39</li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Bundles Electron-based application source code with a renamed/customized Electron executable and
+								its supporting files into folders ready for distribution.</p>
+							</div>
+							<p>Briefly, this function:</p>
+							<ul>
+								<li>finds or downloads the correct release of Electron</li>
+								<li>uses that version of Electron to create a app in <code>&lt;out&gt;/&lt;appname&gt;-&lt;platform&gt;-&lt;arch&gt;</code></li>
+							</ul>
+							<p>Short example:</p>
+							<pre><code class="language-javascript"><span class="hljs-keyword">const</span> packager = <span class="hljs-built_in">require</span>(<span class="hljs-string">'electron-packager'</span>)
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bundleElectronApp</span>(<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">const</span> appPaths = <span class="hljs-keyword">await</span> packager(options)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Electron app bundles created:\n<span class="hljs-subst">${appPaths.join(<span class="hljs-string">"\n"</span>)}</span>`</span>)
+}</code></pre>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>opts: <a href="../interfaces/electronpackager.options.html" class="tsd-signature-type">Options</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Options to configure packaging.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>A Promise containing the paths to the newly created application bundles.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/electronpackager.macosprotocol.html" class="tsd-kind-icon">MacOSProtocol</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/electronpackager.options.html" class="tsd-kind-icon">Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/electronpackager.win32metadataoptions.html" class="tsd-kind-icon">Win32<wbr>Metadata<wbr>Options</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#archoption" class="tsd-kind-icon">Arch<wbr>Option</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#hookfunction" class="tsd-kind-icon">Hook<wbr>Function</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#ignorefunction" class="tsd-kind-icon">Ignore<wbr>Function</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#officialarch" class="tsd-kind-icon">Official<wbr>Arch</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#officialplatform" class="tsd-kind-icon">Official<wbr>Platform</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#osxnotarizeoptions" class="tsd-kind-icon">Osx<wbr>Notarize<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#osxsignoptions" class="tsd-kind-icon">Osx<wbr>Sign<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#platformoption" class="tsd-kind-icon">Platform<wbr>Option</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#targetarch" class="tsd-kind-icon">Target<wbr>Arch</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="electronpackager.html#targetplatform" class="tsd-kind-icon">Target<wbr>Platform</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="archoption" class="tsd-anchor"></a>
+					<h3>Arch<wbr>Option</h3>
+					<div class="tsd-signature tsd-kind-icon">Arch<wbr>Option<span class="tsd-signature-symbol">:</span> <a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"all"</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:53</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="hookfunction" class="tsd-anchor"></a>
+					<h3>Hook<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">Hook<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>buildPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, electronVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a>, arch<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:93</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A function that is called on the completion of a packaging stage.</p>
+						</div>
+						<p>By default, the functions are called in parallel (via
+							<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all"><code>Promise.all</code></a>).
+							If you need the functions called serially, there is a utility function provided. Please note that
+						<strong>callback-style functions are not supported by <code>serialHooks</code>.</strong> For example:</p>
+						<pre><code class="language-javascript"><span class="hljs-keyword">const</span> packager = <span class="hljs-built_in">require</span>(<span class="hljs-string">'electron-packager'</span>)
+<span class="hljs-keyword">const</span> { serialHooks } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'electron-packager/src/hooks'</span>)
+
+packager({
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-attr">afterCopy</span>: [serialHooks([
+    <span class="hljs-function">(<span class="hljs-params">buildPath, electronVersion, platform, arch</span>) =&gt;</span> {
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+          <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'first function'</span>)
+          resolve()
+        }, <span class="hljs-number">1000</span>)
+      })
+    },
+    (buildPath, electronVersion, platform, arch) =&gt; {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'second function'</span>)
+    }
+  ])],
+  <span class="hljs-comment">// ...</span>
+})</code></pre>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>buildPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, electronVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a>, arch<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+										</div>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>buildPath: <span class="tsd-signature-type">string</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>For <a href="../interfaces/electronpackager.options.html#afterextract">afterExtract</a>, the path to the temporary folder where the prebuilt
+															Electron binary has been extracted to. For <a href="../interfaces/electronpackager.options.html#aftercopy">afterCopy</a> and <a href="../interfaces/electronpackager.options.html#afterprune">afterPrune</a>, the path to the
+														folder where the Electron app has been copied to.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5>electronVersion: <span class="tsd-signature-type">string</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>the version of Electron that is being bundled with the application.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5>platform: <a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>The target platform you are packaging for.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5>arch: <a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>The target architecture you are packaging for.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5>callback: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<p>Must be called once you have completed your actions.</p>
+												</div>
+												<ul class="tsd-parameters">
+													<li class="tsd-parameter-siganture">
+														<ul class="tsd-signatures tsd-kind-type-literal">
+															<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+														</ul>
+														<ul class="tsd-descriptions">
+															<li class="tsd-description">
+																<div class="tsd-comment tsd-typography">
+																	<p>Must be called once you have completed your actions.</p>
+																</div>
+																<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ignorefunction" class="tsd-anchor"></a>
+					<h3>Ignore<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">Ignore<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:61</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A predicate function that, given an absolute file <code>path</code>, returns <code>true</code> if the file should be
+								ignored, or <code>false</code> if the file should be kept. <em>This does not use any of the default ignored
+							files/directories listed for the <a href="../interfaces/electronpackager.options.html#ignore">ignore</a> option.</em></p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>path: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="officialarch" class="tsd-anchor"></a>
+					<h3>Official<wbr>Arch</h3>
+					<div class="tsd-signature tsd-kind-icon">Official<wbr>Arch<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"ia32"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"x64"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"armv7l"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"arm64"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"mips64el"</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:46</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Architectures that have been supported by the official Electron prebuilt binaries, past
+							and present.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="officialplatform" class="tsd-anchor"></a>
+					<h3>Official<wbr>Platform</h3>
+					<div class="tsd-signature tsd-kind-icon">Official<wbr>Platform<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"linux"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"win32"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"darwin"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"mas"</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:50</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Platforms that have been supported by the official Electron prebuilt binaries, past and present.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="osxnotarizeoptions" class="tsd-anchor"></a>
+					<h3>Osx<wbr>Notarize<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Osx<wbr>Notarize<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">NotarizeOptions</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"appBundleId"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"appPath"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:118</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>See the documentation for <a href="https://npm.im/electron-notarize#method-notarizeopts-promisevoid"><code>electron-notarize</code></a>
+							for details.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="osxsignoptions" class="tsd-anchor"></a>
+					<h3>Osx<wbr>Sign<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Osx<wbr>Sign<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SignOptions</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"app"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"binaries"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"platform"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"version"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:112</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>See the documentation for <a href="https://npm.im/electron-osx-sign#opts"><code>electron-osx-sign</code></a> for details.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="platformoption" class="tsd-anchor"></a>
+					<h3>Platform<wbr>Option</h3>
+					<div class="tsd-signature tsd-kind-icon">Platform<wbr>Option<span class="tsd-signature-symbol">:</span> <a href="electronpackager.html#targetplatform" class="tsd-signature-type">TargetPlatform</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"all"</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:54</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="targetarch" class="tsd-anchor"></a>
+					<h3>Target<wbr>Arch</h3>
+					<div class="tsd-signature tsd-kind-icon">Target<wbr>Arch<span class="tsd-signature-symbol">:</span> <a href="electronpackager.html#officialarch" class="tsd-signature-type">OfficialArch</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:51</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="targetplatform" class="tsd-anchor"></a>
+					<h3>Target<wbr>Platform</h3>
+					<div class="tsd-signature tsd-kind-icon">Target<wbr>Platform<span class="tsd-signature-symbol">:</span> <a href="electronpackager.html#officialplatform" class="tsd-signature-type">OfficialPlatform</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:52</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="electronpackager.html">electron<wbr>Packager</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/electronpackager.macosprotocol.html" class="tsd-kind-icon">MacOSProtocol</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/electronpackager.options.html" class="tsd-kind-icon">Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/electronpackager.win32metadataoptions.html" class="tsd-kind-icon">Win32<wbr>Metadata<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#archoption" class="tsd-kind-icon">Arch<wbr>Option</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#hookfunction" class="tsd-kind-icon">Hook<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#ignorefunction" class="tsd-kind-icon">Ignore<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#officialarch" class="tsd-kind-icon">Official<wbr>Arch</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#officialplatform" class="tsd-kind-icon">Official<wbr>Platform</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#osxnotarizeoptions" class="tsd-kind-icon">Osx<wbr>Notarize<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#osxsignoptions" class="tsd-kind-icon">Osx<wbr>Sign<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#platformoption" class="tsd-kind-icon">Platform<wbr>Option</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#targetarch" class="tsd-kind-icon">Target<wbr>Arch</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="electronpackager.html#targetplatform" class="tsd-kind-icon">Target<wbr>Platform</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

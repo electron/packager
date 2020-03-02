@@ -1,0 +1,14 @@
+*.cer
+*.csr
+*.key
+*.pem
+node_modules
+package-lock.json
+yarn.lock
+test/fixtures/basic/main-link.js
+!test/fixtures/prune-is-module/node_modules
+test/work
+typedoc
+.DS_Store
+.nyc_output
+npm-debug.log

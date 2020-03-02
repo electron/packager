@@ -1,0 +1,330 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>electron-packager</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">electron-packager</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>electron-packager</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#electron-packager" id="electron-packager" style="color: inherit; text-decoration: none;">
+					<h1>Electron Packager</h1>
+				</a>
+				<p>Package your <a href="https://electronjs.org">Electron</a> app into OS-specific bundles (<code>.app</code>, <code>.exe</code>, etc.) via JavaScript or the command line.</p>
+				<p><a href="https://circleci.com/gh/electron/electron-packager/tree/master"><img src="https://circleci.com/gh/electron/electron-packager/tree/master.svg?style=svg" alt="CircleCI Build Status"></a>
+					<a href="https://codecov.io/gh/electron/electron-packager"><img src="https://codecov.io/gh/electron/electron-packager/branch/master/graph/badge.svg" alt="Coverage Status"></a>
+					<a href="https://npm.im/electron-packager"><img src="https://badgen.net/npm/v/electron-packager" alt="NPM"></a>
+				<img src="https://flat.badgen.net/dependabot/electron/electron-packager?icon=dependabot" alt="Dependabot Status"></p>
+				<p><a href="#supported-platforms">Supported Platforms</a> |
+					<a href="#installation">Installation</a> |
+					<a href="#usage">Usage</a> |
+					<a href="https://electron.github.io/electron-packager/master/">API</a> |
+					<a href="https://github.com/electron/electron-packager/blob/master/CONTRIBUTING.md">Contributing</a> |
+					<a href="https://github.com/electron/electron-packager/blob/master/SUPPORT.md">Support</a> |
+					<a href="#related">Related Apps/Libraries</a> |
+					<a href="https://github.com/electron/electron-packager/blob/master/docs/faq.md">FAQ</a> |
+				<a href="https://github.com/electron/electron-packager/blob/master/NEWS.md">Release Notes</a></p>
+				<hr>
+				<a href="#about" id="about" style="color: inherit; text-decoration: none;">
+					<h2>About</h2>
+				</a>
+				<p>Electron Packager is a command line tool and Node.js library that bundles Electron-based application
+				source code with a renamed Electron executable and supporting files into folders ready for distribution.</p>
+				<p>For creating distributables like installers and Linux packages, consider using either <a href="https://github.com/electron-userland/electron-forge">Electron
+					Forge</a> (which uses Electron Packager
+					internally), or one of the <a href="#distributable-creators">related Electron tools</a>, which utilizes
+				Electron Packager-created folders as a basis.</p>
+				<p>Note that packaged Electron applications can be relatively large. A zipped, minimal Electron
+					application is approximately the same size as the zipped prebuilt binary for a given target
+					platform, target arch, and <a href="https://github.com/electron/electron/releases">Electron version</a>
+				<em>(files named <code>electron-v${version}-${platform}-${arch}.zip</code>)</em>.</p>
+				<a href="#supported-platforms" id="supported-platforms" style="color: inherit; text-decoration: none;">
+					<h2>Supported Platforms</h2>
+				</a>
+				<p>Electron Packager is known to run on the following <strong>host</strong> platforms:</p>
+				<ul>
+					<li>Windows (32/64 bit)</li>
+					<li>macOS (formerly known as OS X)</li>
+					<li>Linux (x86/x86_64)</li>
+				</ul>
+				<p>It generates executables/bundles for the following <strong>target</strong> platforms:</p>
+				<ul>
+					<li>Windows (also known as <code>win32</code>, for x86, x86_64, and arm64 architectures)</li>
+					<li>macOS (also known as <code>darwin</code>) / <a href="https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/">Mac App Store</a> (also known as <code>mas</code>)<sup>*</sup></li>
+					<li>Linux (for x86, x86_64, armv7l, arm64, and mips64el architectures)</li>
+				</ul>
+				<p><sup>*</sup> <em>Note for macOS / Mac App Store target bundles: the <code>.app</code> bundle can only be signed when building on a host macOS platform.</em></p>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<p>This module requires Node.js 10.0 or higher to run. On macOS/Linux, the <code>unzip</code> program is required. On Windows, both <a href="https://github.com/feross/cross-zip#windows-users">.NET Framework 4.5 or higher and Powershell 3 or higher are required</a>.</p>
+				<pre><code class="language-sh"><span class="hljs-comment"># For use in npm scripts (recommended)</span>
+npm install electron-packager --save-dev
+
+<span class="hljs-comment"># For use from the CLI</span>
+npm install electron-packager -g</code></pre>
+				<a href="#building-windows-apps-from-non-windows-platforms" id="building-windows-apps-from-non-windows-platforms" style="color: inherit; text-decoration: none;">
+					<h3>Building Windows apps from non-Windows platforms</h3>
+				</a>
+				<p>Building an Electron app for the Windows target platform requires editing the <code>Electron.exe</code> file.
+					Currently, Electron Packager uses <a href="https://github.com/atom/node-rcedit">node-rcedit</a> to accomplish
+					this. A Windows executable is bundled in that Node package and needs to be run in order for this
+					functionality to work, so on non-Windows host platforms, <a href="https://www.winehq.org/">Wine</a> 1.6 or
+				later needs to be installed. On macOS, it is installable via <a href="http://brew.sh/">Homebrew</a>.</p>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<p>JavaScript API usage can be found in the <a href="https://electron.github.io/electron-packager/master/modules/electronpackager.html">API documentation</a>.</p>
+				<a href="#from-the-command-line" id="from-the-command-line" style="color: inherit; text-decoration: none;">
+					<h3>From the Command Line</h3>
+				</a>
+				<p>Running electron-packager from the command line has this basic form:</p>
+				<pre><code>electron-packager <span class="hljs-variable">&lt;sourcedir&gt;</span> <span class="hljs-variable">&lt;appname&gt;</span> --platform=<span class="hljs-variable">&lt;platform&gt;</span> --arch=<span class="hljs-variable">&lt;arch&gt;</span> [optional <span class="hljs-keyword">flags</span>...]</code></pre><p>This will:</p>
+				<ul>
+					<li>Find or download the correct release of Electron</li>
+					<li>Use that version of Electron to create a app in <code>&lt;out&gt;/&lt;appname&gt;-&lt;platform&gt;-&lt;arch&gt;</code> <em>(this can be customized via an optional flag)</em></li>
+				</ul>
+				<p><code>--platform</code> and <code>--arch</code> can be omitted, in two cases:</p>
+				<ul>
+					<li>If you specify <code>--all</code> instead, bundles for all valid combinations of target
+					platforms/architectures will be created.</li>
+					<li>Otherwise, a single bundle for the host platform/architecture will be created.</li>
+				</ul>
+				<p>For an overview of the other optional flags, run <code>electron-packager --help</code> or see
+					<a href="https://github.com/electron/electron-packager/blob/master/usage.txt">usage.txt</a>. For
+				detailed descriptions, see the <a href="https://electron.github.io/electron-packager/master/modules/electronpackager.html">API documentation</a>.</p>
+				<p>If <code>appname</code> is omitted, this will use the name specified by &quot;productName&quot; or &quot;name&quot; in the nearest package.json.</p>
+				<p><strong>Characters in the Electron app name which are not allowed in all target platforms&#39; filenames
+				(e.g., <code>/</code>), will be replaced by hyphens (<code>-</code>).</strong></p>
+				<p>You should be able to launch the app on the platform you built for. If not, check your settings and try again.</p>
+				<p><strong>Be careful</strong> not to include <code>node_modules</code> you don&#39;t want into your final app. If you put them in
+					the <code>devDependencies</code> section of <code>package.json</code>, by default none of the modules related to those
+					dependencies will be copied in the app bundles. (This behavior can be turned off with the
+					<code>--no-prune</code> flag.) In addition, folders like <code>.git</code> and <code>node_modules/.bin</code> will be ignored by
+					default. You can use <code>--ignore</code> to ignore files and folders via a regular expression (<em>not</em> a
+					<a href="https://en.wikipedia.org/wiki/Glob_%28programming%29">glob pattern</a>). Examples include
+				<code>--ignore=\.gitignore</code> or <code>--ignore=&quot;\.git(ignore|modules)&quot;</code>.</p>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h4>Example</h4>
+				</a>
+				<p>Let&#39;s assume that you have made an app based on the <a href="https://github.com/electron/electron-quick-start">electron-quick-start</a> repository on a macOS host platform with the following file structure:</p>
+				<pre><code>foobar
+├── package.json
+├── <span class="hljs-keyword">index</span>.html
+├── […other files, <span class="hljs-keyword">like</span> the app<span class="hljs-string">'s LICENSE…]
+└── script.js</span></code></pre><p>…and that the following is true:</p>
+				<ul>
+					<li><code>electron-packager</code> is installed globally</li>
+					<li><code>productName</code> in <code>package.json</code> has been set to <code>Foo Bar</code></li>
+					<li>The <code>electron</code> module is in the <code>devDependencies</code> section of <code>package.json</code>, and set to the exact version of <code>1.4.15</code>.</li>
+					<li><code>npm install</code> for the <code>Foo Bar</code> app has been run at least once</li>
+				</ul>
+				<p>When one runs the following command for the first time in the <code>foobar</code> directory:</p>
+				<pre><code>electron-packager .</code></pre><p><code>electron-packager</code> will do the following:</p>
+				<ul>
+					<li>Use the current directory for the <code>sourcedir</code></li>
+					<li>Infer the <code>appname</code> from the <code>productName</code> in <code>package.json</code></li>
+					<li>Infer the <code>appVersion</code> from the <code>version</code> in <code>package.json</code></li>
+					<li>Infer the <code>platform</code> and <code>arch</code> from the host, in this example, <code>darwin</code> platform and <code>x64</code> arch.</li>
+					<li>Download the darwin x64 build of Electron 1.4.15 (and cache the downloads in <code>~/.electron</code>)</li>
+					<li>Build the macOS <code>Foo Bar.app</code></li>
+					<li>Place <code>Foo Bar.app</code> in <code>foobar/Foo Bar-darwin-x64/</code> (since an <code>out</code> directory was not specified, it used the current working directory)</li>
+				</ul>
+				<p>The file structure now looks like:</p>
+				<pre><code>foobar
+├── Foo Bar-darwin-x64
+│   ├── Foo Bar.app
+│   │   └── […Mac app contents…]
+│   ├── LICENSE [the Electron license]
+│   └── <span class="hljs-keyword">version</span>
+├── […other application bundles, <span class="hljs-keyword">like</span> "Foo Bar-win32-x64" (sans quotes)…]
+├── package.json
+├── <span class="hljs-keyword">index</span>.html
+├── […other files, <span class="hljs-keyword">like</span> the app<span class="hljs-string">'s LICENSE…]
+└── script.js</span></code></pre><p>The <code>Foo Bar.app</code> folder generated can be executed by a system running macOS, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via <code>Foo Bar-win32-x64/Foo Bar.exe</code>), and so on.</p>
+				<a href="#related" id="related" style="color: inherit; text-decoration: none;">
+					<h2>Related</h2>
+				</a>
+				<ul>
+					<li><a href="https://github.com/electron-userland/electron-forge">Electron Forge</a> - creates, builds, and distributes modern Electron applications</li>
+					<li><a href="https://github.com/Urucas/electron-packager-interactive">electron-packager-interactive</a> - an interactive CLI for electron-packager</li>
+					<li><a href="https://github.com/sindresorhus/grunt-electron">grunt-electron</a> - grunt plugin for electron-packager</li>
+				</ul>
+				<a href="#distributable-creators" id="distributable-creators" style="color: inherit; text-decoration: none;">
+					<h3>Distributable Creators</h3>
+				</a>
+				<ul>
+					<li><a href="https://github.com/electron-userland/electron-installer-zip">electron-installer-zip</a> - creates symlink-compatible ZIP files</li>
+				</ul>
+				<p>Windows:</p>
+				<ul>
+					<li><a href="https://github.com/electron/windows-installer">electron-winstaller</a> - Squirrel.Windows-based installer from the Electron maintainers group</li>
+					<li><a href="https://github.com/felixrieseberg/electron-windows-store">electron-windows-store</a> - creates an AppX package for the Windows Store</li>
+					<li><a href="https://github.com/felixrieseberg/electron-wix-msi">electron-wix-msi</a> - creates traditional MSI installers</li>
+					<li><a href="https://github.com/electron-userland/electron-installer-windows">electron-installer-windows</a> - alternative Squirrel.Windows-based installer</li>
+				</ul>
+				<p>macOS:</p>
+				<ul>
+					<li><a href="https://github.com/electron-userland/electron-installer-dmg">electron-installer-dmg</a> - creates a DMG</li>
+				</ul>
+				<p>Linux:</p>
+				<ul>
+					<li><a href="https://github.com/electron-userland/electron-installer-debian">electron-installer-debian</a> - creates a DEB file</li>
+					<li><a href="https://github.com/electron-userland/electron-installer-redhat">electron-installer-redhat</a> - creates an RPM</li>
+					<li><a href="https://github.com/endlessm/electron-installer-flatpak">electron-installer-flatpak</a> - creates a Flatpak file</li>
+					<li><a href="https://github.com/electron-userland/electron-installer-snap">electron-installer-snap</a> - creates a Snap file</li>
+				</ul>
+				<a href="#plugins" id="plugins" style="color: inherit; text-decoration: none;">
+					<h3>Plugins</h3>
+				</a>
+				<p>These Node modules utilize Electron Packager API hooks:</p>
+				<ul>
+					<li><a href="https://npm.im/electron-packager-languages">electron-packager-languages</a> - set the locales
+					available to Electron when packaged, which is used by the Mac App Store, among other places</li>
+					<li><a href="https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg">electron-packager-plugin-non-proprietary-codecs-ffmpeg</a> - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs</li>
+					<li><a href="https://github.com/electron/electron-rebuild">electron-rebuild</a> - rebuild native Node.js modules
+					against the packaged Electron version</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/electronpackager.html">electron<wbr>Packager</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
