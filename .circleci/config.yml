@@ -25,9 +25,6 @@ step-before-install: &step-before-install
   run: test/ci/before_install.sh
 
 steps-ci: &steps-ci
-  branches:
-    ignore:
-      - gh-pages
   steps:
     - checkout
     - *step-env
@@ -50,18 +47,30 @@ orbs:
   win: circleci/windows@2.4.0
 jobs:
   test-linux-10:
+    branches:
+      ignore:
+        - gh-pages
     docker:
       - image: circleci/node:10
     <<: *steps-ci
   test-linux-12:
+    branches:
+      ignore:
+        - gh-pages
     docker:
       - image: circleci/node:12
     <<: *steps-ci
   test-mac:
+    branches:
+      ignore:
+        - gh-pages
     macos:
       xcode: "11.3.1"
     <<: *steps-ci
   test-windows:
+    branches:
+      ignore:
+        - gh-pages
     executor:
       name: win/default
       shell: bash.exe
