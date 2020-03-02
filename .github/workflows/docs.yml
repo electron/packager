@@ -25,4 +25,4 @@ jobs:
           showUnderscoreFiles: true
           versionDocs: true
         env:
-          DOCS_SSH_DEPLOY_KEY: ${{ secrets.DOCS_SSH_DEPLOY_KEY }}
+          GH_PAGES_SSH_DEPLOY_KEY: ${{ secrets.DOCS_SSH_DEPLOY_KEY }}
