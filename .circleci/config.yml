@@ -25,6 +25,9 @@ step-before-install: &step-before-install
   run: test/ci/before_install.sh
 
 steps-ci: &steps-ci
+  branches:
+    ignore:
+      - gh-pages
   steps:
     - checkout
     - *step-env
