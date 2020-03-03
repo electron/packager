@@ -27,6 +27,7 @@ value of the environment variable is a comma-separated list of modules which sup
 feature. Known modules include:
 
 * `@electron/get:*`
+* `electron-notarize*`
 * `electron-osx-sign`
 * `electron-packager` (always use this one before filing an issue)
 * `get-package-info`
