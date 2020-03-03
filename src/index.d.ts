@@ -409,7 +409,7 @@ declare namespace electronPackager {
     /**
      * If present, signs macOS target apps when the host platform is macOS and XCode is installed.
      * When the value is `true`, pass default configuration to the signing module. See
-     * [electron-osx-sign](https://npm.im/electron-osx-sign#opts) for sub-option descriptions and
+     * [electron-osx-sign](https://npm.im/electron-osx-sign#opts---options) for sub-option descriptions and
      * their defaults. Options include, but are not limited to:
      * - `identity` (*string*): The identity used when signing the package via `codesign`.
      * - `entitlements` (*string*): The path to the 'parent' entitlements.
