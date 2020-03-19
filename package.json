@@ -62,7 +62,7 @@
     "pkg-up": "^3.0.1",
     "sinon": "^9.0.0",
     "tsd": "^0.11.0",
-    "typedoc": "^0.16.10",
+    "typedoc": "^0.17.1",
     "typescript": "^3.7.5"
   },
   "engines": {
