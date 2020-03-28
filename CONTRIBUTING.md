@@ -27,6 +27,7 @@ value of the environment variable is a comma-separated list of modules which sup
 feature. Known modules include:
 
 * `@electron/get:*`
+* `electron-notarize*`
 * `electron-osx-sign`
 * `electron-packager` (always use this one before filing an issue)
 * `get-package-info`
@@ -52,7 +53,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   spot regressions much easier.
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
   the package's documentation. Files that will likely need to be updated include `README.md`,
-  `docs/api.md`, and `usage.txt`.
+  `src/index.d.ts`, and `usage.txt`.
 * This project uses the [JavaScript Standard Style](https://standardjs.com/) as a coding convention.
   CI will fail if the PR does not conform to this standard.
 * One of the philosophies of the project is to keep the code base as small as possible. If you are

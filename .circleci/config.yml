@@ -37,7 +37,9 @@ steps-ci: &steps-ci
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
-    - run: npm test
+    - run: npm run lint
+    - run: npm run tsd
+    - run: npm run coverage
     - run: npm run codecov
 
 version: 2.1
@@ -66,7 +68,15 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-linux-10
-      - test-linux-12
-      - test-mac
-      - test-windows
+      - test-linux-10:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-linux-12:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-mac:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-windows:
+          filters:
+            branches: { ignore: gh-pages }

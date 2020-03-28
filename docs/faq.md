@@ -2,6 +2,9 @@
 
 ## Why does the menubar appear when running in development mode, but disappear when packaged?
 
+**Note**: as of Electron 5, the menubar always appears, so this question is not relevant to
+officially supported versions of Electron.
+
 Based on [a comment from **@MarshallOfSound**](https://github.com/electron/electron-packager/issues/553#issuecomment-270805213):
 
 When you're running in "development mode" (for example, `electron /path/to/app`), Electron uses the
@@ -11,7 +14,7 @@ and packaged modes, you'll need to [define it yourself](https://electronjs.org/d
 
 ## Why isn't my `ignore` option working?
 
-As stated in the documentation for [`ignore`](https://github.com/electron/electron-packager/blob/master/docs/api.md#ignore), it uses "[one] or more additional
+As stated in the documentation for [`ignore`](https://electron.github.io/electron-packager/master/interfaces/electronpackager.options.html#ignore), it uses "[one] or more additional
 [regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
 patterns. […] Please note that [glob patterns](https://en.wikipedia.org/wiki/Glob_%28programming%29)
 will not work."
@@ -41,7 +44,7 @@ console.log(require(jsonFilename));
 
 ## How do I set an icon on Linux?
 
-The docs for [`icon`](https://github.com/electron/electron-packager/blob/master/docs/api.md#icon)
+The docs for [`icon`](https://electron.github.io/electron-packager/master/interfaces/electronpackager.options.html#icon)
 already show how to set an icon on your `BrowserWindow`, but your dock/taskbar may not use that and
 instead use the `Icon` value in your `.desktop` file. The [Linux distributable creators](https://github.com/electron/electron-packager#distributable-creators)
 can help you set/distribute the appropriate icon in that case.

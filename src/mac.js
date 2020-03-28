@@ -384,7 +384,7 @@ function createSignOpts (properties, platform, app, version, notarize, quiet) {
     signOpts.identity = null
   }
 
-  if (notarize && !signOpts.hardenedRuntime) {
+  if (notarize && !signOpts.hardenedRuntime && !signOpts['hardened-runtime']) {
     common.warning('notarization is enabled but hardenedRuntime was not enabled in the signing ' +
       'options. It has been enabled for you but you should enable it in your config.')
     signOpts.hardenedRuntime = true

@@ -10,6 +10,7 @@ require('./infer')
 require('./hooks')
 require('./prune')
 require('./targets')
+require('./unzip')
 require('./win32')
 
 if (process.platform !== 'win32') {
