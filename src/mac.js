@@ -6,7 +6,7 @@ const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
-const { notarize } = require('electron-notarize')
+const { validateAuthorizationArgs, notarize } = require('electron-notarize')
 const { signAsync } = require('electron-osx-sign')
 
 class MacApp extends App {
@@ -394,15 +394,19 @@ function createSignOpts (properties, platform, app, version, notarize, quiet) {
 }
 
 function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
-  const notarizeOpts = properties
+  try {
+    validateAuthorizationArgs(properties)
+  } catch (e) {
+    common.warning(`Failed validation, notarize will not run: ${e.message}`)
+    return
+  }
 
   // osxNotarize options are handed off to the electron-notarize module, but with a few
   // additions from the main options. The user may think they can pass bundle ID or appPath,
   // but they will be ignored.
-  common.subOptionWarning(notarizeOpts, 'osxNotarize', 'appBundleId', appBundleId, quiet)
-  common.subOptionWarning(notarizeOpts, 'osxNotarize', 'appPath', appPath, quiet)
-
-  return notarizeOpts
+  common.subOptionWarning(properties, 'osxNotarize', 'appBundleId', appBundleId, quiet)
+  common.subOptionWarning(properties, 'osxNotarize', 'appPath', appPath, quiet)
+  return properties
 }
 
 module.exports = {
