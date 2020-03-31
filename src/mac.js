@@ -6,7 +6,7 @@ const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
-const { validateAuthorizationArgs, notarize } = require('electron-notarize')
+const { notarize, validateAuthorizationArgs } = require('electron-notarize')
 const { signAsync } = require('electron-osx-sign')
 
 class MacApp extends App {
@@ -397,7 +397,7 @@ function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
   try {
     validateAuthorizationArgs(properties)
   } catch (e) {
-    common.warning(`Failed validation, notarize will not run: ${e.message}`)
+    common.warning(`Failed validation, notarization will not run: ${e.message}`)
     return
   }
 

@@ -266,7 +266,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     util.setupConsoleWarnSpy()
     const notarizeOpts = mac.createNotarizeOpts({ appleId: '' })
     t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: Failed validation, notarize will not run: The appleId property is required when using notarization with appleIdPassword')
+    util.assertWarning(t, 'WARNING: Failed validation, notarization will not run: The appleId property is required when using notarization with appleIdPassword')
   })
 
   test('osxNotarize: appBundleId not overwritten', t => {
