@@ -397,9 +397,9 @@ declare namespace electronPackager {
      */
     name?: string;
     /**
-     * If present, notarizes macOS target apps when the host platform is macOS and XCode is
-     * installed. See [`electron-notarize`](https://github.com/electron/electron-notarize#method-notarizeopts-promisevoid)
-     * for sub-option descriptions and how to use the `appleIdPassword` sub-option safely.
+     * If present, notarizes macOS target apps when the host platform is macOS and XCode is installed.
+     * See [`electron-notarize`](https://github.com/electron/electron-notarize#method-notarizeopts-promisevoid)
+     * for option descriptions, such as how to use `appleIdPassword` safely or obtain an API key.
      *
      * **Requires the [[osxSign]] option to be set.**
      *
