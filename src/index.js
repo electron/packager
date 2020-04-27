@@ -182,7 +182,7 @@ module.exports = async function packager (opts) {
   debug(`Application name: ${opts.name}`)
   debug(`Target Electron version: ${opts.electronVersion}`)
 
-  copyFilter.generateIgnores(opts)
+  copyFilter.populateIgnoredPaths(opts)
 
   const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms)
   // Remove falsy entries (e.g. skipped platforms)

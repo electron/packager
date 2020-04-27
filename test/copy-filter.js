@@ -21,7 +21,7 @@ async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore
 }
 
 async function copyDirToTempDirWithIgnores (t, opts) {
-  copyFilter.generateIgnores(opts)
+  copyFilter.populateIgnoredPaths(opts)
   const targetDir = path.join(t.context.tempDir, 'result')
   await fs.copy(opts.dir, targetDir, { dereference: false, filter: copyFilter.userIgnoreFilter(opts) })
   return targetDir
@@ -57,12 +57,12 @@ async function ignoreOutDirTest (t, opts, distPath) {
   return assertOutDirIgnored(t, opts, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
 }
 
-test('generateIgnores ignores the generated temporary directory only on Linux', t => {
+test('populateIgnoredPaths ignores the generated temporary directory only on Linux', t => {
   const tmpdir = '/foo/bar'
   const expected = path.join(tmpdir, 'electron-packager')
   const opts = { tmpdir }
 
-  copyFilter.generateIgnores(opts)
+  copyFilter.populateIgnoredPaths(opts)
 
   if (process.platform === 'linux') {
     t.true(opts.ignore.includes(expected), 'temporary dir in opts.ignore')
@@ -71,8 +71,8 @@ test('generateIgnores ignores the generated temporary directory only on Linux', 
   }
 })
 
-test('generateOutIgnores ignores all possible platform/arch permutations', (t) => {
-  const ignores = copyFilter.generateOutIgnores({ name: 'test' })
+test('generateIgnoredOutDirs ignores all possible platform/arch permutations', (t) => {
+  const ignores = copyFilter.generateIgnoredOutDirs({ name: 'test' })
   t.is(ignores.length, util.allPlatformArchCombosCount)
 })
 
