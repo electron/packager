@@ -101,11 +101,15 @@ class MacApp extends App {
     })
   }
 
-  updateHelperPlist (base, suffix) {
+  updateHelperPlist (base, suffix, identifierIgnoresSuffix) {
     let helperSuffix, identifier, name
     if (suffix) {
       helperSuffix = `Helper ${suffix}`
-      identifier = `${this.helperBundleIdentifier}.${suffix}`
+      if (identifierIgnoresSuffix) {
+        identifier = this.helperBundleIdentifier
+      } else {
+        identifier = `${this.helperBundleIdentifier}.${suffix}`
+      }
       name = `${this.appName} ${helperSuffix}`
     } else {
       helperSuffix = 'Helper'
@@ -154,6 +158,9 @@ class MacApp extends App {
     ]
 
     const possiblePlists = [
+      [this.ehPlistFilename('Electron Helper (Renderer).app'), 'helperRendererPlist'],
+      [this.ehPlistFilename('Electron Helper (Plugin).app'), 'helperPluginPlist'],
+      [this.ehPlistFilename('Electron Helper (GPU).app'), 'helperGPUPlist'],
       [this.ehPlistFilename('Electron Helper EH.app'), 'helperEHPlist'],
       [this.ehPlistFilename('Electron Helper NP.app'), 'helperNPPlist'],
       [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist']
@@ -179,11 +186,16 @@ class MacApp extends App {
       .then(() => {
         this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
         this.helperPlist = this.updateHelperPlist(this.helperPlist)
-        if (this.helperEHPlist) {
-          this.helperEHPlist = this.updateHelperPlist(this.helperEHPlist, 'EH')
-        }
-        if (this.helperNPPlist) {
-          this.helperNPPlist = this.updateHelperPlist(this.helperNPPlist, 'NP')
+        const updateIfExists = [
+          ['helperRendererPlist', '(Renderer)', true],
+          ['helperPluginPlist', '(Plugin)', true],
+          ['helperGPUPlist', '(GPU)', true],
+          ['helperEHPlist', 'EH'],
+          ['helperNPPlist', 'NP']
+        ]
+        for (const [plistKey, ...suffixArgs] of updateIfExists) {
+          if (!this[plistKey]) continue
+          this[plistKey] = this.updateHelperPlist(this[plistKey], ...suffixArgs)
         }
 
         if (this.loginHelperPlist) {
@@ -222,7 +234,7 @@ class MacApp extends App {
   }
 
   moveHelpers () {
-    const helpers = [' Helper', ' Helper EH', ' Helper NP']
+    const helpers = [' Helper', ' Helper EH', ' Helper NP', ' Helper (Renderer)', ' Helper (Plugin)', ' Helper (GPU)']
     return Promise.all(helpers.map(suffix => this.moveHelper(this.frameworksPath, suffix)))
       .then(() => fs.pathExists(this.loginItemsPath))
       .then(exists => exists ? this.moveHelper(this.loginItemsPath, ' Login Helper') : null)

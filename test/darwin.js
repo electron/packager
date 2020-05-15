@@ -71,6 +71,16 @@ function packageAndParseInfoPlist (t, opts) {
     .then(paths => parseInfoPlist(t, opts, paths[0]))
 }
 
+function assertPlistStringValue (t, obj, property, value, message) {
+  t.is(obj[property], value, message)
+  t.is(typeof obj[property], 'string', `${property} should be a string`)
+}
+
+function assertCFBundleIdentifierValue (t, obj, value, message) {
+  assertPlistStringValue(t, obj, 'CFBundleIdentifier', value, message)
+  t.is(/^[a-zA-Z0-9-.]*$/.test(obj.CFBundleIdentifier), true, 'CFBundleIdentifier should allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)')
+}
+
 function assertHelper (t, prefix, appName, helperSuffix) {
   return fs.stat(getHelperAppPath(prefix, appName, helperSuffix))
     .then(stats => {
@@ -246,9 +256,38 @@ function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
     })
 }
 
+async function appHelpersBundleElectron6Test (t, opts) {
+  opts.electronVersion = '6.0.0'
+  const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
+  const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+  const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
+
+  const finalPath = (await packager(opts))[0]
+  const frameworksPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks')
+  const helperObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper.app`))
+  assertPlistStringValue(t, helperObj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperPluginObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Plugin).app`))
+  assertPlistStringValue(t, helperPluginObj, 'CFBundleName', `${opts.name} Helper (Plugin)`, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperPluginObj, 'CFBundleExecutable', `${opts.name} Helper (Plugin)`, 'CFBundleExecutable should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperPluginObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperRendererObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (Renderer).app`))
+  assertPlistStringValue(t, helperRendererObj, 'CFBundleName', `${opts.name} Helper (Renderer)`, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperRendererObj, 'CFBundleExecutable', `${opts.name} Helper (Renderer)`, 'CFBundleExecutable should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperRendererObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+
+  const helperGPUObj = await util.parsePlist(t, path.join(frameworksPath, `${opts.name} Helper (GPU).app`))
+  assertPlistStringValue(t, helperGPUObj, 'CFBundleName', `${opts.name} Helper (GPU)`, 'CFBundleName should reflect opts.name in helper app')
+  assertPlistStringValue(t, helperGPUObj, 'CFBundleExecutable', `${opts.name} Helper (GPU)`, 'CFBundleExecutable should reflect opts.name in helper app')
+  assertCFBundleIdentifierValue(t, helperGPUObj, helperBundleIdentifier, 'CFBundleIdentifier should reflect opts.helperBundleId, opts.appBundleId or fallback to default in helper app')
+}
+
 if (!(process.env.CI && process.platform === 'win32')) {
   darwinTest('helper app paths test', helperAppPathsTest)
   darwinTest('helper app paths test with app name needing sanitization', helperAppPathsTest, {name: '@username/package-name'}, '@username-package-name')
+  darwinTest('app helpers bundle with renderer/plugin helpers', appHelpersBundleElectron6Test)
 
   const iconBase = path.join(__dirname, 'fixtures', 'monochrome')
   const icnsPath = `${iconBase}.icns`

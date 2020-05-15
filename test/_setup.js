@@ -25,7 +25,14 @@ function downloadAll (version) {
   console.log(`Calling electron-download for ${version} before running tests...`)
   const combinations = download.createDownloadCombos({electronVersion: config.version, all: true}, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
 
-  return Promise.all(combinations.map(combination => downloadElectronZip(version, combination)))
+  return Promise.all(
+    [
+      ...combinations.map(combination => downloadElectronZip(version, combination)),
+      downloadElectronZip('6.0.0-beta.15', {
+        platform: 'darwin'
+      })
+    ]
+  )
 }
 
 function downloadElectronZip (version, options) {
