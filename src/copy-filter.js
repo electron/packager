@@ -52,7 +52,7 @@ function generateIgnoredOutDirs (opts) {
   return ignoredOutDirs
 }
 
-async function userPathFilter (opts) {
+function userPathFilter (opts) {
   let ignore = opts.ignore || []
   let ignoreFunc = null
 
