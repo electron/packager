@@ -52,19 +52,20 @@ function generateIgnoredOutDirs (opts) {
   return ignoredOutDirs
 }
 
-function userPathFilter (opts) {
-  let ignore = opts.ignore || []
-  let ignoreFunc = null
-
+function generateFilterFunction (ignore) {
   if (typeof (ignore) === 'function') {
-    ignoreFunc = file => { return !ignore(file) }
+    return file => !ignore(file)
   } else {
-    ignore = common.ensureArray(ignore)
+    const ignoredRegexes = common.ensureArray(ignore)
 
-    ignoreFunc = function filterByRegexes (file) {
-      return !ignore.some(regex => file.match(regex))
+    return function filterByRegexes (file) {
+      return !ignoredRegexes.some(regex => file.match(regex))
     }
   }
+}
+
+function userPathFilter (opts) {
+  const filterFunc = generateFilterFunction(opts.ignore || [])
 
   const ignoredOutDirs = generateIgnoredOutDirs(opts)
   const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
@@ -92,11 +93,11 @@ function userPathFilter (opts) {
       if (await prune.isModule(file)) {
         return pruner.pruneModule(name)
       } else {
-        return ignoreFunc(name)
+        return filterFunc(name)
       }
     }
 
-    return ignoreFunc(name)
+    return filterFunc(name)
   }
 }
 
