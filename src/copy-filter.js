@@ -66,7 +66,6 @@ function generateFilterFunction (ignore) {
 
 function userPathFilter (opts) {
   const filterFunc = generateFilterFunction(opts.ignore || [])
-
   const ignoredOutDirs = generateIgnoredOutDirs(opts)
   const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
 
