@@ -1,12 +1,12 @@
 'use strict'
 
 const common = require('./common')
+const copyFilter = require('./copy-filter')
 const debug = require('debug')('electron-packager')
 const download = require('./download')
 const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('./infer')
 const hooks = require('./hooks')
-const ignore = require('./ignore')
 const path = require('path')
 const targets = require('./targets')
 const unzip = require('./unzip')
@@ -182,7 +182,7 @@ module.exports = async function packager (opts) {
   debug(`Application name: ${opts.name}`)
   debug(`Target Electron version: ${opts.electronVersion}`)
 
-  ignore.generateIgnores(opts)
+  copyFilter.populateIgnoredPaths(opts)
 
   const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms)
   // Remove falsy entries (e.g. skipped platforms)

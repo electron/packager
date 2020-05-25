@@ -13,7 +13,7 @@ const DEFAULT_IGNORES = [
   '\\.o(bj)?$'
 ]
 
-function generateIgnores (opts) {
+function populateIgnoredPaths (opts) {
   opts.originalIgnore = opts.ignore
   if (typeof (opts.ignore) !== 'function') {
     if (opts.ignore) {
@@ -29,9 +29,9 @@ function generateIgnores (opts) {
   }
 }
 
-function generateOutIgnores (opts) {
+function generateIgnoredOutDirs (opts) {
   const normalizedOut = opts.out ? path.resolve(opts.out) : null
-  const outIgnores = []
+  const ignoredOutDirs = []
   if (normalizedOut === null || normalizedOut === process.cwd()) {
     for (const [platform, archs] of Object.entries(targets.officialPlatformArchCombos)) {
       for (const arch of archs) {
@@ -40,38 +40,39 @@ function generateOutIgnores (opts) {
           name: opts.name,
           platform: platform
         }
-        outIgnores.push(path.join(process.cwd(), common.generateFinalBasename(basenameOpts)))
+        ignoredOutDirs.push(path.join(process.cwd(), common.generateFinalBasename(basenameOpts)))
       }
     }
   } else {
-    outIgnores.push(normalizedOut)
+    ignoredOutDirs.push(normalizedOut)
   }
 
-  debug('Ignored paths based on the out param:', outIgnores)
+  debug('Ignored paths based on the out param:', ignoredOutDirs)
 
-  return outIgnores
+  return ignoredOutDirs
 }
 
-function userIgnoreFilter (opts) {
-  let ignore = opts.ignore || []
-  let ignoreFunc = null
-
+function generateFilterFunction (ignore) {
   if (typeof (ignore) === 'function') {
-    ignoreFunc = file => { return !ignore(file) }
+    return file => !ignore(file)
   } else {
-    ignore = common.ensureArray(ignore)
+    const ignoredRegexes = common.ensureArray(ignore)
 
-    ignoreFunc = function filterByRegexes (file) {
-      return !ignore.some(regex => file.match(regex))
+    return function filterByRegexes (file) {
+      return !ignoredRegexes.some(regex => file.match(regex))
     }
   }
+}
 
-  const outIgnores = generateOutIgnores(opts)
+function userPathFilter (opts) {
+  const filterFunc = generateFilterFunction(opts.ignore || [])
+  const ignoredOutDirs = generateIgnoredOutDirs(opts)
   const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
 
   return async function filter (file) {
     const fullPath = path.resolve(file)
-    if (outIgnores.includes(fullPath)) {
+
+    if (ignoredOutDirs.includes(fullPath)) {
       return false
     }
 
@@ -91,16 +92,16 @@ function userIgnoreFilter (opts) {
       if (await prune.isModule(file)) {
         return pruner.pruneModule(name)
       } else {
-        return ignoreFunc(name)
+        return filterFunc(name)
       }
     }
 
-    return ignoreFunc(name)
+    return filterFunc(name)
   }
 }
 
 module.exports = {
-  generateIgnores: generateIgnores,
-  generateOutIgnores: generateOutIgnores,
-  userIgnoreFilter: userIgnoreFilter
+  populateIgnoredPaths,
+  generateIgnoredOutDirs,
+  userPathFilter
 }

@@ -1,8 +1,8 @@
 'use strict'
 
 const common = require('../src/common')
+const copyFilter = require('../src/copy-filter')
 const fs = require('fs-extra')
-const ignore = require('../src/ignore')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
@@ -21,9 +21,9 @@ async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore
 }
 
 async function copyDirToTempDirWithIgnores (t, opts) {
-  ignore.generateIgnores(opts)
+  copyFilter.populateIgnoredPaths(opts)
   const targetDir = path.join(t.context.tempDir, 'result')
-  await fs.copy(opts.dir, targetDir, { dereference: false, filter: ignore.userIgnoreFilter(opts) })
+  await fs.copy(opts.dir, targetDir, { dereference: false, filter: copyFilter.userPathFilter(opts) })
   return targetDir
 }
 
@@ -57,12 +57,12 @@ async function ignoreOutDirTest (t, opts, distPath) {
   return assertOutDirIgnored(t, opts, opts.out, path.join(opts.out, 'ignoreMe'), path.basename(opts.out))
 }
 
-test('generateIgnores ignores the generated temporary directory only on Linux', t => {
+test('populateIgnoredPaths ignores the generated temporary directory only on Linux', t => {
   const tmpdir = '/foo/bar'
   const expected = path.join(tmpdir, 'electron-packager')
   const opts = { tmpdir }
 
-  ignore.generateIgnores(opts)
+  copyFilter.populateIgnoredPaths(opts)
 
   if (process.platform === 'linux') {
     t.true(opts.ignore.includes(expected), 'temporary dir in opts.ignore')
@@ -71,8 +71,8 @@ test('generateIgnores ignores the generated temporary directory only on Linux', 
   }
 })
 
-test('generateOutIgnores ignores all possible platform/arch permutations', (t) => {
-  const ignores = ignore.generateOutIgnores({ name: 'test' })
+test('generateIgnoredOutDirs ignores all possible platform/arch permutations', (t) => {
+  const ignores = copyFilter.generateIgnoredOutDirs({ name: 'test' })
   t.is(ignores.length, util.allPlatformArchCombosCount)
 })
 

@@ -6,8 +6,8 @@ const fs = require('fs-extra')
 const path = require('path')
 
 const common = require('./common')
+const copyFilter = require('./copy-filter')
 const hooks = require('./hooks')
-const ignore = require('./ignore')
 
 class App {
   constructor (opts, templatePath) {
@@ -122,7 +122,7 @@ class App {
     ]
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
-      filter: ignore.userIgnoreFilter(this.opts),
+      filter: copyFilter.userPathFilter(this.opts),
       dereference: this.opts.derefSymlinks
     })
     await hooks.promisifyHooks(this.opts.afterCopy, hookArgs)
