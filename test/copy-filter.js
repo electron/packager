@@ -23,7 +23,7 @@ async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore
 async function copyDirToTempDirWithIgnores (t, opts) {
   copyFilter.populateIgnoredPaths(opts)
   const targetDir = path.join(t.context.tempDir, 'result')
-  await fs.copy(opts.dir, targetDir, { dereference: false, filter: copyFilter.userIgnoreFilter(opts) })
+  await fs.copy(opts.dir, targetDir, { dereference: false, filter: copyFilter.userPathFilter(opts) })
   return targetDir
 }
 

@@ -52,7 +52,7 @@ function generateIgnoredOutDirs (opts) {
   return ignoredOutDirs
 }
 
-function userIgnoreFilter (opts) {
+async function userPathFilter (opts) {
   let ignore = opts.ignore || []
   let ignoreFunc = null
 
@@ -71,6 +71,7 @@ function userIgnoreFilter (opts) {
 
   return async function filter (file) {
     const fullPath = path.resolve(file)
+
     if (ignoredOutDirs.includes(fullPath)) {
       return false
     }
@@ -102,5 +103,5 @@ function userIgnoreFilter (opts) {
 module.exports = {
   populateIgnoredPaths,
   generateIgnoredOutDirs,
-  userIgnoreFilter
+  userPathFilter
 }

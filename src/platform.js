@@ -122,7 +122,7 @@ class App {
     ]
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
-      filter: copyFilter.userIgnoreFilter(this.opts),
+      filter: copyFilter.userPathFilter(this.opts),
       dereference: this.opts.derefSymlinks
     })
     await hooks.promisifyHooks(this.opts.afterCopy, hookArgs)
