@@ -107,10 +107,10 @@ You should be able to launch the app on the platform you built for. If not, chec
 **Be careful** not to include `node_modules` you don't want into your final app. If you put them in
 the `devDependencies` section of `package.json`, by default none of the modules related to those
 dependencies will be copied in the app bundles. (This behavior can be turned off with the
-`--no-prune` flag.) In addition, folders like `.git` and `node_modules/.bin` will be ignored by
-default. You can use `--ignore` to ignore files and folders via a regular expression (*not* a
-[glob pattern](https://en.wikipedia.org/wiki/Glob_%28programming%29)). Examples include
-`--ignore=\.gitignore` or `--ignore="\.git(ignore|modules)"`.
+`prune: false` API option or `--no-prune` CLI flag.) In addition, folders like `.git` and
+`node_modules/.bin` will be ignored by default. You can use `--ignore` to ignore files and folders
+via a regular expression (*not* a [glob pattern](https://en.wikipedia.org/wiki/Glob_%28programming%29)).
+Examples include `--ignore=\.gitignore` or `--ignore="\.git(ignore|modules)"`.
 
 #### Example
 
