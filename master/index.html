@@ -155,10 +155,10 @@ npm install electron-packager -g</code></pre>
 				<p><strong>Be careful</strong> not to include <code>node_modules</code> you don&#39;t want into your final app. If you put them in
 					the <code>devDependencies</code> section of <code>package.json</code>, by default none of the modules related to those
 					dependencies will be copied in the app bundles. (This behavior can be turned off with the
-					<code>--no-prune</code> flag.) In addition, folders like <code>.git</code> and <code>node_modules/.bin</code> will be ignored by
-					default. You can use <code>--ignore</code> to ignore files and folders via a regular expression (<em>not</em> a
-					<a href="https://en.wikipedia.org/wiki/Glob_%28programming%29">glob pattern</a>). Examples include
-				<code>--ignore=\.gitignore</code> or <code>--ignore=&quot;\.git(ignore|modules)&quot;</code>.</p>
+					<code>prune: false</code> API option or <code>--no-prune</code> CLI flag.) In addition, folders like <code>.git</code> and
+					<code>node_modules/.bin</code> will be ignored by default. You can use <code>--ignore</code> to ignore files and folders
+					via a regular expression (<em>not</em> a <a href="https://en.wikipedia.org/wiki/Glob_%28programming%29">glob pattern</a>).
+				Examples include <code>--ignore=\.gitignore</code> or <code>--ignore=&quot;\.git(ignore|modules)&quot;</code>.</p>
 				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
 					<h4>Example</h4>
 				</a>
