@@ -110,6 +110,16 @@ test('do not infer win32metadata.CompanyName when author is an object without a 
 
   return testInferWin32metadataAuthorObject(t, opts, author, expected, 'win32metadata.CompanyName should not have been inferred')
 }))
+test('infer: missing author for win32 target platform', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = await copyFixtureToTempDir(t, 'infer-win32metadata')
+  opts.appVersion = '1.0.0'
+
+  const packageJSONFilename = path.join(opts.dir, 'package.json')
+  const packageJSON = await fs.readJson(packageJSONFilename)
+  delete packageJSON.author
+  await fs.writeJson(packageJSONFilename, packageJSON)
+  await t.throwsAsync(getMetadataFromPackageJSON(['win32'], opts, opts.dir), { message: /following fields: author/ })
+}))
 test('missing name from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-name', /^Unable to determine application name/))
 test('missing Electron version from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-electron-version', /^Unable to determine Electron version/))
 test('missing package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-package-json', /^Could not locate a package\.json file/))

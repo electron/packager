@@ -152,6 +152,7 @@ module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir
   }
 
   if (platforms.includes('win32') && !(opts.win32metadata && opts.win32metadata.CompanyName)) {
+    debug('Requiring author in package.json, as CompanyName was not specified for win32metadata')
     props.push('author')
   }
 
@@ -166,7 +167,7 @@ module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir
     if (err.missingProps) {
       if (err.missingProps.length === props.length) {
         debug(err.message)
-        err.message = `Could not locate a package.json file in "${path.resolve(opts.dir)}" or its parent directories for an Electron app.`
+        err.message = `Could not locate a package.json file in "${path.resolve(opts.dir)}" or its parent directories for an Electron app with the following fields: ${err.missingProps.join(', ')}`
       } else {
         return handleMissingProperties(opts, err)
       }
