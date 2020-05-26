@@ -1,4 +1,4 @@
-const eslintConfig = require('./.eslintrc')
+const { eslintConfig } = require('./package.json')
 eslintConfig.parser = '@typescript-eslint/parser'
 eslintConfig.parserOptions.sourceType = 'module'
 eslintConfig.extends.push(
