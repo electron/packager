@@ -1,3 +1,5 @@
+'use strict'
+
 const { eslintConfig } = require('./package.json')
 eslintConfig.parser = '@typescript-eslint/parser'
 eslintConfig.parserOptions.sourceType = 'module'
