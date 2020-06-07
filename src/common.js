@@ -1,12 +1,12 @@
 'use strict'
 
+const filenamify = require('filenamify')
 const metadata = require('../package.json')
 const os = require('os')
 const path = require('path')
-const sanitize = require('sanitize-filename')
 
 function sanitizeAppName (name) {
-  return sanitize(name, { replacement: '-' })
+  return filenamify(name, { replacement: '-' })
 }
 
 function generateFinalBasename (opts) {
@@ -78,7 +78,7 @@ module.exports = {
   },
   generateFinalBasename: generateFinalBasename,
   generateFinalPath: generateFinalPath,
-  sanitizeAppName: sanitizeAppName,
+  sanitizeAppName,
   /**
    * Convert slashes to UNIX-format separators.
    */
