@@ -54,6 +54,10 @@ jobs:
     docker:
       - image: circleci/node:12
     <<: *steps-ci
+  test-linux-14:
+    docker:
+      - image: circleci/node:14
+    <<: *steps-ci
   test-mac:
     macos:
       xcode: "11.3.1"
@@ -72,6 +76,9 @@ workflows:
           filters:
             branches: { ignore: gh-pages }
       - test-linux-12:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-linux-14:
           filters:
             branches: { ignore: gh-pages }
       - test-mac:
