@@ -2,7 +2,24 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v14.2.1...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v15.0.0...master
+
+## [15.0.0] - 2020-06-27
+
+### Added
+
+* mac: app API key notarization (#1127)
+* TypeScript definition (#1131)
+
+### Changed
+
+* Replace `cross-zip` with `extract-zip` (#1139)
+
+### Removed
+
+* Node &lt; 10 support (#1122)
+
+[14.2.1]: https://github.com/electron/electron-packager/compare/v14.2.0...v14.2.1
 
 ## [14.2.1] - 2020-02-07
 
