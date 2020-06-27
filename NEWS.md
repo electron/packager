@@ -6,6 +6,8 @@
 
 ## [15.0.0] - 2020-06-27
 
+[15.0.0]: https://github.com/electron/electron-packager/compare/v14.2.1...v15.0.0
+
 ### Added
 
 * mac: app API key notarization (#1127)
@@ -18,8 +20,6 @@
 ### Removed
 
 * Node &lt; 10 support (#1122)
-
-[14.2.1]: https://github.com/electron/electron-packager/compare/v14.2.0...v14.2.1
 
 ## [14.2.1] - 2020-02-07
 
