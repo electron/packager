@@ -23,7 +23,6 @@
     "docs/*.md",
     "NEWS.md",
     "src",
-    "src/index.d.ts",
     "usage.txt"
   ],
   "dependencies": {
