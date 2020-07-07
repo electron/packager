@@ -47,7 +47,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.0.0",
     "@typescript-eslint/parser": "^3.0.0",
-    "ava": "^3.3.0",
+    "ava": "^3.3.0, < 3.10.0",
     "buffer-equal": "^1.0.0",
     "codecov": "^3.0.0",
     "eslint": "^7.1.0",
@@ -60,7 +60,7 @@
     "nyc": "^15.0.0",
     "pkg-up": "^3.0.1",
     "sinon": "^9.0.0",
-    "tsd": "^0.12.1",
+    "tsd": "^0.13.1",
     "typedoc": "^0.17.1",
     "typescript": "^3.7.5"
   },
@@ -70,7 +70,7 @@
   "scripts": {
     "ava": "ava test/index.js",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "coverage": "nyc npm run ava",
+    "coverage": "nyc ava test/index.js",
     "docs:build": "node test/ci/build_docs.js",
     "lint": "npm run lint:js && npm run lint:ts",
     "lint:js": "eslint .",
