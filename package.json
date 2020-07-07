@@ -70,7 +70,7 @@
   "scripts": {
     "ava": "ava test/index.js",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "coverage": "nyc npm run ava",
+    "coverage": "nyc ava test/index.js",
     "docs:build": "node test/ci/build_docs.js",
     "lint": "npm run lint:js && npm run lint:ts",
     "lint:js": "eslint .",
