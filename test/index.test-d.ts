@@ -170,7 +170,7 @@ await packager({
   osxNotarize: {
     appleId: 'My ID',
     appleIdPassword: 'Bad Password',
-  } as packager.OsxNotarizeOptions,
+  },
   osxSign: {
     identity: 'myidentity',
     entitlements: 'path/to/my.entitlements',
