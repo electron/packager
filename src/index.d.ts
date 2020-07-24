@@ -229,7 +229,7 @@ declare namespace electronPackager {
      * - `ia32`
      * - `x64`
      * - `armv7l`
-     * - `arm64` _(Electron 1.8.0 and above)_
+     * - `arm64` _(Linux: Electron 1.8.0 and above; Windows: 6.0.8 and above; macOS: 11.0.0-beta.1 and above)_
      * - `mips64el` _(Electron 1.8.2-beta.5 to 1.8.8)_
      */
     arch?: ArchOption | ArchOption[];
