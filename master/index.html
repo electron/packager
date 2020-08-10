@@ -134,7 +134,8 @@ npm install electron-packager -g</code></pre>
 					<h3>From the Command Line</h3>
 				</a>
 				<p>Running electron-packager from the command line has this basic form:</p>
-				<pre><code>electron-packager <span class="hljs-variable">&lt;sourcedir&gt;</span> <span class="hljs-variable">&lt;appname&gt;</span> --platform=<span class="hljs-variable">&lt;platform&gt;</span> --arch=<span class="hljs-variable">&lt;arch&gt;</span> [optional <span class="hljs-keyword">flags</span>...]</code></pre><p>This will:</p>
+				<pre><code>electron-packager <span class="hljs-variable">&lt;sourcedir&gt;</span> <span class="hljs-variable">&lt;appname&gt;</span> --platform=<span class="hljs-variable">&lt;platform&gt;</span> --arch=<span class="hljs-variable">&lt;arch&gt;</span> [optional <span class="hljs-keyword">flags</span>...]</code></pre>
+				<p>This will:</p>
 				<ul>
 					<li>Find or download the correct release of Electron</li>
 					<li>Use that version of Electron to create a app in <code>&lt;out&gt;/&lt;appname&gt;-&lt;platform&gt;-&lt;arch&gt;</code> <em>(this can be customized via an optional flag)</em></li>
@@ -167,7 +168,8 @@ npm install electron-packager -g</code></pre>
 ├── package.json
 ├── <span class="hljs-keyword">index</span>.html
 ├── […other files, <span class="hljs-keyword">like</span> the app<span class="hljs-string">&#x27;s LICENSE…]
-└── script.js</span></code></pre><p>…and that the following is true:</p>
+└── script.js</span></code></pre>
+				<p>…and that the following is true:</p>
 				<ul>
 					<li><code>electron-packager</code> is installed globally</li>
 					<li><code>productName</code> in <code>package.json</code> has been set to <code>Foo Bar</code></li>
@@ -175,7 +177,8 @@ npm install electron-packager -g</code></pre>
 					<li><code>npm install</code> for the <code>Foo Bar</code> app has been run at least once</li>
 				</ul>
 				<p>When one runs the following command for the first time in the <code>foobar</code> directory:</p>
-				<pre><code>electron-packager .</code></pre><p><code>electron-packager</code> will do the following:</p>
+				<pre><code>electron-packager .</code></pre>
+				<p><code>electron-packager</code> will do the following:</p>
 				<ul>
 					<li>Use the current directory for the <code>sourcedir</code></li>
 					<li>Infer the <code>appname</code> from the <code>productName</code> in <code>package.json</code></li>
@@ -196,7 +199,8 @@ npm install electron-packager -g</code></pre>
 ├── package.json
 ├── <span class="hljs-keyword">index</span>.html
 ├── […other files, <span class="hljs-keyword">like</span> the app<span class="hljs-string">&#x27;s LICENSE…]
-└── script.js</span></code></pre><p>The <code>Foo Bar.app</code> folder generated can be executed by a system running macOS, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via <code>Foo Bar-win32-x64/Foo Bar.exe</code>), and so on.</p>
+└── script.js</span></code></pre>
+				<p>The <code>Foo Bar.app</code> folder generated can be executed by a system running macOS, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via <code>Foo Bar-win32-x64/Foo Bar.exe</code>), and so on.</p>
 				<a href="#related" id="related" style="color: inherit; text-decoration: none;">
 					<h2>Related</h2>
 				</a>
