@@ -77,10 +77,10 @@ test('validateListFromOptions works for armv7l host and target arch', t => {
 })
 
 test('build for all available official targets',
-     testMultiTarget({ all: true, electronVersion: '1.8.2' }, util.allPlatformArchCombosCount - 1,
+     testMultiTarget({ all: true, electronVersion: '1.8.2' }, util.allPlatformArchCombosCount - 3,
                      'Packages should be generated for all possible platforms (except win32/arm64)'))
 test('build for all available official targets for a version without arm64 or mips64el support',
-     testMultiTarget({ all: true }, util.allPlatformArchCombosCount - 3,
+     testMultiTarget({ all: true }, util.allPlatformArchCombosCount - 5,
                      'Packages should be generated for all possible platforms (except linux/arm64, linux/mips64el, or win32/arm64)'))
 test('platform=all (one arch)',
      testMultiTarget({ arch: 'ia32', platform: 'all' }, 2, 'Packages should be generated for both 32-bit platforms'))
