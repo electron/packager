@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v15.0.0...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v15.1.0...master
+
+## [15.1.0] - 2020-08-21
+
+[15.1.0]: https://github.com/electron/electron-packager/compare/v15.0.0...v15.1.0
+
+### Added
+
+* add darwin/arm64 and mas/arm64 as official platform/arch combinations (#1168)
+
+### Fixed
+
+* TypeScript: ensure `OsxNotarizeOptions` definition contains credentials (#1167)
 
 ## [15.0.0] - 2020-06-27
 
