@@ -96,6 +96,12 @@ test('ignore: not junk when junk: false', util.testSinglePlatform(async (t, opts
   const targetDir = await copyDirToTempDirWithIgnores(t, opts)
   await assertFileNotIgnored(t, targetDir, 'subfolder/Thumbs.db')
 }))
+test('ignore: package manager lock files', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = t.context.workDir
+  const targetDir = await copyDirToTempDirWithIgnores(t, opts)
+  await assertFileIgnored(t, targetDir, 'package-lock.json')
+  await assertFileIgnored(t, targetDir, 'yarn.lock')
+}))
 
 test.serial('ignore out dir', util.testSinglePlatform(ignoreOutDirTest, 'ignoredOutDir'))
 test.serial('ignore out dir: unnormalized path', util.testSinglePlatform(ignoreOutDirTest, './ignoredOutDir'))
