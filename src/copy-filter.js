@@ -8,8 +8,8 @@ const prune = require('./prune')
 const targets = require('./targets')
 
 const DEFAULT_IGNORES = [
-  '\bpackage-lock\\.json$',
-  '\byarn\\.lock$',
+  '(/|\b)package-lock\\.json$',
+  '(/|\b)yarn\\.lock$',
   '/\\.git($|/)',
   '/node_modules/\\.bin($|/)',
   '\\.o(bj)?$'
