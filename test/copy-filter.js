@@ -78,6 +78,12 @@ test('generateIgnoredOutDirs ignores all possible platform/arch permutations', (
 
 test('ignore default: .o files', util.testSinglePlatform(ignoreTest, null, 'ignore.o'))
 test('ignore default: .obj files', util.testSinglePlatform(ignoreTest, null, 'ignore.obj'))
+test('ignore default: package manager lock files', util.testSinglePlatform(async (t, opts) => {
+  opts.dir = util.fixtureSubdir('ignore-package-lock')
+  const targetDir = await copyDirToTempDirWithIgnores(t, opts)
+  await assertFileIgnored(t, targetDir, 'package-lock.json')
+  await assertFileIgnored(t, targetDir, 'yarn.lock')
+}))
 test('ignore: string in array', util.testSinglePlatform(ignoreTest, ['ignorethis'], 'ignorethis.txt'))
 test('ignore: string', util.testSinglePlatform(ignoreTest, 'ignorethis', 'ignorethis.txt'))
 test('ignore: RegExp', util.testSinglePlatform(ignoreTest, /ignorethis/, 'ignorethis.txt'))

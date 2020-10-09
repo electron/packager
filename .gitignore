@@ -7,6 +7,7 @@ package-lock.json
 yarn.lock
 test/fixtures/basic/main-link.js
 !test/fixtures/prune-is-module/node_modules
+!test/fixtures/ignore-package-lock/*
 test/work
 typedoc
 .DS_Store
