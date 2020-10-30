@@ -89,6 +89,9 @@ declare namespace electronPackager {
    *   // ...
    * })
    * ```
+   *
+   * For real-world examples of `HookFunction`s, see the [list of related
+   * plugins](https://github.com/electron/electron-packager#plugins).
    */
   type HookFunction =
     /**
