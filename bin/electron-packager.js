@@ -2,7 +2,8 @@
 
 'use strict'
 
-// Not consts so that this file can load in Node < 4.0
+/* eslint-disable no-var */
+// WHY: not consts so that this file can load in Node < 4.0
 var packageJSON = require('../package.json')
 var semver = require('semver')
 if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {

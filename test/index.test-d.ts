@@ -117,7 +117,7 @@ await packager({
     },
   },
   extraResource: ['foo.js', 'bar.js'],
-  ignore: [/ab+c/, new RegExp('abc')],
+  ignore: [/ab+c/, new RegExp('abc')], // eslint-disable-line prefer-regex-literals
   platform: 'darwin',
   prune: false,
   tmpdir: 'false',
