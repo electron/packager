@@ -79,7 +79,7 @@ function validOfficialPlatformArch (opts, platform, arch) {
 }
 
 function officialBuildExists (opts, buildVersion) {
-  return semver.satisfies(opts.electronVersion, buildVersion)
+  return semver.satisfies(opts.electronVersion, buildVersion, { includePrerelease: true })
 }
 
 function allPlatformsOrArchsSpecified (opts) {
