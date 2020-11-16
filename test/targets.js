@@ -103,6 +103,7 @@ test('fails with invalid platform', util.invalidOptionTest({
 test('invalid official combination', testMultiTarget({ arch: 'ia32', platform: 'darwin' }, 0, 'Package should not be generated for invalid official combination'))
 
 test('platform=linux and arch=arm64 with a supported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux', electronVersion: '1.8.0' }, 1, 'Package should be generated for linux/arm64'))
+test('platform=linux and arch=arm64 with a supported official Electron version (11.0.0-beta.22)', testMultiTarget({ arch: 'arm64', platform: 'linux', electronVersion: '11.0.0-beta.22' }, 1, 'Package should be generated for linux/arm64'))
 test('platform=linux and arch=arm64 with an unsupported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux' }, 0, 'Package should not be generated for linux/arm64'))
 
 test('platform=linux and arch=mips64el with a supported official Electron version', testMultiTarget({ arch: 'mips64el', platform: 'linux', electronVersion: '1.8.2-beta.5' }, 1, 'Package should be generated for mips64el'))
