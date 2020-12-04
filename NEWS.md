@@ -2,7 +2,20 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v15.1.0...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v15.2.0...master
+
+## [15.2.0] - 2020-12-04
+
+[15.2.0]: https://github.com/electron/electron-packager/compare/v15.1.0...v15.2.0
+
+### Added
+
+* Upgrade `electron-osx-sign` to 0.5.0 which adds a new option, `entitlementsForFile` (#1189)
+
+### Fixed
+
+* Add package manager lockfiles to default ignore list (#1182)
+* Allow checking official builds against prerelease versions (#1191)
 
 ## [15.1.0] - 2020-08-21
 
