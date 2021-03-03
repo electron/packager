@@ -335,7 +335,9 @@ declare namespace electronPackager {
     extendInfo?: string | { [property: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
     /**
      * One or more files to be copied directly into the app's `Contents/Resources` directory for
-     * macOS target platforms, and the `resources` directory for other target platforms.
+     * macOS target platforms, and the `resources` directory for other target platforms. The
+     * resources directory can be referenced in the packaged app via the
+     * [`process.resourcesPath`](https://www.electronjs.org/docs/api/process#processresourcespath-readonly) value.
      */
     extraResource?: string | string[];
     /**
