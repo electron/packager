@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "13:00"
+  open-pull-requests-limit: 99
+  ignore:
+  - dependency-name: typedoc
+    versions:
+    - ">= 0.20.a, < 0.21"
+  - dependency-name: sinon
+    versions:
+    - 10.0.0
