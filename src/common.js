@@ -1,6 +1,8 @@
 'use strict'
 
+const debug = require('debug')('electron-packager')
 const filenamify = require('filenamify')
+const fs = require('fs-extra')
 const metadata = require('../package.json')
 const os = require('os')
 const path = require('path')
@@ -84,6 +86,36 @@ module.exports = {
    */
   normalizePath: function normalizePath (pathToNormalize) {
     return pathToNormalize.replace(/\\/g, '/')
+  },
+  /**
+   * Validates that the application directory contains a package.json file, and that there exists an
+   * appropriate main entry point file, per the rules of the "main" field in package.json.
+   *
+   * See: https://docs.npmjs.com/cli/v6/configuring-npm/package-json#main
+   *
+   * @param appDir - the directory specified by the user
+   * @param bundledAppDir - the directory where the appDir is copied to in the bundled Electron app
+   */
+  validateElectronApp: async function validateElectronApp (appDir, bundledAppDir) {
+    debug('Validating bundled Electron app')
+    debug('Checking for a package.json file')
+
+    const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json')
+    if (!(await fs.pathExists(bundledPackageJSONPath))) {
+      const originalPackageJSONPath = path.join(appDir, 'package.json')
+      throw new Error(`Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`)
+    }
+
+    debug('Checking for the main entry point file')
+    const packageJSON = await fs.readJson(bundledPackageJSONPath)
+    const mainScriptBasename = packageJSON.main || 'index.js'
+    const mainScript = path.resolve(bundledAppDir, mainScriptBasename)
+    if (!(await fs.pathExists(mainScript))) {
+      const originalMainScript = path.join(appDir, mainScriptBasename)
+      throw new Error(`The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`)
+    }
+
+    debug('Validation complete')
   },
 
   hostInfo: function hostInfo () {
