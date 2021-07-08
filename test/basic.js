@@ -314,18 +314,18 @@ test('validateElectronApp succeeds on a well-formed Electron app without a main 
 
 test('validateElectronApp fails on an Electron app without package.json', async t => {
   await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-package-json')), {
-    message: 'Application manifest was not found. Make sure "original-dir/package.json" exists and does not get ignored by your ignore option'
+    message: `Application manifest was not found. Make sure "${path.join('original-dir', 'package.json')}" exists and does not get ignored by your ignore option`
   })
 })
 
 test('validateElectronApp fails on an Electron app with a package.json with a main field missing main entry point', async t => {
   await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-main-or-index')), {
-    message: 'The main entry point to your app was not found. Make sure "original-dir/index.js" exists and does not get ignored by your ignore option'
+    message: `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'index.js')}" exists and does not get ignored by your ignore option`
   })
 })
 
 test('validateElectronApp fails on an Electron app with a package.json without a main field missing main entry point', async t => {
   await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-with-main-without-entry-point')), {
-    message: 'The main entry point to your app was not found. Make sure "original-dir/main.js" exists and does not get ignored by your ignore option'
+    message: `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'main.js')}" exists and does not get ignored by your ignore option`
   })
 })
