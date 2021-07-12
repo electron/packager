@@ -110,6 +110,7 @@ class App {
 
   async buildApp () {
     await this.copyTemplate()
+    await common.validateElectronApp(this.opts.dir, this.originalResourcesAppDir)
     await this.asarApp()
   }
 

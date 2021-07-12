@@ -303,3 +303,29 @@ test.serial('electronZipDir: ZIP file does not exist', util.testSinglePlatform(a
 
   await t.throwsAsync(async () => packager(opts), { message: /Electron ZIP file does not exist/ })
 }))
+
+test('validateElectronApp succeeds on a well-formed Electron app containing a main field', async t => {
+  await t.notThrowsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-success-with-main')))
+})
+
+test('validateElectronApp succeeds on a well-formed Electron app without a main field', async t => {
+  await t.notThrowsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-success-without-main')))
+})
+
+test('validateElectronApp fails on an Electron app without package.json', async t => {
+  await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-package-json')), {
+    message: `Application manifest was not found. Make sure "${path.join('original-dir', 'package.json')}" exists and does not get ignored by your ignore option`
+  })
+})
+
+test('validateElectronApp fails on an Electron app with a package.json with a main field missing main entry point', async t => {
+  await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-main-or-index')), {
+    message: `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'index.js')}" exists and does not get ignored by your ignore option`
+  })
+})
+
+test('validateElectronApp fails on an Electron app with a package.json without a main field missing main entry point', async t => {
+  await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-with-main-without-entry-point')), {
+    message: `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'main.js')}" exists and does not get ignored by your ignore option`
+  })
+})
