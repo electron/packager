@@ -85,7 +85,7 @@ electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [opt
 This will:
 
 - Find or download the correct release of Electron
-- Use that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
+- Use that version of Electron to create an app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
 
 `--platform` and `--arch` can be omitted, in two cases:
 
@@ -197,8 +197,8 @@ Linux:
 
 These Node modules utilize Electron Packager API hooks:
 
-- [electron-packager-languages](https://npm.im/electron-packager-languages) - set the locales
+- [electron-packager-languages](https://npm.im/electron-packager-languages) - sets the locales
   available to Electron when packaged, which is used by the Mac App Store, among other places
 - [electron-packager-plugin-non-proprietary-codecs-ffmpeg](https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg) - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs
-- [electron-rebuild](https://github.com/electron/electron-rebuild) - rebuild native Node.js modules
+- [electron-rebuild](https://github.com/electron/electron-rebuild) - rebuilds native Node.js modules
   against the packaged Electron version
