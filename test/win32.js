@@ -150,20 +150,22 @@ test('error message unchanged when error not about wine missing', t => {
   t.is(returnedError.message, 'Not a wrapper error')
 })
 
-test.serial('win32 integration: catches a missing wine executable', util.packagerTest(async (t, opts) => {
-  process.env.WINE_BINARY = 'wine-nonexistent'
-  try {
-    await t.throwsAsync(() => packager({
-      ...opts,
-      ...win32Opts
-    }), {
-      instanceOf: WrapperError,
-      message: /wine-nonexistent.*win32metadata/ms
-    })
-  } finally {
-    delete process.env.WINE_BINARY
-  }
-}))
+if (process.platform !== 'win32') {
+  test.serial('win32 integration: catches a missing wine executable', util.packagerTest(async (t, opts) => {
+    process.env.WINE_BINARY = 'wine-nonexistent'
+    try {
+      await t.throwsAsync(() => packager({
+        ...opts,
+        ...win32Opts
+      }), {
+        instanceOf: WrapperError,
+        message: /wine-nonexistent.*win32metadata/ms
+      })
+    } finally {
+      delete process.env.WINE_BINARY
+    }
+  }))
+}
 
 test('win32metadata defaults', t => {
   const opts = { name: 'Win32 App' }
