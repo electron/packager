@@ -150,7 +150,9 @@ test('error message unchanged when error not about wine missing', t => {
   t.is(returnedError.message, 'Not a wrapper error')
 })
 
-if (process.platform !== 'win32') {
+// Wine-using platforms only; macOS exhibits a strange behavior in CI,
+// so we're disabling it there as well.
+if (process.platform === 'linux') {
   test.serial('win32 integration: catches a missing wine executable', util.packagerTest(async (t, opts) => {
     process.env.WINE_BINARY = 'wine-nonexistent'
     try {
