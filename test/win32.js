@@ -6,6 +6,7 @@ const path = require('path')
 const test = require('ava')
 const util = require('./_util')
 const win32 = require('../src/win32')
+const { WrapperError } = require('cross-spawn-windows-exe')
 
 const win32Opts = {
   name: 'basicTest',
@@ -134,35 +135,39 @@ function setCompanyNameTest (companyName) {
                                    'Company name should match win32metadata value')
 }
 
-for (const wineBinary of ['wine', 'wine64']) {
-  test(`better error message when ${wineBinary} is not found`, t => {
-    let err = Error(`spawn ${wineBinary} ENOENT`)
-    err.code = 'ENOENT'
-    err.syscall = `spawn ${wineBinary}`
+test('better error message when wine is not found', t => {
+  const err = new WrapperError('wine-nonexistent')
 
-    t.is(err.message, `spawn ${wineBinary} ENOENT`)
-    err = win32.updateWineMissingException(err)
-    t.not(err.message, `spawn ${wineBinary} ENOENT`)
-  })
-}
-
-test('error message unchanged when error not about wine/wine64', t => {
-  let errNotEnoent = Error('unchanged')
-  errNotEnoent.code = 'ESOMETHINGELSE'
-  errNotEnoent.syscall = 'spawn wine'
-
-  t.is(errNotEnoent.message, 'unchanged')
-  errNotEnoent = win32.updateWineMissingException(errNotEnoent)
-  t.is(errNotEnoent.message, 'unchanged')
-
-  let errNotSpawnWine = Error('unchanged')
-  errNotSpawnWine.code = 'ENOENT'
-  errNotSpawnWine.syscall = 'spawn foo'
-
-  t.is(errNotSpawnWine.message, 'unchanged')
-  errNotSpawnWine = win32.updateWineMissingException(errNotSpawnWine)
-  t.is(errNotSpawnWine.message, 'unchanged')
+  t.notRegex(err.message, /win32metadata/)
+  const augmentedError = win32.updateWineMissingException(err)
+  t.regex(augmentedError.message, /win32metadata/)
 })
+
+test('error message unchanged when error not about wine missing', t => {
+  const notWrapperError = Error('Not a wrapper error')
+
+  const returnedError = win32.updateWineMissingException(notWrapperError)
+  t.is(returnedError.message, 'Not a wrapper error')
+})
+
+// Wine-using platforms only; macOS exhibits a strange behavior in CI,
+// so we're disabling it there as well.
+if (process.platform === 'linux') {
+  test.serial('win32 integration: catches a missing wine executable', util.packagerTest(async (t, opts) => {
+    process.env.WINE_BINARY = 'wine-nonexistent'
+    try {
+      await t.throwsAsync(() => packager({
+        ...opts,
+        ...win32Opts
+      }), {
+        instanceOf: WrapperError,
+        message: /wine-nonexistent.*win32metadata/ms
+      })
+    } finally {
+      delete process.env.WINE_BINARY
+    }
+  }))
+}
 
 test('win32metadata defaults', t => {
   const opts = { name: 'Win32 App' }

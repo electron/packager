@@ -2,17 +2,16 @@
 
 const debug = require('debug')('electron-packager')
 const path = require('path')
+const { WrapperError } = require('cross-spawn-windows-exe')
 
 const App = require('./platform')
 const common = require('./common')
 
 function updateWineMissingException (err) {
-  if (err && err.code === 'ENOENT' && ['spawn wine', 'spawn wine64'].includes(err.syscall)) {
-    const binary = err.syscall.split(' ')[1]
-    err.message = `Could not find "${binary}" on your system.\n\n` +
+  if (err instanceof WrapperError) {
+    err.message += '\n\n' +
       'Wine is required to use the appCopyright, appVersion, buildVersion, icon, and \n' +
       'win32metadata parameters for Windows targets.\n\n' +
-      `Make sure that the "${binary}" executable is in your PATH.\n\n` +
       'See https://github.com/electron/electron-packager#building-windows-apps-from-non-windows-platforms for details.'
   }
 
@@ -85,17 +84,16 @@ class WindowsApp extends App {
 
     const rcOpts = this.generateRceditOptionsSansIcon()
 
-    try {
-      const icon = await this.getIconPath()
-      if (icon) {
-        rcOpts.icon = icon
-      }
+    // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
+    const icon = await this.getIconPath()
+    if (icon) {
+      rcOpts.icon = icon
+    }
 
-      debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
+    debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`)
+    try {
       await require('rcedit')(this.electronBinaryPath, rcOpts)
     } catch (err) {
-      // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
-      /* istanbul ignore next */
       throw updateWineMissingException(err)
     }
   }
