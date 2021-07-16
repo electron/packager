@@ -65,10 +65,11 @@ npm install electron-packager -g
 ### Building Windows apps from non-Windows platforms
 
 Building an Electron app for the Windows target platform requires editing the `Electron.exe` file.
-Currently, Electron Packager uses [node-rcedit](https://github.com/atom/node-rcedit) to accomplish
+Currently, Electron Packager uses [`node-rcedit`](https://github.com/atom/node-rcedit) to accomplish
 this. A Windows executable is bundled in that Node package and needs to be run in order for this
-functionality to work, so on non-Windows host platforms, [Wine](https://www.winehq.org/) 1.6 or
-later needs to be installed. On macOS, it is installable via [Homebrew](http://brew.sh/).
+functionality to work, so on non-Windows host platforms (not including WSL),
+[Wine](https://www.winehq.org/) 1.6 or later needs to be installed. On macOS, it is installable
+via [Homebrew](http://brew.sh/).
 
 ## Usage
 
