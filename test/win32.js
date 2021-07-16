@@ -135,7 +135,7 @@ function setCompanyNameTest (companyName) {
                                    'Company name should match win32metadata value')
 }
 
-test(`better error message when wine is not found`, t => {
+test('better error message when wine is not found', t => {
   const err = new WrapperError('wine-nonexistent')
 
   t.notRegex(err.message, /win32metadata/)
