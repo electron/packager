@@ -21,6 +21,7 @@ jobs:
       - run: npm run docs:build
       - uses: docker://malept/gha-gh-pages:1.3.0
         with:
+          defaultBranch: main
           docsPath: typedoc
           gitCommitEmail: 'electron-bot@users.noreply.github.com'
           gitCommitMessage: 'Publish [skip ci]'
