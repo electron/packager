@@ -2,20 +2,20 @@
 
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![CircleCI Build Status](https://circleci.com/gh/electron/electron-packager/tree/master.svg?style=svg)](https://circleci.com/gh/electron/electron-packager/tree/master)
-[![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/master/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
+[![CircleCI Build Status](https://circleci.com/gh/electron/electron-packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/electron-packager/tree/main)
+[![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
 [![NPM](https://badgen.net/npm/v/electron-packager)](https://npm.im/electron-packager)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.gg/electron)
 
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
 [Usage](#usage) |
-[API](https://electron.github.io/electron-packager/master/) |
-[Contributing](https://github.com/electron/electron-packager/blob/master/CONTRIBUTING.md) |
-[Support](https://github.com/electron/electron-packager/blob/master/SUPPORT.md) |
+[API](https://electron.github.io/electron-packager/main/) |
+[Contributing](https://github.com/electron/electron-packager/blob/main/CONTRIBUTING.md) |
+[Support](https://github.com/electron/electron-packager/blob/main/SUPPORT.md) |
 [Related Apps/Libraries](#related) |
-[FAQ](https://github.com/electron/electron-packager/blob/master/docs/faq.md) |
-[Release Notes](https://github.com/electron/electron-packager/blob/master/NEWS.md)
+[FAQ](https://github.com/electron/electron-packager/blob/main/docs/faq.md) |
+[Release Notes](https://github.com/electron/electron-packager/blob/main/NEWS.md)
 
 ----
 
@@ -73,7 +73,7 @@ via [Homebrew](http://brew.sh/).
 
 ## Usage
 
-JavaScript API usage can be found in the [API documentation](https://electron.github.io/electron-packager/master/modules/electronpackager.html).
+JavaScript API usage can be found in the [API documentation](https://electron.github.io/electron-packager/main/modules/electronpackager.html).
 
 ### From the Command Line
 
@@ -95,8 +95,8 @@ This will:
 * Otherwise, a single bundle for the host platform/architecture will be created.
 
 For an overview of the other optional flags, run `electron-packager --help` or see
-[usage.txt](https://github.com/electron/electron-packager/blob/master/usage.txt). For
-detailed descriptions, see the [API documentation](https://electron.github.io/electron-packager/master/modules/electronpackager.html).
+[usage.txt](https://github.com/electron/electron-packager/blob/main/usage.txt). For
+detailed descriptions, see the [API documentation](https://electron.github.io/electron-packager/main/modules/electronpackager.html).
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 
