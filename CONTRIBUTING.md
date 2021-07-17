@@ -4,7 +4,7 @@ Electron Packager is a community-driven project. As such, we welcome and encoura
 contributions. They include, but are not limited to:
 
 - Constructive feedback
-- [Questions about usage](https://github.com/electron/electron-packager/blob/master/SUPPORT.md)
+- [Questions about usage](https://github.com/electron/electron-packager/blob/main/SUPPORT.md)
 - [Bug reports / technical issues](#before-opening-bug-reportstechnical-issues)
 - Documentation changes
 - Feature requests
@@ -14,7 +14,7 @@ We strongly suggest that before filing an issue, you search through the existing
 if it has already been filed by someone else.
 
 This project is a part of the Electron ecosystem. As such, all contributions to this project follow
-[Electron's code of conduct](https://github.com/electron/electron/blob/master/CODE_OF_CONDUCT.md)
+[Electron's code of conduct](https://github.com/electron/electron/blob/main/CODE_OF_CONDUCT.md)
 where appropriate.
 
 ## Before opening bug reports/technical issues
@@ -65,7 +65,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   Feel free to indicate whether the changes require a major, minor, or patch version bump, as
   prescribed by the [semantic versioning specification](http://semver.org/).
 * Once your pull request is approved, please make sure your commits are rebased onto the latest
-  commit in the master branch, and that you limit/squash the number of commits created to a
+  commit in the main branch, and that you limit/squash the number of commits created to a
   "feature"-level. For instance:
 
 bad:

@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v15.2.0...master
+[Unreleased]: https://github.com/electron/electron-packager/compare/v15.2.0...main
 
 ## [15.2.0] - 2020-12-04
 
@@ -787,7 +787,7 @@
 ### Changed
 
 * [win32] `rcedit` dependency updated to 0.4.x. **A new DLL is required to run the new version
-  of rcedit, please see [the documentation](https://github.com/electron/electron-packager/blob/master/README.md#building-windows-apps-from-non-windows-platforms)
+  of rcedit, please see [the documentation](https://github.com/electron/electron-packager/blob/main/README.md#building-windows-apps-from-non-windows-platforms)
   for details**
 * API documentation moved from readme.md to docs/api.md (#296)
 
