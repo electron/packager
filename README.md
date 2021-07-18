@@ -55,12 +55,10 @@ It generates executables/bundles for the following **target** platforms:
 This module requires Node.js 10.0 or higher to run.
 
 ```sh
-# For use in npm scripts (recommended)
-npm install electron-packager --save-dev
-
-# For use from the CLI
-npm install electron-packager -g
+npm install --save-dev electron-packager
 ```
+
+It is **not** recommended to install `electron-packager` globally.
 
 ### Building Windows apps from non-Windows platforms
 
@@ -77,11 +75,14 @@ JavaScript API usage can be found in the [API documentation](https://electron.gi
 
 ### From the Command Line
 
-Running electron-packager from the command line has this basic form:
+Running Electron Packager from the command line has this basic form:
 
 ```
-electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
+npx electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
+
+**Note**: `npx` can be substituted for `yarn` or `npm exec` depending on what package manager and
+the version you have installed.
 
 This will:
 
@@ -127,7 +128,7 @@ foobar
 
 …and that the following is true:
 
-* `electron-packager` is installed globally
+* `electron-packager` is installed locally
 * `productName` in `package.json` has been set to `Foo Bar`
 * The `electron` module is in the `devDependencies` section of `package.json`, and set to the exact version of `1.4.15`.
 * `npm install` for the `Foo Bar` app has been run at least once
@@ -135,7 +136,7 @@ foobar
 When one runs the following command for the first time in the `foobar` directory:
 
 ```
-electron-packager .
+npx electron-packager .
 ```
 
 `electron-packager` will do the following:
