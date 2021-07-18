@@ -290,8 +290,8 @@
 						<div class="lead">
 							<p>Whether to package the application&#39;s source code into an archive, using <a href="https://github.com/electron/asar">Electron&#39;s
 								archive format</a>. Reasons why you may want to enable
-								this feature are described in <a href="https://electronjs.org/docs/tutorial/application-packaging/">an application packaging tutorial in Electron&#39;s
-								documentation</a>. When the value
+								this feature include mitigating issues around long path names on Windows, slightly speeding
+								up <code>require</code>, and concealing your source code from cursory inspection. When the value
 								is <code>true</code>, it passes the default configuration to the <code>asar</code> module. The configuration
 								values can be customized when the value is an <code>Object</code>. Supported sub-options include, but
 							are not limited to:</p>
