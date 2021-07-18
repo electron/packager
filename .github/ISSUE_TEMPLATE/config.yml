@@ -2,5 +2,5 @@ blank_issues_enabled: false
 
 contact_links:
   - name: Question
-    url: https://discord.gg
+    url: https://discord.gg/electron
     about: "Please ask questions about using Electron Packager in the official Electron Discord server, at the #electron-packager channel."
