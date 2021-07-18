@@ -13,3 +13,8 @@ updates:
   - dependency-name: sinon
     versions:
     - 10.0.0
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    # Check for updates to GitHub Actions every weekday
+    interval: "daily"
