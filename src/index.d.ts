@@ -239,8 +239,8 @@ declare namespace electronPackager {
     /**
      * Whether to package the application's source code into an archive, using [Electron's
      * archive format](https://github.com/electron/asar). Reasons why you may want to enable
-     * this feature are described in [an application packaging tutorial in Electron's
-     * documentation](https://electronjs.org/docs/tutorial/application-packaging/). When the value
+     * this feature include mitigating issues around long path names on Windows, slightly speeding
+     * up `require`, and concealing your source code from cursory inspection. When the value
      * is `true`, it passes the default configuration to the `asar` module. The configuration
      * values can be customized when the value is an `Object`. Supported sub-options include, but
      * are not limited to:
