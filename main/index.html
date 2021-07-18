@@ -113,12 +113,9 @@
 					<h2>Installation</h2>
 				</a>
 				<p>This module requires Node.js 10.0 or higher to run.</p>
-				<pre><code class="language-sh"><span class="hljs-comment"># For use in npm scripts (recommended)</span>
-npm install electron-packager --save-dev
-
-<span class="hljs-comment"># For use from the CLI</span>
-npm install electron-packager -g
+				<pre><code class="language-sh">npm install --save-dev electron-packager
 </code></pre>
+				<p>It is <strong>not</strong> recommended to install <code>electron-packager</code> globally.</p>
 				<a href="#building-windows-apps-from-non-windows-platforms" id="building-windows-apps-from-non-windows-platforms" style="color: inherit; text-decoration: none;">
 					<h3>Building Windows apps from non-Windows platforms</h3>
 				</a>
@@ -135,9 +132,11 @@ npm install electron-packager -g
 				<a href="#from-the-command-line" id="from-the-command-line" style="color: inherit; text-decoration: none;">
 					<h3>From the Command Line</h3>
 				</a>
-				<p>Running electron-packager from the command line has this basic form:</p>
-				<pre><code>electron-packager <span class="hljs-variable">&lt;sourcedir&gt;</span> <span class="hljs-variable">&lt;appname&gt;</span> --platform=<span class="hljs-variable">&lt;platform&gt;</span> --arch=<span class="hljs-variable">&lt;arch&gt;</span> [optional <span class="hljs-keyword">flags</span>...]
+				<p>Running Electron Packager from the command line has this basic form:</p>
+				<pre><code>npx electron-packager <span class="hljs-variable">&lt;sourcedir&gt;</span> <span class="hljs-variable">&lt;appname&gt;</span> --platform=<span class="hljs-variable">&lt;platform&gt;</span> --arch=<span class="hljs-variable">&lt;arch&gt;</span> [optional <span class="hljs-keyword">flags</span>...]
 </code></pre>
+				<p><strong>Note</strong>: <code>npx</code> can be substituted for <code>yarn</code> or <code>npm exec</code> depending on what package manager and
+				the version you have installed.</p>
 				<p>This will:</p>
 				<ul>
 					<li>Find or download the correct release of Electron</li>
@@ -175,13 +174,13 @@ npm install electron-packager -g
 </code></pre>
 				<p>…and that the following is true:</p>
 				<ul>
-					<li><code>electron-packager</code> is installed globally</li>
+					<li><code>electron-packager</code> is installed locally</li>
 					<li><code>productName</code> in <code>package.json</code> has been set to <code>Foo Bar</code></li>
 					<li>The <code>electron</code> module is in the <code>devDependencies</code> section of <code>package.json</code>, and set to the exact version of <code>1.4.15</code>.</li>
 					<li><code>npm install</code> for the <code>Foo Bar</code> app has been run at least once</li>
 				</ul>
 				<p>When one runs the following command for the first time in the <code>foobar</code> directory:</p>
-				<pre><code>electron-packager .
+				<pre><code>npx electron-packager .
 </code></pre>
 				<p><code>electron-packager</code> will do the following:</p>
 				<ul>
