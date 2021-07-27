@@ -105,8 +105,8 @@ class MacApp extends App {
     return path.join(this.loginItemsPath, 'Electron Login Helper.app')
   }
 
-  updatePlist (base, displayName, identifier, name) {
-    return Object.assign(base, {
+  updatePlist (basePlist, displayName, identifier, name) {
+    return Object.assign(basePlist, {
       CFBundleDisplayName: displayName,
       CFBundleExecutable: common.sanitizeAppName(displayName),
       CFBundleIdentifier: identifier,
@@ -114,7 +114,7 @@ class MacApp extends App {
     })
   }
 
-  updateHelperPlist (base, suffix, identifierIgnoresSuffix) {
+  updateHelperPlist (basePlist, suffix, identifierIgnoresSuffix) {
     let helperSuffix, identifier, name
     if (suffix) {
       helperSuffix = `Helper ${suffix}`
@@ -129,19 +129,19 @@ class MacApp extends App {
       identifier = this.helperBundleIdentifier
       name = this.appName
     }
-    return this.updatePlist(base, `${this.appName} ${helperSuffix}`, identifier, name)
+    return this.updatePlist(basePlist, `${this.appName} ${helperSuffix}`, identifier, name)
   }
 
-  async extendAppPlist (propsOrFilename) {
+  async extendPlist (basePlist, propsOrFilename) {
     if (!propsOrFilename) {
       return Promise.resolve()
     }
 
     if (typeof propsOrFilename === 'string') {
       const plist = await this.loadPlist(propsOrFilename)
-      return Object.assign(this.appPlist, plist)
+      return Object.assign(basePlist, plist)
     } else {
-      return Object.assign(this.appPlist, propsOrFilename)
+      return Object.assign(basePlist, propsOrFilename)
     }
   }
 
@@ -189,9 +189,9 @@ class MacApp extends App {
 
     const plists = await this.determinePlistFilesToUpdate()
     await Promise.all(plists.map(plistArgs => this.loadPlist(...plistArgs)))
-    await this.extendAppPlist(this.opts.extendInfo)
+    await this.extendPlist(this.appPlist, this.opts.extendInfo)
     this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
-    this.helperPlist = this.updateHelperPlist(this.helperPlist)
+
     const updateIfExists = [
       ['helperRendererPlist', '(Renderer)', true],
       ['helperPluginPlist', '(Plugin)', true],
@@ -199,10 +199,23 @@ class MacApp extends App {
       ['helperEHPlist', 'EH'],
       ['helperNPPlist', 'NP']
     ]
+
+    for (const [plistKey] of [...updateIfExists, ['helperPlist']]) {
+      if (!this[plistKey]) continue
+      await this.extendPlist(this[plistKey], this.opts.extendHelperInfo)
+    }
+
+    this.helperPlist = this.updateHelperPlist(this.helperPlist)
     for (const [plistKey, ...suffixArgs] of updateIfExists) {
       if (!this[plistKey]) continue
       this[plistKey] = this.updateHelperPlist(this[plistKey], ...suffixArgs)
     }
+
+    // Some properties need to go on all helpers as well, version, usage info, etc.
+    const plistsToUpdate = updateIfExists
+      .filter(([key]) => !!this[key])
+      .map(([key]) => key)
+      .concat(['appPlist', 'helperPlist'])
 
     if (this.loginHelperPlist) {
       const loginHelperName = common.sanitizeAppName(`${this.appName} Login Helper`)
@@ -212,11 +225,17 @@ class MacApp extends App {
     }
 
     if (this.appVersion) {
-      this.appPlist.CFBundleShortVersionString = this.appPlist.CFBundleVersion = '' + this.appVersion
+      const appVersionString = '' + this.appVersion
+      for (const plistKey of plistsToUpdate) {
+        this[plistKey].CFBundleShortVersionString = this[plistKey].CFBundleVersion = appVersionString
+      }
     }
 
     if (this.buildVersion) {
-      this.appPlist.CFBundleVersion = '' + this.buildVersion
+      const buildVersionString = '' + this.buildVersion
+      for (const plistKey of plistsToUpdate) {
+        this[plistKey].CFBundleVersion = buildVersionString
+      }
     }
 
     if (this.opts.protocols && this.opts.protocols.length) {
@@ -237,7 +256,11 @@ class MacApp extends App {
 
     if (this.usageDescription) {
       for (const [type, description] of Object.entries(this.usageDescription)) {
-        this.appPlist[`NS${type}UsageDescription`] = description
+        const usageTypeKey = `NS${type}UsageDescription`
+        for (const plistKey of plistsToUpdate) {
+          this[plistKey][usageTypeKey] = description
+        }
+        this.appPlist[usageTypeKey] = description
       }
     }
 

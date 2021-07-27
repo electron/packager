@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v15.3.0...main
 
+### Added
+
+* `extendHelperInfo` option to allow extending helper app `Info.plist` files (#1233)
+
 ## [15.3.0] - 2021-07-17
 
 [15.3.0]: https://github.com/electron/electron-packager/compare/v15.2.0...v15.3.0
