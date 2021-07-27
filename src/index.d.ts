@@ -339,7 +339,7 @@ declare namespace electronPackager {
      * When the value is an `Object`, it specifies an already-parsed `plist` data structure that is
      * merged into all the Helper app's `Info.plist` files.
      *
-     * Entries from `extendHelperInfo` override entries in the helpers apps `Info.plist` file supplied by
+     * Entries from `extendHelperInfo` override entries in the helper apps' `Info.plist` file supplied by
      * `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other
      * options such as [[appVersion]] or [[appBundleId]].
      *

@@ -16,7 +16,7 @@
 
 ### Added
 
-* Add `extendHelperInfo` option to allow extend helper app `Info.plist` files
+* `extendHelperInfo` option to allow extending helper app `Info.plist` files
 
 ## [15.2.0] - 2020-12-04
 

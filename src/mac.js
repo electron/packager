@@ -212,7 +212,10 @@ class MacApp extends App {
     }
 
     // Some properties need to go on all helpers as well, version, usage info, etc.
-    const plistsToUpdate = updateIfExists.filter(([key]) => !!this[key]).map(([key]) => key).concat(['appPlist', 'helperPlist'])
+    const plistsToUpdate = updateIfExists
+      .filter(([key]) => !!this[key])
+      .map(([key]) => key)
+      .concat(['appPlist', 'helperPlist'])
 
     if (this.loginHelperPlist) {
       const loginHelperName = common.sanitizeAppName(`${this.appName} Login Helper`)
@@ -222,8 +225,9 @@ class MacApp extends App {
     }
 
     if (this.appVersion) {
+      const appVersionString = '' + this.appVersion
       for (const plistKey of plistsToUpdate) {
-        this[plistKey].CFBundleShortVersionString = this[plistKey].CFBundleVersion = '' + this.appVersion
+        this[plistKey].CFBundleShortVersionString = this[plistKey].CFBundleVersion = appVersionString
       }
     }
 
@@ -251,10 +255,11 @@ class MacApp extends App {
 
     if (this.usageDescription) {
       for (const [type, description] of Object.entries(this.usageDescription)) {
+        const usageTypeKey = `NS${type}UsageDescription`;
         for (const plistKey of plistsToUpdate) {
-          this[plistKey][`NS${type}UsageDescription`] = description
+          this[plistKey][usageTypeKey] = description
         }
-        this.appPlist[`NS${type}UsageDescription`] = description
+        this.appPlist[usageTypeKey] = description
       }
     }
 
