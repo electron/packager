@@ -335,9 +335,9 @@ declare namespace electronPackager {
     extendInfo?: string | { [property: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
     /**
      * When the value is a string, specifies the filename of a `plist` file. Its contents are merged
-     * into all the Helper app's `Info.plist` files.
+     * into all the Helper apps' `Info.plist` files.
      * When the value is an `Object`, it specifies an already-parsed `plist` data structure that is
-     * merged into all the Helper app's `Info.plist` files.
+     * merged into all the Helper apps' `Info.plist` files.
      *
      * Entries from `extendHelperInfo` override entries in the helper apps' `Info.plist` file supplied by
      * `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other

@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v15.3.0...main
 
+### Added
+
+* `extendHelperInfo` option to allow extending helper app `Info.plist` files (#1233)
+
 ## [15.3.0] - 2021-07-17
 
 [15.3.0]: https://github.com/electron/electron-packager/compare/v15.2.0...v15.3.0
@@ -13,10 +17,6 @@
 * Bundled app validation to ensure that both `package.json` and the main entry point exist (#1257)
 * Support for customizing Windows targets on darwin/arm64 (#1260)
 * Support for customizing Windows targets on WSL without Wine installed (#1260)
-
-### Added
-
-* `extendHelperInfo` option to allow extending helper app `Info.plist` files
 
 ## [15.2.0] - 2020-12-04
 

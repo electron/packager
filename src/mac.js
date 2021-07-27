@@ -105,8 +105,8 @@ class MacApp extends App {
     return path.join(this.loginItemsPath, 'Electron Login Helper.app')
   }
 
-  updatePlist (base, displayName, identifier, name) {
-    return Object.assign(base, {
+  updatePlist (basePlist, displayName, identifier, name) {
+    return Object.assign(basePlist, {
       CFBundleDisplayName: displayName,
       CFBundleExecutable: common.sanitizeAppName(displayName),
       CFBundleIdentifier: identifier,
@@ -114,7 +114,7 @@ class MacApp extends App {
     })
   }
 
-  updateHelperPlist (base, suffix, identifierIgnoresSuffix) {
+  updateHelperPlist (basePlist, suffix, identifierIgnoresSuffix) {
     let helperSuffix, identifier, name
     if (suffix) {
       helperSuffix = `Helper ${suffix}`
@@ -129,19 +129,19 @@ class MacApp extends App {
       identifier = this.helperBundleIdentifier
       name = this.appName
     }
-    return this.updatePlist(base, `${this.appName} ${helperSuffix}`, identifier, name)
+    return this.updatePlist(basePlist, `${this.appName} ${helperSuffix}`, identifier, name)
   }
 
-  async extendPlist (base, propsOrFilename) {
+  async extendPlist (basePlist, propsOrFilename) {
     if (!propsOrFilename) {
       return Promise.resolve()
     }
 
     if (typeof propsOrFilename === 'string') {
       const plist = await this.loadPlist(propsOrFilename)
-      return Object.assign(base, plist)
+      return Object.assign(basePlist, plist)
     } else {
-      return Object.assign(base, propsOrFilename)
+      return Object.assign(basePlist, propsOrFilename)
     }
   }
 
@@ -232,8 +232,9 @@ class MacApp extends App {
     }
 
     if (this.buildVersion) {
+      const buildVersionString = '' + this.buildVersion
       for (const plistKey of plistsToUpdate) {
-        this[plistKey].CFBundleVersion = '' + this.buildVersion
+        this[plistKey].CFBundleVersion = buildVersionString
       }
     }
 
