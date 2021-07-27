@@ -255,7 +255,7 @@ class MacApp extends App {
 
     if (this.usageDescription) {
       for (const [type, description] of Object.entries(this.usageDescription)) {
-        const usageTypeKey = `NS${type}UsageDescription`;
+        const usageTypeKey = `NS${type}UsageDescription`
         for (const plistKey of plistsToUpdate) {
           this[plistKey][usageTypeKey] = description
         }
