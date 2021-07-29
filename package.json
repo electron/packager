@@ -37,7 +37,7 @@
     "fs-extra": "^9.0.0",
     "galactus": "^0.2.1",
     "get-package-info": "^1.0.0",
-    "junk": "^3.1.0",
+    "junk": "^4.0.0",
     "parse-author": "^2.0.0",
     "plist": "^3.0.0",
     "rcedit": "^3.0.1",
