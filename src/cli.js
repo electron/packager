@@ -133,7 +133,7 @@ module.exports = {
       }
     } catch (err) {
       if (err.message) {
-        console.error(err.message)
+        console.error(err.message, err.stack)
       } else {
         console.error(err, err.stack)
       }
