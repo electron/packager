@@ -298,13 +298,6 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.deepEqual(obj.CFBundleURLTypes, expected, 'CFBundleURLTypes did not contain specified protocol schemes and names')
   }))
 
-  test('osxNotarize: missing appleIdPassword', t => {
-    util.setupConsoleWarnSpy()
-    const notarizeOpts = mac.createNotarizeOpts({ appleId: '' })
-    t.falsy(notarizeOpts, 'does not generate options')
-    util.assertWarning(t, 'WARNING: Failed validation, notarization will not run: The appleId property is required when using notarization with appleIdPassword')
-  })
-
   test('osxNotarize: appBundleId not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'no' }
     const notarizeOpts = mac.createNotarizeOpts(args, 'yes', 'appPath', true)
