@@ -30,7 +30,7 @@
     "asar": "^3.0.0",
     "cross-spawn-windows-exe": "^1.2.0",
     "debug": "^4.0.1",
-    "electron-notarize": "^1.0.0",
+    "electron-notarize": "^1.1.0",
     "electron-osx-sign": "^0.5.0",
     "extract-zip": "^2.0.0",
     "filenamify": "^4.1.0",
