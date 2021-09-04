@@ -298,6 +298,12 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.deepEqual(obj.CFBundleURLTypes, expected, 'CFBundleURLTypes did not contain specified protocol schemes and names')
   }))
 
+  test('osxNotarize: appBundleId can be overwritten if tool = notarytool', t => {
+    const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'overwritten', tool: 'notarytool' }
+    const notarizeOpts = mac.createNotarizeOpts(args, 'original', 'appPath', true)
+    t.is(notarizeOpts.appBundleId, 'overwritten', 'appBundleId is taken from user-supplied options')
+  })
+
   test('osxNotarize: appBundleId not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'no' }
     const notarizeOpts = mac.createNotarizeOpts(args, 'yes', 'appPath', true)

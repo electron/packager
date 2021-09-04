@@ -420,7 +420,9 @@ function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
   // osxNotarize options are handed off to the electron-notarize module, but with a few
   // additions from the main options. The user may think they can pass bundle ID or appPath,
   // but they will be ignored.
-  common.subOptionWarning(properties, 'osxNotarize', 'appBundleId', appBundleId, quiet)
+  if (properties.tool !== 'notarytool') {
+    common.subOptionWarning(properties, 'osxNotarize', 'appBundleId', appBundleId, quiet)
+  }
   common.subOptionWarning(properties, 'osxNotarize', 'appPath', appPath, quiet)
   return properties
 }
