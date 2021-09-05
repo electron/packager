@@ -5,7 +5,8 @@ eslintConfig.parser = '@typescript-eslint/parser'
 eslintConfig.parserOptions.sourceType = 'module'
 eslintConfig.extends.push(
   'plugin:@typescript-eslint/eslint-recommended',
-  'plugin:@typescript-eslint/recommended'
+  'plugin:@typescript-eslint/recommended',
+  'plugin:import/typescript'
 )
 
 eslintConfig.rules['comma-dangle'] = ['error', 'only-multiline']

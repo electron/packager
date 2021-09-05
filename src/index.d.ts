@@ -10,8 +10,14 @@
 
 import { CreateOptions as AsarOptions } from 'asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
-import { NotarizeCredentials, TransporterOptions as NotarizeTransporterOptions } from 'electron-notarize';
+import {
+  LegacyNotarizeCredentials,
+  NotaryToolCredentials,
+  TransporterOptions
+} from 'electron-notarize/lib/types';
 import { SignOptions } from 'electron-osx-sign';
+
+type NotarizeLegacyOptions = LegacyNotarizeCredentials & TransporterOptions;
 
 /**
  * Bundles Electron-based application source code with a renamed/customized Electron executable and
@@ -118,7 +124,9 @@ declare namespace electronPackager {
    * See the documentation for [`electron-notarize`](https://npm.im/electron-notarize#method-notarizeopts-promisevoid)
    * for details.
    */
-  type OsxNotarizeOptions = NotarizeCredentials & NotarizeTransporterOptions;
+  type OsxNotarizeOptions =
+    | ({ tool?: 'legacy' } & NotarizeLegacyOptions)
+    | ({ tool: 'notarytool' } & NotaryToolCredentials);
 
   /**
    * Defines URL protocol schemes to be used on macOS.
