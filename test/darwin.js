@@ -466,4 +466,24 @@ if (!(process.env.CI && process.platform === 'win32')) {
     await util.assertDirectory(t, appPath, 'The Electron.app folder exists')
     await util.assertFile(t, path.join(appPath, 'Contents', 'MacOS', 'Electron'), 'The Electron.app/Contents/MacOS/Electron binary exists')
   }))
+
+  test.serial('asar integrity hashes are not inserted when asar is disabled', darwinTest(async (t, baseOpts) => {
+    const opts = { ...baseOpts, asar: false }
+    const finalPath = (await packager(opts))[0]
+    const plistObj = await parseInfoPlist(t, opts, finalPath)
+    t.is(typeof plistObj.ElectronAsarIntegrity, 'undefined')
+  }))
+
+  test.serial('asar integrity hashes are automatically inserted', darwinTest(async (t, baseOpts) => {
+    const opts = { ...baseOpts, asar: true }
+    const finalPath = (await packager(opts))[0]
+    const plistObj = await parseInfoPlist(t, opts, finalPath)
+    t.is(typeof plistObj.ElectronAsarIntegrity, 'object')
+    t.deepEqual(plistObj.ElectronAsarIntegrity, {
+      'Resources/app.asar': {
+        algorithm: 'SHA256',
+        hash: '27f2dba4273f6c119000ec7059c27d86e27306d5dbbb83cfdfb862d92c679574'
+      }
+    })
+  }))
 }

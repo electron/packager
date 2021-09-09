@@ -1,6 +1,7 @@
 'use strict'
 
 const asar = require('asar')
+const crypto = require('crypto')
 const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
@@ -191,6 +192,10 @@ class App {
     await fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true })
   }
 
+  appRelativePath (p) {
+    return path.relative(this.stagingPath, p)
+  }
+
   async asarApp () {
     if (!this.asarOptions) {
       return Promise.resolve()
@@ -198,6 +203,13 @@ class App {
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`)
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions)
+    const { headerString } = asar.getRawHeader(this.appAsarPath)
+    this.asarIntegrity = {
+      [this.appRelativePath(this.appAsarPath)]: {
+        algorithm: 'SHA256',
+        hash: crypto.createHash('SHA256').update(headerString).digest('hex')
+      }
+    }
     await fs.remove(this.originalResourcesAppDir)
   }
 

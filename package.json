@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@electron/get": "^1.6.0",
-    "asar": "^3.0.0",
+    "asar": "^3.1.0",
     "cross-spawn-windows-exe": "^1.2.0",
     "debug": "^4.0.1",
     "electron-notarize": "^1.1.1",

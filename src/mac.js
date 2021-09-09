@@ -183,6 +183,10 @@ class MacApp extends App {
     return plists.concat(optional.filter(item => item))
   }
 
+  appRelativePath (p) {
+    return path.relative(this.contentsPath, p)
+  }
+
   async updatePlistFiles () {
     const appBundleIdentifier = this.bundleName
     this.helperBundleIdentifier = filterCFBundleIdentifier(this.opts.helperBundleId || `${appBundleIdentifier}.helper`)
@@ -190,6 +194,11 @@ class MacApp extends App {
     const plists = await this.determinePlistFilesToUpdate()
     await Promise.all(plists.map(plistArgs => this.loadPlist(...plistArgs)))
     await this.extendPlist(this.appPlist, this.opts.extendInfo)
+    if (this.asarIntegrity) {
+      await this.extendPlist(this.appPlist, {
+        ElectronAsarIntegrity: this.asarIntegrity
+      })
+    }
     this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
 
     const updateIfExists = [
