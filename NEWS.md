@@ -2,11 +2,20 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v15.3.0...main
+[Unreleased]: https://github.com/electron/electron-packager/compare/v15.4.0...main
+
+## [15.4.0] - 2021-09-10
+
+[15.4.0]: https://github.com/electron/electron-packager/compare/v15.3.0...v15.4.0
 
 ### Added
 
 * `extendHelperInfo` option to allow extending helper app `Info.plist` files (#1233)
+* Automatically insert `ElectronAsarIntegrity` into `Info.plist` files (#1279)
+
+### Fixed
+
+* Compatibility with `electron-notarize@^1.1.0` (#1278)
 
 ## [15.3.0] - 2021-07-17
 
