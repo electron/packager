@@ -84,10 +84,10 @@ class App {
   /**
    * @TODO: rename this into something less verbose or remove it altogether
    */
-  get hookArgsWithOriginalResourcesAppDir() {
+  get hookArgsWithOriginalResourcesAppDir () {
     return [
       this.originalResourcesAppDir,
-      ...this.commonHookArgs,
+      ...this.commonHookArgs
     ]
   }
 
@@ -263,7 +263,7 @@ class App {
     if (this.opts.afterComplete) {
       const hookArgs = [
         finalPath,
-        ...this.commonHookArgs,
+        ...this.commonHookArgs
       ]
 
       await hooks.promisifyHooks(this.opts.afterComplete, hookArgs)
