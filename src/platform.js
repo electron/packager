@@ -73,6 +73,24 @@ class App {
     return path.join(this.originalResourcesDir, 'app.asar')
   }
 
+  get commonHookArgs () {
+    return [
+      this.opts.electronVersion,
+      this.opts.platform,
+      this.opts.arch
+    ]
+  }
+
+  /**
+   * @TODO: rename this into something less verbose or remove it altogether
+   */
+  get hookArgsWithOriginalResourcesAppDir() {
+    return [
+      this.originalResourcesAppDir,
+      ...this.commonHookArgs,
+    ]
+  }
+
   async relativeRename (basePath, oldName, newName) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`)
     await fs.rename(path.join(basePath, oldName), path.join(basePath, newName))
@@ -107,6 +125,8 @@ class App {
     } else {
       await this.buildApp()
     }
+
+    await hooks.promisifyHooks(this.opts.afterInitialize, this.hookArgsWithOriginalResourcesAppDir)
   }
 
   async buildApp () {
@@ -116,20 +136,15 @@ class App {
   }
 
   async copyTemplate () {
-    const hookArgs = [
-      this.originalResourcesAppDir,
-      this.opts.electronVersion,
-      this.opts.platform,
-      this.opts.arch
-    ]
+    await hooks.promisifyHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir)
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
       filter: copyFilter.userPathFilter(this.opts),
       dereference: this.opts.derefSymlinks
     })
-    await hooks.promisifyHooks(this.opts.afterCopy, hookArgs)
+    await hooks.promisifyHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir)
     if (this.opts.prune) {
-      await hooks.promisifyHooks(this.opts.afterPrune, hookArgs)
+      await hooks.promisifyHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir)
     }
   }
 
@@ -171,7 +186,7 @@ class App {
       common.warning('prebuiltAsar has been specified, all asar options will be ignored')
     }
 
-    for (const hookName of ['afterCopy', 'afterPrune']) {
+    for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune']) {
       if (this.opts[hookName]) {
         throw new Error(`${hookName} is incompatible with prebuiltAsar`)
       }
@@ -202,6 +217,9 @@ class App {
     }
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`)
+
+    await hooks.promisifyHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir)
+
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions)
     const { headerString } = asar.getRawHeader(this.appAsarPath)
     this.asarIntegrity = {
@@ -211,6 +229,8 @@ class App {
       }
     }
     await fs.remove(this.originalResourcesAppDir)
+
+    await hooks.promisifyHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir)
   }
 
   async copyExtraResources () {
@@ -218,9 +238,18 @@ class App {
 
     const extraResources = common.ensureArray(this.opts.extraResource)
 
+    const hookArgs = [
+      this.stagingPath,
+      ...this.commonHookArgs
+    ]
+
+    await hooks.promisifyHooks(this.opts.beforeCopyExtraResources, hookArgs)
+
     await Promise.all(extraResources.map(
       resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))
     ))
+
+    await hooks.promisifyHooks(this.opts.afterCopyExtraResources, hookArgs)
   }
 
   async move () {
@@ -229,6 +258,15 @@ class App {
     if (this.opts.tmpdir !== false) {
       debug(`Moving ${this.stagingPath} to ${finalPath}`)
       await fs.move(this.stagingPath, finalPath)
+    }
+
+    if (this.opts.afterComplete) {
+      const hookArgs = [
+        finalPath,
+        ...this.commonHookArgs,
+      ]
+
+      await hooks.promisifyHooks(this.opts.afterComplete, hookArgs)
     }
 
     return finalPath

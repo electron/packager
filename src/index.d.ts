@@ -106,7 +106,8 @@ declare namespace electronPackager {
     /**
      * @param buildPath - For [[afterExtract]], the path to the temporary folder where the prebuilt
      * Electron binary has been extracted to. For [[afterCopy]] and [[afterPrune]], the path to the
-     * folder where the Electron app has been copied to.
+     * folder where the Electron app has been copied to. For [[afterComplete]], the final directory
+     * of the packaged application.
      * @param electronVersion - the version of Electron that is being bundled with the application.
      * @param platform - The target platform you are packaging for.
      * @param arch - The target architecture you are packaging for.
@@ -184,11 +185,23 @@ declare namespace electronPackager {
     /** The source directory. */
     dir: string;
     /**
+     * Functions to be called after your app directory has been packaged into an .asar file.
+     *
+     * **Note**: `afterAsar` will only be called if the [[asar]] option is set.
+     */
+    afterAsar?: HookFunction[];
+    /** Functions to be called after the packaged application has been moved to the final directory. */
+    afterComplete?: HookFunction[];
+    /**
      * Functions to be called after your app directory has been copied to a temporary directory.
      *
      * **Note**: `afterCopy` will not be called if the [[prebuiltAsar]] option is set.
      */
     afterCopy?: HookFunction[];
+    /**
+     * Functions to be called after the files specified in the [[extraResource]] option have been copied.
+     **/
+    afterCopyExtraResources?: HookFunction[];
     /** Functions to be called after the prebuilt Electron binary has been extracted to a temporary directory. */
     afterExtract?: HookFunction[];
     /**
@@ -280,6 +293,22 @@ declare namespace electronPackager {
      * **Note:** `asar` will have no effect if the [[prebuiltAsar]] option is set.
      */
     asar?: boolean | AsarOptions;
+    /**
+     * Functions to be called before your app directory is packaged into an .asar file.
+     *
+     * **Note**: `beforeAsar` will only be called if the [[asar]] option is set.
+     */
+    beforeAsar?: HookFunction[];
+    /**
+     * Functions to be called before your app directory is copied to a temporary directory.
+     *
+     * **Note**: `beforeCopy` will not be called if the [[prebuiltAsar]] option is set.
+     */
+    beforeCopy?: HookFunction[];
+    /**
+     * Functions to be called before the files specified in the [[extraResource]] option are copied.
+     **/
+    beforeCopyExtraResources?: HookFunction[];
     /**
      * The build version of the application. Defaults to the value of the [[appVersion]] option.
      * Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on macOS.
