@@ -36,6 +36,7 @@ test.serial('platform=all (one arch) for afterInitialize hook', createHookTest('
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
 test.serial('platform=all (one arch) for afterPrune hook', createHookTest('afterPrune'))
+test.serial('platform=all (one arch) for afterExtract hook', createHookTest('afterExtract'))
 test.serial('platform=all (one arch) for beforeAsar hook', createHookTest('beforeAsar'))
 test.serial('platform=all (one arch) for afterAsar hook', createHookTest('afterAsar'))
 test.serial('platform=all (one arch) for beforeCopyExtraResources hook', createHookTest('beforeCopyExtraResources'))
