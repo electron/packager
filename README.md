@@ -5,7 +5,7 @@ Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.
 [![CircleCI Build Status](https://circleci.com/gh/electron/electron-packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/electron-packager/tree/main)
 [![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
 [![NPM](https://badgen.net/npm/v/electron-packager)](https://npm.im/electron-packager)
-[![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.gg/electron)
+[![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
 
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
