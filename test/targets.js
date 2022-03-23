@@ -119,6 +119,12 @@ test('platform=darwin and arch=arm64 with an unsupported official Electron versi
 test('platform=mas and arch=arm64 with a supported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'mas', electronVersion: '11.0.0-beta.5' }, 1, 'Package should be generated for mas/arm64'))
 test('platform=mas and arch=arm64 with an unsupported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'mas' }, 0, 'Package should not be generated for mas/arm64'))
 
+test('platform=darwin and arch=universal with a supported official Electron version', testMultiTarget({ arch: 'universal', platform: 'darwin', electronVersion: '11.0.0-beta.5' }, 1, 'Package should be generated for darwin/universal'))
+test('platform=darwin and arch=universal with an unsupported official Electron version', testMultiTarget({ arch: 'universal', platform: 'darwin' }, 0, 'Package should not be generated for darwin/universal'))
+
+test('platform=mas and arch=universal with a supported official Electron version', testMultiTarget({ arch: 'universal', platform: 'mas', electronVersion: '11.0.0-beta.5' }, 1, 'Package should be generated for mas/universal'))
+test('platform=mas and arch=universal with an unsupported official Electron version', testMultiTarget({ arch: 'universal', platform: 'mas' }, 0, 'Package should not be generated for mas/universal'))
+
 test('unofficial arch', testMultiTarget({ arch: 'z80', platform: 'linux', download: { mirrorOptions: { mirror: 'mirror' } } }, 1,
                                         'Package should be generated for non-standard arch from non-official mirror'))
 test('unofficial platform', testMultiTarget({ arch: 'ia32', platform: 'minix', download: { mirrorOptions: { mirror: 'mirror' } } }, 1,
