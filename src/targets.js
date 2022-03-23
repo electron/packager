@@ -9,7 +9,7 @@ const officialPlatforms = ['darwin', 'linux', 'mas', 'win32']
 const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
   linux: ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el'],
-  mas: ['x64', 'arm64'],
+  mas: ['x64', 'arm64', 'universal'],
   win32: ['ia32', 'x64', 'arm64']
 }
 
