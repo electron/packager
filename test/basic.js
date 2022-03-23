@@ -152,7 +152,7 @@ test.serial('overwrite', util.testSinglePlatform(async (t, opts) => {
 }))
 
 test.serial('overwrite sans platform/arch set', util.testSinglePlatform(async (t, opts) => {
-  delete opts.platfrom
+  delete opts.platform
   delete opts.arch
   opts.dir = util.fixtureSubdir('basic')
   opts.overwrite = true
