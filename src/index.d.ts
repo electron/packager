@@ -16,6 +16,9 @@ import {
   TransporterOptions
 } from 'electron-notarize/lib/types';
 import { SignOptions } from 'electron-osx-sign';
+import type { makeUniversalApp } from '@electron/universal';
+
+type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
 
 type NotarizeLegacyOptions = LegacyNotarizeCredentials & TransporterOptions;
 
@@ -127,6 +130,12 @@ declare namespace electronPackager {
   type OsxNotarizeOptions =
     | ({ tool?: 'legacy' } & NotarizeLegacyOptions)
     | ({ tool: 'notarytool' } & NotaryToolCredentials);
+
+  /**
+   * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
+   * for details.
+   */
+  type OsxUniversalOptions = Omit<MakeUniversalOpts, 'x64AppPath' | 'arm64AppPath' | 'outAppPath' | 'force'>
 
   /**
    * Defines URL protocol schemes to be used on macOS.
@@ -444,6 +453,12 @@ declare namespace electronPackager {
      * @category macOS
      */
     osxSign?: true | OsxSignOptions;
+    /**
+     * Used to provide custom options to the internal call to `@electron/universal` when building a macOS
+     * app with the target architecture of "universal".  Unused otherwise, providing a value does not imply
+     * a universal app is built.
+     */
+    osxUniversal?: OsxUniversalOptions;
     /**
      * The base directory where the finished package(s) are created.
      *
