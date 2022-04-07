@@ -366,6 +366,7 @@ class MacApp extends App {
         this.opts.quiet
       )
       if (notarizeOpts) {
+        debug(`Running electron-notarize with the options ${JSON.stringify(notarizeOpts)}`)
         return notarize(notarizeOpts)
       }
     }
