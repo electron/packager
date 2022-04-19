@@ -10,6 +10,7 @@ const hooks = require('./hooks')
 const path = require('path')
 const targets = require('./targets')
 const unzip = require('./unzip')
+const { packageUniversalMac } = require('./universal')
 
 function debugHostInfo () {
   debug(common.hostInfo())
@@ -73,14 +74,18 @@ class Packager {
     await hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch])
   }
 
-  async createApp (comboOpts, zipPath) {
+  buildDir (platform, arch) {
     let buildParentDir
     if (this.useTempDir) {
       buildParentDir = this.tempBase
     } else {
       buildParentDir = this.opts.out || process.cwd()
     }
-    const buildDir = path.resolve(buildParentDir, `${comboOpts.platform}-${comboOpts.arch}-template`)
+    return path.resolve(buildParentDir, `${platform}-${arch}-template`)
+  }
+
+  async createApp (comboOpts, zipPath) {
+    const buildDir = this.buildDir(comboOpts.platform, comboOpts.arch)
     common.info(`Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`, this.opts.quiet)
 
     debug(`Creating ${buildDir}`)
@@ -125,15 +130,8 @@ class Packager {
     }
   }
 
-  async packageForPlatformAndArch (downloadOpts) {
+  async packageForPlatformAndArchWithOpts (comboOpts, downloadOpts) {
     const zipPath = await this.getElectronZipPath(downloadOpts)
-    // Create delegated options object with specific platform and arch, for output directory naming
-    const comboOpts = {
-      ...this.opts,
-      arch: downloadOpts.arch,
-      platform: downloadOpts.platform,
-      electronVersion: downloadOpts.version
-    }
 
     if (!this.useTempDir) {
       return this.createApp(comboOpts, zipPath)
@@ -149,6 +147,22 @@ class Packager {
     }
 
     return this.checkOverwrite(comboOpts, zipPath)
+  }
+
+  async packageForPlatformAndArch (downloadOpts) {
+    // Create delegated options object with specific platform and arch, for output directory naming
+    const comboOpts = {
+      ...this.opts,
+      arch: downloadOpts.arch,
+      platform: downloadOpts.platform,
+      electronVersion: downloadOpts.version
+    }
+
+    if (common.isPlatformMac(comboOpts.platform) && comboOpts.arch === 'universal') {
+      return packageUniversalMac(this.packageForPlatformAndArchWithOpts.bind(this), this.buildDir(comboOpts.platform, comboOpts.arch), comboOpts, downloadOpts, this.tempBase)
+    }
+
+    return this.packageForPlatformAndArchWithOpts(comboOpts, downloadOpts)
   }
 }
 

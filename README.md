@@ -45,7 +45,7 @@ Electron Packager is known to run on the following **host** platforms:
 It generates executables/bundles for the following **target** platforms:
 
 * Windows (also known as `win32`, for x86, x86_64, and arm64 architectures)
-* macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup> (for x86_64 and arm64 architectures)
+* macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup> (for x86_64, arm64, and universal architectures)
 * Linux (for x86, x86_64, armv7l, arm64, and mips64el architectures)
 
 <sup>*</sup> *Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.*

@@ -4,25 +4,27 @@ const common = require('./common')
 const { getHostArch } = require('@electron/get')
 const semver = require('semver')
 
-const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el']
+const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el', 'universal']
 const officialPlatforms = ['darwin', 'linux', 'mas', 'win32']
 const officialPlatformArchCombos = {
-  darwin: ['x64', 'arm64'],
+  darwin: ['x64', 'arm64', 'universal'],
   linux: ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el'],
-  mas: ['x64', 'arm64'],
+  mas: ['x64', 'arm64', 'universal'],
   win32: ['ia32', 'x64', 'arm64']
 }
 
 const buildVersions = {
   darwin: {
-    arm64: '>= 11.0.0-beta.1'
+    arm64: '>= 11.0.0-beta.1',
+    universal: '>= 11.0.0-beta.1'
   },
   linux: {
     arm64: '>= 1.8.0',
     mips64el: '^1.8.2-beta.5'
   },
   mas: {
-    arm64: '>= 11.0.0-beta.1'
+    arm64: '>= 11.0.0-beta.1',
+    universal: '>= 11.0.0-beta.1'
   },
   win32: {
     arm64: '>= 6.0.8'

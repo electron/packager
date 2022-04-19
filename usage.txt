@@ -22,8 +22,9 @@ version            prints the version of Electron Packager and Node, plus the ta
 all                equivalent to --platform=all --arch=all
 app-copyright      human-readable copyright line for the app
 app-version        release version to set for the app
-arch               all, or one or more of: ia32, x64, armv7l, arm64, mips64el (comma-delimited if
-                   multiple). Defaults to the host arch
+arch               all, or one or more of: ia32, x64, armv7l, arm64, mips64el, universal (comma-delimited if
+                   multiple). Defaults to the host arch.
+                   For info on arch/platform support see https://github.com/electron/electron-packager/#supported-platforms
 asar               whether to package the source code within your app into an archive. You can either
                    pass --asar by itself to use the default configuration, OR use dot notation to
                    configure a list of sub-properties, e.g. --asar.unpackDir=sub_dir - do not use
