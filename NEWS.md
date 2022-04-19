@@ -4,6 +4,15 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v15.4.0...main
 
+## [15.5.0] - 2022-04-19
+
+[15.5.0]: https://github.com/electron/electron-packager/compare/v15.4.0...v15.5.0
+
+### Added
+
+* New `universal` architecture supported when packaging for macOS to generate a universal app
+* `osxUniveral` option to allow providing options to `@electron/universal` when packaging a universal app
+
 ## [15.4.0] - 2021-09-10
 
 [15.4.0]: https://github.com/electron/electron-packager/compare/v15.3.0...v15.4.0
