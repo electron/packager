@@ -4,6 +4,15 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v15.4.0...main
 
+## [15.5.1] - 2022-04-20
+
+[15.5.1]: https://github.com/electron/electron-packager/compare/v15.5.0...v15.5.1
+
+### Fixed
+
+* Univeral builds single-arch components are now built sequentially instead of in parallel to fix race conditions in hooks
+* The typescript definition for HookFunction now correctly allows an error to be passed
+
 ## [15.5.0] - 2022-04-19
 
 [15.5.0]: https://github.com/electron/electron-packager/compare/v15.4.0...v15.5.0
