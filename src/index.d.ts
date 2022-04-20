@@ -117,7 +117,7 @@ declare namespace electronPackager {
     electronVersion: string,
     platform: TargetArch,
     arch: TargetArch,
-    callback: () => void
+    callback: (err?: Error | null) => void
   ) => void;
 
   /** See the documentation for [`electron-osx-sign`](https://npm.im/electron-osx-sign#opts) for details. */
