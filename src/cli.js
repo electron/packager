@@ -1,6 +1,6 @@
 'use strict'
 
-const { hostInfo, warning } = require('./common')
+const { common, hostInfo, warning } = require('./common')
 const fs = require('fs-extra')
 const { initializeProxy } = require('@electron/get')
 const packager = require('..')
@@ -127,9 +127,9 @@ module.exports = {
     try {
       const appPaths = await packager(args)
       if (appPaths.length > 1) {
-        console.error(`Wrote new apps to:\n${appPaths.join('\n')}`)
+        common.info(`Wrote new apps to:\n${appPaths.join('\n')}`)
       } else if (appPaths.length === 1) {
-        console.error('Wrote new app to', appPaths[0])
+        common.info('Wrote new app to', appPaths[0])
       }
     } catch (err) {
       if (err.message) {
