@@ -482,7 +482,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.deepEqual(plistObj.ElectronAsarIntegrity, {
       'Resources/app.asar': {
         algorithm: 'SHA256',
-        hash: '27f2dba4273f6c119000ec7059c27d86e27306d5dbbb83cfdfb862d92c679574'
+        hash: '2ef4c03f6fc8adf03f782b40fddcfcdd26d1f3f3669ecedffeea5de5d28897c3'
       }
     })
   }))

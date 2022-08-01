@@ -76,6 +76,7 @@ test('generateIgnoredOutDirs ignores all possible platform/arch permutations', (
   t.is(ignores.length, util.allPlatformArchCombosCount)
 })
 
+test('ignore default: node_gyp_bins files', util.testSinglePlatform(ignoreTest, null, 'node_gyp_bins'))
 test('ignore default: .o files', util.testSinglePlatform(ignoreTest, null, 'ignore.o'))
 test('ignore default: .obj files', util.testSinglePlatform(ignoreTest, null, 'ignore.obj'))
 test('ignore default: package manager lock files', util.testSinglePlatform(async (t, opts) => {
