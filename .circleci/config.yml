@@ -46,21 +46,21 @@ version: 2.1
 orbs:
   win: circleci/windows@2.4.0
 jobs:
-  test-linux-10:
-    docker:
-      - image: circleci/node:10
-    <<: *steps-ci
-  test-linux-12:
-    docker:
-      - image: circleci/node:12
-    <<: *steps-ci
   test-linux-14:
     docker:
       - image: circleci/node:14
     <<: *steps-ci
+  test-linux-16:
+    docker:
+      - image: circleci/node:16
+    <<: *steps-ci
+  test-linux-18:
+    docker:
+      - image: cimg/node:18.7.0
+    <<: *steps-ci
   test-mac:
     macos:
-      xcode: "11.6.0"
+      xcode: "13.3.0"
     <<: *steps-ci
   test-windows:
     executor:
@@ -72,13 +72,13 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-linux-10:
-          filters:
-            branches: { ignore: gh-pages }
-      - test-linux-12:
-          filters:
-            branches: { ignore: gh-pages }
       - test-linux-14:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-linux-16:
+          filters:
+            branches: { ignore: gh-pages }
+      - test-linux-18:
           filters:
             branches: { ignore: gh-pages }
       - test-mac:
