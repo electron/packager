@@ -479,6 +479,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     const finalPath = (await packager(opts))[0]
     const plistObj = await parseInfoPlist(t, opts, finalPath)
     t.is(typeof plistObj.ElectronAsarIntegrity, 'object')
+    // Note: If updating thr basic app fixture (used here in baseOpts), ths hash should also be updated.
     t.deepEqual(plistObj.ElectronAsarIntegrity, {
       'Resources/app.asar': {
         algorithm: 'SHA256',
