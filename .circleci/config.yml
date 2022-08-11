@@ -60,7 +60,7 @@ jobs:
     <<: *steps-ci
   test-mac:
     macos:
-      xcode: "11.6.0"
+      xcode: "11.7.0"
     <<: *steps-ci
   test-windows:
     executor:
