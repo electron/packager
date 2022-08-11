@@ -12,7 +12,8 @@ const DEFAULT_IGNORES = [
   '/yarn\\.lock$',
   '/\\.git($|/)',
   '/node_modules/\\.bin($|/)',
-  '\\.o(bj)?$'
+  '\\.o(bj)?$',
+  '/node_gyp_bins($|/)'
 ]
 
 function populateIgnoredPaths (opts) {
