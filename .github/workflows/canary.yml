@@ -17,10 +17,10 @@ jobs:
           repository: electron/electron-quick-start
           ref: refs/heads/master
           path: electron-quick-start
-      - name: Use Node.js 10.x
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v2.4.1
         with:
-          node-version: 10.x
+          node-version: 14.x
       - name: Replace electron with electron-nightly
         run: |
           cd electron-quick-start
