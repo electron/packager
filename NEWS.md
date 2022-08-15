@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v15.4.0...main
+### Changed
+
+* Upgraded `electron/get` to `2.0.0` (#1139)
 
 ## [15.5.1] - 2022-04-20
 
