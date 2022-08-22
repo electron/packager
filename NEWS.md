@@ -2,7 +2,17 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v15.4.0...main
+[Unreleased]: https://github.com/electron/electron-packager/compare/v15.5.2...main
+
+
+## [15.5.2] - 2022-08-22
+
+[15.5.2]: https://github.com/electron/electron-packager/compare/v15.5.1...v15.5.2
+
+### Fixed
+
+* Package should not log info on `--quiet` flag
+* Ignore `node_gyp_bins` directory if it exists
 
 ## [15.5.1] - 2022-04-20
 
