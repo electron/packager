@@ -52,6 +52,18 @@ await packager({
 await packager({
   dir: '.',
   name: 'myapplication',
+  platform: 'darwin',
+  arch: 'universal',
+  electronVersion: '0.34.0',
+  osxUniversal: {
+    mergeASARs: true
+  }
+});
+
+
+await packager({
+  dir: '.',
+  name: 'myapplication',
   platform: 'all',
   arch: 'all',
   electronVersion: '0.34.0',
