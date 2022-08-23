@@ -6,6 +6,7 @@ const { initializeProxy } = require('@electron/get')
 const packager = require('..')
 const path = require('path')
 const yargs = require('yargs-parser')
+const common = require('./common')
 
 /* istanbul ignore next */
 async function printUsageAndExit (isError) {
