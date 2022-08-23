@@ -60,7 +60,6 @@ await packager({
   }
 });
 
-
 await packager({
   dir: '.',
   name: 'myapplication',
