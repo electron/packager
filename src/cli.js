@@ -1,12 +1,11 @@
 'use strict'
 
-const { hostInfo, warning } = require('./common')
+const { info, hostInfo, warning } = require('./common')
 const fs = require('fs-extra')
 const { initializeProxy } = require('@electron/get')
 const packager = require('..')
 const path = require('path')
 const yargs = require('yargs-parser')
-const common = require('./common')
 
 /* istanbul ignore next */
 async function printUsageAndExit (isError) {
@@ -128,9 +127,9 @@ module.exports = {
     try {
       const appPaths = await packager(args)
       if (appPaths.length > 1) {
-        common.info(`Wrote new apps to:\n${appPaths.join('\n')}`)
+        info(`Wrote new apps to:\n${appPaths.join('\n')}`)
       } else if (appPaths.length === 1) {
-        common.info('Wrote new app to', appPaths[0])
+        info('Wrote new app to', appPaths[0])
       }
     } catch (err) {
       if (err.message) {
