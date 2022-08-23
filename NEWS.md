@@ -2,8 +2,23 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v15.5.2...main
+[Unreleased]: https://github.com/electron/electron-packager/compare/v16.0.0...main
 
+## [16.0.0] - 2022-08-23
+
+[16.0.0]: https://github.com/electron/electron-packager/compare/v15.5.1...v16.0.0
+
+### Fixed
+
+* Properly import info logger (#1405)
+
+### Changed
+
+* Bump `got` to 2.0.0 (#1397)
+
+### Removed
+
+* Node 12 support (#1399)
 
 ## [15.5.2] - 2022-08-22
 
