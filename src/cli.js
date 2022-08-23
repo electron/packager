@@ -1,6 +1,6 @@
 'use strict'
 
-const { common, hostInfo, warning } = require('./common')
+const { hostInfo, warning } = require('./common')
 const fs = require('fs-extra')
 const { initializeProxy } = require('@electron/get')
 const packager = require('..')
