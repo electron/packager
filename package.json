@@ -1,6 +1,6 @@
 {
   "name": "electron-packager",
-  "version": "15.5.1",
+  "version": "15.5.2",
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -26,7 +26,7 @@
     "usage.txt"
   ],
   "dependencies": {
-    "@electron/get": "^1.6.0",
+    "@electron/get": "^2.0.0",
     "@electron/universal": "^1.2.1",
     "asar": "^3.1.0",
     "cross-spawn-windows-exe": "^1.2.0",
