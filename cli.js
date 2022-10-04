@@ -2,7 +2,7 @@
 
 'use strict'
 
-var isNodeVersionOk = require('./isNodeVersionOk');
+var isNodeVersionOk = require('./isNodeVersionOk')
 
 if (!isNodeVersionOk(process.versions.node)) {
   console.error('CANNOT RUN WITH NODE ' + process.versions.node)

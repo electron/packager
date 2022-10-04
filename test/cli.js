@@ -1,8 +1,8 @@
 'use strict'
 
 const common = require('../common')
-const isNodeVersionOk = require('../isNodeVersionOk');
-const test = require('tape');
+const isNodeVersionOk = require('../isNodeVersionOk')
+const test = require('tape')
 
 test('CLI node version test: should accept any node that is at least version 4', (t) => {
   t.equal(isNodeVersionOk('1.0.0'), false)
