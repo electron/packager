@@ -1,7 +1,23 @@
 'use strict'
 
 const common = require('../common')
-const test = require('tape')
+const isNodeVersionOk = require('../isNodeVersionOk');
+const test = require('tape');
+
+test('CLI node version test: should accept any node that is at least version 4', (t) => {
+  t.equal(isNodeVersionOk('1.0.0'), false)
+  t.equal(isNodeVersionOk('1.5.0'), false)
+  t.equal(isNodeVersionOk('1.0.5'), false)
+  t.equal(isNodeVersionOk('2.0.0'), false)
+  t.equal(isNodeVersionOk('2.5.0'), false)
+  t.equal(isNodeVersionOk('2.0.5'), false)
+  t.equal(isNodeVersionOk('3.0.0'), false)
+  t.equal(isNodeVersionOk('4.0.0'), true)
+  t.equal(isNodeVersionOk('10.0.0'), true)
+  t.equal(isNodeVersionOk('16.0.0'), true)
+  t.equal(isNodeVersionOk('16.16.0'), true)
+  t.end()
+})
 
 test('CLI argument test: --electron-version populates opts.electronVersion', (t) => {
   let args = common.parseCLIArgs([])

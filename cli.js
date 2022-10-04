@@ -2,8 +2,9 @@
 
 'use strict'
 
-var nodeVersionInfo = process.versions.node.split('.').map(function (n) { return Number(n) })
-if (nodeVersionInfo < [4, 0, 0]) {
+var isNodeVersionOk = require('./isNodeVersionOk');
+
+if (!isNodeVersionOk(process.versions.node)) {
   console.error('CANNOT RUN WITH NODE ' + process.versions.node)
   console.error('Electron Packager requires Node 4.0 or above.')
   process.exit(1)
