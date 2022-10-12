@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v16.0.0...main
 
+### Changed
+
+* Replaced `electron-osx-sign` with `@electron/osx-sign`.  The accepted properties on the `osxSign` options object are now slightly different.  Please see the [migration guide](https://github.com/electron/osx-sign/blob/main/MIGRATION.md) for more information on these changes.
+
 ## [16.0.0] - 2022-08-23
 
 [16.0.0]: https://github.com/electron/electron-packager/compare/v15.5.1...v16.0.0

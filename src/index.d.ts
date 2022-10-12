@@ -15,7 +15,7 @@ import {
   NotaryToolCredentials,
   TransporterOptions
 } from 'electron-notarize/lib/types';
-import { SignOptions } from 'electron-osx-sign';
+import { SignOptions } from '@electron/osx-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
 
 type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
@@ -120,7 +120,7 @@ declare namespace electronPackager {
     callback: (err?: Error | null) => void
   ) => void;
 
-  /** See the documentation for [`electron-osx-sign`](https://npm.im/electron-osx-sign#opts) for details. */
+  /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
   type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
 
   /**
@@ -444,11 +444,10 @@ declare namespace electronPackager {
     /**
      * If present, signs macOS target apps when the host platform is macOS and XCode is installed.
      * When the value is `true`, pass default configuration to the signing module. See
-     * [electron-osx-sign](https://npm.im/electron-osx-sign#opts---options) for sub-option descriptions and
+     * [@electron/osx-sign](https://npm.im/@electron/osx-sign#opts---options) for sub-option descriptions and
      * their defaults. Options include, but are not limited to:
      * - `identity` (*string*): The identity used when signing the package via `codesign`.
-     * - `entitlements` (*string*): The path to the 'parent' entitlements.
-     * - `entitlements-inherit` (*string*): The path to the 'child' entitlements.
+     * - `binaries` (*array<string>*): Path to additional binaries that will be signed along with built-ins of Electron/
      *
      * @category macOS
      */

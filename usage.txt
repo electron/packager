@@ -84,7 +84,7 @@ helper-bundle-id   bundle identifier to use in the app helper plist
 osx-sign           (macOS host platform only) Whether to sign the macOS app packages. You can either
                    pass --osx-sign by itself to use the default configuration, or use dot notation
                    to configure a list of sub-properties, e.g. --osx-sign.identity="My Name"
-                   For info on supported values see https://npm.im/electron-osx-sign#opts---options
+                   For info on supported values see https://npm.im/@electron/osx-sign#opts---options
                    Properties supported include:
                    - identity: should contain the identity to be used when running `codesign`
                    - entitlements: the path to entitlements used in signing

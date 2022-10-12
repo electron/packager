@@ -46,13 +46,9 @@ test('CLI argument: --osx-sign and --osx-sign subproperties should not be mixed'
 
 test('CLI argument: --osx-sign is object', t => {
   const args = cli.parseArgs([
-    '--osx-sign.identity=identity',
-    '--osx-sign.entitlements-inherit=path',
-    '--osx-sign.hardenedRuntime'
+    '--osx-sign.identity=identity'
   ])
   t.is(args.osxSign.identity, 'identity')
-  t.is(args.osxSign['entitlements-inherit'], 'path')
-  t.true(args.osxSign.hardenedRuntime)
 })
 
 test('CLI argument: --osx-notarize=true', t => {
