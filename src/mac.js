@@ -198,6 +198,8 @@ class MacApp extends App {
       await this.extendPlist(this.appPlist, {
         ElectronAsarIntegrity: this.asarIntegrity
       })
+    } else {
+      delete this.appPlist.ElectronAsarIntegrity
     }
     this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName)
 
