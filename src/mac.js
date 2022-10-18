@@ -7,7 +7,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
 const { notarize } = require('electron-notarize')
-const { signAsync } = require('electron-osx-sign')
+const { signApp } = require('@electron/osx-sign')
 
 class MacApp extends App {
   constructor (opts, templatePath) {
@@ -345,10 +345,10 @@ class MacApp extends App {
     }
 
     if (osxSignOpt) {
-      const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.osxNotarize, this.opts.quiet)
-      debug(`Running electron-osx-sign with the options ${JSON.stringify(signOpts)}`)
+      const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.quiet)
+      debug(`Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`)
       try {
-        await signAsync(signOpts)
+        await signApp(signOpts)
       } catch (err) {
         // Although not signed successfully, the application is packed.
         common.warning(`Code sign failed; please retry manually. ${err}`)
@@ -395,7 +395,7 @@ function filterCFBundleIdentifier (identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '')
 }
 
-function createSignOpts (properties, platform, app, version, notarize, quiet) {
+function createSignOpts (properties, platform, app, version, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
   const signOpts = properties === true ? { identity: null } : { ...properties }
 
@@ -407,7 +407,7 @@ function createSignOpts (properties, platform, app, version, notarize, quiet) {
   common.subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet)
 
   if (signOpts.binaries) {
-    common.warning('osx-sign.binaries is not an allowed sub-option. Not passing to electron-osx-sign.')
+    common.warning('osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.')
     delete signOpts.binaries
   }
 
@@ -416,12 +416,6 @@ function createSignOpts (properties, platform, app, version, notarize, quiet) {
   // autodiscovery. Otherwise, provide signing certificate info.
   if (signOpts.identity === true) {
     signOpts.identity = null
-  }
-
-  if (notarize && !signOpts.hardenedRuntime && !signOpts['hardened-runtime']) {
-    common.warning('notarization is enabled but hardenedRuntime was not enabled in the signing ' +
-      'options. It has been enabled for you but you should enable it in your config.')
-    signOpts.hardenedRuntime = true
   }
 
   return signOpts

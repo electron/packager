@@ -184,8 +184,9 @@ await packager({
   },
   osxSign: {
     identity: 'myidentity',
-    entitlements: 'path/to/my.entitlements',
-    'entitlements-inherit': 'path/to/inherit.entitlements',
+    optionsForFile: () => ({
+      entitlements: 'path/to/my.entitlements',
+    }),
   },
   protocols: [
     {
