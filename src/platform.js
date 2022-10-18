@@ -1,6 +1,6 @@
 'use strict'
 
-const asar = require('asar')
+const asar = require('@electron/asar')
 const crypto = require('crypto')
 const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
