@@ -7,6 +7,7 @@
 ### Changed
 
 * Replaced `electron-osx-sign` with `@electron/osx-sign`.  The accepted properties on the `osxSign` options object are now slightly different.  Please see the [migration guide](https://github.com/electron/osx-sign/blob/main/MIGRATION.md) for more information on these changes.
+* Replaced `asar` with `@electron/asar`. The configuration options are unchanged, this migration is purely cosmetic.
 
 ### Fixed
 

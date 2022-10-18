@@ -8,7 +8,7 @@
 // * Mark Lee <https://github.com/malept>
 // * Florian Keller <https://github.com/ffflorian>
 
-import { CreateOptions as AsarOptions } from 'asar';
+import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
 import {
   LegacyNotarizeCredentials,
