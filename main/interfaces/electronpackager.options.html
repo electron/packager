@@ -562,7 +562,7 @@
 					<div class="tsd-signature tsd-kind-icon">osx<wbr>Universal<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#osxuniversaloptions" class="tsd-signature-type">OsxUniversalOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:461</li>
+							<li>Defined in index.d.ts:460</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -579,7 +579,7 @@
 					<div class="tsd-signature tsd-kind-icon">out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:467</li>
+							<li>Defined in index.d.ts:466</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -595,7 +595,7 @@
 					<div class="tsd-signature tsd-kind-icon">overwrite<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:472</li>
+							<li>Defined in index.d.ts:471</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -611,7 +611,7 @@
 					<div class="tsd-signature tsd-kind-icon">platform<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#platformoption" class="tsd-signature-type">PlatformOption</a><span class="tsd-signature-symbol"> | </span><a href="../modules/electronpackager.html#platformoption" class="tsd-signature-type">PlatformOption</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:493</li>
+							<li>Defined in index.d.ts:492</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -641,7 +641,7 @@
 					<div class="tsd-signature tsd-kind-icon">prebuilt<wbr>Asar<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:508</li>
+							<li>Defined in index.d.ts:507</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -667,7 +667,7 @@
 					<div class="tsd-signature tsd-kind-icon">prune<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:523</li>
+							<li>Defined in index.d.ts:522</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -685,7 +685,7 @@
 					<div class="tsd-signature tsd-kind-icon">quiet<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:530</li>
+							<li>Defined in index.d.ts:529</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -702,7 +702,7 @@
 					<div class="tsd-signature tsd-kind-icon">tmpdir<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:535</li>
+							<li>Defined in index.d.ts:534</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -721,7 +721,7 @@
 					<div class="tsd-signature tsd-kind-icon">win32metadata<span class="tsd-signature-symbol">:</span> <a href="electronpackager.win32metadataoptions.html" class="tsd-signature-type">Win32MetadataOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:564</li>
+							<li>Defined in index.d.ts:563</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -851,19 +851,18 @@
 					<div class="tsd-signature tsd-kind-icon">osx<wbr>Sign<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><a href="../modules/electronpackager.html#osxsignoptions" class="tsd-signature-type">OsxSignOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:455</li>
+							<li>Defined in index.d.ts:454</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>If present, signs macOS target apps when the host platform is macOS and XCode is installed.
 								When the value is <code>true</code>, pass default configuration to the signing module. See
-								<a href="https://npm.im/electron-osx-sign#opts---options">electron-osx-sign</a> for sub-option descriptions and
+								<a href="https://npm.im/@electron/osx-sign#opts---options">@electron/osx-sign</a> for sub-option descriptions and
 							their defaults. Options include, but are not limited to:</p>
 							<ul>
 								<li><code>identity</code> (<em>string</em>): The identity used when signing the package via <code>codesign</code>.</li>
-								<li><code>entitlements</code> (<em>string</em>): The path to the &#39;parent&#39; entitlements.</li>
-								<li><code>entitlements-inherit</code> (<em>string</em>): The path to the &#39;child&#39; entitlements.</li>
+								<li><code>binaries</code> (<em>array<string></em>): Path to additional binaries that will be signed along with built-ins of Electron/</li>
 							</ul>
 						</div>
 					</div>
@@ -874,7 +873,7 @@
 					<div class="tsd-signature tsd-kind-icon">protocols<span class="tsd-signature-symbol">:</span> <a href="electronpackager.macosprotocol.html" class="tsd-signature-type">MacOSProtocol</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:514</li>
+							<li>Defined in index.d.ts:513</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -889,7 +888,7 @@
 					<div class="tsd-signature tsd-kind-icon">usage<wbr>Description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:559</li>
+							<li>Defined in index.d.ts:558</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
