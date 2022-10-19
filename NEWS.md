@@ -2,12 +2,16 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v16.0.0...main
+[Unreleased]: https://github.com/electron/electron-packager/compare/v17.0.0...main
+
+## [17.0.0]
+
+[17.0.0]: https://github.com/electron/electron-packager/compare/v16.0.0...v17.0.0
 
 ### Changed
 
-* Replaced `electron-osx-sign` with `@electron/osx-sign`.  The accepted properties on the `osxSign` options object are now slightly different.  Please see the [migration guide](https://github.com/electron/osx-sign/blob/main/MIGRATION.md) for more information on these changes.
-* Replaced `asar` with `@electron/asar`. The configuration options are unchanged, this migration is purely cosmetic.
+* **BREAKING:** Replaced `electron-osx-sign` with `@electron/osx-sign`.  The accepted properties on the `osxSign` options object are now slightly different.  Please see the [migration guide](https://github.com/electron/osx-sign/blob/main/MIGRATION.md) for more information on these changes. (#1428)
+* Replaced `asar` with `@electron/asar`. The configuration options are unchanged. This migration is purely cosmetic. (#1431)
 
 ### Fixed
 
