@@ -81,9 +81,6 @@ class App {
     ]
   }
 
-  /**
-   * @TODO: rename this into something less verbose or remove it altogether
-   */
   get hookArgsWithOriginalResourcesAppDir () {
     return [
       this.originalResourcesAppDir,
