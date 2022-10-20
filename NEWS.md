@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v17.0.0...main
 
+### Changed
+
+* Replaced `electron-notarize` with `@electron/notarize`.  The configuration options are unchanged. This migration is purely cosmetic.
+
 ## [17.0.0]
 
 [17.0.0]: https://github.com/electron/electron-packager/compare/v16.0.0...v17.0.0

@@ -14,7 +14,7 @@ import {
   LegacyNotarizeCredentials,
   NotaryToolCredentials,
   TransporterOptions
-} from 'electron-notarize/lib/types';
+} from '@electron/notarize/lib/types';
 import { SignOptions } from '@electron/osx-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
 
@@ -124,7 +124,7 @@ declare namespace electronPackager {
   type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
 
   /**
-   * See the documentation for [`electron-notarize`](https://npm.im/electron-notarize#method-notarizeopts-promisevoid)
+   * See the documentation for [`@electron/notarize`](https://npm.im/@electron/notarize#method-notarizeopts-promisevoid)
    * for details.
    */
   type OsxNotarizeOptions =
@@ -433,7 +433,7 @@ declare namespace electronPackager {
     name?: string;
     /**
      * If present, notarizes macOS target apps when the host platform is macOS and XCode is installed.
-     * See [`electron-notarize`](https://github.com/electron/electron-notarize#method-notarizeopts-promisevoid)
+     * See [`@electron/notarize`](https://github.com/electron/notarize#method-notarizeopts-promisevoid)
      * for option descriptions, such as how to use `appleIdPassword` safely or obtain an API key.
      *
      * **Requires the [[osxSign]] option to be set.**

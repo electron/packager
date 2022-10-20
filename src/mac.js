@@ -6,7 +6,7 @@ const debug = require('debug')('electron-packager')
 const fs = require('fs-extra')
 const path = require('path')
 const plist = require('plist')
-const { notarize } = require('electron-notarize')
+const { notarize } = require('@electron/notarize')
 const { signApp } = require('@electron/osx-sign')
 
 class MacApp extends App {
@@ -422,7 +422,7 @@ function createSignOpts (properties, platform, app, version, quiet) {
 }
 
 function createNotarizeOpts (properties, appBundleId, appPath, quiet) {
-  // osxNotarize options are handed off to the electron-notarize module, but with a few
+  // osxNotarize options are handed off to the @electron/notarize module, but with a few
   // additions from the main options. The user may think they can pass bundle ID or appPath,
   // but they will be ignored.
   if (properties.tool !== 'notarytool') {
