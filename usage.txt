@@ -92,7 +92,7 @@ osx-sign           (macOS host platform only) Whether to sign the macOS app pack
 osx-notarize       (macOS host platform only, requires --osx-sign) Whether to notarize the macOS app
                    packages. You must use dot notation to configure a list of sub-properties, e.g.
                    --osx-notarize.appleId="foo@example.com"
-                   For info on supported values see https://npm.im/electron-notarize#method-notarizeopts-promisevoid
+                   For info on supported values see https://npm.im/@electron/notarize#method-notarizeopts-promisevoid
                    Properties supported include:
                    - appleId: should contain your apple ID username / email
                    - appleIdPassword: should contain the password for the provided apple ID
