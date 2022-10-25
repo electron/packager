@@ -85,9 +85,15 @@ await packager({
 
 await packager({
   dir: '.',
+  afterAsar: [completeFunction],
+  afterComplete: [completeFunction],
   afterCopy: [completeFunction],
+  afterCopyExtraResources: [completeFunction],
   afterExtract: [completeFunction],
   afterPrune: [completeFunction],
+  beforeAsar: [completeFunction],
+  beforeCopy: [completeFunction],
+  beforeCopyExtraResources: [completeFunction],
   appCopyright: 'Copyright',
   appVersion: '1.0',
   arch: 'ia32',
