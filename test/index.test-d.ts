@@ -11,6 +11,9 @@ function completeFunction(
   callbackFn();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+function targetMatrixFunction(matrix: { arch: string; platform: string }[]): void {}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ignoreFunction(path: string): boolean {
   return true;
@@ -90,6 +93,7 @@ await packager({
   afterCopy: [completeFunction],
   afterCopyExtraResources: [completeFunction],
   afterExtract: [completeFunction],
+  afterFinalizeTargetMatrix: [targetMatrixFunction],
   afterPrune: [completeFunction],
   beforeAsar: [completeFunction],
   beforeCopy: [completeFunction],

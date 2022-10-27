@@ -198,6 +198,7 @@ module.exports = async function packager (opts) {
 
   copyFilter.populateIgnoredPaths(opts)
 
+  await hooks.promisifyHooks(opts.afterFinalizeTargetMatrix, [targets.createPlatformArchPairs(opts, platforms, archs).map(([platform, arch]) => ({ platform, arch }))])
   const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms)
   // Remove falsy entries (e.g. skipped platforms)
   return appPaths.filter(appPath => appPath)
