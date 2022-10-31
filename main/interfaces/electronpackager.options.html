@@ -94,6 +94,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#aftercopy" class="tsd-kind-icon">after<wbr>Copy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#aftercopyextraresources" class="tsd-kind-icon">after<wbr>Copy<wbr>Extra<wbr>Resources</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#afterextract" class="tsd-kind-icon">after<wbr>Extract</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#afterfinalizepackagetargets" class="tsd-kind-icon">after<wbr>Finalize<wbr>Package<wbr>Targets</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#afterprune" class="tsd-kind-icon">after<wbr>Prune</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#all" class="tsd-kind-icon">all</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="electronpackager.options.html#appbundleid" class="tsd-kind-icon">app<wbr>Bundle<wbr>Id</a></li>
@@ -153,7 +154,7 @@
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Asar<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:192</li>
+							<li>Defined in index.d.ts:198</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -169,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Complete<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:194</li>
+							<li>Defined in index.d.ts:200</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -184,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Copy<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:200</li>
+							<li>Defined in index.d.ts:206</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -200,7 +201,7 @@
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Copy<wbr>Extra<wbr>Resources<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:204</li>
+							<li>Defined in index.d.ts:210</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -215,7 +216,7 @@
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:206</li>
+							<li>Defined in index.d.ts:212</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -225,12 +226,28 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="afterfinalizepackagetargets" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> after<wbr>Finalize<wbr>Package<wbr>Targets</h3>
+					<div class="tsd-signature tsd-kind-icon">after<wbr>Finalize<wbr>Package<wbr>Targets<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#finalizepackagetargetshookfunction" class="tsd-signature-type">FinalizePackageTargetsHookFunction</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:217</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Functions to be called after the final matrix of platform/arch combination is determined.  Use this to
+							learn what archs/platforms packager is targetting when you pass &quot;all&quot; as a value.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="afterprune" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> after<wbr>Prune</h3>
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Prune<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:213</li>
+							<li>Defined in index.d.ts:224</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -247,7 +264,7 @@
 					<div class="tsd-signature tsd-kind-icon">all<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:216</li>
+							<li>Defined in index.d.ts:227</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -262,7 +279,7 @@
 					<div class="tsd-signature tsd-kind-icon">app<wbr>Bundle<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:222</li>
+							<li>Defined in index.d.ts:233</li>
 						</ul>
 					</aside>
 				</section>
@@ -272,7 +289,7 @@
 					<div class="tsd-signature tsd-kind-icon">app<wbr>Copyright<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:239</li>
+							<li>Defined in index.d.ts:250</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -288,7 +305,7 @@
 					<div class="tsd-signature tsd-kind-icon">app<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:248</li>
+							<li>Defined in index.d.ts:259</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -307,7 +324,7 @@
 					<div class="tsd-signature tsd-kind-icon">arch<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#archoption" class="tsd-signature-type">ArchOption</a><span class="tsd-signature-symbol"> | </span><a href="../modules/electronpackager.html#archoption" class="tsd-signature-type">ArchOption</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:268</li>
+							<li>Defined in index.d.ts:279</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -337,7 +354,7 @@
 					<div class="tsd-signature tsd-kind-icon">asar<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsarOptions</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:295</li>
+							<li>Defined in index.d.ts:306</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -375,7 +392,7 @@
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Asar<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:301</li>
+							<li>Defined in index.d.ts:312</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -391,7 +408,7 @@
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Copy<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:307</li>
+							<li>Defined in index.d.ts:318</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -407,7 +424,7 @@
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Copy<wbr>Extra<wbr>Resources<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#hookfunction" class="tsd-signature-type">HookFunction</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:311</li>
+							<li>Defined in index.d.ts:322</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -422,7 +439,7 @@
 					<div class="tsd-signature tsd-kind-icon">build<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:316</li>
+							<li>Defined in index.d.ts:327</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -438,7 +455,7 @@
 					<div class="tsd-signature tsd-kind-icon">deref<wbr>Symlinks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:332</li>
+							<li>Defined in index.d.ts:343</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -455,7 +472,7 @@
 					<div class="tsd-signature tsd-kind-icon">dir<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:186</li>
+							<li>Defined in index.d.ts:192</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -470,7 +487,7 @@
 					<div class="tsd-signature tsd-kind-icon">download<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ElectronDownloadOptions</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:344</li>
+							<li>Defined in index.d.ts:355</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -494,7 +511,7 @@
 					<div class="tsd-signature tsd-kind-icon">electron<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:353</li>
+							<li>Defined in index.d.ts:364</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -514,7 +531,7 @@
 					<div class="tsd-signature tsd-kind-icon">electron<wbr>Zip<wbr>Dir<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:362</li>
+							<li>Defined in index.d.ts:373</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -533,7 +550,7 @@
 					<div class="tsd-signature tsd-kind-icon">executable<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:368</li>
+							<li>Defined in index.d.ts:379</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -550,7 +567,7 @@
 					<div class="tsd-signature tsd-kind-icon">extra<wbr>Resource<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:401</li>
+							<li>Defined in index.d.ts:412</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -568,7 +585,7 @@
 					<div class="tsd-signature tsd-kind-icon">icon<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:423</li>
+							<li>Defined in index.d.ts:434</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -594,7 +611,7 @@
 					<div class="tsd-signature tsd-kind-icon">ignore<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="../modules/electronpackager.html#ignorefunction" class="tsd-signature-type">IgnoreFunction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:447</li>
+							<li>Defined in index.d.ts:458</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -626,7 +643,7 @@
 					<div class="tsd-signature tsd-kind-icon">junk<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:454</li>
+							<li>Defined in index.d.ts:465</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -643,7 +660,7 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:462</li>
+							<li>Defined in index.d.ts:473</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -661,7 +678,7 @@
 					<div class="tsd-signature tsd-kind-icon">osx<wbr>Universal<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#osxuniversaloptions" class="tsd-signature-type">OsxUniversalOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:489</li>
+							<li>Defined in index.d.ts:500</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -678,7 +695,7 @@
 					<div class="tsd-signature tsd-kind-icon">out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:495</li>
+							<li>Defined in index.d.ts:506</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -694,7 +711,7 @@
 					<div class="tsd-signature tsd-kind-icon">overwrite<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:500</li>
+							<li>Defined in index.d.ts:511</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -710,7 +727,7 @@
 					<div class="tsd-signature tsd-kind-icon">platform<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#platformoption" class="tsd-signature-type">PlatformOption</a><span class="tsd-signature-symbol"> | </span><a href="../modules/electronpackager.html#platformoption" class="tsd-signature-type">PlatformOption</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:521</li>
+							<li>Defined in index.d.ts:532</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -740,7 +757,7 @@
 					<div class="tsd-signature tsd-kind-icon">prebuilt<wbr>Asar<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:536</li>
+							<li>Defined in index.d.ts:547</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -766,7 +783,7 @@
 					<div class="tsd-signature tsd-kind-icon">prune<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:551</li>
+							<li>Defined in index.d.ts:562</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -784,7 +801,7 @@
 					<div class="tsd-signature tsd-kind-icon">quiet<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:558</li>
+							<li>Defined in index.d.ts:569</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -801,7 +818,7 @@
 					<div class="tsd-signature tsd-kind-icon">tmpdir<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:563</li>
+							<li>Defined in index.d.ts:574</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -820,7 +837,7 @@
 					<div class="tsd-signature tsd-kind-icon">win32metadata<span class="tsd-signature-symbol">:</span> <a href="electronpackager.win32metadataoptions.html" class="tsd-signature-type">Win32MetadataOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:592</li>
+							<li>Defined in index.d.ts:603</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -838,7 +855,7 @@
 					<div class="tsd-signature tsd-kind-icon">app<wbr>Category<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:234</li>
+							<li>Defined in index.d.ts:245</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -857,7 +874,7 @@
 					<div class="tsd-signature tsd-kind-icon">darwin<wbr>Dark<wbr>Mode<wbr>Support<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:325</li>
+							<li>Defined in index.d.ts:336</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -875,7 +892,7 @@
 					<div class="tsd-signature tsd-kind-icon">extend<wbr>Helper<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:394</li>
+							<li>Defined in index.d.ts:405</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -896,7 +913,7 @@
 					<div class="tsd-signature tsd-kind-icon">extend<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:381</li>
+							<li>Defined in index.d.ts:392</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -917,7 +934,7 @@
 					<div class="tsd-signature tsd-kind-icon">helper<wbr>Bundle<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:407</li>
+							<li>Defined in index.d.ts:418</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -932,7 +949,7 @@
 					<div class="tsd-signature tsd-kind-icon">osx<wbr>Notarize<span class="tsd-signature-symbol">:</span> <a href="../modules/electronpackager.html#osxnotarizeoptions" class="tsd-signature-type">OsxNotarizeOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:472</li>
+							<li>Defined in index.d.ts:483</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -950,7 +967,7 @@
 					<div class="tsd-signature tsd-kind-icon">osx<wbr>Sign<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><a href="../modules/electronpackager.html#osxsignoptions" class="tsd-signature-type">OsxSignOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:483</li>
+							<li>Defined in index.d.ts:494</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -972,7 +989,7 @@
 					<div class="tsd-signature tsd-kind-icon">protocols<span class="tsd-signature-symbol">:</span> <a href="electronpackager.macosprotocol.html" class="tsd-signature-type">MacOSProtocol</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:542</li>
+							<li>Defined in index.d.ts:553</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -987,7 +1004,7 @@
 					<div class="tsd-signature tsd-kind-icon">usage<wbr>Description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:587</li>
+							<li>Defined in index.d.ts:598</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1056,6 +1073,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="electronpackager.options.html#afterextract" class="tsd-kind-icon">after<wbr>Extract</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="electronpackager.options.html#afterfinalizepackagetargets" class="tsd-kind-icon">after<wbr>Finalize<wbr>Package<wbr>Targets</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="electronpackager.options.html#afterprune" class="tsd-kind-icon">after<wbr>Prune</a>
@@ -1188,6 +1208,9 @@
 						<a href="../modules/electronpackager.html#archoption" class="tsd-kind-icon">Arch<wbr>Option</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/electronpackager.html#finalizepackagetargetshookfunction" class="tsd-kind-icon">Finalize<wbr>Package<wbr>Targets<wbr>Hook<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/electronpackager.html#hookfunction" class="tsd-kind-icon">Hook<wbr>Function</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
@@ -1213,6 +1236,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/electronpackager.html#targetarch" class="tsd-kind-icon">Target<wbr>Arch</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="../modules/electronpackager.html#targetdefinition" class="tsd-kind-icon">Target<wbr>Definition</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="../modules/electronpackager.html#targetplatform" class="tsd-kind-icon">Target<wbr>Platform</a>

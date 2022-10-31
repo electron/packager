@@ -125,6 +125,7 @@
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#archoption" class="tsd-kind-icon">Arch<wbr>Option</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#finalizepackagetargetshookfunction" class="tsd-kind-icon">Finalize<wbr>Package<wbr>Targets<wbr>Hook<wbr>Function</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#hookfunction" class="tsd-kind-icon">Hook<wbr>Function</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#ignorefunction" class="tsd-kind-icon">Ignore<wbr>Function</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#officialarch" class="tsd-kind-icon">Official<wbr>Arch</a></li>
@@ -134,6 +135,7 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#osxuniversaloptions" class="tsd-kind-icon">Osx<wbr>Universal<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#platformoption" class="tsd-kind-icon">Platform<wbr>Option</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#targetarch" class="tsd-kind-icon">Target<wbr>Arch</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#targetdefinition" class="tsd-kind-icon">Target<wbr>Definition</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-namespace"><a href="electronpackager.html#targetplatform" class="tsd-kind-icon">Target<wbr>Platform</a></li>
 							</ul>
 						</section>
@@ -151,6 +153,58 @@
 							<li>Defined in index.d.ts:62</li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
+					<a name="finalizepackagetargetshookfunction" class="tsd-anchor"></a>
+					<h3>Finalize<wbr>Package<wbr>Targets<wbr>Hook<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">Finalize<wbr>Package<wbr>Targets<wbr>Hook<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>targets<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetdefinition" class="tsd-signature-type">TargetDefinition</a><span class="tsd-signature-symbol">[]</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:128</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>targets<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetdefinition" class="tsd-signature-type">TargetDefinition</a><span class="tsd-signature-symbol">[]</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>targets: <a href="electronpackager.html#targetdefinition" class="tsd-signature-type">TargetDefinition</a><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>callback: <span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+												<ul class="tsd-parameters">
+													<li class="tsd-parameter-signature">
+														<ul class="tsd-signatures tsd-kind-type-literal">
+															<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+														</ul>
+														<ul class="tsd-descriptions">
+															<li class="tsd-description">
+																<h4 class="tsd-parameters-title">Parameters</h4>
+																<ul class="tsd-parameters">
+																	<li>
+																		<h5><span class="tsd-flag ts-flagOptional">Optional</span> err: <span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+																	</li>
+																</ul>
+																<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="hookfunction" class="tsd-anchor"></a>
@@ -351,7 +405,7 @@ packager({
 					<div class="tsd-signature tsd-kind-icon">Osx<wbr>Notarize<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">{ </span>tool<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"legacy"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><a href="../globals.html#notarizelegacyoptions" class="tsd-signature-type">NotarizeLegacyOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">{ </span>tool<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"notarytool"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">NotaryToolCredentials</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:131</li>
+							<li>Defined in index.d.ts:137</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -367,7 +421,7 @@ packager({
 					<div class="tsd-signature tsd-kind-icon">Osx<wbr>Sign<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SignOptions</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"app"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"binaries"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"platform"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"version"</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:125</li>
+							<li>Defined in index.d.ts:131</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -382,7 +436,7 @@ packager({
 					<div class="tsd-signature tsd-kind-icon">Osx<wbr>Universal<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#makeuniversalopts" class="tsd-signature-type">MakeUniversalOpts</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"x64AppPath"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"arm64AppPath"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"outAppPath"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"force"</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.d.ts:139</li>
+							<li>Defined in index.d.ts:145</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -411,6 +465,27 @@ packager({
 							<li>Defined in index.d.ts:60</li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
+					<a name="targetdefinition" class="tsd-anchor"></a>
+					<h3>Target<wbr>Definition</h3>
+					<div class="tsd-signature tsd-kind-icon">Target<wbr>Definition<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>arch<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a><span class="tsd-signature-symbol">; </span>platform<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetplatform" class="tsd-signature-type">TargetPlatform</a><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in index.d.ts:124</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>arch<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetarch" class="tsd-signature-type">TargetArch</a></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>platform<span class="tsd-signature-symbol">: </span><a href="electronpackager.html#targetplatform" class="tsd-signature-type">TargetPlatform</a></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-namespace">
 					<a name="targetplatform" class="tsd-anchor"></a>
@@ -450,6 +525,9 @@ packager({
 						<a href="electronpackager.html#archoption" class="tsd-kind-icon">Arch<wbr>Option</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="electronpackager.html#finalizepackagetargetshookfunction" class="tsd-kind-icon">Finalize<wbr>Package<wbr>Targets<wbr>Hook<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="electronpackager.html#hookfunction" class="tsd-kind-icon">Hook<wbr>Function</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
@@ -475,6 +553,9 @@ packager({
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="electronpackager.html#targetarch" class="tsd-kind-icon">Target<wbr>Arch</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
+						<a href="electronpackager.html#targetdefinition" class="tsd-kind-icon">Target<wbr>Definition</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 						<a href="electronpackager.html#targetplatform" class="tsd-kind-icon">Target<wbr>Platform</a>
