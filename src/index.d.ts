@@ -125,7 +125,7 @@ declare namespace electronPackager {
     arch: TargetArch;
     platform: TargetPlatform;
   }
-  type FinalizeTargetMatrixHookFunction = (matrix: TargetDefinition[]) => void;
+  type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: (err?: Error | null) => void) => void;
 
   /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
   type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
@@ -214,7 +214,7 @@ declare namespace electronPackager {
      * Functions to be called after the final matrix of platform/arch combination is determined.  Use this to
      * learn what archs/platforms packager is targetting when you pass "all" as a value.
      */
-    afterFinalizeTargetMatrix?: FinalizeTargetMatrixHookFunction[];
+    afterFinalizePackageTargets?: FinalizePackageTargetsHookFunction[];
     /**
      * Functions to be called after Node module pruning has been applied to the application.
      *

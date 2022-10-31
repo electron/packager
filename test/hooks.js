@@ -39,12 +39,12 @@ function createHookTest (hookName, validator) {
 
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
-test.serial('platform=all (one arch) for afterFinalizeTargetMatrix hook', createHookTest('afterFinalizeTargetMatrix', (t, matrix, callback) => {
-  t.is(matrix.length, 2, 'target matrix should have two items')
-  t.is(matrix[0].arch, 'ia32')
-  t.is(matrix[0].platform, 'linux')
-  t.is(matrix[1].arch, 'ia32')
-  t.is(matrix[1].platform, 'win32')
+test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets, callback) => {
+  t.is(targets.length, 2, 'target list should have two items')
+  t.is(targets[0].arch, 'ia32')
+  t.is(targets[0].platform, 'linux')
+  t.is(targets[1].arch, 'ia32')
+  t.is(targets[1].platform, 'win32')
   callback()
 }))
 test.serial('platform=all (one arch) for afterPrune hook', createHookTest('afterPrune'))
