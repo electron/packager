@@ -7,7 +7,7 @@
 ### Changed
 
 * Replaced `electron-notarize` with `@electron/notarize`.  The configuration options are unchanged. This migration is purely cosmetic.
-* Added new `afterFinalizePackageTargets` hook. This hook allows you to learn what platform/arch combinations packager is packaging for when you provide `arch: all` or `platform: all` as options.
+* Added new `afterFinalizePackageTargets` hook. This hook exposes the platform/arch combinations that are being packaged when the `arch:all` or `platform:all` options are set.
 
 ## [17.0.0]
 
