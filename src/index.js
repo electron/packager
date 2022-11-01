@@ -33,7 +33,8 @@ class Packager {
   }
 
   async testSymlink (comboOpts, zipPath) {
-    const testPath = path.join(this.tempBase, `symlink-test-${comboOpts.platform}-${comboOpts.arch}`)
+    await fs.mkdirp(this.tempBase)
+    const testPath = await fs.mkdtemp(path.join(this.tempBase, `symlink-test-${comboOpts.platform}-${comboOpts.arch}-`))
     const testFile = path.join(testPath, 'test')
     const testLink = path.join(testPath, 'testlink')
 
@@ -74,18 +75,19 @@ class Packager {
     await hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch])
   }
 
-  buildDir (platform, arch) {
+  async buildDir (platform, arch) {
     let buildParentDir
     if (this.useTempDir) {
       buildParentDir = this.tempBase
     } else {
       buildParentDir = this.opts.out || process.cwd()
     }
-    return path.resolve(buildParentDir, `${platform}-${arch}-template`)
+    await fs.mkdirp(buildParentDir)
+    return await fs.mkdtemp(path.resolve(buildParentDir, `${platform}-${arch}-template-`))
   }
 
   async createApp (comboOpts, zipPath) {
-    const buildDir = this.buildDir(comboOpts.platform, comboOpts.arch)
+    const buildDir = await this.buildDir(comboOpts.platform, comboOpts.arch)
     common.info(`Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`, this.opts.quiet)
 
     debug(`Creating ${buildDir}`)
@@ -159,7 +161,7 @@ class Packager {
     }
 
     if (common.isPlatformMac(comboOpts.platform) && comboOpts.arch === 'universal') {
-      return packageUniversalMac(this.packageForPlatformAndArchWithOpts.bind(this), this.buildDir(comboOpts.platform, comboOpts.arch), comboOpts, downloadOpts, this.tempBase)
+      return packageUniversalMac(this.packageForPlatformAndArchWithOpts.bind(this), await this.buildDir(comboOpts.platform, comboOpts.arch), comboOpts, downloadOpts, this.tempBase)
     }
 
     return this.packageForPlatformAndArchWithOpts(comboOpts, downloadOpts)
