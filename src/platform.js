@@ -61,11 +61,15 @@ class App {
     if (this.opts.tmpdir === false) {
       return common.generateFinalPath(this.opts)
     } else {
-      return path.join(
-        common.baseTempDir(this.opts),
-        `${this.opts.platform}-${this.opts.arch}`,
-        common.generateFinalBasename(this.opts)
-      )
+      if (!this.cachedStagingPath) {
+        const parentDir = path.join(
+          common.baseTempDir(this.opts),
+          `${this.opts.platform}-${this.opts.arch}`
+        )
+        fs.mkdirpSync(parentDir)
+        this.cachedStagingPath = fs.mkdtempSync(path.join(parentDir, `${common.generateFinalBasename(this.opts)}-`))
+      }
+      return this.cachedStagingPath
     }
   }
 
