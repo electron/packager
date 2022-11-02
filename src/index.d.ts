@@ -472,7 +472,7 @@ declare namespace electronPackager {
      */
     name?: string;
     /**
-     * If present, notarizes macOS target apps when the host platform is macOS and XCode is installed.
+     * If present, notarizes macOS target apps when the host platform is macOS and Xcode is installed.
      * See [`@electron/notarize`](https://github.com/electron/notarize#method-notarizeopts-promisevoid)
      * for option descriptions, such as how to use `appleIdPassword` safely or obtain an API key.
      *
@@ -482,7 +482,7 @@ declare namespace electronPackager {
      */
     osxNotarize?: OsxNotarizeOptions;
     /**
-     * If present, signs macOS target apps when the host platform is macOS and XCode is installed.
+     * If present, signs macOS target apps when the host platform is macOS and Xcode is installed.
      * When the value is `true`, pass default configuration to the signing module. See
      * [@electron/osx-sign](https://npm.im/@electron/osx-sign#opts---options) for sub-option descriptions and
      * their defaults. Options include, but are not limited to:
