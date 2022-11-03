@@ -47,7 +47,7 @@ function createAsarOpts (opts) {
   } else if (opts.asar === false || opts.asar === undefined) {
     return false
   } else {
-    warning(`asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`)
+    warning(`asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`, opts.quiet)
     return false
   }
 
@@ -64,9 +64,9 @@ module.exports = {
 
   createAsarOpts: createAsarOpts,
 
-  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName) {
+  deprecatedParameter: function deprecatedParameter (properties, oldName, newName, newCLIName, quiet) {
     if (Object.prototype.hasOwnProperty.call(properties, oldName)) {
-      warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`)
+      warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`, quiet)
       if (!Object.prototype.hasOwnProperty.call(properties, newName)) {
         properties[newName] = properties[oldName]
       }
