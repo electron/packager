@@ -52,7 +52,7 @@ module.exports = {
     }
 
     if (args.out === '') {
-      warning('Specifying --out= without a value is the same as the default value')
+      warning('Specifying --out= without a value is the same as the default value', args.quiet)
       args.out = null
     }
 
@@ -60,17 +60,17 @@ module.exports = {
 
     // asar: `Object` or `true`
     if (args.asar === 'true' || args.asar instanceof Array) {
-      warning('--asar does not take any arguments, it only has sub-properties (see --help)')
+      warning('--asar does not take any arguments, it only has sub-properties (see --help)', args.quiet)
       args.asar = true
     }
 
     // osx-sign: `Object` or `true`
     if (args.osxSign === 'true') {
-      warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)')
+      warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)', args.quiet)
       args.osxSign = true
     } else if (typeof args['osx-sign'] === 'object') {
       if (Array.isArray(args['osx-sign'])) {
-        warning('Remove --osx-sign (the bare flag) from the command line, only specify sub-properties (see --help)')
+        warning('Remove --osx-sign (the bare flag) from the command line, only specify sub-properties (see --help)', args.quiet)
       } else {
         // Keep kebab case of sub properties
         args.osxSign = args['osx-sign']
@@ -80,10 +80,10 @@ module.exports = {
     if (args.osxNotarize) {
       let notarize = true
       if (typeof args.osxNotarize !== 'object' || Array.isArray(args.osxNotarize)) {
-        warning('--osx-notarize does not take any arguments, it only has sub-properties (see --help)')
+        warning('--osx-notarize does not take any arguments, it only has sub-properties (see --help)', args.quiet)
         notarize = false
       } else if (!args.osxSign) {
-        warning('Notarization was enabled but macOS code signing was not, code signing is a requirement for notarization, notarize will not run')
+        warning('Notarization was enabled but macOS code signing was not, code signing is a requirement for notarization, notarize will not run', args.quiet)
         notarize = false
       }
 
@@ -94,7 +94,7 @@ module.exports = {
 
     // tmpdir: `String` or `false`
     if (args.tmpdir === 'false') {
-      warning('--tmpdir=false is deprecated, use --no-tmpdir instead')
+      warning('--tmpdir=false is deprecated, use --no-tmpdir instead', args.quiet)
       args.tmpdir = false
     }
 
@@ -127,9 +127,9 @@ module.exports = {
     try {
       const appPaths = await packager(args)
       if (appPaths.length > 1) {
-        info(`Wrote new apps to:\n${appPaths.join('\n')}`)
+        info(`Wrote new apps to:\n${appPaths.join('\n')}`, args.quiet)
       } else if (appPaths.length === 1) {
-        info('Wrote new app to', appPaths[0])
+        info(`Wrote new app to: ${appPaths[0]}`, args.quiet)
       }
     } catch (err) {
       if (err.message) {

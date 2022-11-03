@@ -74,13 +74,13 @@ test('deprecatedParameter moves value in deprecated param to new param if new pa
   const opts = {
     old: 'value'
   }
-  common.deprecatedParameter(opts, 'old', 'new', 'new-value')
+  common.deprecatedParameter(opts, 'old', 'new', 'new-value', false)
 
   t.false(Object.prototype.hasOwnProperty.call(opts, 'old'), 'old property is not set')
   t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
 
   opts.not_overwritten_old = 'another'
-  common.deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value')
+  common.deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value', false)
 
   t.false(Object.prototype.hasOwnProperty.call(opts, 'not_overwritten_old'), 'not_overwritten_old property is not set')
   t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')

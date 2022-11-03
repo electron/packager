@@ -341,7 +341,7 @@ class MacApp extends App {
     if ((platform === 'all' || platform === 'mas') &&
         osxSignOpt === undefined) {
       common.warning('signing is required for mas builds. Provide the osx-sign option, ' +
-                     'or manually sign the app later.')
+                     'or manually sign the app later.', this.opts.quiet)
     }
 
     if (osxSignOpt) {
@@ -351,7 +351,7 @@ class MacApp extends App {
         await signApp(signOpts)
       } catch (err) {
         // Although not signed successfully, the application is packed.
-        common.warning(`Code sign failed; please retry manually. ${err}`)
+        common.warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet)
       }
     }
   }
@@ -407,7 +407,7 @@ function createSignOpts (properties, platform, app, version, quiet) {
   common.subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet)
 
   if (signOpts.binaries) {
-    common.warning('osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.')
+    common.warning('osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.', quiet)
     delete signOpts.binaries
   }
 

@@ -172,19 +172,19 @@ class App {
       return iconFilename
     } else {
       /* istanbul ignore next */
-      common.warning(`Could not find icon "${iconFilename}", not updating app icon`)
+      common.warning(`Could not find icon "${iconFilename}", not updating app icon`, this.opts.quiet)
     }
   }
 
   prebuiltAsarWarning (option, triggerWarning) {
     if (triggerWarning) {
-      common.warning(`prebuiltAsar and ${option} are incompatible, ignoring the ${option} option`)
+      common.warning(`prebuiltAsar and ${option} are incompatible, ignoring the ${option} option`, this.opts.quiet)
     }
   }
 
   async copyPrebuiltAsar () {
     if (this.asarOptions) {
-      common.warning('prebuiltAsar has been specified, all asar options will be ignored')
+      common.warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet)
     }
 
     for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune']) {

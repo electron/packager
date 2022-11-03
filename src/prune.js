@@ -12,8 +12,9 @@ const ELECTRON_MODULES = [
 ]
 
 class Pruner {
-  constructor (dir) {
+  constructor (dir, quiet) {
     this.baseDir = common.normalizePath(dir)
+    this.quiet = quiet
     this.galactus = new galactus.DestroyerOfModules({
       rootDirectory: dir,
       shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep)
@@ -43,7 +44,7 @@ class Pruner {
     }
 
     if (ELECTRON_MODULES.includes(module.name)) {
-      common.warning(`Found '${module.name}' but not as a devDependency, pruning anyway`)
+      common.warning(`Found '${module.name}' but not as a devDependency, pruning anyway`, this.quiet)
       return false
     }
 

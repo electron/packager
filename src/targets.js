@@ -90,7 +90,7 @@ function allPlatformsOrArchsSpecified (opts) {
 
 function warnIfAllNotSpecified (opts, message) {
   if (!allPlatformsOrArchsSpecified(opts)) {
-    common.warning(message)
+    common.warning(message, opts.quiet)
   }
 }
 

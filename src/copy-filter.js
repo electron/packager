@@ -70,7 +70,7 @@ function generateFilterFunction (ignore) {
 function userPathFilter (opts) {
   const filterFunc = generateFilterFunction(opts.ignore || [])
   const ignoredOutDirs = generateIgnoredOutDirs(opts)
-  const pruner = opts.prune ? new prune.Pruner(opts.dir) : null
+  const pruner = opts.prune ? new prune.Pruner(opts.dir, opts.quiet) : null
 
   return async function filter (file) {
     const fullPath = path.resolve(file)
