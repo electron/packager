@@ -31,16 +31,16 @@ steps-ci: &steps-ci
     - *step-before-install
     - run: |
         case "$(uname -s)" in
-          "Darwin"|"Linux") npm install --engine-strict --no-lockfile ;;
-          *) npm install --no-lockfile ;;
+          "Darwin"|"Linux") yarn install --frozen-lockfile ;;
+          *) yarn install --frozen-lockfile ;;
         esac
     - *step-restore-electron-cache
     - run: test/ci/_before_script.js
     - *step-save-electron-cache
-    - run: npm run lint
-    - run: npm run tsd
-    - run: npm run coverage
-    - run: npm run codecov
+    - run: yarn run lint
+    - run: yarn run tsd
+    - run: yarn run coverage
+    - run: yarn run codecov
 
 version: 2.1
 orbs:
