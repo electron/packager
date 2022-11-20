@@ -380,6 +380,7 @@ class MacApp extends App {
     await this.renameElectron()
     await this.renameAppAndHelpers()
     await this.copyExtraResources()
+    await this.flipFuses()
     await this.signAppIfSpecified()
     await this.notarizeAppIfSpecified()
     return this.move()

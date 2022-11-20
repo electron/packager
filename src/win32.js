@@ -102,6 +102,7 @@ class WindowsApp extends App {
     await this.initialize()
     await this.renameElectron()
     await this.copyExtraResources()
+    await this.flipFuses()
     await this.runRcedit()
     return this.move()
   }

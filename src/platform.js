@@ -272,6 +272,18 @@ class App {
 
     return finalPath
   }
+
+  async flipFuses () {
+    const { fusesConfig = {} } = this.opts
+
+    if (Object.keys(fusesConfig).length) {
+      const electronExecutablePath = path.join(this.cachedStagingPath, this.newElectronName)
+
+      const { flipFuses } = require('@electron/fuses')
+
+      await flipFuses(electronExecutablePath, fusesConfig)
+    }
+  }
 }
 
 module.exports = App

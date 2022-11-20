@@ -17,6 +17,7 @@ import {
 } from '@electron/notarize/lib/types';
 import { SignOptions } from '@electron/osx-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
+import type { FuseConfig } from '@electron/fuses';
 
 type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
 
@@ -410,6 +411,11 @@ declare namespace electronPackager {
      * [`process.resourcesPath`](https://www.electronjs.org/docs/api/process#processresourcespath-readonly) value.
      */
     extraResource?: string | string[];
+    /**
+     * Configuration options for [@electron/fuses](https://github.com/electron/electron/fuses),
+     * which makes it possible to enable/disable some Electron features at packaging-time.
+     */
+    fusesConfig?: FuseConfig
     /**
      * The bundle identifier to use in the application helper's `Info.plist`.
      *

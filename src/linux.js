@@ -16,6 +16,7 @@ class LinuxApp extends App {
     await this.initialize()
     await this.renameElectron()
     await this.copyExtraResources()
+    await this.flipFuses()
     return this.move()
   }
 }
