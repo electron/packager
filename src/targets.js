@@ -20,6 +20,7 @@ const buildVersions = {
   },
   linux: {
     arm64: '>= 1.8.0',
+    ia32: '<19.0.0-beta.1',
     mips64el: '^1.8.2-beta.5'
   },
   mas: {
