@@ -106,6 +106,10 @@ test('platform=linux and arch=arm64 with a supported official Electron version',
 test('platform=linux and arch=arm64 with a supported official Electron version (11.0.0-beta.22)', testMultiTarget({ arch: 'arm64', platform: 'linux', electronVersion: '11.0.0-beta.22' }, 1, 'Package should be generated for linux/arm64'))
 test('platform=linux and arch=arm64 with an unsupported official Electron version', testMultiTarget({ arch: 'arm64', platform: 'linux' }, 0, 'Package should not be generated for linux/arm64'))
 
+test('platform=linux and arch=ia32 with a supported official Electron version', testMultiTarget({ arch: 'ia32', platform: 'linux', electronVersion: '10.0.0' }, 1, 'Package should be generated for linux/ia32'))
+test('platform=linux and arch=ia32 with an unsupported official Electron version (19.0.0-beta.1)', testMultiTarget({ arch: 'ia32', platform: 'linux', electronVersion: '19.0.0-beta.1' }, 0, 'Package should not be generated for linux/ia32'))
+test('platform=linux and arch=ia32 with an unsupported official Electron version', testMultiTarget({ arch: 'ia32', platform: 'linux', electronVersion: '20.0.0' }, 0, 'Package should not be generated for linux/ia32'))
+
 test('platform=linux and arch=mips64el with a supported official Electron version', testMultiTarget({ arch: 'mips64el', platform: 'linux', electronVersion: '1.8.2-beta.5' }, 1, 'Package should be generated for mips64el'))
 test('platform=linux and arch=mips64el with an unsupported official Electron version', testMultiTarget({ arch: 'mips64el', platform: 'linux' }, 0, 'Package should not be generated for linux/mips64el'))
 test('platform=linux and arch=mips64el with an unsupported official Electron version (2.0.0)', testMultiTarget({ arch: 'mips64el', platform: 'linux', electronVersion: '2.0.0' }, 0, 'Package should not be generated for linux/mips64el'))
