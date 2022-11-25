@@ -65,7 +65,7 @@ declare namespace electronPackager {
   /**
    * A predicate function that, given an absolute file `path`, returns `true` if the file should be
    * ignored, or `false` if the file should be kept. *This does not use any of the default ignored
-   * files/directories listed for the [[ignore]] option.*
+   * files/directories listed for the {@link ignore} option.*
    */
   type IgnoreFunction = (path: string) => boolean;
   /**
@@ -104,9 +104,9 @@ declare namespace electronPackager {
    */
   type HookFunction =
     /**
-     * @param buildPath - For [[afterExtract]], the path to the temporary folder where the prebuilt
-     * Electron binary has been extracted to. For [[afterCopy]] and [[afterPrune]], the path to the
-     * folder where the Electron app has been copied to. For [[afterComplete]], the final directory
+     * @param buildPath - For {@link afterExtract}, the path to the temporary folder where the prebuilt
+     * Electron binary has been extracted to. For {@link afterCopy} and {@link afterPrune}, the path to the
+     * folder where the Electron app has been copied to. For {@link afterComplete}, the final directory
      * of the packaged application.
      * @param electronVersion - the version of Electron that is being bundled with the application.
      * @param platform - The target platform you are packaging for.
@@ -193,7 +193,7 @@ declare namespace electronPackager {
     /**
      * Functions to be called after your app directory has been packaged into an .asar file.
      *
-     * **Note**: `afterAsar` will only be called if the [[asar]] option is set.
+     * **Note**: `afterAsar` will only be called if the {@link asar} option is set.
      */
     afterAsar?: HookFunction[];
     /** Functions to be called after the packaged application has been moved to the final directory. */
@@ -201,11 +201,11 @@ declare namespace electronPackager {
     /**
      * Functions to be called after your app directory has been copied to a temporary directory.
      *
-     * **Note**: `afterCopy` will not be called if the [[prebuiltAsar]] option is set.
+     * **Note**: `afterCopy` will not be called if the {@link prebuiltAsar} option is set.
      */
     afterCopy?: HookFunction[];
     /**
-     * Functions to be called after the files specified in the [[extraResource]] option have been copied.
+     * Functions to be called after the files specified in the {@link extraResource} option have been copied.
      **/
     afterCopyExtraResources?: HookFunction[];
     /** Functions to be called after the prebuilt Electron binary has been extracted to a temporary directory. */
@@ -218,12 +218,12 @@ declare namespace electronPackager {
     /**
      * Functions to be called after Node module pruning has been applied to the application.
      *
-     * **Note**: None of these functions will be called if the [[prune]] option is `false` or
-     * the [[prebuiltAsar]] option is set.
+     * **Note**: None of these functions will be called if the {@link prune} option is `false` or
+     * the {@link prebuiltAsar} option is set.
      */
     afterPrune?: HookFunction[];
 
-    /** When `true`, sets both [[arch]] and [[platform]] to `all`. */
+    /** When `true`, sets both {@link arch} and {@link platform} to `all`. */
     all?: boolean;
     /*
      * The bundle identifier to use in the application's `Info.plist`.
@@ -260,8 +260,8 @@ declare namespace electronPackager {
     /**
      * The target system architecture(s) to build for.
      *
-     * Not required if the [[all]] option is set. If `arch` is set to `all`, all supported
-     * architectures for the target platforms specified by [[platform]] will be built.
+     * Not required if the {@link all} option is set. If `arch` is set to `all`, all supported
+     * architectures for the target platforms specified by {@link platform} will be built.
      * Arbitrary combinations of individual architectures are also supported via a comma-delimited
      * string or array of strings. The non-`all` values correspond to the architecture names used
      * by [Electron releases](https://github.com/electron/electron/releases). This value
@@ -290,7 +290,7 @@ declare namespace electronPackager {
      * - `unpack` (*string*): A [glob expression](https://github.com/isaacs/minimatch#features),
      *   when specified, unpacks the file with matching names to the `app.asar.unpacked` directory.
      * - `unpackDir` (*string*): Unpacks the dir to the `app.asar.unpacked` directory whose names
-     *   exactly or pattern match this string. The `asar.unpackDir` is relative to [[dir]].
+     *   exactly or pattern match this string. The `asar.unpackDir` is relative to {@link dir}.
      *
      * Defaults to `false`.
      *
@@ -301,27 +301,27 @@ declare namespace electronPackager {
      * - `asar.unpackDir = path.join('**', '{sub_dir1/sub_sub_dir,sub_dir2}', '**')` will unpack the subdirectories of the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2`.
      * - `asar.unpackDir = path.join('**', '{sub_dir1/sub_sub_dir,sub_dir2}', '**', '*')` will unpack the directories `/<dir>/sub_dir1/sub_sub_dir` and `/<dir>/sub_dir2` and their subdirectories.
      *
-     * **Note:** `asar` will have no effect if the [[prebuiltAsar]] option is set.
+     * **Note:** `asar` will have no effect if the {@link prebuiltAsar} option is set.
      */
     asar?: boolean | AsarOptions;
     /**
      * Functions to be called before your app directory is packaged into an .asar file.
      *
-     * **Note**: `beforeAsar` will only be called if the [[asar]] option is set.
+     * **Note**: `beforeAsar` will only be called if the {@link asar} option is set.
      */
     beforeAsar?: HookFunction[];
     /**
      * Functions to be called before your app directory is copied to a temporary directory.
      *
-     * **Note**: `beforeCopy` will not be called if the [[prebuiltAsar]] option is set.
+     * **Note**: `beforeCopy` will not be called if the {@link prebuiltAsar} option is set.
      */
     beforeCopy?: HookFunction[];
     /**
-     * Functions to be called before the files specified in the [[extraResource]] option are copied.
+     * Functions to be called before the files specified in the {@link extraResource} option are copied.
      **/
     beforeCopyExtraResources?: HookFunction[];
     /**
-     * The build version of the application. Defaults to the value of the [[appVersion]] option.
+     * The build version of the application. Defaults to the value of the {@link appVersion} option.
      * Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on macOS.
      */
     buildVersion?: string;
@@ -338,7 +338,7 @@ declare namespace electronPackager {
      * Whether symlinks should be dereferenced during the copying of the application source.
      * Defaults to `true`.
      *
-     * **Note:** `derefSymlinks` will have no effect if the [[prebuiltAsar]] option is set.
+     * **Note:** `derefSymlinks` will have no effect if the {@link prebuiltAsar} option is set.
      */
     derefSymlinks?: boolean;
     /**
@@ -350,7 +350,7 @@ declare namespace electronPackager {
      * - `rejectUnauthorized` (*boolean* - default: `true`): Whether SSL certificates are required to be
      *   valid when downloading Electron.
      *
-     * **Note:** `download` sub-options will have no effect if the [[electronZipDir]] option is set.
+     * **Note:** `download` sub-options will have no effect if the {@link electronZipDir} option is set.
      */
     download?: ElectronDownloadOptions;
     /**
@@ -367,14 +367,14 @@ declare namespace electronPackager {
      * of downloading them. The ZIP filenames should be in the same format as the ones downloaded from the
      * [Electron releases](https://github.com/electron/electron/releases) site.
      *
-     * **Note:** Setting this option prevents the [[download]] sub-options from being used, as
+     * **Note:** Setting this option prevents the {@link download} sub-options from being used, as
      * the functionality gets skipped over.
      */
     electronZipDir?: string;
     /**
-     * The name of the executable file, sans file extension. Defaults to the value for the [[name]]
+     * The name of the executable file, sans file extension. Defaults to the value for the {@link name}
      * option. For `darwin` or `mas` target platforms, this does not affect the name of the
-     * `.app` folder - this will use the [[name]] option instead.
+     * `.app` folder - this will use the {@link name} option instead.
      */
     executableName?: string;
     /**
@@ -385,7 +385,7 @@ declare namespace electronPackager {
      *
      * Entries from `extendInfo` override entries in the base `Info.plist` file supplied by
      * `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other
-     * options such as [[appVersion]] or [[appBundleId]].
+     * options such as {@link appVersion} or {@link appBundleId}.
      *
      * @category macOS
      */
@@ -398,7 +398,7 @@ declare namespace electronPackager {
      *
      * Entries from `extendHelperInfo` override entries in the helper apps' `Info.plist` file supplied by
      * `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other
-     * options such as [[appVersion]] or [[appBundleId]].
+     * options such as {@link appVersion} or {@link appBundleId}.
      *
      * @category macOS
      */
@@ -439,9 +439,9 @@ declare namespace electronPackager {
      *
      * **Please note that [glob patterns](https://en.wikipedia.org/wiki/Glob_%28programming%29) will not work.**
      *
-     * The following paths are always ignored (*when you aren't using an [[IgnoreFunction]]*):
+     * The following paths are always ignored (*when you aren't using an {@link IgnoreFunction}*):
      *
-     * - the directory specified by the [[out]] option
+     * - the directory specified by the {@link out} option
      * - the temporary directory used to build the Electron app
      * - `node_modules/.bin`
      * - `node_modules/electron`
@@ -451,16 +451,16 @@ declare namespace electronPackager {
      * - files and folders ending in `.o` and `.obj`
      *
      * **Note**: Node modules specified in `devDependencies` are ignored by default, via the
-     * [[prune]] option.
+     * {@link prune} option.
      *
-     * **Note:** `ignore` will have no effect if the [[prebuiltAsar]] option is set.
+     * **Note:** `ignore` will have no effect if the {@link prebuiltAsar} option is set.
      */
     ignore?: RegExp | RegExp[] | IgnoreFunction;
     /**
      * Ignores [system junk files](https://github.com/sindresorhus/junk) when copying the Electron app,
-     * regardless of the [[ignore]] option.
+     * regardless of the {@link ignore} option.
      *
-     * **Note:** `junk` will have no effect if the [[prebuiltAsar]] option is set.
+     * **Note:** `junk` will have no effect if the {@link prebuiltAsar} option is set.
      */
     junk?: boolean;
     /**
@@ -476,7 +476,7 @@ declare namespace electronPackager {
      * See [`@electron/notarize`](https://github.com/electron/notarize#method-notarizeopts-promisevoid)
      * for option descriptions, such as how to use `appleIdPassword` safely or obtain an API key.
      *
-     * **Requires the [[osxSign]] option to be set.**
+     * **Requires the {@link osxSign} option to be set.**
      *
      * @category macOS
      */
@@ -512,8 +512,8 @@ declare namespace electronPackager {
     /**
      * The target platform(s) to build for.
      *
-     * Not required if the [[all]] option is set. If `platform` is set to `all`, all officially
-     * supported target platforms for the target architectures specified by the [[arch]] option
+     * Not required if the {@link all} option is set. If `platform` is set to `all`, all officially
+     * supported target platforms for the target architectures specified by the {@link arch} option
      * will be built. Arbitrary combinations of individual platforms are also supported via a
      * comma-delimited string or array of strings.
      *
@@ -536,13 +536,13 @@ declare namespace electronPackager {
      * **Note:** Setting this option prevents the following options from being used, as the functionality
      * gets skipped over:
      *
-     * - [[asar]]
-     * - [[afterCopy]]
-     * - [[afterPrune]]
-     * - [[derefSymlinks]]
-     * - [[ignore]]
-     * - [[junk]]
-     * - [[prune]]
+     * - {@link asar}
+     * - {@link afterCopy}
+     * - {@link afterPrune}
+     * - {@link derefSymlinks}
+     * - {@link ignore}
+     * - {@link junk}
+     * - {@link prune}
      */
     prebuiltAsar?: string;
     /**
@@ -557,7 +557,7 @@ declare namespace electronPackager {
      *
      * Defaults to `true`.
      *
-     * **Note:** `prune` will have no effect if the [[prebuiltAsar]] option is set.
+     * **Note:** `prune` will have no effect if the {@link prebuiltAsar} option is set.
      */
     prune?: boolean;
     /**
