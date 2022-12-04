@@ -133,5 +133,8 @@
   },
   "funding": {
     "url": "https://github.com/electron/electron-packager?sponsor=1"
+  },
+  "resolutions": {
+    "got": "11.8.5"
   }
 }
