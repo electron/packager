@@ -35,7 +35,7 @@
     "debug": "^4.0.1",
     "extract-zip": "^2.0.0",
     "filenamify": "^4.1.0",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.1.0",
     "galactus": "^1.0.0",
     "get-package-info": "^1.0.0",
     "junk": "^3.1.0",
