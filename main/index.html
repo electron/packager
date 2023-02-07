@@ -67,6 +67,7 @@
 				</a>
 				<p>Package your <a href="https://electronjs.org">Electron</a> app into OS-specific bundles (<code>.app</code>, <code>.exe</code>, etc.) via JavaScript or the command line.</p>
 				<p><a href="https://circleci.com/gh/electron/electron-packager/tree/main"><img src="https://circleci.com/gh/electron/electron-packager/tree/main.svg?style=svg" alt="CircleCI Build Status"></a>
+					<a href="https://github.com/electron/electron-packager/actions/workflows/canary.yml"><img src="https://github.com/electron/electron-packager/actions/workflows/canary.yml/badge.svg" alt="electron-nightly Canary"></a>
 					<a href="https://codecov.io/gh/electron/electron-packager"><img src="https://codecov.io/gh/electron/electron-packager/branch/main/graph/badge.svg" alt="Coverage Status"></a>
 					<a href="https://npm.im/electron-packager"><img src="https://badgen.net/npm/v/electron-packager" alt="npm"></a>
 				<a href="https://discord.com/invite/APGC3k5yaH"><img src="https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord" alt="Discord"></a></p>
@@ -85,7 +86,7 @@
 				</a>
 				<p>Electron Packager is a command line tool and Node.js library that bundles Electron-based application
 				source code with a renamed Electron executable and supporting files into folders ready for distribution.</p>
-				<p>For creating distributables like installers and Linux packages, consider using either <a href="https://github.com/electron-userland/electron-forge">Electron
+				<p>For creating distributables like installers and Linux packages, consider using either <a href="https://github.com/electron/forge">Electron
 					Forge</a> (which uses Electron Packager
 					internally), or one of the <a href="#distributable-creators">related Electron tools</a>, which utilizes
 				Electron Packager-created folders as a basis.</p>
@@ -120,11 +121,11 @@
 					<h3>Building Windows apps from non-Windows platforms</h3>
 				</a>
 				<p>Building an Electron app for the Windows target platform requires editing the <code>Electron.exe</code> file.
-					Currently, Electron Packager uses <a href="https://github.com/atom/node-rcedit"><code>node-rcedit</code></a> to accomplish
+					Currently, Electron Packager uses <a href="https://github.com/electron/node-rcedit"><code>node-rcedit</code></a> to accomplish
 					this. A Windows executable is bundled in that Node package and needs to be run in order for this
 					functionality to work, so on non-Windows host platforms (not including WSL),
 					<a href="https://www.winehq.org/">Wine</a> 1.6 or later needs to be installed. On macOS, it is installable
-				via <a href="http://brew.sh/">Homebrew</a>.</p>
+				via <a href="https://brew.sh/">Homebrew</a>.</p>
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h2>Usage</h2>
 				</a>
@@ -210,7 +211,7 @@
 					<h2>Related</h2>
 				</a>
 				<ul>
-					<li><a href="https://github.com/electron-userland/electron-forge">Electron Forge</a> - creates, builds, and distributes modern Electron applications</li>
+					<li><a href="https://github.com/electron/forge">Electron Forge</a> - creates, builds, and distributes modern Electron applications</li>
 					<li><a href="https://github.com/Urucas/electron-packager-interactive">electron-packager-interactive</a> - an interactive CLI for electron-packager</li>
 					<li><a href="https://github.com/sindresorhus/grunt-electron">grunt-electron</a> - grunt plugin for electron-packager</li>
 				</ul>
@@ -246,7 +247,7 @@
 					<li><a href="https://npm.im/electron-packager-languages">electron-packager-languages</a> - sets the locales
 					available to Electron when packaged, which is used by the Mac App Store, among other places</li>
 					<li><a href="https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg">electron-packager-plugin-non-proprietary-codecs-ffmpeg</a> - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs</li>
-					<li><a href="https://github.com/electron/electron-rebuild">electron-rebuild</a> - rebuilds native Node.js modules
+					<li><a href="https://github.com/electron/rebuild">@electron/rebuild</a> - rebuilds native Node.js modules
 					against the packaged Electron version</li>
 				</ul>
 			</div>
