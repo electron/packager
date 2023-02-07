@@ -3,6 +3,7 @@
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
 [![CircleCI Build Status](https://circleci.com/gh/electron/electron-packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/electron-packager/tree/main)
+[![electron-nightly Canary](https://github.com/electron/electron-packager/actions/workflows/canary.yml/badge.svg)](https://github.com/electron/electron-packager/actions/workflows/canary.yml)
 [![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
 [![npm](https://badgen.net/npm/v/electron-packager)](https://npm.im/electron-packager)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
@@ -25,7 +26,7 @@ Electron Packager is a command line tool and Node.js library that bundles Electr
 source code with a renamed Electron executable and supporting files into folders ready for distribution.
 
 For creating distributables like installers and Linux packages, consider using either [Electron
-Forge](https://github.com/electron-userland/electron-forge) (which uses Electron Packager
+Forge](https://github.com/electron/forge) (which uses Electron Packager
 internally), or one of the [related Electron tools](#distributable-creators), which utilizes
 Electron Packager-created folders as a basis.
 
@@ -63,11 +64,11 @@ It is **not** recommended to install `electron-packager` globally.
 ### Building Windows apps from non-Windows platforms
 
 Building an Electron app for the Windows target platform requires editing the `Electron.exe` file.
-Currently, Electron Packager uses [`node-rcedit`](https://github.com/atom/node-rcedit) to accomplish
+Currently, Electron Packager uses [`node-rcedit`](https://github.com/electron/node-rcedit) to accomplish
 this. A Windows executable is bundled in that Node package and needs to be run in order for this
 functionality to work, so on non-Windows host platforms (not including WSL),
 [Wine](https://www.winehq.org/) 1.6 or later needs to be installed. On macOS, it is installable
-via [Homebrew](http://brew.sh/).
+via [Homebrew](https://brew.sh/).
 
 ## Usage
 
@@ -169,7 +170,7 @@ The `Foo Bar.app` folder generated can be executed by a system running macOS, wh
 
 ## Related
 
-- [Electron Forge](https://github.com/electron-userland/electron-forge) - creates, builds, and distributes modern Electron applications
+- [Electron Forge](https://github.com/electron/forge) - creates, builds, and distributes modern Electron applications
 - [electron-packager-interactive](https://github.com/Urucas/electron-packager-interactive) - an interactive CLI for electron-packager
 - [grunt-electron](https://github.com/sindresorhus/grunt-electron) - grunt plugin for electron-packager
 
@@ -202,5 +203,5 @@ These Node modules utilize Electron Packager API hooks:
 - [electron-packager-languages](https://npm.im/electron-packager-languages) - sets the locales
   available to Electron when packaged, which is used by the Mac App Store, among other places
 - [electron-packager-plugin-non-proprietary-codecs-ffmpeg](https://www.npmjs.com/package/electron-packager-plugin-non-proprietary-codecs-ffmpeg) - replaces the normal version of FFmpeg in Electron with a version without proprietary codecs
-- [electron-rebuild](https://github.com/electron/electron-rebuild) - rebuilds native Node.js modules
+- [@electron/rebuild](https://github.com/electron/rebuild) - rebuilds native Node.js modules
   against the packaged Electron version
