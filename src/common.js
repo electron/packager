@@ -12,7 +12,7 @@ function sanitizeAppName (name) {
 }
 
 function generateFinalBasename (opts) {
-  return `${sanitizeAppName(opts.name)}-${opts.platform}-${opts.arch}`
+  return `${sanitizeAppName(opts.basename || opts.name)}-${opts.platform}-${opts.arch}`
 }
 
 function generateFinalPath (opts) {

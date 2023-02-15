@@ -464,6 +464,14 @@ declare namespace electronPackager {
      */
     junk?: boolean;
     /**
+     * The base folder ${basename}-${platform}-${arch}. If omitted, it will use the `productName` or `name` value from the
+     * nearest `package.json`.
+     *
+     * **Regardless of source, characters in the Electron app name which are not allowed in all target
+     * platforms' filenames (e.g., `/`), will be replaced by hyphens (`-`).**
+     */
+    basename?: string;
+    /**
      * The application name. If omitted, it will use the `productName` or `name` value from the
      * nearest `package.json`.
      *
