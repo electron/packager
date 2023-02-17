@@ -59,6 +59,16 @@ test('sanitize app name for use in the out directory name', t => {
   t.is(common.generateFinalBasename(opts), '@username-package-name-linux-x64', 'generateFinalBasename output should be sanitized')
 })
 
+test('basename should be used in the out directory name', t => {
+  const opts = {
+    arch: 'x64',
+    name: 'app name',
+    basename: 'myapp',
+    platform: 'linux'
+  }
+  t.is(common.generateFinalBasename(opts), 'myapp-linux-x64', 'generateFinalBasename output should use basename over name')
+})
+
 test('cannot build apps where the name ends in " Helper"', async t => {
   const opts = {
     arch: 'x64',
