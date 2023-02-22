@@ -40,6 +40,7 @@ function generateIgnoredOutDirs (opts) {
       for (const arch of archs) {
         const basenameOpts = {
           arch: arch,
+          basename: opts.basename,
           name: opts.name,
           platform: platform
         }
