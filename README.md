@@ -53,7 +53,7 @@ It generates executables/bundles for the following **target** platforms:
 
 ## Installation
 
-This module requires Node.js 10.0 or higher to run.
+This module requires Node.js 14.17.5 or higher to run.
 
 ```sh
 npm install --save-dev electron-packager
