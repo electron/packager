@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # tag: v3.5.2
         with:
           repository: electron/electron-quick-start
-          ref: refs/heads/master
+          ref: refs/heads/main
           path: electron-quick-start
       - name: Use Node.js 14.x
         uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c  # tag: v3.6.0
