@@ -98,6 +98,11 @@ osx-notarize       (macOS host platform only, requires --osx-sign) Whether to no
                    - appleIdPassword: should contain the password for the provided apple ID
                    - appleApiKey: should contain an App Store Connect API key
                    - appleApiIssuer: should contain the API key's issuer
+osx-universal      (macOS host platform only, requires --arch=universal) Options to pass to `@electron/universal`
+                   when packaging a Universal macOS binary. You must use dot notation to configure a list of sub-properties,
+                   e.g. --osx-universal.mergeASARs="true"
+                   For info on supported values see
+                   https://electron.github.io/electron-packager/main/modules/electronpackager.html#osxuniversaloptions
 protocol           URL protocol scheme to register the app as an opener of.
                    For example, `--protocol=myapp` would register the app to open
                    URLs such as `myapp://path`. This argument requires a `--protocol-name`
