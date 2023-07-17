@@ -72,9 +72,11 @@ via [Homebrew](https://brew.sh/).
 
 ## Usage
 
+### Via JavaScript
+
 JavaScript API usage can be found in the [API documentation](https://electron.github.io/electron-packager/main/modules/electronpackager.html).
 
-### From the Command Line
+### From the command line
 
 Running Electron Packager from the command line has this basic form:
 
@@ -82,13 +84,14 @@ Running Electron Packager from the command line has this basic form:
 npx electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
 
-**Note**: `npx` can be substituted for `yarn` or `npm exec` depending on what package manager and
-the version you have installed.
+> **Note**:
+> `npx` can be substituted for `yarn` or `npm exec` depending on what package manager and
+> the version you have installed.
 
 This will:
 
-- Find or download the correct release of Electron
-- Use that version of Electron to create an app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
+* Find or download the correct release of Electron
+* Use that version of Electron to create an app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
 
 `--platform` and `--arch` can be omitted, in two cases:
 
@@ -99,6 +102,13 @@ This will:
 For an overview of the other optional flags, run `electron-packager --help` or see
 [usage.txt](https://github.com/electron/electron-packager/blob/main/usage.txt). For
 detailed descriptions, see the [API documentation](https://electron.github.io/electron-packager/main/modules/electronpackager.html).
+
+For flags that are structured as objects, you can pass each option as via dot notation as such:
+
+```sh
+npx electron-packager --flag.foo="bar"
+# will pass in { flag: { foo: "bar"} } as an option to the Electron Packager API
+```
 
 If `appname` is omitted, this will use the name specified by "productName" or "name" in the nearest package.json.
 
