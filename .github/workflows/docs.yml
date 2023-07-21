@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # tag: v3.5.2
       - name: Fetch all git branches
         run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c  # tag: v3.6.0
+      - uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8  # tag: v3.7.0
         with:
           node-version: 14.x
       - run: npm install --engine-strict --no-lockfile
