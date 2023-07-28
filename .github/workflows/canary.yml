@@ -34,4 +34,7 @@ jobs:
       - name: Package
         run: |
           cd electron-quick-start
-          node_modules/.bin/electron-packager . --arch=all
+          if [ "${{ matrix.os }}" = "macOS-latest" ]; then
+            node_modules/.bin/electron-packager . --arch=universal
+          else
+            node_modules/.bin/electron-packager . --arch=all
