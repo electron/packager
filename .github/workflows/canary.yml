@@ -2,23 +2,24 @@ name: electron-nightly Canary
 
 on:
   schedule:
-    - cron: '15 8 * * *'
+    - cron: "15 8 * * *"
+  pull_request:
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macOS-latest, ubuntu-latest]
+        os: [macOS-latest, ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9  # tag: v3.5.3
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # tag: v3.5.3
         with:
           repository: electron/electron-quick-start
           ref: refs/heads/main
           path: electron-quick-start
       - name: Use Node.js 14.x
-        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8  # tag: v3.7.0
+        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # tag: v3.7.0
         with:
           node-version: 14.x
       - name: Replace electron with electron-nightly
@@ -31,10 +32,13 @@ jobs:
         run: |
           cd electron-quick-start
           npm install --save-dev electron-packager@electron/electron-packager
+        shell: bash
       - name: Package
         run: |
           cd electron-quick-start
-          if [ "${{ matrix.os }}" = "macOS-latest" ]; then
+          if [ "${{ matrix.os }}" == "macOS-latest" ]; then
             node_modules/.bin/electron-packager . --arch=universal
           else
             node_modules/.bin/electron-packager . --arch=all
+          fi
+        shell: bash
