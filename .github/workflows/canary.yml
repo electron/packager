@@ -3,7 +3,6 @@ name: electron-nightly Canary
 on:
   schedule:
     - cron: "15 8 * * *"
-  pull_request:
 
 jobs:
   build:
