@@ -35,7 +35,10 @@ steps-ci: &steps-ci
           *) yarn install --frozen-lockfile ;;
         esac
     - *step-restore-electron-cache
-    - run: test/ci/_before_script.js
+    - run:
+        name: Download Electron binaries
+        command: |
+          node test/ci/_before_script.js
     - *step-save-electron-cache
     - run: yarn run lint
     - run: yarn run tsd

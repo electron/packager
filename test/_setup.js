@@ -49,6 +49,7 @@ async function downloadAll (version) {
 async function downloadElectronChecksum (version) {
   return downloadArtifact({
     isGeneric: true,
+    cacheRoot: path.join(os.homedir(), '.electron'),
     version,
     artifactName: 'SHASUMS256.txt'
   })
