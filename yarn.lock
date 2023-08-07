@@ -3615,9 +3615,9 @@ rc@1.2.8, rc@^1.2.8:
     strip-json-comments "~2.0.1"
 
 rcedit@^3.0.1:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-3.0.2.tgz#ab742d4a2aecbf489ae9411789ac946767743133"
-  integrity sha512-JbPZ7ltZxMBa3ioBGDNGMWGpo0vOWMgnfsC1w/Fx7lWIoT+skCwSGCbVrBdFBXCoe8LtV5ut5l05mZZpkkrLTg==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-3.1.0.tgz#1563ec7a5663de639f94c5dc85429db1da364b3e"
+  integrity sha512-WRlRdY1qZbu1L11DklT07KuHfRk42l0NFFJdaExELEu4fEQ982bP5Z6OWGPj/wLLIuKRQDCxZJGAwoFsxhZhNA==
   dependencies:
     cross-spawn-windows-exe "^1.1.0"
 
