@@ -2,14 +2,52 @@
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v17.0.0...main
+[Unreleased]: https://github.com/electron/electron-packager/compare/v17.1.2...main
+
+## [17.1.2] - 2023-08-18
+
+[17.1.2]: https://github.com/electron/electron-packager/compare/v17.1.1...v17.1.2
+
+### Fixed
+
+* Added osx-universal flag to usage.txt (#1533)
+* Bumped osx-sign to 1.0.5 to fix an entitlement signing error (#1549)
+* Ensured logs are quiet when quiet flag is passed (#1440)
+* Pruned electron-nightly even if in dependencies (#1538)
+* Changed tsdoc to use @link syntax for index.d.ts (#1450)
+* Clarified CLI usage (#1534)
+* Fixed typos (#1438)
+
+### Changed
+
+* Updated Galactus (#1441)
+* Updated got to clean up yarn audit (#1456)
+* Set @wg-ecosystem as CODEOWNERS (#1471)
+* Bumped dependencies to clean yarn audit (#1473)
+* Updated GitHub actions workflows (#1475)
+
+### Removed
+
+* Removed Linux/ia32 official support (was removed in Electron 19) (#1449)
+
+## [17.1.1] - 2022-11-01
+
+[17.1.1]: https://github.com/electron/electron-packager/compare/v17.1.0...v17.1.1
+
+### Fixed
+
+* Fixed an error allowing packaging twice simultaneously (#1439)
+
+## [17.1.0] - 2022-10-31
+
+[17.1.0]: https://github.com/electron/electron-packager/compare/v17.0.0...v17.1.0
 
 ### Changed
 
 * Replaced `electron-notarize` with `@electron/notarize`.  The configuration options are unchanged. This migration is purely cosmetic.
 * Added new `afterFinalizePackageTargets` hook. This hook exposes the platform/arch combinations that are being packaged when the `arch:all` or `platform:all` options are set.
 
-## [17.0.0]
+## [17.0.0] - 2022-10-19
 
 [17.0.0]: https://github.com/electron/electron-packager/compare/v16.0.0...v17.0.0
 

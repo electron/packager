@@ -1,6 +1,6 @@
 {
   "name": "electron-packager",
-  "version": "17.1.1",
+  "version": "17.1.2",
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
   "main": "src/index.js",
   "types": "src/index.d.ts",
