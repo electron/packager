@@ -129,15 +129,21 @@
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h2>Usage</h2>
 				</a>
+				<a href="#via-javascript" id="via-javascript" style="color: inherit; text-decoration: none;">
+					<h3>Via JavaScript</h3>
+				</a>
 				<p>JavaScript API usage can be found in the <a href="https://electron.github.io/electron-packager/main/modules/electronpackager.html">API documentation</a>.</p>
 				<a href="#from-the-command-line" id="from-the-command-line" style="color: inherit; text-decoration: none;">
-					<h3>From the Command Line</h3>
+					<h3>From the command line</h3>
 				</a>
 				<p>Running Electron Packager from the command line has this basic form:</p>
 				<pre><code>npx electron-packager <span class="hljs-variable">&lt;sourcedir&gt;</span> <span class="hljs-variable">&lt;appname&gt;</span> --platform=<span class="hljs-variable">&lt;platform&gt;</span> --arch=<span class="hljs-variable">&lt;arch&gt;</span> [optional <span class="hljs-keyword">flags</span>...]
 </code></pre>
-				<p><strong>Note</strong>: <code>npx</code> can be substituted for <code>yarn</code> or <code>npm exec</code> depending on what package manager and
-				the version you have installed.</p>
+				<blockquote>
+					<p><strong>Note</strong>:
+						<code>npx</code> can be substituted for <code>yarn</code> or <code>npm exec</code> depending on what package manager and
+					the version you have installed.</p>
+				</blockquote>
 				<p>This will:</p>
 				<ul>
 					<li>Find or download the correct release of Electron</li>
@@ -152,6 +158,10 @@
 				<p>For an overview of the other optional flags, run <code>electron-packager --help</code> or see
 					<a href="https://github.com/electron/electron-packager/blob/main/usage.txt">usage.txt</a>. For
 				detailed descriptions, see the <a href="https://electron.github.io/electron-packager/main/modules/electronpackager.html">API documentation</a>.</p>
+				<p>For flags that are structured as objects, you can pass each option as via dot notation as such:</p>
+				<pre><code class="language-sh">npx electron-packager --flag.foo=<span class="hljs-string">&quot;bar&quot;</span>
+<span class="hljs-comment"># will pass in { flag: { foo: &quot;bar&quot;} } as an option to the Electron Packager API</span>
+</code></pre>
 				<p>If <code>appname</code> is omitted, this will use the name specified by &quot;productName&quot; or &quot;name&quot; in the nearest package.json.</p>
 				<p><strong>Characters in the Electron app name which are not allowed in all target platforms&#39; filenames
 				(e.g., <code>/</code>), will be replaced by hyphens (<code>-</code>).</strong></p>
