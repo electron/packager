@@ -3797,10 +3797,10 @@ rc@1.2.8, rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-rcedit@^3.0.1:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-3.0.2.tgz#ab742d4a2aecbf489ae9411789ac946767743133"
-  integrity sha512-JbPZ7ltZxMBa3ioBGDNGMWGpo0vOWMgnfsC1w/Fx7lWIoT+skCwSGCbVrBdFBXCoe8LtV5ut5l05mZZpkkrLTg==
+rcedit@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-4.0.0.tgz#6c5436470266f613f29d84098847957f4fb6e9ba"
+  integrity sha512-OIPwu2e0b2WF4urFMcdiYUZGjmwh5pa52Mt847MK7ovxHkjpiPaI4Ov2atjeKTNFo4Tas0G31Qm7K21t87hp+g==
   dependencies:
     cross-spawn-windows-exe "^1.1.0"
 
