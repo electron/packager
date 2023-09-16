@@ -4,7 +4,6 @@ const fs = require('fs-extra')
 const getMetadataFromPackageJSON = require('../src/infer')
 const packager = require('..')
 const path = require('path')
-const pkgUp = require('pkg-up')
 const semver = require('semver')
 const test = require('ava')
 const util = require('./_util')
@@ -21,6 +20,7 @@ async function inferElectronVersionTest (t, opts, fixture, packageName) {
 async function copyFixtureToTempDir (t, fixtureSubdir) {
   const tmpdir = path.join(t.context.tempDir, fixtureSubdir)
   const fixtureDir = util.fixtureSubdir(fixtureSubdir)
+  const { pkgUp } = await import('pkg-up')
   const tmpdirPkg = await pkgUp({ cwd: path.join(tmpdir, '..') })
 
   if (tmpdirPkg) {
