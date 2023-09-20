@@ -204,11 +204,10 @@
     arrify "^1.0.1"
 
 "@electron/asar@^3.2.1":
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.4.tgz#7e8635a3c4f6d8b3f8ae6efaf5ecb9fbf3bd9864"
-  integrity sha512-lykfY3TJRRWFeTxccEKdf1I6BLl2Plw81H0bbp4Fc5iEc67foDCa5pjJQULVgo0wF+Dli75f3xVcdb/67FFZ/g==
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.5.tgz#1557d456e99123cbc0b69a79230199b32dca785a"
+  integrity sha512-Ypahc2ElTj9YOrFvUHuoXv5Z/V1nPA5enlhmQapc578m/HZBHKTbqhoL5JZQjje2+/6Ti5AHh7Gj1/haeJa63Q==
   dependencies:
-    chromium-pickle-js "^0.2.0"
     commander "^5.0.0"
     glob "^7.1.6"
     minimatch "^3.0.4"
@@ -1098,11 +1097,6 @@ chokidar@^3.4.3:
     readdirp "~3.6.0"
   optionalDependencies:
     fsevents "~2.3.2"
-
-chromium-pickle-js@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/chromium-pickle-js/-/chromium-pickle-js-0.2.0.tgz#04a106672c18b085ab774d983dfa3ea138f22205"
-  integrity sha512-1R5Fho+jBq0DDydt+/vHWj5KJNJCKdARKOCwZUen84I5BreWoLqRLANH1U87eJy1tiASPtMnGqJJq0ZsLoRPOw==
 
 chunkd@^2.0.1:
   version "2.0.1"
