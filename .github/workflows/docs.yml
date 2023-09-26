@@ -20,7 +20,7 @@ jobs:
         run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
       - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d  # tag: v3.8.1
         with:
-          node-version: 14.x
+          node-version: lts/*
       - run: npm install --engine-strict --no-lockfile
       - run: npm run docs:build
       - uses: dsanders11/github-action-gh-pages@6837fa66857ff3234e3ea5bcf709c86767ae3ce1
