@@ -204,9 +204,9 @@
     arrify "^1.0.1"
 
 "@electron/asar@^3.2.1":
-  version "3.2.5"
-  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.5.tgz#1557d456e99123cbc0b69a79230199b32dca785a"
-  integrity sha512-Ypahc2ElTj9YOrFvUHuoXv5Z/V1nPA5enlhmQapc578m/HZBHKTbqhoL5JZQjje2+/6Ti5AHh7Gj1/haeJa63Q==
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.6.tgz#849d6166167b70755911c1ac8908cd8f84573592"
+  integrity sha512-g3Qj43/4Fi8EOB7hwVF6TCwPfwWXTYqD6R16cuCWKD3khKIQJT0WOloF55+LzaP92rYovlE6XLlaESitrxSKmg==
   dependencies:
     commander "^5.0.0"
     glob "^7.1.6"
