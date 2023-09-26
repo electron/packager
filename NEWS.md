@@ -1,8 +1,9 @@
 # Electron Packager: Changes by Version
 
-## [Unreleased]
+## New Release Notes on GitHub Releases
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v17.1.2...main
+Release notes for new releases are now on [GitHub Releases](https://github.com/electron/electron-packager/releases)
+for the repository.
 
 ## [17.1.2] - 2023-08-18
 

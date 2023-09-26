@@ -1,7 +1,8 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@1.2.0
+  cfa: continuousauth/npm@1.0.2
+  node: electronjs/node@1.4.1
 
 jobs:
   test:
@@ -58,10 +59,17 @@ workflows:
                 - node/macos
                 - node/windows
               node-version:
-                - 20.2.0
-                - 18.14.0
-                - 16.19.0
-                - 14.19.0
+                - '20.9'
+                - '18.17'
+                - '16.20'
+                - '14.21'
           filters:
             branches: { ignore: gh-pages }
-
+      - cfa/release:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - main
+          context: cfa-release

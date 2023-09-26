@@ -124,14 +124,3 @@ existing fixture, such as `basic`. If you need to add a new fixture:
 ## For Collaborators
 
 Make sure to get a `:thumbsup:`, `+1` or `LGTM` from another collaborator before merging a PR.
-
-### Release process
-
-- if you aren't sure if a release should happen, open an issue
-- make sure that `NEWS.md` is up to date
-- make sure the tests pass
-- `npm version <major|minor|patch>`
-- `git push && git push --tags` (or `git push` with `git config --global push.followTags true` on latest git)
-- create a new GitHub release from the pushed tag with the contents of `NEWS.md` for that version
-- close the milestone associated with the version if one is open
-- `npm publish`
