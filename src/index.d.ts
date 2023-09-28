@@ -33,7 +33,7 @@ type NotarizeLegacyOptions = LegacyNotarizeCredentials & TransporterOptions;
  * Short example:
  *
  * ```javascript
- * const packager = require('electron-packager')
+ * const packager = require('@electron/packager')
  *
  * async function bundleElectronApp(options) {
  *   const appPaths = await packager(options)
@@ -77,8 +77,8 @@ declare namespace electronPackager {
    * **callback-style functions are not supported by `serialHooks`.** For example:
    *
    * ```javascript
-   * const packager = require('electron-packager')
-   * const { serialHooks } = require('electron-packager/src/hooks')
+   * const packager = require('@electron/packager')
+   * const { serialHooks } = require('@electron/packager/src/hooks')
    *
    * packager({
    *   // ...
@@ -100,7 +100,7 @@ declare namespace electronPackager {
    * ```
    *
    * For real-world examples of `HookFunction`s, see the [list of related
-   * plugins](https://github.com/electron/electron-packager#plugins).
+   * plugins](https://github.com/electron/packager#plugins).
    */
   type HookFunction =
     /**
@@ -422,7 +422,7 @@ declare namespace electronPackager {
      * Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
      *
      * - macOS: `.icns`
-     * - Windows: `.ico` ([See the readme](https://github.com/electron/electron-packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
+     * - Windows: `.ico` ([See the readme](https://github.com/electron/packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
      * - Linux: this option is not supported, as the dock/window list icon is set via
      *   [the `icon` option in the `BrowserWindow` constructor](https://electronjs.org/docs/api/browser-window/#new-browserwindowoptions).
      *   *Please note that you need to use a PNG, and not the macOS or Windows icon formats, in order for it

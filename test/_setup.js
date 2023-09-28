@@ -25,7 +25,7 @@ function fixtureSubdir (subdir) {
 
 /**
  * Skip testing darwin/mas target on Windows since Electron Packager itself skips it
- * (see https://github.com/electron/electron-packager/issues/71)
+ * (see https://github.com/electron/packager/issues/71)
  */
 function skipDownloadingMacZips (platform, arch) {
   return common.isPlatformMac(platform) && process.platform === 'win32'

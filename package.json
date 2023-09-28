@@ -1,5 +1,5 @@
 {
-  "name": "electron-packager",
+  "name": "@electron/packager",
   "version": "0.0.0-development",
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
   "main": "src/index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-packager.git"
+    "url": "git+https://github.com/electron/packager.git"
   },
   "author": "Mark Lee",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/electron/electron-packager/issues"
+    "url": "https://github.com/electron/packager/issues"
   },
-  "homepage": "https://github.com/electron/electron-packager",
+  "homepage": "https://github.com/electron/packager",
   "files": [
     "collaborators.md",
     "bin",
@@ -132,7 +132,7 @@
     "directory": "test"
   },
   "funding": {
-    "url": "https://github.com/electron/electron-packager?sponsor=1"
+    "url": "https://github.com/electron/packager?sponsor=1"
   },
   "resolutions": {
     "got": "11.8.5"

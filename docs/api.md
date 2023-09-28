@@ -1,1 +1,1 @@
-[API Documentation](https://electron.github.io/electron-packager/) has moved.
+[API Documentation](https://electron.github.io/packager/) has moved.
