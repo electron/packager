@@ -24,13 +24,13 @@ jobs:
       - name: Replace electron with electron-nightly
         run: |
           cd electron-quick-start
-          yarn remove electron
-          yarn add --dev electron-nightly@latest
+          npm uninstall --save-dev electron
+          npm install --save-dev electron-nightly@latest
         shell: bash
       - name: Install Electron Packager
         run: |
           cd electron-quick-start
-          yarn add --dev electron-packager@electron/electron-packager
+          npm install --save-dev electron-packager@electron/electron-packager
         shell: bash
       - name: Package
         run: |
