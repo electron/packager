@@ -16,7 +16,7 @@ jobs:
       contents: write
     steps:
       - name: Generate GitHub App token
-        uses: electron/github-app-auth-action@72247c8be59cd63accc5f99599bf400a360a5d8a # v1.1.0
+        uses: electron/github-app-auth-action@384fd19694fe7b6dcc9a684746c6976ad78228ae # v1.1.1
         id: generate-token
         with:
           creds: ${{ secrets.GH_APP_CREDS }}
