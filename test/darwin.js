@@ -319,38 +319,44 @@ if (!(process.env.CI && process.platform === 'win32')) {
   test('osxSign: default args', t => {
     const args = true
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version' })
+    t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: identity=true sets autodiscovery mode', t => {
     const args = { identity: true }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version' })
+    t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: optionsForFile passed to @electron/osx-sign', t => {
     const optionsForFile = () => ({ entitlements: 'path-to-entitlements' })
     const args = { optionsForFile }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', optionsForFile })
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', optionsForFile, continueOnError: true })
   })
 
   test('osxSign: app not overwritten', t => {
     const args = { app: 'some-other-path' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: platform not overwritten', t => {
     const args = { platform: 'mas' }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: binaries not set', t => {
     const args = { binaries: ['binary1', 'binary2'] }
     const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
-    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version' })
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
+  })
+
+  test('osxSign: continueOnError=false', t => {
+    const args = { continueOnError: false }
+    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: false })
   })
 
   if (process.platform === 'darwin') {
@@ -362,6 +368,19 @@ if (!(process.env.CI && process.platform === 'win32')) {
       await util.assertDirectory(t, appPath, 'The expected .app directory should exist')
       await exec(`codesign --verify --verbose ${appPath}`)
       t.pass('codesign should verify successfully')
+    }))
+
+    test.serial('end-to-end failed codesign throws an error with osxOpts.continueOnError=false', darwinTest(async (t, opts) => {
+      opts.osxSign = { identity: 'something else', continueOnError: false }
+
+      await t.throwsAsync(() => packager(opts))
+    }))
+
+    test.serial('end-to-end failed codesign does not throw an error with osxOpts.continueOnError=true', darwinTest(async (t, opts) => {
+      opts.osxSign = { identity: 'something else' }
+
+      await packager(opts)
+      t.pass('codesign should fail but continue due to continueOnError=true')
     }))
   }
 
