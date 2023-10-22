@@ -4,6 +4,10 @@
 
 [Unreleased]: https://github.com/electron/electron-packager/compare/v17.1.2...main
 
+### Changed
+
+* Added `osxSign.continueOnError` option. Setting it to `false` will fail the build if there was an error signing the app instead of the default behavior of printing a warning. (#1579)
+
 ## [17.1.2] - 2023-08-18
 
 [17.1.2]: https://github.com/electron/electron-packager/compare/v17.1.1...v17.1.2
