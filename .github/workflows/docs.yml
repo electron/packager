@@ -12,10 +12,16 @@ permissions: {}
 jobs:
   docs:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
+      - name: Generate GitHub App token
+        uses: electron/github-app-auth-action@384fd19694fe7b6dcc9a684746c6976ad78228ae # v1.1.1
+        id: generate-token
+        with:
+          creds: ${{ secrets.GH_APP_CREDS }}
+          export-git-user: true
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # tag: v4.1.1
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
       - name: Fetch all git branches
         run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
       - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d  # tag: v3.8.1
@@ -23,14 +29,14 @@ jobs:
           node-version: lts/*
       - run: yarn install --frozen-lockfile
       - run: yarn run docs:build
-      - uses: dsanders11/github-action-gh-pages@6837fa66857ff3234e3ea5bcf709c86767ae3ce1
+      - uses: malept/github-action-gh-pages@e151760357583e2f9152f8e8c8658ceb3ccf3d64  # tag: v1.3.1
         with:
           defaultBranch: main
           docsPath: typedoc
-          gitCommitEmail: 'github-actions@github.com'
+          gitCommitEmail: ${{ env.GIT_COMMITTER_EMAIL }}
           gitCommitMessage: 'Publish [skip ci]'
-          gitCommitUser: 'github-actions'
+          gitCommitUser: ${{ env.GIT_COMMITTER_NAME }}
           showUnderscoreFiles: true
           versionDocs: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
