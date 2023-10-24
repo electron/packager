@@ -24,7 +24,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
       - name: Fetch all git branches
         run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-      - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d  # tag: v3.8.1
+      - uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65  # tag: v4.0.0
         with:
           node-version: lts/*
       - run: yarn install --frozen-lockfile
