@@ -28,7 +28,7 @@ test('setting the quiet option does not print messages', t => {
   common.warning('warning', true)
   t.true(console.warn.notCalled, 'quieted common.warning should not call console.warn')
   common.info('info', true)
-  t.true(console.error.notCalled, 'quieted common.info should not call console.error')
+  t.true(console.error.notCalled, 'quieted common.info should not call console.info')
 })
 
 test('download argument: download.{arch,platform,version,artifactName} does not overwrite {arch,platform,version,artifactName}', t => {
