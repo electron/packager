@@ -60,8 +60,7 @@ workflows:
               node-version:
                 - 20.2.0
                 - 18.14.0
-                - 16.19.0
-                - 14.19.0
+                - 16.4.0
           filters:
             branches: { ignore: gh-pages }
 
