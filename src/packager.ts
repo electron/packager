@@ -8,6 +8,7 @@ import path from 'path';
 import { createPlatformArchPairs, osModules, validateListFromOptions } from './targets';
 import unzip from './unzip';
 import { packageUniversalMac } from './universal';
+import { Options } from './types';
 
 function debugHostInfo() {
   debug(hostInfo());
@@ -173,7 +174,30 @@ async function packageAllSpecifiedCombos(opts, archs, platforms) {
   ));
 }
 
-export async function packager(opts) {
+/**
+ * Bundles Electron-based application source code with a renamed/customized Electron executable and
+ * its supporting files into folders ready for distribution.
+ *
+ * Briefly, this function:
+ * - finds or downloads the correct release of Electron
+ * - uses that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>`
+ *
+ * Short example:
+ *
+ * ```javascript
+ * const packager = require('@electron/packager')
+ *
+ * async function bundleElectronApp(options) {
+ *   const appPaths = await packager(options)
+ *   console.log(`Electron app bundles created:\n${appPaths.join("\n")}`)
+ * }
+ * ```
+ *
+ * @param opts - Options to configure packaging.
+ *
+ * @returns A Promise containing the paths to the newly created application bundles.
+ */
+export async function packager(opts: Options): Promise<string[]> {
   debugHostInfo();
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`);
 

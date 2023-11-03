@@ -23,31 +23,6 @@ export type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
 export type NotarizeLegacyOptions = LegacyNotarizeCredentials & TransporterOptions;
 
 /**
- * Bundles Electron-based application source code with a renamed/customized Electron executable and
- * its supporting files into folders ready for distribution.
- *
- * Briefly, this function:
- * - finds or downloads the correct release of Electron
- * - uses that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>`
- *
- * Short example:
- *
- * ```javascript
- * const packager = require('@electron/packager')
- *
- * async function bundleElectronApp(options) {
- *   const appPaths = await packager(options)
- *   console.log(`Electron app bundles created:\n${appPaths.join("\n")}`)
- * }
- * ```
- *
- * @param opts - Options to configure packaging.
- *
- * @returns A Promise containing the paths to the newly created application bundles.
- */
-declare function electronPackager(opts: Options): Promise<string[]>;
-
-/**
  * Architectures that have been supported by the official Electron prebuilt binaries, past
  * and present.
  */
