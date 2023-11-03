@@ -90,7 +90,7 @@ class Packager {
     debug(`Creating ${buildDir}`);
     await fs.ensureDir(buildDir);
     await this.extractElectronZip(comboOpts, zipPath, buildDir);
-    const os = require(osModules[comboOpts.platform]);
+    const os = await import(osModules[comboOpts.platform]);
     const app = new os.App(comboOpts, buildDir);
     return app.create();
   }

@@ -2,6 +2,7 @@ import { makeUniversalApp } from '@electron/universal';
 import { generateFinalPath, info } from './common';
 import fs from 'fs-extra';
 import path from 'path';
+import { App } from './mac';
 
 export async function packageUniversalMac(packageForPlatformAndArchWithOpts, buildDir, comboOpts, downloadOpts, tempBase) {
   // In order to generate a universal macOS build we actually need to build the x64 and the arm64 app
@@ -10,7 +11,6 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts, bui
   await fs.mkdirp(tempBase);
   const tempDir = await fs.mkdtemp(path.resolve(tempBase, 'electron-packager-universal-'));
 
-  const { App } = require('./mac');
   const app = new App(comboOpts, buildDir);
   const universalStagingPath = app.stagingPath;
   const finalUniversalPath = generateFinalPath(app.opts);

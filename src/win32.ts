@@ -3,6 +3,7 @@ import { WrapperError } from 'cross-spawn-windows-exe';
 
 import App from './platform';
 import { debug, sanitizeAppName } from './common';
+import rcedit from 'rcedit';
 
 export function updateWineMissingException(err) {
   if (err instanceof WrapperError) {
@@ -89,7 +90,7 @@ class WindowsApp extends App {
 
     debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`);
     try {
-      await require('rcedit')(this.electronBinaryPath, rcOpts);
+      await rcedit(this.electronBinaryPath, rcOpts);
     } catch (err) {
       throw updateWineMissingException(err);
     }
