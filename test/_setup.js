@@ -40,7 +40,8 @@ async function downloadAll (version) {
     [
       ...combinations.map(combination => combination.arch === 'universal' ? null : downloadElectronZip(version, combination)),
       downloadElectronZip('6.0.0', {
-        platform: 'darwin'
+        platform: 'darwin',
+        arch: 'x64'
       })
     ]
   )
