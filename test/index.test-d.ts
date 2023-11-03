@@ -1,5 +1,5 @@
 import { expectType } from 'tsd';
-import * as packager from '..';
+import { packager } from '../src/packager';
 
 function completeFunction(
   buildPath: string,

@@ -173,7 +173,7 @@ async function packageAllSpecifiedCombos(opts, archs, platforms) {
   ));
 }
 
-export default async function packager(opts) {
+export async function packager(opts) {
   debugHostInfo();
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`);
 
