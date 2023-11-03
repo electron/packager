@@ -1,17 +1,15 @@
-'use strict'
+const common = require('./common');
+const { getHostArch } = require('@electron/get');
+const semver = require('semver');
 
-const common = require('./common')
-const { getHostArch } = require('@electron/get')
-const semver = require('semver')
-
-const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el', 'universal']
-const officialPlatforms = ['darwin', 'linux', 'mas', 'win32']
+const officialArchs = ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el', 'universal'];
+const officialPlatforms = ['darwin', 'linux', 'mas', 'win32'];
 const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
   linux: ['ia32', 'x64', 'armv7l', 'arm64', 'mips64el'],
   mas: ['x64', 'arm64', 'universal'],
   win32: ['ia32', 'x64', 'arm64']
-}
+};
 
 const buildVersions = {
   darwin: {
@@ -30,7 +28,7 @@ const buildVersions = {
   win32: {
     arm64: '>= 6.0.8'
   }
-}
+};
 
 // Maps to module filename for each platform (lazy-required if used)
 const osModules = {
@@ -38,73 +36,73 @@ const osModules = {
   linux: './linux',
   mas: './mac', // map to darwin
   win32: './win32'
-}
+};
 
 const supported = {
   arch: new Set(officialArchs),
   platform: new Set(officialPlatforms)
-}
+};
 
-function createPlatformArchPairs (opts, selectedPlatforms, selectedArchs, ignoreFunc) {
-  const combinations = []
+function createPlatformArchPairs(opts, selectedPlatforms, selectedArchs, ignoreFunc) {
+  const combinations = [];
   for (const arch of selectedArchs) {
     for (const platform of selectedPlatforms) {
       if (usingOfficialElectronPackages(opts)) {
         if (!validOfficialPlatformArch(opts, platform, arch)) {
-          warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`)
-          continue
+          warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`);
+          continue;
         } else if (buildVersions[platform] && buildVersions[platform][arch]) {
-          const buildVersion = buildVersions[platform][arch]
+          const buildVersion = buildVersions[platform][arch];
           if (buildVersion && !officialBuildExists(opts, buildVersion)) {
-            warnIfAllNotSpecified(opts, `Official ${platform}/${arch} support only exists in Electron ${buildVersion}`)
-            continue
+            warnIfAllNotSpecified(opts, `Official ${platform}/${arch} support only exists in Electron ${buildVersion}`);
+            continue;
           }
         }
-        if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue
+        if (typeof ignoreFunc === 'function' && ignoreFunc(platform, arch)) continue;
       }
-      combinations.push([platform, arch])
+      combinations.push([platform, arch]);
     }
   }
 
-  return combinations
+  return combinations;
 }
 
-function unsupportedListOption (name, value, supported) {
-  return new Error(`Unsupported ${name}=${value} (${typeof value}); must be a string matching: ${Array.from(supported.values()).join(', ')}`)
+function unsupportedListOption(name, value, supported) {
+  return new Error(`Unsupported ${name}=${value} (${typeof value}); must be a string matching: ${Array.from(supported.values()).join(', ')}`);
 }
 
-function usingOfficialElectronPackages (opts) {
-  return !opts.download || !Object.prototype.hasOwnProperty.call(opts.download, 'mirrorOptions')
+function usingOfficialElectronPackages(opts) {
+  return !opts.download || !Object.prototype.hasOwnProperty.call(opts.download, 'mirrorOptions');
 }
 
-function validOfficialPlatformArch (opts, platform, arch) {
-  return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].includes(arch)
+function validOfficialPlatformArch(opts, platform, arch) {
+  return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].includes(arch);
 }
 
-function officialBuildExists (opts, buildVersion) {
-  return semver.satisfies(opts.electronVersion, buildVersion, { includePrerelease: true })
+function officialBuildExists(opts, buildVersion) {
+  return semver.satisfies(opts.electronVersion, buildVersion, { includePrerelease: true });
 }
 
-function allPlatformsOrArchsSpecified (opts) {
-  return opts.all || opts.arch === 'all' || opts.platform === 'all'
+function allPlatformsOrArchsSpecified(opts) {
+  return opts.all || opts.arch === 'all' || opts.platform === 'all';
 }
 
-function warnIfAllNotSpecified (opts, message) {
+function warnIfAllNotSpecified(opts, message) {
   if (!allPlatformsOrArchsSpecified(opts)) {
-    common.warning(message, opts.quiet)
+    common.warning(message, opts.quiet);
   }
 }
 
 module.exports = {
-  allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion (platform, electronVersion) {
-    const archs = officialPlatformArchCombos[platform]
+  allOfficialArchsForPlatformAndVersion: function allOfficialArchsForPlatformAndVersion(platform, electronVersion) {
+    const archs = officialPlatformArchCombos[platform];
     if (buildVersions[platform]) {
       const excludedArchs = Object.keys(buildVersions[platform])
-        .filter(arch => !officialBuildExists({ electronVersion: electronVersion }, buildVersions[platform][arch]))
-      return archs.filter(arch => !excludedArchs.includes(arch))
+        .filter(arch => !officialBuildExists({ electronVersion: electronVersion }, buildVersions[platform][arch]));
+      return archs.filter(arch => !excludedArchs.includes(arch));
     }
 
-    return archs
+    return archs;
   },
   createPlatformArchPairs,
   officialArchs,
@@ -114,36 +112,36 @@ module.exports = {
   supported,
   // Validates list of architectures or platforms.
   // Returns a normalized array if successful, or throws an Error.
-  validateListFromOptions: function validateListFromOptions (opts, name) {
-    if (opts.all) return Array.from(supported[name].values())
+  validateListFromOptions: function validateListFromOptions(opts, name) {
+    if (opts.all) return Array.from(supported[name].values());
 
-    let list = opts[name]
+    let list = opts[name];
     if (!list) {
       if (name === 'arch') {
-        list = getHostArch()
+        list = getHostArch();
       } else {
-        list = process[name]
+        list = process[name];
       }
     } else if (list === 'all') {
-      return Array.from(supported[name].values())
+      return Array.from(supported[name].values());
     }
 
     if (!Array.isArray(list)) {
       if (typeof list === 'string') {
-        list = list.split(/,\s*/)
+        list = list.split(/,\s*/);
       } else {
-        return unsupportedListOption(name, list, supported[name])
+        return unsupportedListOption(name, list, supported[name]);
       }
     }
 
-    const officialElectronPackages = usingOfficialElectronPackages(opts)
+    const officialElectronPackages = usingOfficialElectronPackages(opts);
 
     for (const value of list) {
       if (officialElectronPackages && !supported[name].has(value)) {
-        return unsupportedListOption(name, value, supported[name])
+        return unsupportedListOption(name, value, supported[name]);
       }
     }
 
-    return list
+    return list;
   }
-}
+};
