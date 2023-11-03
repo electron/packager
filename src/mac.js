@@ -351,7 +351,11 @@ class MacApp extends App {
         await signApp(signOpts)
       } catch (err) {
         // Although not signed successfully, the application is packed.
-        common.warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet)
+        if (signOpts.continueOnError) {
+          common.warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet)
+        } else {
+          throw err
+        }
       }
     }
   }
@@ -416,6 +420,11 @@ function createSignOpts (properties, platform, app, version, quiet) {
   // autodiscovery. Otherwise, provide signing certificate info.
   if (signOpts.identity === true) {
     signOpts.identity = null
+  }
+
+  // Default to `continueOnError: true` since this was the default behavior before this option was added
+  if (signOpts.continueOnError !== false) {
+    signOpts.continueOnError = true
   }
 
   return signOpts

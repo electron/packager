@@ -21,7 +21,7 @@ function generateFinalPath (opts) {
 
 function info (message, quiet) {
   if (!quiet) {
-    console.error(message)
+    console.info(message)
   }
 }
 
