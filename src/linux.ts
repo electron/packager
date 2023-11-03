@@ -1,5 +1,5 @@
-const App = require('./platform');
-const common = require('./common');
+import App from './platform';
+import { sanitizeAppName } from './common';
 
 class LinuxApp extends App {
   get originalElectronName() {
@@ -7,7 +7,7 @@ class LinuxApp extends App {
   }
 
   get newElectronName() {
-    return common.sanitizeAppName(this.executableName);
+    return sanitizeAppName(this.executableName);
   }
 
   async create() {
@@ -18,6 +18,4 @@ class LinuxApp extends App {
   }
 }
 
-module.exports = {
-  App: LinuxApp
-};
+export { LinuxApp as App };

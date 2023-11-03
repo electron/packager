@@ -1,16 +1,16 @@
-const common = require('./common');
-const galactus = require('galactus');
-const fs = require('fs-extra');
-const path = require('path');
+import { normalizePath, warning } from './common';
+import galactus from 'galactus';
+import fs from 'fs-extra';
+import path from 'path';
 
 const ELECTRON_MODULES = [
   'electron',
   'electron-nightly'
 ];
 
-class Pruner {
+export class Pruner {
   constructor(dir, quiet) {
-    this.baseDir = common.normalizePath(dir);
+    this.baseDir = normalizePath(dir);
     this.quiet = quiet;
     this.galactus = new galactus.DestroyerOfModules({
       rootDirectory: dir,
@@ -20,7 +20,7 @@ class Pruner {
   }
 
   setModules(moduleMap) {
-    const modulePaths = Array.from(moduleMap.keys()).map(modulePath => `/${common.normalizePath(modulePath)}`);
+    const modulePaths = Array.from(moduleMap.keys()).map(modulePath => `/${normalizePath(modulePath)}`);
     this.modules = new Set(modulePaths);
     this.walkedTree = true;
   }
@@ -41,7 +41,7 @@ class Pruner {
     }
 
     if (ELECTRON_MODULES.includes(module.name)) {
-      common.warning(`Found '${module.name}' but not as a devDependency, pruning anyway`, this.quiet);
+      warning(`Found '${module.name}' but not as a devDependency, pruning anyway`, this.quiet);
       return false;
     }
 
@@ -58,9 +58,6 @@ function isNodeModuleFolder(pathToCheck) {
     (path.basename(path.dirname(pathToCheck)).startsWith('@') && path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) === 'node_modules');
 }
 
-module.exports = {
-  isModule: async function isModule(pathToCheck) {
-    return (await fs.pathExists(path.join(pathToCheck, 'package.json'))) && isNodeModuleFolder(pathToCheck);
-  },
-  Pruner: Pruner
-};
+export async function isModule(pathToCheck) {
+  return (await fs.pathExists(path.join(pathToCheck, 'package.json'))) && isNodeModuleFolder(pathToCheck);
+}

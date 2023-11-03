@@ -1,5 +1,5 @@
-const extractZip = require('extract-zip');
+import extractZip from 'extract-zip';
 
-module.exports = async function extractElectronZip(zipPath, targetDir) {
+export default async function extractElectronZip(zipPath, targetDir) {
   await extractZip(zipPath, { dir: targetDir });
-};
+}

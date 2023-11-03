@@ -1,11 +1,10 @@
-const debug = require('debug')('electron-packager');
-const path = require('path');
-const { WrapperError } = require('cross-spawn-windows-exe');
+import path from 'path';
+import { WrapperError } from 'cross-spawn-windows-exe';
 
-const App = require('./platform');
-const common = require('./common');
+import App from './platform';
+import { debug, sanitizeAppName } from './common';
 
-function updateWineMissingException(err) {
+export function updateWineMissingException(err) {
   if (err instanceof WrapperError) {
     err.message += '\n\n' +
       'Wine is required to use the appCopyright, appVersion, buildVersion, icon, and \n' +
@@ -22,7 +21,7 @@ class WindowsApp extends App {
   }
 
   get newElectronName() {
-    return `${common.sanitizeAppName(this.executableName)}.exe`;
+    return `${sanitizeAppName(this.executableName)}.exe`;
   }
 
   get electronBinaryPath() {
@@ -105,7 +104,4 @@ class WindowsApp extends App {
   }
 }
 
-module.exports = {
-  App: WindowsApp,
-  updateWineMissingException: updateWineMissingException
-};
+export { WindowsApp as App };

@@ -1,23 +1,22 @@
-const common = require('./common');
-const copyFilter = require('./copy-filter');
-const debug = require('debug')('electron-packager');
-const download = require('./download');
-const fs = require('fs-extra');
-const getMetadataFromPackageJSON = require('./infer');
-const hooks = require('./hooks');
-const path = require('path');
-const targets = require('./targets');
-const unzip = require('./unzip');
-const { packageUniversalMac } = require('./universal');
+import { baseTempDir, debug, generateFinalPath, hostInfo, info, isPlatformMac } from './common';
+import { populateIgnoredPaths } from './copy-filter';
+import { downloadElectronZip, createDownloadCombos } from './download';
+import fs from 'fs-extra';
+import getMetadataFromPackageJSON from './infer';
+import { promisifyHooks } from './hooks';
+import path from 'path';
+import { createPlatformArchPairs, osModules, validateListFromOptions } from './targets';
+import unzip from './unzip';
+import { packageUniversalMac } from './universal';
 
 function debugHostInfo() {
-  debug(common.hostInfo());
+  debug(hostInfo());
 }
 
 class Packager {
   constructor(opts) {
     this.opts = opts;
-    this.tempBase = common.baseTempDir(opts);
+    this.tempBase = baseTempDir(opts);
     this.useTempDir = opts.tmpdir !== false;
     this.canCreateSymlinks = undefined;
   }
@@ -57,7 +56,7 @@ class Packager {
 
   /* istanbul ignore next */
   skipHostPlatformSansSymlinkSupport(comboOpts) {
-    common.info(`Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${comboOpts.platform} platform`, this.opts.quiet);
+    info(`Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${comboOpts.platform} platform`, this.opts.quiet);
     return Promise.resolve();
   }
 
@@ -70,7 +69,7 @@ class Packager {
   async extractElectronZip(comboOpts, zipPath, buildDir) {
     debug(`Extracting ${zipPath} to ${buildDir}`);
     await unzip(zipPath, buildDir);
-    await hooks.promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]);
+    await promisifyHooks(this.opts.afterExtract, [buildDir, comboOpts.electronVersion, comboOpts.platform, comboOpts.arch]);
   }
 
   async buildDir(platform, arch) {
@@ -86,23 +85,23 @@ class Packager {
 
   async createApp(comboOpts, zipPath) {
     const buildDir = await this.buildDir(comboOpts.platform, comboOpts.arch);
-    common.info(`Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`, this.opts.quiet);
+    info(`Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`, this.opts.quiet);
 
     debug(`Creating ${buildDir}`);
     await fs.ensureDir(buildDir);
     await this.extractElectronZip(comboOpts, zipPath, buildDir);
-    const os = require(targets.osModules[comboOpts.platform]);
+    const os = require(osModules[comboOpts.platform]);
     const app = new os.App(comboOpts, buildDir);
     return app.create();
   }
 
   async checkOverwrite(comboOpts, zipPath) {
-    const finalPath = common.generateFinalPath(comboOpts);
+    const finalPath = generateFinalPath(comboOpts);
     if (await fs.pathExists(finalPath)) {
       if (this.opts.overwrite) {
         return this.overwriteAndCreateApp(finalPath, comboOpts, zipPath);
       } else {
-        common.info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, this.opts.quiet);
+        info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, this.opts.quiet);
         return true;
       }
     } else {
@@ -126,7 +125,7 @@ class Packager {
 
       throw new Error(`The specified Electron ZIP directory does not exist: ${this.opts.electronZipDir}`);
     } else {
-      return download.downloadElectronZip(downloadOpts);
+      return downloadElectronZip(downloadOpts);
     }
   }
 
@@ -137,7 +136,7 @@ class Packager {
       return this.createApp(comboOpts, zipPath);
     }
 
-    if (common.isPlatformMac(comboOpts.platform)) {
+    if (isPlatformMac(comboOpts.platform)) {
       /* istanbul ignore else */
       if (this.canCreateSymlinks === undefined) {
         return this.testSymlink(comboOpts, zipPath);
@@ -158,7 +157,7 @@ class Packager {
       electronVersion: downloadOpts.version
     };
 
-    if (common.isPlatformMac(comboOpts.platform) && comboOpts.arch === 'universal') {
+    if (isPlatformMac(comboOpts.platform) && comboOpts.arch === 'universal') {
       return packageUniversalMac(this.packageForPlatformAndArchWithOpts.bind(this), await this.buildDir(comboOpts.platform, comboOpts.arch), comboOpts, downloadOpts, this.tempBase);
     }
 
@@ -169,17 +168,17 @@ class Packager {
 async function packageAllSpecifiedCombos(opts, archs, platforms) {
   const packager = new Packager(opts);
   await packager.ensureTempDir();
-  return Promise.all(download.createDownloadCombos(opts, platforms, archs).map(
+  return Promise.all(createDownloadCombos(opts, platforms, archs).map(
     downloadOpts => packager.packageForPlatformAndArch(downloadOpts)
   ));
 }
 
-module.exports = async function packager(opts) {
+export default async function packager(opts) {
   debugHostInfo();
   if (debug.enabled) debug(`Packager Options: ${JSON.stringify(opts)}`);
 
-  const archs = targets.validateListFromOptions(opts, 'arch');
-  const platforms = targets.validateListFromOptions(opts, 'platform');
+  const archs = validateListFromOptions(opts, 'arch');
+  const platforms = validateListFromOptions(opts, 'platform');
   if (!Array.isArray(archs)) return Promise.reject(archs);
   if (!Array.isArray(platforms)) return Promise.reject(platforms);
 
@@ -196,10 +195,10 @@ module.exports = async function packager(opts) {
   debug(`Application name: ${opts.name}`);
   debug(`Target Electron version: ${opts.electronVersion}`);
 
-  copyFilter.populateIgnoredPaths(opts);
+  populateIgnoredPaths(opts);
 
-  await hooks.promisifyHooks(opts.afterFinalizePackageTargets, [targets.createPlatformArchPairs(opts, platforms, archs).map(([platform, arch]) => ({ platform, arch }))]);
+  await promisifyHooks(opts.afterFinalizePackageTargets, [createPlatformArchPairs(opts, platforms, archs).map(([platform, arch]) => ({ platform, arch }))]);
   const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms);
   // Remove falsy entries (e.g. skipped platforms)
   return appPaths.filter(appPath => appPath);
-};
+}

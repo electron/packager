@@ -1,25 +1,25 @@
-const universal = require('@electron/universal');
-const common = require('./common');
-const fs = require('fs-extra');
-const path = require('path');
+import { makeUniversalApp } from '@electron/universal';
+import { generateFinalPath, info } from './common';
+import fs from 'fs-extra';
+import path from 'path';
 
-async function packageUniversalMac(packageForPlatformAndArchWithOpts, buildDir, comboOpts, downloadOpts, tempBase) {
+export async function packageUniversalMac(packageForPlatformAndArchWithOpts, buildDir, comboOpts, downloadOpts, tempBase) {
   // In order to generate a universal macOS build we actually need to build the x64 and the arm64 app
   // and then glue them together
-  common.info(`Packaging app for platform ${comboOpts.platform} universal using electron v${comboOpts.electronVersion} - Building x64 and arm64 slices now`, comboOpts.quiet);
+  info(`Packaging app for platform ${comboOpts.platform} universal using electron v${comboOpts.electronVersion} - Building x64 and arm64 slices now`, comboOpts.quiet);
   await fs.mkdirp(tempBase);
   const tempDir = await fs.mkdtemp(path.resolve(tempBase, 'electron-packager-universal-'));
 
   const { App } = require('./mac');
   const app = new App(comboOpts, buildDir);
   const universalStagingPath = app.stagingPath;
-  const finalUniversalPath = common.generateFinalPath(app.opts);
+  const finalUniversalPath = generateFinalPath(app.opts);
 
   if (await fs.pathExists(finalUniversalPath)) {
     if (comboOpts.overwrite) {
       await fs.remove(finalUniversalPath);
     } else {
-      common.info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, comboOpts.quiet);
+      info(`Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`, comboOpts.quiet);
       return true;
     }
   }
@@ -46,12 +46,12 @@ async function packageUniversalMac(packageForPlatformAndArchWithOpts, buildDir, 
   const x64AppPath = tempPackages.x64;
   const arm64AppPath = tempPackages.arm64;
 
-  common.info(`Stitching universal app for platform ${comboOpts.platform}`, comboOpts.quiet);
+  info(`Stitching universal app for platform ${comboOpts.platform}`, comboOpts.quiet);
 
   const generatedFiles = await fs.readdir(x64AppPath);
   const appName = generatedFiles.filter(file => path.extname(file) === '.app')[0];
 
-  await universal.makeUniversalApp({
+  await makeUniversalApp({
     ...comboOpts.osxUniversal,
     x64AppPath: path.resolve(x64AppPath, appName),
     arm64AppPath: path.resolve(arm64AppPath, appName),
@@ -72,7 +72,3 @@ async function packageUniversalMac(packageForPlatformAndArchWithOpts, buildDir, 
 
   return finalUniversalPath;
 }
-
-module.exports = {
-  packageUniversalMac
-};

@@ -1,11 +1,10 @@
-const App = require('./platform');
-const common = require('./common');
-const debug = require('debug')('electron-packager');
-const fs = require('fs-extra');
-const path = require('path');
-const plist = require('plist');
-const { notarize } = require('@electron/notarize');
-const { signApp } = require('@electron/osx-sign');
+import App from './platform';
+import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
+import fs from 'fs-extra';
+import path from 'path';
+import plist from 'plist';
+import { notarize } from '@electron/notarize';
+import { signApp } from '@electron/osx-sign';
 
 class MacApp extends App {
   constructor(opts, templatePath) {
@@ -48,11 +47,11 @@ class MacApp extends App {
   }
 
   get dotAppName() {
-    return `${common.sanitizeAppName(this.appName)}.app`;
+    return `${sanitizeAppName(this.appName)}.app`;
   }
 
   get defaultBundleName() {
-    return `com.electron.${common.sanitizeAppName(this.appName).toLowerCase()}`;
+    return `com.electron.${sanitizeAppName(this.appName).toLowerCase()}`;
   }
 
   get bundleName() {
@@ -106,9 +105,9 @@ class MacApp extends App {
   updatePlist(basePlist, displayName, identifier, name) {
     return Object.assign(basePlist, {
       CFBundleDisplayName: displayName,
-      CFBundleExecutable: common.sanitizeAppName(displayName),
+      CFBundleExecutable: sanitizeAppName(displayName),
       CFBundleIdentifier: identifier,
-      CFBundleName: common.sanitizeAppName(name)
+      CFBundleName: sanitizeAppName(name)
     });
   }
 
@@ -227,7 +226,7 @@ class MacApp extends App {
       .concat(['appPlist', 'helperPlist']);
 
     if (this.loginHelperPlist) {
-      const loginHelperName = common.sanitizeAppName(`${this.appName} Login Helper`);
+      const loginHelperName = sanitizeAppName(`${this.appName} Login Helper`);
       this.loginHelperPlist.CFBundleExecutable = loginHelperName;
       this.loginHelperPlist.CFBundleIdentifier = `${appBundleIdentifier}.loginhelper`;
       this.loginHelperPlist.CFBundleName = loginHelperName;
@@ -292,7 +291,7 @@ class MacApp extends App {
       return this.renameHelperAndExecutable(
         helperDirectory,
         originalBasename,
-        `${common.sanitizeAppName(this.appName)}${suffix}`
+        `${sanitizeAppName(this.appName)}${suffix}`
       );
     } else {
       return Promise.resolve();
@@ -338,7 +337,7 @@ class MacApp extends App {
 
     if ((platform === 'all' || platform === 'mas') &&
         osxSignOpt === undefined) {
-      common.warning('signing is required for mas builds. Provide the osx-sign option, ' +
+      warning('signing is required for mas builds. Provide the osx-sign option, ' +
                      'or manually sign the app later.', this.opts.quiet);
     }
 
@@ -350,7 +349,7 @@ class MacApp extends App {
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {
-          common.warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet);
+          warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet);
         } else {
           throw err;
         }
@@ -388,28 +387,30 @@ class MacApp extends App {
   }
 }
 
+export { MacApp as App };
+
 /**
  * Remove special characters and allow only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.)
  * Apple documentation:
  * https://developer.apple.com/library/mac/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070
  */
-function filterCFBundleIdentifier(identifier) {
+export function filterCFBundleIdentifier(identifier) {
   return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '');
 }
 
-function createSignOpts(properties, platform, app, version, quiet) {
+export function createSignOpts(properties, platform, app, version, quiet) {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
   const signOpts = properties === true ? { identity: null } : { ...properties };
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options
   // user may think they can pass platform, app, or version, but they will be ignored
-  common.subOptionWarning(signOpts, 'osx-sign', 'platform', platform, quiet);
-  common.subOptionWarning(signOpts, 'osx-sign', 'app', app, quiet);
-  common.subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet);
+  subOptionWarning(signOpts, 'osx-sign', 'platform', platform, quiet);
+  subOptionWarning(signOpts, 'osx-sign', 'app', app, quiet);
+  subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet);
 
   if (signOpts.binaries) {
-    common.warning('osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.', quiet);
+    warning('osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.', quiet);
     delete signOpts.binaries;
   }
 
@@ -428,20 +429,13 @@ function createSignOpts(properties, platform, app, version, quiet) {
   return signOpts;
 }
 
-function createNotarizeOpts(properties, appBundleId, appPath, quiet) {
+export function createNotarizeOpts(properties, appBundleId, appPath, quiet) {
   // osxNotarize options are handed off to the @electron/notarize module, but with a few
   // additions from the main options. The user may think they can pass appPath,
   // but it will be ignored.
   if (properties.tool !== 'notarytool') {
-    common.subOptionWarning(properties, 'osxNotarize', 'appBundleId', appBundleId, quiet);
+    subOptionWarning(properties, 'osxNotarize', 'appBundleId', appBundleId, quiet);
   }
-  common.subOptionWarning(properties, 'osxNotarize', 'appPath', appPath, quiet);
+  subOptionWarning(properties, 'osxNotarize', 'appPath', appPath, quiet);
   return properties;
 }
-
-module.exports = {
-  App: MacApp,
-  createNotarizeOpts: createNotarizeOpts,
-  createSignOpts: createSignOpts,
-  filterCFBundleIdentifier: filterCFBundleIdentifier
-};

@@ -1,9 +1,8 @@
-const common = require('./common');
-const debug = require('debug')('electron-packager');
-const junk = require('junk');
-const path = require('path');
-const prune = require('./prune');
-const targets = require('./targets');
+import { baseTempDir, debug, ensureArray, generateFinalBasename, normalizePath } from './common';
+import junk from 'junk';
+import path from 'path';
+import { isModule, Pruner } from './prune';
+import { officialPlatformArchCombos } from './targets';
 
 const DEFAULT_IGNORES = [
   '/package-lock\\.json$',
@@ -14,34 +13,34 @@ const DEFAULT_IGNORES = [
   '/node_gyp_bins($|/)'
 ];
 
-function populateIgnoredPaths(opts) {
+export function populateIgnoredPaths(opts) {
   opts.originalIgnore = opts.ignore;
   if (typeof (opts.ignore) !== 'function') {
     if (opts.ignore) {
-      opts.ignore = common.ensureArray(opts.ignore).concat(DEFAULT_IGNORES);
+      opts.ignore = ensureArray(opts.ignore).concat(DEFAULT_IGNORES);
     } else {
       opts.ignore = [].concat(DEFAULT_IGNORES);
     }
     if (process.platform === 'linux') {
-      opts.ignore.push(common.baseTempDir(opts));
+      opts.ignore.push(baseTempDir(opts));
     }
 
     debug('Ignored path regular expressions:', opts.ignore);
   }
 }
 
-function generateIgnoredOutDirs(opts) {
+export function generateIgnoredOutDirs(opts) {
   const normalizedOut = opts.out ? path.resolve(opts.out) : null;
   const ignoredOutDirs = [];
   if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (const [platform, archs] of Object.entries(targets.officialPlatformArchCombos)) {
+    for (const [platform, archs] of Object.entries(officialPlatformArchCombos)) {
       for (const arch of archs) {
         const basenameOpts = {
           arch: arch,
           name: opts.name,
           platform: platform
         };
-        ignoredOutDirs.push(path.join(process.cwd(), common.generateFinalBasename(basenameOpts)));
+        ignoredOutDirs.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)));
       }
     }
   } else {
@@ -57,7 +56,7 @@ function generateFilterFunction(ignore) {
   if (typeof (ignore) === 'function') {
     return file => !ignore(file);
   } else {
-    const ignoredRegexes = common.ensureArray(ignore);
+    const ignoredRegexes = ensureArray(ignore);
 
     return function filterByRegexes(file) {
       return !ignoredRegexes.some(regex => file.match(regex));
@@ -65,10 +64,10 @@ function generateFilterFunction(ignore) {
   }
 }
 
-function userPathFilter(opts) {
+export function userPathFilter(opts) {
   const filterFunc = generateFilterFunction(opts.ignore || []);
   const ignoredOutDirs = generateIgnoredOutDirs(opts);
-  const pruner = opts.prune ? new prune.Pruner(opts.dir, opts.quiet) : null;
+  const pruner = opts.prune ? new Pruner(opts.dir, opts.quiet) : null;
 
   return async function filter(file) {
     const fullPath = path.resolve(file);
@@ -86,11 +85,11 @@ function userPathFilter(opts) {
     let name = fullPath.split(path.resolve(opts.dir))[1];
 
     if (path.sep === '\\') {
-      name = common.normalizePath(name);
+      name = normalizePath(name);
     }
 
     if (pruner && name.startsWith('/node_modules/')) {
-      if (await prune.isModule(file)) {
+      if (await isModule(file)) {
         return pruner.pruneModule(name);
       } else {
         return filterFunc(name);
@@ -100,9 +99,3 @@ function userPathFilter(opts) {
     return filterFunc(name);
   };
 }
-
-module.exports = {
-  populateIgnoredPaths,
-  generateIgnoredOutDirs,
-  userPathFilter
-};

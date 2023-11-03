@@ -1,8 +1,8 @@
-const debug = require('debug')('electron-packager');
-const getPackageInfo = require('get-package-info');
-const parseAuthor = require('parse-author');
-const path = require('path');
-const resolve = require('resolve');
+import getPackageInfo from 'get-package-info';
+import parseAuthor from 'parse-author';
+import path from 'path';
+import resolve from 'resolve';
+import { debug } from './common';
 
 function isMissingRequiredProperty(props) {
   return props.some(prop => prop === 'productName' || prop === 'dependencies.electron');
@@ -109,7 +109,7 @@ function handleMissingProperties(opts, err) {
   }
 }
 
-module.exports = async function getMetadataFromPackageJSON(platforms, opts, dir) {
+export default async function getMetadataFromPackageJSON(platforms, opts, dir) {
   const props = [];
   if (!opts.name) props.push(['productName', 'name']);
   if (!opts.appVersion) props.push('version');
@@ -146,4 +146,4 @@ module.exports = async function getMetadataFromPackageJSON(platforms, opts, dir)
 
     throw err;
   }
-};
+}

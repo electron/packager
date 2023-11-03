@@ -1,18 +1,17 @@
-const asar = require('@electron/asar');
-const crypto = require('crypto');
-const debug = require('debug')('electron-packager');
-const fs = require('fs-extra');
-const path = require('path');
+import fs from 'fs-extra';
+import path from 'path';
 
-const common = require('./common');
-const copyFilter = require('./copy-filter');
-const hooks = require('./hooks');
+import { baseTempDir, createAsarOpts, debug, ensureArray, generateFinalPath, validateElectronApp, warning } from './common';
+import { userPathFilter } from './copy-filter';
+import { promisifyHooks } from './hooks';
+import asar from '@electron/asar';
+import crypto from 'crypto';
 
-class App {
+export default class App {
   constructor(opts, templatePath) {
     this.opts = opts;
     this.templatePath = templatePath;
-    this.asarOptions = common.createAsarOpts(opts);
+    this.asarOptions = createAsarOpts(opts);
 
     if (this.opts.prune === undefined) {
       this.opts.prune = true;
@@ -57,12 +56,12 @@ class App {
 
   get stagingPath() {
     if (this.opts.tmpdir === false) {
-      return common.generateFinalPath(this.opts);
+      return generateFinalPath(this.opts);
     } else {
       if (!this.cachedStagingPath) {
-        const baseTempDir = common.baseTempDir(this.opts);
-        fs.mkdirpSync(baseTempDir);
-        this.cachedStagingPath = fs.mkdtempSync(path.resolve(baseTempDir, 'tmp-'));
+        const tempDir = baseTempDir(this.opts);
+        fs.mkdirpSync(tempDir);
+        this.cachedStagingPath = fs.mkdtempSync(path.resolve(tempDir, 'tmp-'));
       }
       return this.cachedStagingPath;
     }
@@ -122,25 +121,25 @@ class App {
       await this.buildApp();
     }
 
-    await hooks.promisifyHooks(this.opts.afterInitialize, this.hookArgsWithOriginalResourcesAppDir);
+    await promisifyHooks(this.opts.afterInitialize, this.hookArgsWithOriginalResourcesAppDir);
   }
 
   async buildApp() {
     await this.copyTemplate();
-    await common.validateElectronApp(this.opts.dir, this.originalResourcesAppDir);
+    await validateElectronApp(this.opts.dir, this.originalResourcesAppDir);
     await this.asarApp();
   }
 
   async copyTemplate() {
-    await hooks.promisifyHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
+    await promisifyHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
-      filter: copyFilter.userPathFilter(this.opts),
+      filter: userPathFilter(this.opts),
       dereference: this.opts.derefSymlinks
     });
-    await hooks.promisifyHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
+    await promisifyHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
     if (this.opts.prune) {
-      await hooks.promisifyHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
+      await promisifyHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
     }
   }
 
@@ -167,19 +166,19 @@ class App {
       return iconFilename;
     } else {
       /* istanbul ignore next */
-      common.warning(`Could not find icon "${iconFilename}", not updating app icon`, this.opts.quiet);
+      warning(`Could not find icon "${iconFilename}", not updating app icon`, this.opts.quiet);
     }
   }
 
   prebuiltAsarWarning(option, triggerWarning) {
     if (triggerWarning) {
-      common.warning(`prebuiltAsar and ${option} are incompatible, ignoring the ${option} option`, this.opts.quiet);
+      warning(`prebuiltAsar and ${option} are incompatible, ignoring the ${option} option`, this.opts.quiet);
     }
   }
 
   async copyPrebuiltAsar() {
     if (this.asarOptions) {
-      common.warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet);
+      warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet);
     }
 
     for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune']) {
@@ -214,7 +213,7 @@ class App {
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`);
 
-    await hooks.promisifyHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
+    await promisifyHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
 
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions);
     const { headerString } = asar.getRawHeader(this.appAsarPath);
@@ -226,30 +225,30 @@ class App {
     };
     await fs.remove(this.originalResourcesAppDir);
 
-    await hooks.promisifyHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
+    await promisifyHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
   }
 
   async copyExtraResources() {
     if (!this.opts.extraResource) return Promise.resolve();
 
-    const extraResources = common.ensureArray(this.opts.extraResource);
+    const extraResources = ensureArray(this.opts.extraResource);
 
     const hookArgs = [
       this.stagingPath,
       ...this.commonHookArgs
     ];
 
-    await hooks.promisifyHooks(this.opts.beforeCopyExtraResources, hookArgs);
+    await promisifyHooks(this.opts.beforeCopyExtraResources, hookArgs);
 
     await Promise.all(extraResources.map(
       resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))
     ));
 
-    await hooks.promisifyHooks(this.opts.afterCopyExtraResources, hookArgs);
+    await promisifyHooks(this.opts.afterCopyExtraResources, hookArgs);
   }
 
   async move() {
-    const finalPath = common.generateFinalPath(this.opts);
+    const finalPath = generateFinalPath(this.opts);
 
     if (this.opts.tmpdir !== false) {
       debug(`Moving ${this.stagingPath} to ${finalPath}`);
@@ -262,11 +261,9 @@ class App {
         ...this.commonHookArgs
       ];
 
-      await hooks.promisifyHooks(this.opts.afterComplete, hookArgs);
+      await promisifyHooks(this.opts.afterComplete, hookArgs);
     }
 
     return finalPath;
   }
 }
-
-module.exports = App;
