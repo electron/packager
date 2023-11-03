@@ -357,9 +357,8 @@ declare namespace electronPackager {
      * The Electron version with which the app is built (without the leading 'v') - for example,
      * [`1.4.13`](https://github.com/electron/electron/releases/tag/v1.4.13). See [Electron
      * releases](https://github.com/electron/electron/releases) for valid versions. If omitted, it
-     * will use the version of the nearest local installation of `electron`,
-     * `electron-prebuilt-compile`, or `electron-prebuilt`, defined in `package.json` in either
-     * `devDependencies` or `dependencies`.
+     * will use the version of the nearest local installation of `electron` or `electron-nightly`
+     *  defined in `package.json` in either `devDependencies` or `dependencies`.
      */
     electronVersion?: string;
     /**
@@ -384,7 +383,7 @@ declare namespace electronPackager {
      * merged into the app's `Info.plist`.
      *
      * Entries from `extendInfo` override entries in the base `Info.plist` file supplied by
-     * `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other
+     * `electron` or `electron-nightly`, but are overridden by other
      * options such as {@link appVersion} or {@link appBundleId}.
      *
      * @category macOS
@@ -397,7 +396,7 @@ declare namespace electronPackager {
      * merged into all the Helper apps' `Info.plist` files.
      *
      * Entries from `extendHelperInfo` override entries in the helper apps' `Info.plist` file supplied by
-     * `electron`, `electron-prebuilt-compile`, or `electron-prebuilt`, but are overridden by other
+     * `electron` or `electron-nightly`, but are overridden by other
      * options such as {@link appVersion} or {@link appBundleId}.
      *
      * @category macOS
@@ -445,8 +444,7 @@ declare namespace electronPackager {
      * - the temporary directory used to build the Electron app
      * - `node_modules/.bin`
      * - `node_modules/electron`
-     * - `node_modules/electron-prebuilt`
-     * - `node_modules/electron-prebuilt-compile`
+     * - `node_modules/electron-nightly`
      * - `.git`
      * - files and folders ending in `.o` and `.obj`
      *
