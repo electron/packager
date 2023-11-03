@@ -60,10 +60,9 @@ workflows:
                 - node/macos
                 - node/windows
               node-version:
-                - '20.9'
-                - '18.17'
-                - '16.20'
-                - '14.21'
+                - 20.2.0
+                - 18.14.0
+                - 16.4.0
           filters:
             branches: { ignore: gh-pages }
       - cfa/release:
