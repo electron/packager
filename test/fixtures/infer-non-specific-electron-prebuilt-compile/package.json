@@ -1,7 +1,0 @@
-{
-  "main": "main.js",
-  "productName": "MainJS",
-  "devDependencies": {
-    "electron-prebuilt-compile": "^2.0.0"
-  }
-}

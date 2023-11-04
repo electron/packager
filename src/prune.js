@@ -7,9 +7,7 @@ const path = require('path')
 
 const ELECTRON_MODULES = [
   'electron',
-  'electron-nightly',
-  'electron-prebuilt',
-  'electron-prebuilt-compile'
+  'electron-nightly'
 ]
 
 class Pruner {
