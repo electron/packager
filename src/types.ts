@@ -451,7 +451,7 @@ export interface Options {
    *
    * **Note:** `ignore` will have no effect if the {@link prebuiltAsar} option is set.
    */
-  ignore?: RegExp | RegExp[] | IgnoreFunction;
+  ignore?: RegExp | Array<string | RegExp> | IgnoreFunction;
   /**
    * Ignores [system junk files](https://github.com/sindresorhus/junk) when copying the Electron app,
    * regardless of the {@link ignore} option.
