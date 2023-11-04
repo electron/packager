@@ -112,7 +112,7 @@ test('infer: missing author for win32 target platform', util.testSinglePlatform(
 test('missing name from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-name', /^Unable to determine application name/))
 test('missing Electron version from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-electron-version', /^Unable to determine Electron version/))
 test('missing package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-package-json', /^Could not locate a package\.json file/))
-test('infer with bad fields', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields', /^Cannot find module/))
+test('infer with bad fields', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields', /^Unable to determine application version/))
 test('infer with malformed JSON', util.testSinglePlatform(async (t, opts) => {
   opts.dir = await copyFixtureToTempDir(t, 'infer-malformed-json')
   delete opts.name
