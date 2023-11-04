@@ -18,6 +18,11 @@ export default class App {
     }
   }
 
+  async create(): Promise<string> {
+    /* istanbul ignore next */
+    throw new Error('Child classes must implement this');
+  }
+
   /**
    * Resource directory path before renaming.
    */
