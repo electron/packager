@@ -1,7 +1,7 @@
-import App from './platform';
+import { App } from './platform';
 import { sanitizeAppName } from './common';
 
-class LinuxApp extends App {
+export class LinuxApp extends App {
   get originalElectronName() {
     return 'electron';
   }

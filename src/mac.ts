@@ -1,4 +1,4 @@
-import App from './platform';
+import { App } from './platform';
 import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
 import fs from 'fs-extra';
 import path from 'path';
@@ -6,7 +6,7 @@ import plist from 'plist';
 import { notarize } from '@electron/notarize';
 import { signApp } from '@electron/osx-sign';
 
-class MacApp extends App {
+export class MacApp extends App {
   constructor(opts, templatePath) {
     super(opts, templatePath);
 

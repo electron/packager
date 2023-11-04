@@ -1,7 +1,7 @@
 import path from 'path';
 import { WrapperError } from 'cross-spawn-windows-exe';
 
-import App from './platform';
+import { App } from './platform';
 import { debug, sanitizeAppName } from './common';
 import rcedit, { Options as RceditOptions } from 'rcedit';
 import { Options } from './types';
@@ -17,7 +17,7 @@ export function updateWineMissingException(err: Error) {
   return err;
 }
 
-class WindowsApp extends App {
+export class WindowsApp extends App {
   get originalElectronName() {
     return 'electron.exe';
   }

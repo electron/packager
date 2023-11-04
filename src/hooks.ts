@@ -1,7 +1,7 @@
 import { promisify } from 'util';
 import { FinalizePackageTargetsHookFunction, HookFunction } from './types';
 
-export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined, args: unknown[]) {
+export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined, args?: unknown[]) {
   if (!hooks || !Array.isArray(hooks)) {
     return Promise.resolve();
   }

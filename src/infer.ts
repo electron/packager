@@ -111,7 +111,7 @@ function handleMissingProperties(opts: Options, err: GetPackageInfoError) {
   }
 }
 
-export default async function getMetadataFromPackageJSON(platforms: SupportedPlatform[], opts: Options, dir: string): Promise<void> {
+export async function getMetadataFromPackageJSON(platforms: SupportedPlatform[], opts: Options, dir: string): Promise<void> {
   const props: Array<string | string[]> = [];
 
   if (!opts.name) {

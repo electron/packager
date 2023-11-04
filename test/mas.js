@@ -1,6 +1,6 @@
 'use strict'
 
-const packager = require('..')
+const { packager } = require('../dist/src')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')

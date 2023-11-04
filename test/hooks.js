@@ -1,8 +1,8 @@
 'use strict'
 
 const config = require('./config.json')
-const hooks = require('../src/hooks')
-const packager = require('..')
+const { promisifyHooks } = require('../dist/src/hooks')
+const { packager } = require('../dist/src')
 const test = require('ava')
 const util = require('./_util')
 
@@ -65,7 +65,7 @@ test('promisifyHooks executes functions in parallel', async t => {
     timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
   )
 
-  await hooks.promisifyHooks(testHooks)
+  await promisifyHooks(testHooks)
   t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order')
 })
 

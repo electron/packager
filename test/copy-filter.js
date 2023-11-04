@@ -1,7 +1,7 @@
 'use strict'
 
-const common = require('../src/common')
-const copyFilter = require('../src/copy-filter')
+const { sanitizeAppName } = require('../dist/src/common')
+const { generateIgnoredOutDirs, populateIgnoredPaths, userPathFilter } = require('../dist/src/copy-filter')
 const fs = require('fs-extra')
 const path = require('path')
 const test = require('ava')
@@ -21,9 +21,9 @@ async function assertOutDirIgnored (t, opts, existingDirectoryPath, pathToIgnore
 }
 
 async function copyDirToTempDirWithIgnores (t, opts) {
-  copyFilter.populateIgnoredPaths(opts)
+  populateIgnoredPaths(opts)
   const targetDir = path.join(t.context.tempDir, 'result')
-  await fs.copy(opts.dir, targetDir, { dereference: false, filter: copyFilter.userPathFilter(opts) })
+  await fs.copy(opts.dir, targetDir, { dereference: false, filter: userPathFilter(opts) })
   return targetDir
 }
 
@@ -62,7 +62,7 @@ test('populateIgnoredPaths ignores the generated temporary directory only on Lin
   const expected = path.join(tmpdir, 'electron-packager')
   const opts = { tmpdir }
 
-  copyFilter.populateIgnoredPaths(opts)
+  populateIgnoredPaths(opts)
 
   if (process.platform === 'linux') {
     t.true(opts.ignore.includes(expected), 'temporary dir in opts.ignore')
@@ -72,7 +72,7 @@ test('populateIgnoredPaths ignores the generated temporary directory only on Lin
 })
 
 test('generateIgnoredOutDirs ignores all possible platform/arch permutations', (t) => {
-  const ignores = copyFilter.generateIgnoredOutDirs({ name: 'test' })
+  const ignores = generateIgnoredOutDirs({ name: 'test' })
   t.is(ignores.length, util.allPlatformArchCombosCount)
 })
 
@@ -112,7 +112,7 @@ test.serial('ignore out dir: implicit path', util.testSinglePlatform(async (t, o
   delete opts.out
 
   const testFilename = 'ignoreMe'
-  const previousPackedResultDir = path.join(opts.dir, `${common.sanitizeAppName(opts.name)}-linux-ia32`)
+  const previousPackedResultDir = path.join(opts.dir, `${sanitizeAppName(opts.name)}-linux-ia32`)
 
   return assertOutDirIgnored(t, opts, previousPackedResultDir, path.join(previousPackedResultDir, testFilename), testFilename)
 }))

@@ -1,14 +1,29 @@
 import fs from 'fs-extra';
 import path from 'path';
+import asar, { FileRecord } from '@electron/asar';
 
-import { baseTempDir, createAsarOpts, debug, ensureArray, generateFinalPath, validateElectronApp, warning } from './common';
+import {
+  baseTempDir,
+  createAsarOpts,
+  debug,
+  ensureArray,
+  generateFinalPath,
+  validateElectronApp,
+  warning,
+} from './common';
 import { userPathFilter } from './copy-filter';
 import { promisifyHooks } from './hooks';
-import asar from '@electron/asar';
 import crypto from 'crypto';
+import { ComboOptions } from './types';
 
-export default class App {
-  constructor(opts, templatePath) {
+export class App {
+  asarIntegrity: Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>> | undefined = undefined;
+  asarOptions: ReturnType<typeof createAsarOpts>;
+  cachedStagingPath: string | undefined = undefined;
+  opts: ComboOptions;
+  templatePath: string;
+
+  constructor(opts: ComboOptions, templatePath: string) {
     this.opts = opts;
     this.templatePath = templatePath;
     this.asarOptions = createAsarOpts(opts);
@@ -26,31 +41,31 @@ export default class App {
   /**
    * Resource directory path before renaming.
    */
-  get originalResourcesDir() {
+  get originalResourcesDir(): string {
     return this.resourcesDir;
   }
 
   /**
    * Resource directory path after renaming.
    */
-  get resourcesDir() {
+  get resourcesDir(): string {
     return path.join(this.stagingPath, 'resources');
   }
 
-  get originalResourcesAppDir() {
+  get originalResourcesAppDir(): string {
     return path.join(this.originalResourcesDir, 'app');
   }
 
-  get electronBinaryDir() {
+  get electronBinaryDir(): string {
     return this.stagingPath;
   }
 
-  get originalElectronName() {
+  get originalElectronName(): string {
     /* istanbul ignore next */
     throw new Error('Child classes must implement this');
   }
 
-  get newElectronName() {
+  get newElectronName(): string {
     /* istanbul ignore next */
     throw new Error('Child classes must implement this');
   }
@@ -80,18 +95,18 @@ export default class App {
     return [
       this.opts.electronVersion,
       this.opts.platform,
-      this.opts.arch
+      this.opts.arch,
     ];
   }
 
   get hookArgsWithOriginalResourcesAppDir() {
     return [
       this.originalResourcesAppDir,
-      ...this.commonHookArgs
+      ...this.commonHookArgs,
     ];
   }
 
-  async relativeRename(basePath, oldName, newName) {
+  async relativeRename(basePath: string, oldName: string, newName: string) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`);
     await fs.rename(path.join(basePath, oldName), path.join(basePath, newName));
   }
@@ -118,7 +133,7 @@ export default class App {
   async initialize() {
     debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`);
 
-    await fs.move(this.templatePath, this.stagingPath, { clobber: true });
+    await fs.move(this.templatePath, this.stagingPath, { overwrite: true });
     await this.removeDefaultApp();
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
@@ -140,7 +155,7 @@ export default class App {
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
       filter: userPathFilter(this.opts),
-      dereference: this.opts.derefSymlinks
+      dereference: this.opts.derefSymlinks,
     });
     await promisifyHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
     if (this.opts.prune) {
@@ -149,7 +164,10 @@ export default class App {
   }
 
   async removeDefaultApp() {
-    await Promise.all(['default_app', 'default_app.asar'].map(async basename => fs.remove(path.join(this.originalResourcesDir, basename))));
+    await Promise.all([
+      'default_app',
+      'default_app.asar',
+    ].map(async basename => fs.remove(path.join(this.originalResourcesDir, basename))));
   }
 
   /**
@@ -158,8 +176,10 @@ export default class App {
    *
    * This error path is used by win32 if no icon is specified.
    */
-  async normalizeIconExtension(targetExt) {
-    if (!this.opts.icon) throw new Error('No filename specified to normalizeIconExtension');
+  async normalizeIconExtension(targetExt: string) {
+    if (!this.opts.icon) {
+      throw new Error('No filename specified to normalizeIconExtension');
+    }
 
     let iconFilename = this.opts.icon;
     const ext = path.extname(iconFilename);
@@ -175,7 +195,7 @@ export default class App {
     }
   }
 
-  prebuiltAsarWarning(option, triggerWarning) {
+  prebuiltAsarWarning(option: keyof ComboOptions, triggerWarning: unknown) {
     if (triggerWarning) {
       warning(`prebuiltAsar and ${option} are incompatible, ignoring the ${option} option`, this.opts.quiet);
     }
@@ -186,17 +206,19 @@ export default class App {
       warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet);
     }
 
-    for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune']) {
+    for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune'] as const) {
       if (this.opts[hookName]) {
         throw new Error(`${hookName} is incompatible with prebuiltAsar`);
       }
     }
 
-    this.prebuiltAsarWarning('ignore', this.opts.originalIgnore);
+    this.prebuiltAsarWarning('ignore', (this.opts as ComboOptions & {
+      originalIgnore: ComboOptions['ignore']
+    }).originalIgnore);
     this.prebuiltAsarWarning('prune', !this.opts.prune);
     this.prebuiltAsarWarning('derefSymlinks', this.opts.derefSymlinks !== undefined);
 
-    const src = path.resolve(this.opts.prebuiltAsar);
+    const src = path.resolve(this.opts.prebuiltAsar!);
 
     const stat = await fs.stat(src);
     if (!stat.isFile()) {
@@ -207,7 +229,7 @@ export default class App {
     await fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true });
   }
 
-  appRelativePath(p) {
+  appRelativePath(p: string) {
     return path.relative(this.stagingPath, p);
   }
 
@@ -225,8 +247,8 @@ export default class App {
     this.asarIntegrity = {
       [this.appRelativePath(this.appAsarPath)]: {
         algorithm: 'SHA256',
-        hash: crypto.createHash('SHA256').update(headerString).digest('hex')
-      }
+        hash: crypto.createHash('SHA256').update(headerString).digest('hex'),
+      },
     };
     await fs.remove(this.originalResourcesAppDir);
 
@@ -234,19 +256,21 @@ export default class App {
   }
 
   async copyExtraResources() {
-    if (!this.opts.extraResource) return Promise.resolve();
+    if (!this.opts.extraResource) {
+      return Promise.resolve();
+    }
 
     const extraResources = ensureArray(this.opts.extraResource);
 
     const hookArgs = [
       this.stagingPath,
-      ...this.commonHookArgs
+      ...this.commonHookArgs,
     ];
 
     await promisifyHooks(this.opts.beforeCopyExtraResources, hookArgs);
 
     await Promise.all(extraResources.map(
-      resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)))
+      resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource))),
     ));
 
     await promisifyHooks(this.opts.afterCopyExtraResources, hookArgs);
@@ -263,7 +287,7 @@ export default class App {
     if (this.opts.afterComplete) {
       const hookArgs = [
         finalPath,
-        ...this.commonHookArgs
+        ...this.commonHookArgs,
       ];
 
       await promisifyHooks(this.opts.afterComplete, hookArgs);
