@@ -30,8 +30,7 @@ async function createPruneOptionTest (t, baseOpts, prune, testMessage) {
   await Promise.all([
     assertDependencyExists(t, resourcesPath, 'run-series'),
     assertDependencyExists(t, resourcesPath, '@types/node'),
-    checkDependency(t, resourcesPath, 'run-waterfall', !prune),
-    checkDependency(t, resourcesPath, 'electron-prebuilt', !prune)
+    checkDependency(t, resourcesPath, 'run-waterfall', !prune)
   ])
 }
 

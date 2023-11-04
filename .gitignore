@@ -4,6 +4,7 @@
 *.pem
 node_modules
 package-lock.json
+!test/fixtures/**/node_modules
 test/fixtures/basic/main-link.js
 !test/fixtures/prune-is-module/node_modules
 !test/fixtures/ignore-package-lock/*

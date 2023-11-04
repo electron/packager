@@ -68,19 +68,8 @@ async function testInferWin32metadataAuthorObject (t, opts, author, expected, as
   t.deepEqual(opts.win32metadata, expected, assertionMessage)
 }
 
-test('infer using `electron-prebuilt` package', util.testSinglePlatform(inferElectronVersionTest, 'basic', 'electron-prebuilt'))
 test('infer using `electron-nightly` package', util.testSinglePlatform(inferElectronVersionTest, 'infer-electron-nightly', 'electron-nightly'))
-test('infer using `electron-prebuilt-compile` package', util.testSinglePlatform(inferElectronVersionTest, 'infer-electron-prebuilt-compile', 'electron-prebuilt-compile'))
-test('infer using non-exact `electron-prebuilt-compile` package', util.testSinglePlatform(inferElectronVersionTest, 'infer-non-specific-electron-prebuilt-compile', 'electron-prebuilt-compile'))
-test('infer when electron-prebuilt-compile dependency points to URL instead of version', util.testSinglePlatform(async (t, opts) => {
-  delete opts.electronVersion
-  opts.dir = util.fixtureSubdir('infer-non-version-electron-prebuilt-compile')
-
-  await getMetadataFromPackageJSON([], opts, opts.dir)
-  t.is(opts.electronVersion, '2.0.10', 'Electron version matches the value in the electron-prebuilt-compile package.json')
-}))
 test('infer using `electron` package only', util.testSinglePlatform(inferMissingVersionTest))
-test('infer where `electron` version is preferred over `electron-prebuilt`', util.testSinglePlatform(inferElectronVersionTest, 'basic-renamed-to-electron', 'electron'))
 test('infer win32metadata', util.testSinglePlatform(async (t, opts) => {
   const expected = { CompanyName: 'Foo Bar' }
 
@@ -123,7 +112,7 @@ test('infer: missing author for win32 target platform', util.testSinglePlatform(
 test('missing name from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-name', /^Unable to determine application name/))
 test('missing Electron version from package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-electron-version', /^Unable to determine Electron version/))
 test('missing package.json', util.testSinglePlatform(inferFailureTest, 'infer-missing-package-json', /^Could not locate a package\.json file/))
-test('infer with bad fields', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields', /^Cannot find module/))
+test('infer with bad fields', util.testSinglePlatform(inferFailureTest, 'infer-bad-fields', /^Unable to determine application version/))
 test('infer with malformed JSON', util.testSinglePlatform(async (t, opts) => {
   opts.dir = await copyFixtureToTempDir(t, 'infer-malformed-json')
   delete opts.name
@@ -135,4 +124,3 @@ test('infer with malformed JSON', util.testSinglePlatform(async (t, opts) => {
 
   return t.throwsAsync(packager(opts), { message: /^Unexpected token/ })
 }))
-test('infer using a non-specific `electron-prebuilt-compile` package version when the package did not have a main file', util.testSinglePlatform(inferFailureTest, 'infer-invalid-non-specific-electron-prebuilt-compile', /^Using electron-prebuilt-compile/))
