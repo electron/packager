@@ -1,14 +1,15 @@
-import getPackageInfo from 'get-package-info';
+import getPackageInfo, { GetPackageInfoError, GetPackageInfoResult, GetPackageInfoResultSourceItem } from 'get-package-info';
 import parseAuthor from 'parse-author';
 import path from 'path';
-import resolve from 'resolve';
+import resolve, { AsyncOpts } from 'resolve';
 import { debug } from './common';
+import { Options, SupportedPlatform } from './types';
 
-function isMissingRequiredProperty(props) {
+function isMissingRequiredProperty(props: string[]) {
   return props.some(prop => prop === 'productName' || prop === 'dependencies.electron');
 }
 
-function errorMessageForProperty(prop) {
+function errorMessageForProperty(prop: string) {
   let hash, propDescription;
   switch (prop) {
     case 'productName':
@@ -34,39 +35,38 @@ function errorMessageForProperty(prop) {
     `https://electron.github.io/packager/main/interfaces/electronpackager.options.html#${hash}\n`;
 }
 
-function resolvePromise(id, options) {
+function resolvePromise(id: string, options: AsyncOpts) {
   // eslint-disable-next-line promise/param-names
-  return new Promise((accept, reject) => {
+  return new Promise<[string | undefined, { version: string }]>((accept, reject) => {
     resolve(id, options, (err, mainPath, pkg) => {
       if (err) {
         /* istanbul ignore next */
         reject(err);
       } else {
-        accept([mainPath, pkg]);
+        accept([mainPath as string | undefined, pkg as { version: string }]);
       }
     });
   });
 }
 
-async function getVersion(opts, electronProp) {
+async function getVersion(opts: Options, electronProp: GetPackageInfoResultSourceItem) {
   const [, packageName] = electronProp.prop.split('.');
   const src = electronProp.src;
 
   const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1];
   debug(`Inferring target Electron version from ${packageName} in ${src}`);
   opts.electronVersion = pkg.version;
-  return null;
 }
 
-async function handleMetadata(opts, result) {
+async function handleMetadata(opts: Options, result: GetPackageInfoResult): Promise<void> {
   if (result.values.productName) {
     debug(`Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`);
-    opts.name = result.values.productName;
+    opts.name = result.values.productName as string;
   }
 
   if (result.values.version) {
     debug(`Inferring appVersion from version in ${result.source.version.src}`);
-    opts.appVersion = result.values.version;
+    opts.appVersion = result.values.version as string;
   }
 
   if (result.values.author && !opts.win32metadata) {
@@ -74,11 +74,13 @@ async function handleMetadata(opts, result) {
   }
 
   if (result.values.author) {
+    const author = result.values.author as string | { name: string };
+
     debug(`Inferring win32metadata.CompanyName from author in ${result.source.author.src}`);
-    if (typeof result.values.author === 'string') {
-      opts.win32metadata.CompanyName = parseAuthor(result.values.author).name;
-    } else if (result.values.author.name) {
-      opts.win32metadata.CompanyName = result.values.author.name;
+    if (typeof author === 'string') {
+      opts.win32metadata!.CompanyName = parseAuthor(author).name;
+    } else if (author.name) {
+      opts.win32metadata!.CompanyName = author.name;
     } else {
       debug('Cannot infer win32metadata.CompanyName from author, no name found');
     }
@@ -92,7 +94,7 @@ async function handleMetadata(opts, result) {
   }
 }
 
-function handleMissingProperties(opts, err) {
+function handleMissingProperties(opts: Options, err: GetPackageInfoError) {
   const missingProps = err.missingProps.map(prop => {
     return Array.isArray(prop) ? prop[0] : prop;
   });
@@ -109,10 +111,17 @@ function handleMissingProperties(opts, err) {
   }
 }
 
-export default async function getMetadataFromPackageJSON(platforms, opts, dir) {
-  const props = [];
-  if (!opts.name) props.push(['productName', 'name']);
-  if (!opts.appVersion) props.push('version');
+export default async function getMetadataFromPackageJSON(platforms: SupportedPlatform[], opts: Options, dir: string): Promise<void> {
+  const props: Array<string | string[]> = [];
+
+  if (!opts.name) {
+    props.push(['productName', 'name']);
+  }
+
+  if (!opts.appVersion) {
+    props.push('version');
+  }
+
   if (!opts.electronVersion) {
     props.push([
       'dependencies.electron',
@@ -128,13 +137,17 @@ export default async function getMetadataFromPackageJSON(platforms, opts, dir) {
   }
 
   // Name and version provided, no need to infer
-  if (props.length === 0) return Promise.resolve();
+  if (props.length === 0) {
+    return Promise.resolve();
+  }
 
   // Search package.json files to infer name and version from
   try {
     const result = await getPackageInfo(props, dir);
     return handleMetadata(opts, result);
-  } catch (err) {
+  } catch (e) {
+    const err = e as GetPackageInfoError;
+
     if (err.missingProps) {
       if (err.missingProps.length === props.length) {
         debug(err.message);
