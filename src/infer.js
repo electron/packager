@@ -51,8 +51,7 @@ function resolvePromise (id, options) {
 }
 
 async function getVersion (opts, electronProp) {
-  // eslint-disable-next-line no-unused-vars
-  const [_, packageName] = electronProp.prop.split('.')
+  const [, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
 
   const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1]
