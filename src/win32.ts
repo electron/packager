@@ -3,9 +3,10 @@ import { WrapperError } from 'cross-spawn-windows-exe';
 
 import App from './platform';
 import { debug, sanitizeAppName } from './common';
-import rcedit from 'rcedit';
+import rcedit, { Options as RceditOptions } from 'rcedit';
+import { Options } from './types';
 
-export function updateWineMissingException(err) {
+export function updateWineMissingException(err: Error) {
   if (err instanceof WrapperError) {
     err.message += '\n\n' +
       'Wine is required to use the appCopyright, appVersion, buildVersion, icon, and \n' +
@@ -22,23 +23,23 @@ class WindowsApp extends App {
   }
 
   get newElectronName() {
-    return `${sanitizeAppName(this.executableName)}.exe`;
+    return `${sanitizeAppName(this.executableName!)}.exe`;
   }
 
   get electronBinaryPath() {
     return path.join(this.stagingPath, this.newElectronName);
   }
 
-  generateRceditOptionsSansIcon() {
-    const win32metadata = {
+  generateRceditOptionsSansIcon(): RceditOptions {
+    const win32metadata: Options['win32metadata'] = {
       FileDescription: this.opts.name,
       InternalName: this.opts.name,
       OriginalFilename: this.newElectronName,
       ProductName: this.opts.name,
-      ...this.opts.win32metadata
+      ...this.opts.win32metadata,
     };
 
-    const rcOpts = { 'version-string': win32metadata };
+    const rcOpts: RceditOptions = { 'version-string': win32metadata };
 
     if (this.opts.appVersion) {
       rcOpts['product-version'] = rcOpts['file-version'] = this.opts.appVersion;
@@ -49,12 +50,14 @@ class WindowsApp extends App {
     }
 
     if (this.opts.appCopyright) {
-      rcOpts['version-string'].LegalCopyright = this.opts.appCopyright;
+      rcOpts['version-string']!.LegalCopyright = this.opts.appCopyright;
     }
 
     const manifestProperties = ['application-manifest', 'requested-execution-level'];
     for (const manifestProperty of manifestProperties) {
-      if (win32metadata[manifestProperty]) {
+      if (win32metadata[manifestProperty as keyof typeof win32metadata]) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         rcOpts[manifestProperty] = win32metadata[manifestProperty];
       }
     }
@@ -71,7 +74,7 @@ class WindowsApp extends App {
   }
 
   needsRcedit() {
-    return this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion;
+    return Boolean(this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion);
   }
 
   async runRcedit() {
@@ -92,7 +95,7 @@ class WindowsApp extends App {
     try {
       await rcedit(this.electronBinaryPath, rcOpts);
     } catch (err) {
-      throw updateWineMissingException(err);
+      throw updateWineMissingException(err as Error);
     }
   }
 
