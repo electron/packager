@@ -3,8 +3,12 @@ import { generateFinalPath, info } from './common';
 import fs from 'fs-extra';
 import path from 'path';
 import { App } from './mac';
+import { ComboOptions, DownloadOptions, SupportedArch } from './types';
+import { Packager } from './packager';
 
-export async function packageUniversalMac(packageForPlatformAndArchWithOpts, buildDir, comboOpts, downloadOpts, tempBase) {
+export async function packageUniversalMac(packageForPlatformAndArchWithOpts: Packager['packageForPlatformAndArchWithOpts'],
+  buildDir: string, comboOpts: ComboOptions,
+  downloadOpts: DownloadOptions, tempBase: string) {
   // In order to generate a universal macOS build we actually need to build the x64 and the arm64 app
   // and then glue them together
   info(`Packaging app for platform ${comboOpts.platform} universal using electron v${comboOpts.electronVersion} - Building x64 and arm64 slices now`, comboOpts.quiet);
@@ -24,23 +28,24 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts, bui
     }
   }
 
-  const tempPackages = {};
+  const tempPackages = {} as Record<SupportedArch, string>;
 
-  for (const tempArch of ['x64', 'arm64']) {
+  for (const tempArch of ['x64', 'arm64'] as SupportedArch[]) {
     const tempOpts = {
       ...comboOpts,
       arch: tempArch,
-      out: tempDir
+      out: tempDir,
     };
     const tempDownloadOpts = {
       ...downloadOpts,
-      arch: tempArch
+      arch: tempArch,
     };
     // Do not sign or notarize the individual slices, we sign and notarize the merged app later
     delete tempOpts.osxSign;
     delete tempOpts.osxNotarize;
 
-    tempPackages[tempArch] = await packageForPlatformAndArchWithOpts(tempOpts, tempDownloadOpts);
+    // @TODO(erikian): I don't like this type cast, the return type for `packageForPlatformAndArchWithOpts` is probably wrong
+    tempPackages[tempArch] = (await packageForPlatformAndArchWithOpts(tempOpts, tempDownloadOpts)) as string;
   }
 
   const x64AppPath = tempPackages.x64;
@@ -55,7 +60,8 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts, bui
     ...comboOpts.osxUniversal,
     x64AppPath: path.resolve(x64AppPath, appName),
     arm64AppPath: path.resolve(arm64AppPath, appName),
-    outAppPath: path.resolve(universalStagingPath, appName)
+    outAppPath: path.resolve(universalStagingPath, appName),
+    force: false,
   });
 
   await app.signAppIfSpecified();
@@ -63,7 +69,9 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts, bui
   await app.move();
 
   for (const generatedFile of generatedFiles) {
-    if (path.extname(generatedFile) === '.app') continue;
+    if (path.extname(generatedFile) === '.app') {
+      continue;
+    }
 
     await fs.copy(path.resolve(x64AppPath, generatedFile), path.resolve(finalUniversalPath, generatedFile));
   }
