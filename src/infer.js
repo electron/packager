@@ -5,7 +5,6 @@ const getPackageInfo = require('get-package-info')
 const parseAuthor = require('parse-author')
 const path = require('path')
 const resolve = require('resolve')
-const semver = require('semver')
 
 function isMissingRequiredProperty (props) {
   return props.some(prop => prop === 'productName' || prop === 'dependencies.electron')
@@ -51,31 +50,10 @@ function resolvePromise (id, options) {
   })
 }
 
-function rangeFromElectronVersion (electronVersion) {
-  try {
-    return new semver.Range(electronVersion)
-  } catch (error) {
-    return null
-  }
-}
-
 async function getVersion (opts, electronProp) {
-  const [depType, packageName] = electronProp.prop.split('.')
+  // eslint-disable-next-line no-unused-vars
+  const [_, packageName] = electronProp.prop.split('.')
   const src = electronProp.src
-  if (packageName === 'electron-prebuilt-compile') {
-    const electronVersion = electronProp.pkg[depType][packageName]
-    const versionRange = rangeFromElectronVersion(electronVersion)
-    if (versionRange !== null && versionRange.intersects(new semver.Range('< 1.6.5'))) {
-      if (!/^\d+\.\d+\.\d+/.test(electronVersion)) {
-        // electron-prebuilt-compile cannot be resolved because `main` does not point
-        // to a valid JS file.
-        throw new Error('Using electron-prebuilt-compile with Electron Packager requires specifying an exact Electron version')
-      }
-
-      opts.electronVersion = electronVersion
-      return Promise.resolve()
-    }
-  }
 
   const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1]
   debug(`Inferring target Electron version from ${packageName} in ${src}`)
@@ -143,11 +121,7 @@ module.exports = async function getMetadataFromPackageJSON (platforms, opts, dir
       'dependencies.electron',
       'devDependencies.electron',
       'dependencies.electron-nightly',
-      'devDependencies.electron-nightly',
-      'dependencies.electron-prebuilt-compile',
-      'devDependencies.electron-prebuilt-compile',
-      'dependencies.electron-prebuilt',
-      'devDependencies.electron-prebuilt'
+      'devDependencies.electron-nightly'
     ])
   }
 
