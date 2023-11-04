@@ -53,7 +53,7 @@ export function createPlatformArchPairs(opts: Options, selectedPlatforms: Suppor
   for (const arch of selectedArchs) {
     for (const platform of selectedPlatforms) {
       if (usingOfficialElectronPackages(opts)) {
-        if (!validOfficialPlatformArch(opts, platform, arch)) {
+        if (!validOfficialPlatformArch(platform, arch)) {
           warnIfAllNotSpecified(opts, `The platform/arch combination ${platform}/${arch} is not currently supported by Electron Packager`);
           continue;
         } else if (buildVersions[platform] && buildVersions[platform][arch]) {
@@ -84,7 +84,7 @@ function usingOfficialElectronPackages(opts: Options) {
   return !opts.download || !Object.prototype.hasOwnProperty.call(opts.download, 'mirrorOptions');
 }
 
-function validOfficialPlatformArch(opts: Options, platform: SupportedPlatform, arch: SupportedArch) {
+function validOfficialPlatformArch(platform: SupportedPlatform, arch: SupportedArch) {
   return officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].includes(arch);
 }
 
