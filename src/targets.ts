@@ -47,8 +47,9 @@ export const supported = {
 };
 
 export function createPlatformArchPairs(opts: Options, selectedPlatforms: SupportedPlatform[],
-  selectedArchs: SupportedArch[], ignoreFunc?: IgnoreFunc) {
-  const combinations = [];
+  selectedArchs: SupportedArch[],
+  ignoreFunc?: IgnoreFunc) {
+  const combinations: Array<[SupportedPlatform, SupportedArch]> = [];
 
   for (const arch of selectedArchs) {
     for (const platform of selectedPlatforms) {
