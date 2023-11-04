@@ -13,7 +13,7 @@ import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@elec
 import {
   LegacyNotarizeCredentials,
   NotaryToolCredentials,
-  TransporterOptions
+  TransporterOptions,
 } from '@electron/notarize/lib/types';
 import { SignOptions } from '@electron/osx-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
@@ -37,6 +37,18 @@ export type TargetArch = OfficialArch | string;
 export type TargetPlatform = OfficialPlatform | string;
 export type ArchOption = TargetArch | 'all';
 export type PlatformOption = TargetPlatform | 'all';
+
+/**
+ * Architecture values that we actually support out of the box (not considering unofficial values provided in
+ * `download.mirrorOptions`).
+ */
+export type SupportedArch = OfficialArch | 'all';
+
+/**
+ * Platform values that we actually support out of the box (not considering unofficial values provided in
+ * `download.mirrorOptions`).
+ */
+export type SupportedPlatform = OfficialPlatform | 'all';
 
 /**
  * A predicate function that, given an absolute file `path`, returns `true` if the file should be
@@ -81,23 +93,23 @@ export type IgnoreFunction = (path: string) => boolean;
  * plugins](https://github.com/electron/packager#plugins).
  */
 export type HookFunction =
-  /**
-   * @param buildPath - For {@link afterExtract}, the path to the temporary folder where the prebuilt
-   * Electron binary has been extracted to. For {@link afterCopy} and {@link afterPrune}, the path to the
-   * folder where the Electron app has been copied to. For {@link afterComplete}, the final directory
-   * of the packaged application.
-   * @param electronVersion - the version of Electron that is being bundled with the application.
-   * @param platform - The target platform you are packaging for.
-   * @param arch - The target architecture you are packaging for.
-   * @param callback - Must be called once you have completed your actions.
-   */
+/**
+ * @param buildPath - For {@link afterExtract}, the path to the temporary folder where the prebuilt
+ * Electron binary has been extracted to. For {@link afterCopy} and {@link afterPrune}, the path to the
+ * folder where the Electron app has been copied to. For {@link afterComplete}, the final directory
+ * of the packaged application.
+ * @param electronVersion - the version of Electron that is being bundled with the application.
+ * @param platform - The target platform you are packaging for.
+ * @param arch - The target architecture you are packaging for.
+ * @param callback - Must be called once you have completed your actions.
+ */
   (
-  buildPath: string,
-  electronVersion: string,
-  platform: TargetArch,
-  arch: TargetArch,
-  callback: (err?: Error | null) => void
-) => void;
+    buildPath: string,
+    electronVersion: string,
+    platform: TargetArch,
+    arch: TargetArch,
+    callback: (err?: Error | null) => void,
+  ) => void;
 
 export type TargetDefinition = {
   arch: TargetArch;
@@ -121,6 +133,8 @@ export type OsxNotarizeOptions =
  * for details.
  */
 export type OsxUniversalOptions = Omit<MakeUniversalOpts, 'x64AppPath' | 'arm64AppPath' | 'outAppPath' | 'force'>
+
+export type IgnoreFunc = (platform: string, arch: string) => boolean;
 
 /**
  * Defines URL protocol schemes to be used on macOS.
@@ -193,6 +207,10 @@ export interface Options {
    * learn what archs/platforms packager is targetting when you pass "all" as a value.
    */
   afterFinalizePackageTargets?: FinalizePackageTargetsHookFunction[];
+
+  // @TODO(erikian): document this
+  afterInitialize?: HookFunction[];
+
   /**
    * Functions to be called after Node module pruning has been applied to the application.
    *
@@ -579,4 +597,19 @@ export interface Options {
    * @category Windows
    */
   win32metadata?: Win32MetadataOptions;
+}
+
+interface OptionsWithRequiredArchAndPlatform extends Options {
+  arch: Exclude<Options['arch'], undefined>;
+  platform: Exclude<Options['platform'], undefined>;
+}
+
+export interface DownloadOptions extends OptionsWithRequiredArchAndPlatform {
+  artifactName: string;
+  version: string;
+}
+
+export interface ComboOptions extends Options {
+  arch: OptionsWithRequiredArchAndPlatform['arch']
+  platform: OptionsWithRequiredArchAndPlatform['platform']
 }

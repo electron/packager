@@ -7,7 +7,7 @@ class LinuxApp extends App {
   }
 
   get newElectronName() {
-    return sanitizeAppName(this.executableName);
+    return sanitizeAppName(this.executableName!);
   }
 
   async create() {

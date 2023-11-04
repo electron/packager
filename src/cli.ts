@@ -4,16 +4,17 @@ import { initializeProxy } from '@electron/get';
 import { packager } from './packager';
 import path from 'path';
 import yargs from 'yargs-parser';
+import { Options } from './types';
 
 /* istanbul ignore next */
-async function printUsageAndExit(isError) {
+async function printUsageAndExit(isError: boolean) {
   const usage = (await fs.readFile(path.resolve(__dirname, '..', 'usage.txt'))).toString();
   const print = isError ? console.error : console.log;
   print(usage);
   process.exit(isError ? 1 : 0);
 }
 
-export function parseArgs(argv) {
+export function parseArgs(argv: string[]) {
   const args = yargs(argv, {
     boolean: [
       'all',
@@ -98,11 +99,18 @@ export function parseArgs(argv) {
   return args;
 }
 
-/* istanbul ignore next */ export async function run(argv) {
+/* istanbul ignore next */ export async function run(argv: string[]) {
   const args = parseArgs(argv);
 
+  // @TODO: remove this whole hack if possible
+  type Handle = {
+    _handle?: {
+      setBlocking?: (blocking: boolean) => void
+    }
+  }
+
   // temporary fix for https://github.com/nodejs/node/issues/6456
-  for (const stdioWriter of [process.stdout, process.stderr]) {
+  for (const stdioWriter of [process.stdout, process.stderr] as Handle[]) {
     if (stdioWriter._handle && stdioWriter._handle.setBlocking) {
       stdioWriter._handle.setBlocking(true);
     }
@@ -123,13 +131,15 @@ export function parseArgs(argv) {
   initializeProxy();
 
   try {
-    const appPaths = await packager(args);
+    const appPaths = await packager(args as unknown as Options);
     if (appPaths.length > 1) {
       info(`Wrote new apps to:\n${appPaths.join('\n')}`, args.quiet);
     } else if (appPaths.length === 1) {
       info(`Wrote new app to: ${appPaths[0]}`, args.quiet);
     }
-  } catch (err) {
+  } catch (e) {
+    const err = e as Error;
+
     if (err.message) {
       console.error(err.message);
     } else {

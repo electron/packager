@@ -1,5 +1,5 @@
 import { normalizePath, warning } from './common';
-import galactus from 'galactus';
+import { DestroyerOfModules, DepType, Module, ModuleMap } from 'galactus';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -9,23 +9,28 @@ const ELECTRON_MODULES = [
 ];
 
 export class Pruner {
-  constructor(dir, quiet) {
+  baseDir: string;
+  galactus: DestroyerOfModules;
+  modules = new Set<string>();
+  quiet: boolean;
+  walkedTree = false;
+
+  constructor(dir: string, quiet: boolean) {
     this.baseDir = normalizePath(dir);
     this.quiet = quiet;
-    this.galactus = new galactus.DestroyerOfModules({
+    this.galactus = new DestroyerOfModules({
       rootDirectory: dir,
       shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep)
     });
-    this.walkedTree = false;
   }
 
-  setModules(moduleMap) {
+  setModules(moduleMap: ModuleMap) {
     const modulePaths = Array.from(moduleMap.keys()).map(modulePath => `/${normalizePath(modulePath)}`);
     this.modules = new Set(modulePaths);
     this.walkedTree = true;
   }
 
-  async pruneModule(name) {
+  async pruneModule(name: string) {
     if (this.walkedTree) {
       return this.isProductionModule(name);
     } else {
@@ -35,8 +40,8 @@ export class Pruner {
     }
   }
 
-  shouldKeepModule(module, isDevDep) {
-    if (isDevDep || module.depType === galactus.DepType.ROOT) {
+  shouldKeepModule(module: Module, isDevDep: boolean) {
+    if (isDevDep || module.depType === DepType.ROOT) {
       return false;
     }
 
@@ -48,16 +53,16 @@ export class Pruner {
     return true;
   }
 
-  isProductionModule(name) {
+  isProductionModule(name: string) {
     return this.modules.has(name);
   }
 }
 
-function isNodeModuleFolder(pathToCheck) {
+function isNodeModuleFolder(pathToCheck: string) {
   return path.basename(path.dirname(pathToCheck)) === 'node_modules' ||
     (path.basename(path.dirname(pathToCheck)).startsWith('@') && path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) === 'node_modules');
 }
 
-export async function isModule(pathToCheck) {
+export async function isModule(pathToCheck: string) {
   return (await fs.pathExists(path.join(pathToCheck, 'package.json'))) && isNodeModuleFolder(pathToCheck);
 }
