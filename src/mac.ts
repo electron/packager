@@ -2,15 +2,65 @@ import { App } from './platform';
 import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
 import fs from 'fs-extra';
 import path from 'path';
-import plist from 'plist';
-import { notarize } from '@electron/notarize';
+import plist, { PlistValue } from 'plist';
+import { notarize, NotarizeOptions } from '@electron/notarize';
 import { signApp } from '@electron/osx-sign';
+import { ComboOptions, OsxNotarizeOptions } from './types';
+import { SignOptions } from '@electron/osx-sign/dist/cjs/types';
 
-export class MacApp extends App {
-  constructor(opts, templatePath) {
+type NSUsageDescription = {
+  [key in `NS${string}UsageDescription`]: string
+}
+
+type BasePList = {
+  CFBundleDisplayName: string
+  CFBundleExecutable: string
+  CFBundleIdentifier: string | undefined
+  CFBundleName: string
+  CFBundleShortVersionString: string
+  CFBundleVersion: string
+} & NSUsageDescription
+
+interface Plists {
+  appPlist?: (BasePList & {
+    CFBundleIconFile: string
+    // eslint-disable-next-line no-use-before-define
+    CFBundleURLTypes: MacApp['protocols']
+    ElectronAsarIntegrity: App['asarIntegrity']
+    LSApplicationCategoryType: string
+    NSHumanReadableCopyright: string
+    NSRequiresAquaSystemAppearance: boolean
+  });
+  helperEHPlist?: BasePList
+  helperGPUPlist?: BasePList
+  helperNPPlist?: BasePList
+  helperPlist?: BasePList
+  helperPluginPlist?: BasePList
+  helperRendererPlist?: BasePList
+  loginHelperPlist?: BasePList
+}
+
+type PlistNames = keyof Plists
+
+// eslint-disable-next-line no-use-before-define
+type LoadPlistParams = Parameters<MacApp['loadPlist']>
+
+export class MacApp extends App implements Plists {
+  appName: string;
+  appPlist: Plists['appPlist'];
+  helperBundleIdentifier: string | undefined;
+  helperEHPlist: Plists['helperEHPlist'];
+  helperGPUPlist: Plists['helperGPUPlist'];
+  helperNPPlist: Plists['helperNPPlist'];
+  helperPlist: Plists['helperPlist'];
+  helperPluginPlist: Plists['helperPluginPlist'];
+  helperRendererPlist: Plists['helperRendererPlist'];
+  loginHelperPlist: Plists['loginHelperPlist'];
+
+  constructor(opts: ComboOptions, templatePath: string) {
     super(opts, templatePath);
 
-    this.appName = opts.name;
+    this.appName = opts.name as string;
   }
 
   get appCategoryType() {
@@ -38,10 +88,10 @@ export class MacApp extends App {
   }
 
   get protocols() {
-    return this.opts.protocols.map((protocol) => {
+    return (this.opts.protocols || []).map((protocol) => {
       return {
         CFBundleURLName: protocol.name,
-        CFBundleURLSchemes: [].concat(protocol.schemes)
+        CFBundleURLSchemes: [...protocol.schemes],
       };
     });
   }
@@ -75,7 +125,7 @@ export class MacApp extends App {
   }
 
   get newElectronName() {
-    return this.appPlist.CFBundleExecutable;
+    return this.appPlist!.CFBundleExecutable;
   }
 
   get renamedAppPath() {
@@ -102,17 +152,19 @@ export class MacApp extends App {
     return path.join(this.loginItemsPath, 'Electron Login Helper.app');
   }
 
-  updatePlist(basePlist, displayName, identifier, name) {
-    return Object.assign(basePlist, {
+  updatePlist<T extends BasePList = BasePList>(basePlist: T, displayName: string, identifier: string | undefined,
+    name: string): T {
+    return Object.assign(basePlist!, {
       CFBundleDisplayName: displayName,
       CFBundleExecutable: sanitizeAppName(displayName),
       CFBundleIdentifier: identifier,
-      CFBundleName: sanitizeAppName(name)
+      CFBundleName: sanitizeAppName(name),
     });
   }
 
-  updateHelperPlist(basePlist, suffix, identifierIgnoresSuffix) {
-    let helperSuffix, identifier, name;
+  updateHelperPlist(helperPlist: MacApp['helperPlist'], suffix?: string, identifierIgnoresSuffix?: boolean) {
+    let helperSuffix: string, identifier: typeof this.helperBundleIdentifier, name: string;
+
     if (suffix) {
       helperSuffix = `Helper ${suffix}`;
       if (identifierIgnoresSuffix) {
@@ -126,10 +178,10 @@ export class MacApp extends App {
       identifier = this.helperBundleIdentifier;
       name = this.appName;
     }
-    return this.updatePlist(basePlist, `${this.appName} ${helperSuffix}`, identifier, name);
+    return this.updatePlist(helperPlist!, `${this.appName} ${helperSuffix}`, identifier, name);
   }
 
-  async extendPlist(basePlist, propsOrFilename) {
+  async extendPlist(basePlist: BasePList, propsOrFilename: ComboOptions['extendInfo' | 'extendHelperInfo']) {
     if (!propsOrFilename) {
       return Promise.resolve();
     }
@@ -142,29 +194,29 @@ export class MacApp extends App {
     }
   }
 
-  async loadPlist(filename, propName) {
+  async loadPlist(filename: string, propName?: PlistNames) {
     const loadedPlist = plist.parse((await fs.readFile(filename)).toString());
     if (propName) {
-      this[propName] = loadedPlist;
+      (this[propName] as unknown) = loadedPlist;
     }
     return loadedPlist;
   }
 
-  ehPlistFilename(helper) {
+  ehPlistFilename(helper: string) {
     return this.helperPlistFilename(path.join(this.frameworksPath, helper));
   }
 
-  helperPlistFilename(helperApp) {
+  helperPlistFilename(helperApp: string) {
     return path.join(helperApp, 'Contents', 'Info.plist');
   }
 
-  async determinePlistFilesToUpdate() {
+  async determinePlistFilesToUpdate(): Promise<LoadPlistParams[]> {
     const appPlistFilename = path.join(this.contentsPath, 'Info.plist');
 
     const plists = [
       [appPlistFilename, 'appPlist'],
-      [this.ehPlistFilename('Electron Helper.app'), 'helperPlist']
-    ];
+      [this.ehPlistFilename('Electron Helper.app'), 'helperPlist'],
+    ] as LoadPlistParams[];
 
     const possiblePlists = [
       [this.ehPlistFilename('Electron Helper (Renderer).app'), 'helperRendererPlist'],
@@ -172,15 +224,16 @@ export class MacApp extends App {
       [this.ehPlistFilename('Electron Helper (GPU).app'), 'helperGPUPlist'],
       [this.ehPlistFilename('Electron Helper EH.app'), 'helperEHPlist'],
       [this.ehPlistFilename('Electron Helper NP.app'), 'helperNPPlist'],
-      [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist']
+      [this.helperPlistFilename(this.loginHelperPath), 'loginHelperPlist'],
     ];
 
     const optional = await Promise.all(possiblePlists.map(async item =>
       (await fs.pathExists(item[0])) ? item : null));
-    return plists.concat(optional.filter(item => item));
+
+    return [...plists, ...(optional as LoadPlistParams[]).filter(item => item)];
   }
 
-  appRelativePath(p) {
+  appRelativePath(p: string) {
     return path.relative(this.contentsPath, p);
   }
 
@@ -190,33 +243,37 @@ export class MacApp extends App {
 
     const plists = await this.determinePlistFilesToUpdate();
     await Promise.all(plists.map(plistArgs => this.loadPlist(...plistArgs)));
-    await this.extendPlist(this.appPlist, this.opts.extendInfo);
+    await this.extendPlist(this.appPlist!, this.opts.extendInfo);
     if (this.asarIntegrity) {
-      await this.extendPlist(this.appPlist, {
-        ElectronAsarIntegrity: this.asarIntegrity
+      await this.extendPlist(this.appPlist!, {
+        ElectronAsarIntegrity: this.asarIntegrity,
       });
     } else {
-      delete this.appPlist.ElectronAsarIntegrity;
+      delete this.appPlist?.ElectronAsarIntegrity;
     }
-    this.appPlist = this.updatePlist(this.appPlist, this.executableName, appBundleIdentifier, this.appName);
+    this.appPlist = this.updatePlist(this.appPlist!, this.executableName!, appBundleIdentifier, this.appName);
 
     const updateIfExists = [
       ['helperRendererPlist', '(Renderer)', true],
       ['helperPluginPlist', '(Plugin)', true],
       ['helperGPUPlist', '(GPU)', true],
       ['helperEHPlist', 'EH'],
-      ['helperNPPlist', 'NP']
-    ];
+      ['helperNPPlist', 'NP'],
+    ] as unknown as Array<[PlistNames, string, boolean?]>;
 
-    for (const [plistKey] of [...updateIfExists, ['helperPlist']]) {
-      if (!this[plistKey]) continue;
-      await this.extendPlist(this[plistKey], this.opts.extendHelperInfo);
+    for (const [plistKey] of [...updateIfExists, (['helperPlist'] as PlistNames[])]) {
+      if (!this[plistKey]) {
+        continue;
+      }
+      await this.extendPlist(this[plistKey] as BasePList, this.opts.extendHelperInfo);
     }
 
     this.helperPlist = this.updateHelperPlist(this.helperPlist);
     for (const [plistKey, ...suffixArgs] of updateIfExists) {
-      if (!this[plistKey]) continue;
-      this[plistKey] = this.updateHelperPlist(this[plistKey], ...suffixArgs);
+      if (!this[plistKey]) {
+        continue;
+      }
+      (this[plistKey] as unknown) = this.updateHelperPlist(this[plistKey], ...suffixArgs);
     }
 
     // Some properties need to go on all helpers as well, version, usage info, etc.
@@ -235,14 +292,14 @@ export class MacApp extends App {
     if (this.appVersion) {
       const appVersionString = '' + this.appVersion;
       for (const plistKey of plistsToUpdate) {
-        this[plistKey].CFBundleShortVersionString = this[plistKey].CFBundleVersion = appVersionString;
+        this[plistKey]!.CFBundleShortVersionString = this[plistKey]!.CFBundleVersion = appVersionString;
       }
     }
 
     if (this.buildVersion) {
       const buildVersionString = '' + this.buildVersion;
       for (const plistKey of plistsToUpdate) {
-        this[plistKey].CFBundleVersion = buildVersionString;
+        this[plistKey]!.CFBundleVersion = buildVersionString;
       }
     }
 
@@ -264,16 +321,16 @@ export class MacApp extends App {
 
     if (this.usageDescription) {
       for (const [type, description] of Object.entries(this.usageDescription)) {
-        const usageTypeKey = `NS${type}UsageDescription`;
+        const usageTypeKey = `NS${type}UsageDescription` as keyof BasePList;
         for (const plistKey of plistsToUpdate) {
-          this[plistKey][usageTypeKey] = description;
+          this[plistKey]![usageTypeKey] = description;
         }
         this.appPlist[usageTypeKey] = description;
       }
     }
 
     await Promise.all(plists.map(([filename, varName]) =>
-      fs.writeFile(filename, plist.build(this[varName]))));
+      fs.writeFile(filename, plist.build(this[varName as PlistNames] as PlistValue))));
   }
 
   async moveHelpers() {
@@ -284,21 +341,21 @@ export class MacApp extends App {
     }
   }
 
-  async moveHelper(helperDirectory, suffix) {
+  async moveHelper(helperDirectory: string, suffix: string) {
     const originalBasename = `Electron${suffix}`;
 
     if (await fs.pathExists(path.join(helperDirectory, `${originalBasename}.app`))) {
       return this.renameHelperAndExecutable(
         helperDirectory,
         originalBasename,
-        `${sanitizeAppName(this.appName)}${suffix}`
+        `${sanitizeAppName(this.appName)}${suffix}`,
       );
     } else {
       return Promise.resolve();
     }
   }
 
-  async renameHelperAndExecutable(helperDirectory, originalBasename, newBasename) {
+  async renameHelperAndExecutable(helperDirectory: string, originalBasename: string, newBasename: string) {
     const originalAppname = `${originalBasename}.app`;
     const executableBasePath = path.join(helperDirectory, originalAppname, 'Contents', 'MacOS');
     await this.relativeRename(executableBasePath, originalBasename, newBasename);
@@ -320,8 +377,8 @@ export class MacApp extends App {
       return Promise.resolve();
     }
     if (icon) {
-      debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist.CFBundleIconFile}"`);
-      await fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist.CFBundleIconFile));
+      debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist!.CFBundleIconFile}"`);
+      await fs.copy(icon, path.join(this.originalResourcesDir, this.appPlist!.CFBundleIconFile));
     }
   }
 
@@ -336,16 +393,16 @@ export class MacApp extends App {
     const version = this.opts.electronVersion;
 
     if ((platform === 'all' || platform === 'mas') &&
-        osxSignOpt === undefined) {
+      osxSignOpt === undefined) {
       warning('signing is required for mas builds. Provide the osx-sign option, ' +
-                     'or manually sign the app later.', this.opts.quiet);
+        'or manually sign the app later.', this.opts.quiet);
     }
 
     if (osxSignOpt) {
       const signOpts = createSignOpts(osxSignOpt, platform, this.renamedAppPath, version, this.opts.quiet);
       debug(`Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`);
       try {
-        await signApp(signOpts);
+        await signApp(signOpts as SignOptions);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {
@@ -366,7 +423,7 @@ export class MacApp extends App {
         osxNotarizeOpt,
         this.bundleName,
         this.renamedAppPath,
-        this.opts.quiet
+        Boolean(this.opts.quiet),
       );
       if (notarizeOpts) {
         return notarize(notarizeOpts);
@@ -394,13 +451,22 @@ export { MacApp as App };
  * Apple documentation:
  * https://developer.apple.com/library/mac/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070
  */
-export function filterCFBundleIdentifier(identifier) {
-  return identifier.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '');
+export function filterCFBundleIdentifier(identifier: ComboOptions['appBundleId']) {
+  return identifier!.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '');
 }
 
-export function createSignOpts(properties, platform, app, version, quiet) {
+type Mutable<T> = {
+  -readonly [key in keyof T]: T[key];
+}
+
+type CreateSignOptsResult = Mutable<SignOptions & {
+  continueOnError?: boolean
+}>
+
+export function createSignOpts(properties: ComboOptions['osxSign'], platform: ComboOptions['platform'], app: string,
+  version: ComboOptions['electronVersion'], quiet?: boolean): CreateSignOptsResult {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
-  const signOpts = properties === true ? { identity: null } : { ...properties };
+  const signOpts = (properties === true ? { identity: null } : { ...properties }) as CreateSignOptsResult;
 
   // osx-sign options are handed off to sign module, but
   // with a few additions from the main options
@@ -417,8 +483,8 @@ export function createSignOpts(properties, platform, app, version, quiet) {
   // Take argument osx-sign as signing identity:
   // if opts.osxSign is true (bool), fallback to identity=null for
   // autodiscovery. Otherwise, provide signing certificate info.
-  if (signOpts.identity === true) {
-    signOpts.identity = null;
+  if ((signOpts.identity as unknown) === true) {
+    (signOpts.identity as unknown) = null;
   }
 
   // Default to `continueOnError: true` since this was the default behavior before this option was added
@@ -429,13 +495,14 @@ export function createSignOpts(properties, platform, app, version, quiet) {
   return signOpts;
 }
 
-export function createNotarizeOpts(properties, appBundleId, appPath, quiet) {
+export function createNotarizeOpts(properties: OsxNotarizeOptions, appBundleId: string, appPath: string,
+  quiet: boolean): NotarizeOptions {
   // osxNotarize options are handed off to the @electron/notarize module, but with a few
   // additions from the main options. The user may think they can pass appPath,
   // but it will be ignored.
   if (properties.tool !== 'notarytool') {
-    subOptionWarning(properties, 'osxNotarize', 'appBundleId', appBundleId, quiet);
+    subOptionWarning(properties as unknown as Record<string, unknown>, 'osxNotarize', 'appBundleId', appBundleId, quiet);
   }
-  subOptionWarning(properties, 'osxNotarize', 'appPath', appPath, quiet);
-  return properties;
+  subOptionWarning(properties as unknown as Record<string, unknown>, 'osxNotarize', 'appPath', appPath, quiet);
+  return properties as NotarizeOptions;
 }
