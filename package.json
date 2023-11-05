@@ -67,7 +67,6 @@
     "nyc": "^15.0.0",
     "pkg-up": "^4.0.0",
     "sinon": "^17.0.0",
-    "tsd": "^0.14.0",
     "typedoc": "^0.19.0",
     "typescript": "^5.2.2"
   },
@@ -85,8 +84,7 @@
     "lint:ts": "eslint --config .eslintrc.typescript.js --ext .ts .",
     "prepublish": "@build",
     "pretest": "@build",
-    "test": "npm run lint && npm run tsd && npm run coverage",
-    "tsd": "tsd"
+    "test": "npm run lint && npm run coverage"
   },
   "directories": {
     "test": "test"
@@ -99,9 +97,6 @@
   ],
   "ava": {
     "timeout": "60s"
-  },
-  "tsd": {
-    "directory": "test"
   },
   "funding": {
     "url": "https://github.com/electron/packager?sponsor=1"
