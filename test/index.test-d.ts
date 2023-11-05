@@ -191,6 +191,7 @@ await packager({
   osxNotarize: {
     appleId: 'My ID',
     appleIdPassword: 'Bad Password',
+    teamId: 'My Team ID',
   },
   osxSign: {
     identity: 'myidentity',
