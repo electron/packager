@@ -134,9 +134,7 @@ declare namespace electronPackager {
    * See the documentation for [`@electron/notarize`](https://npm.im/@electron/notarize#method-notarizeopts-promisevoid)
    * for details.
    */
-  type OsxNotarizeOptions =
-    | ({ tool?: 'legacy' } & NotarizeLegacyOptions)
-    | ({ tool: 'notarytool' } & NotaryToolCredentials);
+  type OsxNotarizeOptions = { tool: 'notarytool' } & NotaryToolCredentials;
 
   /**
    * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
