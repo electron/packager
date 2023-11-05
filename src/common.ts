@@ -1,6 +1,5 @@
 import filenamify from 'filenamify';
 import fs from 'fs-extra';
-import metadata from '../package.json';
 import os from 'os';
 import path from 'path';
 import createDebug from 'debug';
@@ -119,6 +118,9 @@ export async function validateElectronApp(appDir: string, bundledAppDir: string)
 }
 
 export function hostInfo() {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const metadata = require('../package.json');
+
   return `Electron Packager ${metadata.version}\n` +
     `Node ${process.version}\n` +
     `Host Operating system: ${process.platform} ${os.release()} (${process.arch})`;

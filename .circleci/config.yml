@@ -24,6 +24,7 @@ jobs:
             - run: test/ci/before_install.sh
           override-ci-command: yarn install --frozen-lockfile --ignore-engines
           test-steps:
+            - run: yarn build
             - restore_cache:
                 name: Restoring Electron cache
                 paths:
