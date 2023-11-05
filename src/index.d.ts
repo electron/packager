@@ -10,17 +10,11 @@
 
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
-import {
-  LegacyNotarizeCredentials,
-  NotaryToolCredentials,
-  TransporterOptions
-} from '@electron/notarize/lib/types';
+import { NotaryToolCredentials } from '@electron/notarize/lib/types';
 import { SignOptions } from '@electron/osx-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
 
 type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
-
-type NotarizeLegacyOptions = LegacyNotarizeCredentials & TransporterOptions;
 
 /**
  * Bundles Electron-based application source code with a renamed/customized Electron executable and
@@ -129,12 +123,6 @@ declare namespace electronPackager {
 
   /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
   type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
-
-  /**
-   * See the documentation for [`@electron/notarize`](https://npm.im/@electron/notarize#method-notarizeopts-promisevoid)
-   * for details.
-   */
-  type OsxNotarizeOptions = { tool: 'notarytool' } & NotaryToolCredentials;
 
   /**
    * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
@@ -476,7 +464,7 @@ declare namespace electronPackager {
      *
      * @category macOS
      */
-    osxNotarize?: OsxNotarizeOptions;
+    osxNotarize?: NotaryToolCredentials;
     /**
      * If present, signs macOS target apps when the host platform is macOS and Xcode is installed.
      * When the value is `true`, pass default configuration to the signing module. See
