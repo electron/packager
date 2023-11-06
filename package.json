@@ -80,8 +80,8 @@
     "coverage": "nyc ava test/index.js",
     "docs:build": "node test/ci/build_docs.js",
     "lint": "eslint --ext .ts .",
-    "prepublish": "@build",
-    "pretest": "@build",
+    "prepublish": "npm run build",
+    "pretest": "npm run build",
     "test": "npm run lint && npm run coverage"
   },
   "directories": {
