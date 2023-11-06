@@ -321,9 +321,9 @@
     plist "^3.0.5"
 
 "@electron/universal@^1.3.2":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@electron/universal/-/universal-1.4.4.tgz#214181ec3868396c8072c721921d982796e4b9de"
-  integrity sha512-dWwlhSXrpw3MTSkUWLkBEyv58qVcxQ2gVaZzYYRUYqEV5Or4J+SsLSbDthiKEaD404GDceZpdLLuntyHtCAywg==
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@electron/universal/-/universal-1.4.5.tgz#40bcf5343e0c31f4627bb0e58cc417526ede60ef"
+  integrity sha512-3vE9WBQnvlulKylrPbyc+9M4xnD7t1JxuCOF0nrFz00XrrkgbqeqxDf90PNcjLiuB4hAZKr1JooVA6KwsXj94w==
   dependencies:
     "@electron/asar" "^3.2.1"
     "@malept/cross-spawn-promise" "^1.1.0"
