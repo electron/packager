@@ -1,8 +1,8 @@
 'use strict'
 
 const fs = require('fs-extra')
-const { getMetadataFromPackageJSON } = require('../dist/src/infer')
-const { packager } = require('../dist/src')
+const { getMetadataFromPackageJSON } = require('../dist/infer')
+const { packager } = require('../dist')
 const path = require('path')
 const semver = require('semver')
 const test = require('ava')

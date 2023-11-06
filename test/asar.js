@@ -1,6 +1,6 @@
 'use strict'
 
-const { createAsarOpts } = require('../dist/src/common')
+const { createAsarOpts } = require('../dist/common')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')

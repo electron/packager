@@ -1,6 +1,6 @@
 'use strict'
 
-const { parseArgs } = require('../dist/src/cli')
+const { parseArgs } = require('../dist/cli')
 const test = require('ava')
 const util = require('./_util')
 

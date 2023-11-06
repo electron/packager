@@ -1,7 +1,7 @@
 'use strict'
 
-const { isPlatformMac } = require('../dist/src/common')
-const { createDownloadCombos, downloadElectronZip: packagerDownloadElectronZip } = require('../dist/src/download')
+const { isPlatformMac } = require('../dist/common')
+const { createDownloadCombos, downloadElectronZip: packagerDownloadElectronZip } = require('../dist/download')
 const { downloadArtifact } = require('@electron/get')
 const config = require('./config.json')
 const childProcess = require('child_process')
@@ -9,7 +9,7 @@ const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
 const { promisify } = require('util')
-const { officialArchs, officialPlatforms } = require('../dist/src/targets')
+const { officialArchs, officialPlatforms } = require('../dist/targets')
 
 childProcess.exec = promisify(childProcess.exec)
 

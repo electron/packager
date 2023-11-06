@@ -1,8 +1,8 @@
 'use strict'
 
 const config = require('./config.json')
-const { promisifyHooks } = require('../dist/src/hooks')
-const { packager } = require('../dist/src')
+const { promisifyHooks } = require('../dist/hooks')
+const { packager } = require('../dist')
 const test = require('ava')
 const util = require('./_util')
 

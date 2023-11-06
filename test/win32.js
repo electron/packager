@@ -1,11 +1,11 @@
 'use strict'
 
 const config = require('./config.json')
-const { packager } = require('../dist/src')
+const { packager } = require('../dist')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
-const { updateWineMissingException, WindowsApp } = require('../dist/src/win32')
+const { updateWineMissingException, WindowsApp } = require('../dist/win32')
 const { WrapperError } = require('cross-spawn-windows-exe')
 
 const win32Opts = {

@@ -1,7 +1,7 @@
 'use strict'
 
-const { sanitizeAppName } = require('../dist/src/common')
-const { generateIgnoredOutDirs, populateIgnoredPaths, userPathFilter } = require('../dist/src/copy-filter')
+const { sanitizeAppName } = require('../dist/common')
+const { generateIgnoredOutDirs, populateIgnoredPaths, userPathFilter } = require('../dist/copy-filter')
 const fs = require('fs-extra')
 const path = require('path')
 const test = require('ava')

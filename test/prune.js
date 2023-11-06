@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const { isModule } = require('../dist/src/prune')
+const { isModule } = require('../dist/prune')
 const test = require('ava')
 const util = require('./_util')
 

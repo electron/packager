@@ -2,7 +2,7 @@
 
 const config = require('./config.json')
 const sinon = require('sinon')
-const { allOfficialArchsForPlatformAndVersion, createPlatformArchPairs, osModules, supported, validateListFromOptions } = require('../dist/src/targets')
+const { allOfficialArchsForPlatformAndVersion, createPlatformArchPairs, osModules, supported, validateListFromOptions } = require('../dist/targets')
 const test = require('ava')
 const util = require('./_util')
 

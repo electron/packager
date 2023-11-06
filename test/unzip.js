@@ -2,10 +2,10 @@
 
 const { assertSymlink } = require('./_util')
 const config = require('./config.json')
-const { createDownloadOpts, downloadElectronZip } = require('../dist/src/download')
+const { createDownloadOpts, downloadElectronZip } = require('../dist/download')
 const path = require('path')
 const test = require('ava')
-const { extractElectronZip } = require('../dist/src/unzip')
+const { extractElectronZip } = require('../dist/unzip')
 
 test('extractElectronZip preserves symbolic links', async t => {
   const downloadOpts = createDownloadOpts({ electronVersion: config.version }, 'darwin', 'x64')

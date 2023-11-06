@@ -1,10 +1,10 @@
 'use strict'
 
-const { info, warning, isPlatformMac, validateElectronApp, sanitizeAppName, generateFinalBasename, deprecatedParameter } = require('../dist/src/common')
-const { createDownloadOpts, downloadElectronZip } = require('../dist/src/download')
+const { info, warning, isPlatformMac, validateElectronApp, sanitizeAppName, generateFinalBasename, deprecatedParameter } = require('../dist/common')
+const { createDownloadOpts, downloadElectronZip } = require('../dist/download')
 const fs = require('fs-extra')
 const { getHostArch } = require('@electron/get')
-const { packager } = require('../dist/src')
+const { packager } = require('../dist')
 const path = require('path')
 const sinon = require('sinon')
 const test = require('ava')

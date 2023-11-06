@@ -2,11 +2,11 @@
 
 // Keeping this module because it handles non-buffers gracefully
 const bufferEqual = require('buffer-equal')
-const { isPlatformMac } = require('../dist/src/common')
+const { isPlatformMac } = require('../dist/common')
 const config = require('./config.json')
 const fs = require('fs-extra')
 const os = require('os')
-const { packager } = require('../dist/src')
+const { packager } = require('../dist')
 const path = require('path')
 const plist = require('plist')
 const setup = require('./_setup')
