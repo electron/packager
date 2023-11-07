@@ -6,9 +6,13 @@ const eslintConfig = {
     'plugin:import/warnings',
     'plugin:promise/recommended',
     'standard',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:import/typescript',
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    sourceType: 'script',
+    sourceType: 'module',
   },
   plugins: [
     'ava',
@@ -28,19 +32,10 @@ const eslintConfig = {
     ],
     'no-console': 0,
     strict: 'error',
+    'comma-dangle': ['error', 'only-multiline'],
+    semi: ['error', 'always'],
+    'space-before-function-paren': ['error', 'never']
   },
 };
-
-eslintConfig.parser = '@typescript-eslint/parser';
-eslintConfig.parserOptions.sourceType = 'module';
-eslintConfig.extends.push(
-  'plugin:@typescript-eslint/eslint-recommended',
-  'plugin:@typescript-eslint/recommended',
-  'plugin:import/typescript',
-);
-
-eslintConfig.rules['comma-dangle'] = ['error', 'only-multiline'];
-eslintConfig.rules.semi = ['error', 'always'];
-eslintConfig.rules['space-before-function-paren'] = ['error', 'never'];
 
 module.exports = eslintConfig;
