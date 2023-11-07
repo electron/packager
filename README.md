@@ -1,22 +1,22 @@
-# Electron Packager
+# @electron/packager
 
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![CircleCI Build Status](https://circleci.com/gh/electron/electron-packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/electron-packager/tree/main)
-[![electron-nightly Canary](https://github.com/electron/electron-packager/actions/workflows/canary.yml/badge.svg)](https://github.com/electron/electron-packager/actions/workflows/canary.yml)
+[![CircleCI Build Status](https://circleci.com/gh/electron/packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/packager/tree/main)
+[![electron-nightly Canary](https://github.com/electron/packager/actions/workflows/canary.yml/badge.svg)](https://github.com/electron/packager/actions/workflows/canary.yml)
 [![Coverage Status](https://codecov.io/gh/electron/electron-packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/electron-packager)
-[![npm](https://badgen.net/npm/v/electron-packager)](https://npm.im/electron-packager)
+[![npm](https://img.shields.io/npm/v/@electron/packager.svg?style=flat)](https://npm.im/@electron/packager)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
 
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
 [Usage](#usage) |
-[API](https://electron.github.io/electron-packager/main/) |
-[Contributing](https://github.com/electron/electron-packager/blob/main/CONTRIBUTING.md) |
-[Support](https://github.com/electron/electron-packager/blob/main/SUPPORT.md) |
+[API](https://electron.github.io/packager/main/) |
+[Contributing](https://github.com/electron/packager/blob/main/CONTRIBUTING.md) |
+[Support](https://github.com/electron/packager/blob/main/SUPPORT.md) |
 [Related Apps/Libraries](#related) |
-[FAQ](https://github.com/electron/electron-packager/blob/main/docs/faq.md) |
-[Release Notes](https://github.com/electron/electron-packager/blob/main/NEWS.md)
+[FAQ](https://github.com/electron/packager/blob/main/docs/faq.md) |
+[Release Notes](https://github.com/electron/packager/blob/main/NEWS.md)
 
 ----
 
@@ -56,10 +56,10 @@ It generates executables/bundles for the following **target** platforms:
 This module requires Node.js 16.4.0 or higher to run.
 
 ```sh
-npm install --save-dev electron-packager
+npm install --save-dev @electron/packager
 ```
 
-It is **not** recommended to install `electron-packager` globally.
+It is **not** recommended to install `@electron/packager` globally.
 
 ### Building Windows apps from non-Windows platforms
 
@@ -74,7 +74,7 @@ via [Homebrew](https://brew.sh/).
 
 ### Via JavaScript
 
-JavaScript API usage can be found in the [API documentation](https://electron.github.io/electron-packager/main/modules/electronpackager.html).
+JavaScript API usage can be found in the [API documentation](https://electron.github.io/packager/main/modules/electronpackager.html).
 
 ### From the command line
 
@@ -100,8 +100,8 @@ This will:
 * Otherwise, a single bundle for the host platform/architecture will be created.
 
 For an overview of the other optional flags, run `electron-packager --help` or see
-[usage.txt](https://github.com/electron/electron-packager/blob/main/usage.txt). For
-detailed descriptions, see the [API documentation](https://electron.github.io/electron-packager/main/modules/electronpackager.html).
+[usage.txt](https://github.com/electron/packager/blob/main/usage.txt). For
+detailed descriptions, see the [API documentation](https://electron.github.io/packager/main/modules/electronpackager.html).
 
 For flags that are structured as objects, you can pass each option as via dot notation as such:
 
@@ -139,7 +139,7 @@ foobar
 
 …and that the following is true:
 
-* `electron-packager` is installed locally
+* `@electron/packager` is installed locally
 * `productName` in `package.json` has been set to `Foo Bar`
 * The `electron` module is in the `devDependencies` section of `package.json`, and set to the exact version of `1.4.15`.
 * `npm install` for the `Foo Bar` app has been run at least once

@@ -1,7 +1,8 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@1.2.0
+  cfa: continuousauth/npm@2.0.0
+  node: electronjs/node@1.4.1
 
 jobs:
   test:
@@ -21,6 +22,7 @@ jobs:
       - node/test:
           post-node-js-install-steps:
             - run: test/ci/before_install.sh
+          override-ci-command: yarn install --frozen-lockfile --ignore-engines
           test-steps:
             - restore_cache:
                 name: Restoring Electron cache
@@ -63,4 +65,11 @@ workflows:
                 - 16.4.0
           filters:
             branches: { ignore: gh-pages }
-
+      - cfa/release:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - main
+          context: cfa-release

@@ -1,8 +1,9 @@
 # Electron Packager: Changes by Version
 
-## [Unreleased]
+## New Release Notes on GitHub Releases
 
-[Unreleased]: https://github.com/electron/electron-packager/compare/v17.1.2...main
+Release notes for new releases are now on [GitHub Releases](https://github.com/electron/packager/releases)
+for the repository.
 
 ### Changed
 
@@ -10,7 +11,7 @@
 
 ## [17.1.2] - 2023-08-18
 
-[17.1.2]: https://github.com/electron/electron-packager/compare/v17.1.1...v17.1.2
+[17.1.2]: https://github.com/electron/packager/compare/v17.1.1...v17.1.2
 
 ### Fixed
 
@@ -36,7 +37,7 @@
 
 ## [17.1.1] - 2022-11-01
 
-[17.1.1]: https://github.com/electron/electron-packager/compare/v17.1.0...v17.1.1
+[17.1.1]: https://github.com/electron/packager/compare/v17.1.0...v17.1.1
 
 ### Fixed
 
@@ -44,7 +45,7 @@
 
 ## [17.1.0] - 2022-10-31
 
-[17.1.0]: https://github.com/electron/electron-packager/compare/v17.0.0...v17.1.0
+[17.1.0]: https://github.com/electron/packager/compare/v17.0.0...v17.1.0
 
 ### Changed
 
@@ -53,7 +54,7 @@
 
 ## [17.0.0] - 2022-10-19
 
-[17.0.0]: https://github.com/electron/electron-packager/compare/v16.0.0...v17.0.0
+[17.0.0]: https://github.com/electron/packager/compare/v16.0.0...v17.0.0
 
 ### Changed
 
@@ -66,7 +67,7 @@
 
 ## [16.0.0] - 2022-08-23
 
-[16.0.0]: https://github.com/electron/electron-packager/compare/v15.5.1...v16.0.0
+[16.0.0]: https://github.com/electron/packager/compare/v15.5.1...v16.0.0
 
 ### Fixed
 
@@ -82,7 +83,7 @@
 
 ## [15.5.2] - 2022-08-22
 
-[15.5.2]: https://github.com/electron/electron-packager/compare/v15.5.1...v15.5.2
+[15.5.2]: https://github.com/electron/packager/compare/v15.5.1...v15.5.2
 
 ### Fixed
 
@@ -91,7 +92,7 @@
 
 ## [15.5.1] - 2022-04-20
 
-[15.5.1]: https://github.com/electron/electron-packager/compare/v15.5.0...v15.5.1
+[15.5.1]: https://github.com/electron/packager/compare/v15.5.0...v15.5.1
 
 ### Fixed
 
@@ -100,7 +101,7 @@
 
 ## [15.5.0] - 2022-04-19
 
-[15.5.0]: https://github.com/electron/electron-packager/compare/v15.4.0...v15.5.0
+[15.5.0]: https://github.com/electron/packager/compare/v15.4.0...v15.5.0
 
 ### Added
 
@@ -109,7 +110,7 @@
 
 ## [15.4.0] - 2021-09-10
 
-[15.4.0]: https://github.com/electron/electron-packager/compare/v15.3.0...v15.4.0
+[15.4.0]: https://github.com/electron/packager/compare/v15.3.0...v15.4.0
 
 ### Added
 
@@ -122,7 +123,7 @@
 
 ## [15.3.0] - 2021-07-17
 
-[15.3.0]: https://github.com/electron/electron-packager/compare/v15.2.0...v15.3.0
+[15.3.0]: https://github.com/electron/packager/compare/v15.2.0...v15.3.0
 
 ### Added
 
@@ -132,7 +133,7 @@
 
 ## [15.2.0] - 2020-12-04
 
-[15.2.0]: https://github.com/electron/electron-packager/compare/v15.1.0...v15.2.0
+[15.2.0]: https://github.com/electron/packager/compare/v15.1.0...v15.2.0
 
 ### Added
 
@@ -145,7 +146,7 @@
 
 ## [15.1.0] - 2020-08-21
 
-[15.1.0]: https://github.com/electron/electron-packager/compare/v15.0.0...v15.1.0
+[15.1.0]: https://github.com/electron/packager/compare/v15.0.0...v15.1.0
 
 ### Added
 
@@ -157,7 +158,7 @@
 
 ## [15.0.0] - 2020-06-27
 
-[15.0.0]: https://github.com/electron/electron-packager/compare/v14.2.1...v15.0.0
+[15.0.0]: https://github.com/electron/packager/compare/v14.2.1...v15.0.0
 
 ### Added
 
@@ -174,7 +175,7 @@
 
 ## [14.2.1] - 2020-02-07
 
-[14.2.1]: https://github.com/electron/electron-packager/compare/v14.2.0...v14.2.1
+[14.2.1]: https://github.com/electron/packager/compare/v14.2.0...v14.2.1
 
 ### Fixed
 
@@ -183,7 +184,7 @@
 
 ## [14.2.0] - 2020-01-13
 
-[14.2.0]: https://github.com/electron/electron-packager/compare/v14.1.1...v14.2.0
+[14.2.0]: https://github.com/electron/packager/compare/v14.1.1...v14.2.0
 
 ### Added
 
@@ -191,7 +192,7 @@
 
 ## [14.1.1] - 2019-11-19
 
-[14.1.1]: https://github.com/electron/electron-packager/compare/v14.1.0...v14.1.1
+[14.1.1]: https://github.com/electron/packager/compare/v14.1.0...v14.1.1
 
 ### Fixed
 
@@ -206,7 +207,7 @@
 
 ## [14.1.0] - 2019-10-28
 
-[14.1.0]: https://github.com/electron/electron-packager/compare/v14.0.6...v14.1.0
+[14.1.0]: https://github.com/electron/packager/compare/v14.0.6...v14.1.0
 
 ### Added
 
@@ -215,7 +216,7 @@
 
 ## [14.0.6] - 2019-09-09
 
-[14.0.6]: https://github.com/electron/electron-packager/compare/v14.0.5...v14.0.6
+[14.0.6]: https://github.com/electron/packager/compare/v14.0.5...v14.0.6
 
 ### Fixed
 
@@ -223,7 +224,7 @@
 
 ## [14.0.5] - 2019-08-28
 
-[14.0.5]: https://github.com/electron/electron-packager/compare/v14.0.4...v14.0.5
+[14.0.5]: https://github.com/electron/packager/compare/v14.0.4...v14.0.5
 
 ### Fixed
 
@@ -231,7 +232,7 @@
 
 ## [14.0.4] - 2019-07-30
 
-[14.0.4]: https://github.com/electron/electron-packager/compare/v14.0.3...v14.0.4
+[14.0.4]: https://github.com/electron/packager/compare/v14.0.3...v14.0.4
 
 ### Fixed
 
@@ -240,7 +241,7 @@
 
 ## [14.0.3] - 2019-07-18
 
-[14.0.3]: https://github.com/electron/electron-packager/compare/v14.0.2...v14.0.3
+[14.0.3]: https://github.com/electron/packager/compare/v14.0.2...v14.0.3
 
 ### Fixed
 
@@ -249,7 +250,7 @@
 
 ## [14.0.2] - 2019-07-18
 
-[14.0.2]: https://github.com/electron/electron-packager/compare/v14.0.1...v14.0.2
+[14.0.2]: https://github.com/electron/packager/compare/v14.0.1...v14.0.2
 
 ### Fixed
 
@@ -257,7 +258,7 @@
 
 ## [14.0.1] - 2019-07-02
 
-[14.0.1]: https://github.com/electron/electron-packager/compare/v14.0.0...v14.0.1
+[14.0.1]: https://github.com/electron/packager/compare/v14.0.0...v14.0.1
 
 ### Changed
 
@@ -269,7 +270,7 @@
 
 ## [14.0.0] - 2019-06-20
 
-[14.0.0]: https://github.com/electron/electron-packager/compare/v13.1.1...v14.0.0
+[14.0.0]: https://github.com/electron/packager/compare/v13.1.1...v14.0.0
 
 ### Added
 
@@ -297,7 +298,7 @@
 
 ## [13.1.1] - 2019-03-04
 
-[13.1.1]: https://github.com/electron/electron-packager/compare/v13.1.0...v13.1.1
+[13.1.1]: https://github.com/electron/packager/compare/v13.1.0...v13.1.1
 
 ### Fixed
 
@@ -305,7 +306,7 @@
 
 ## [13.1.0] - 2019-02-19
 
-[13.1.0]: https://github.com/electron/electron-packager/compare/v13.0.1...v13.1.0
+[13.1.0]: https://github.com/electron/packager/compare/v13.0.1...v13.1.0
 
 ### Added
 
@@ -318,7 +319,7 @@
 
 ## [13.0.1] - 2018-12-12
 
-[13.0.1]: https://github.com/electron/electron-packager/compare/v13.0.0...v13.0.1
+[13.0.1]: https://github.com/electron/packager/compare/v13.0.0...v13.0.1
 
 ### Fixed
 
@@ -326,7 +327,7 @@
 
 ## [13.0.0] - 2018-12-04
 
-[13.0.0]: https://github.com/electron/electron-packager/compare/v12.2.0...v13.0.0
+[13.0.0]: https://github.com/electron/packager/compare/v12.2.0...v13.0.0
 
 ### Added
 
@@ -344,7 +345,7 @@
 
 ## [12.2.0] - 2018-10-02
 
-[12.2.0]: https://github.com/electron/electron-packager/compare/v12.1.2...v12.2.0
+[12.2.0]: https://github.com/electron/packager/compare/v12.1.2...v12.2.0
 
 ### Added
 
@@ -356,7 +357,7 @@
 
 ## [12.1.2] - 2018-09-12
 
-[12.1.2]: https://github.com/electron/electron-packager/compare/v12.1.1...v12.1.2
+[12.1.2]: https://github.com/electron/packager/compare/v12.1.1...v12.1.2
 
 ### Fixed
 
@@ -364,7 +365,7 @@
 
 ## [12.1.1] - 2018-08-18
 
-[12.1.1]: https://github.com/electron/electron-packager/compare/v12.1.0...v12.1.1
+[12.1.1]: https://github.com/electron/packager/compare/v12.1.0...v12.1.1
 
 ### Changed
 
@@ -378,7 +379,7 @@
 
 ## [12.1.0] - 2018-05-18
 
-[12.1.0]: https://github.com/electron/electron-packager/compare/v12.0.2...v12.1.0
+[12.1.0]: https://github.com/electron/packager/compare/v12.0.2...v12.1.0
 
 ### Added
 
@@ -391,7 +392,7 @@
 
 ## [12.0.2] - 2018-05-02
 
-[12.0.2]: https://github.com/electron/electron-packager/compare/v12.0.1...v12.0.2
+[12.0.2]: https://github.com/electron/packager/compare/v12.0.1...v12.0.2
 
 ### Fixed
 
@@ -403,7 +404,7 @@
 
 ## [12.0.1] - 2018-04-10
 
-[12.0.1]: https://github.com/electron/electron-packager/compare/v12.0.0...v12.0.1
+[12.0.1]: https://github.com/electron/packager/compare/v12.0.0...v12.0.1
 
 ### Fixed
 
@@ -411,7 +412,7 @@
 
 ## [12.0.0] - 2018-04-03
 
-[12.0.0]: https://github.com/electron/electron-packager/compare/v11.2.0...v12.0.0
+[12.0.0]: https://github.com/electron/packager/compare/v11.2.0...v12.0.0
 
 ### Changed
 
@@ -426,7 +427,7 @@
 
 ## [11.2.1] - 2019-01-02
 
-[11.2.1]: https://github.com/electron/electron-packager/compare/v11.2.0...v11.2.1
+[11.2.1]: https://github.com/electron/packager/compare/v11.2.0...v11.2.1
 
 ### Fixed
 
@@ -434,7 +435,7 @@
 
 ## [11.2.0] - 2018-03-24
 
-[11.2.0]: https://github.com/electron/electron-packager/compare/v11.1.0...v11.2.0
+[11.2.0]: https://github.com/electron/packager/compare/v11.1.0...v11.2.0
 
 ### Added
 
@@ -442,7 +443,7 @@
 
 ## [11.1.0] - 2018-03-04
 
-[11.1.0]: https://github.com/electron/electron-packager/compare/v11.0.1...v11.1.0
+[11.1.0]: https://github.com/electron/packager/compare/v11.0.1...v11.1.0
 
 ### Added
 
@@ -450,7 +451,7 @@
 
 ## [11.0.1] - 2018-02-12
 
-[11.0.1]: https://github.com/electron/electron-packager/compare/v11.0.0...v11.0.1
+[11.0.1]: https://github.com/electron/packager/compare/v11.0.0...v11.0.1
 
 ### Fixed
 
@@ -459,7 +460,7 @@
 
 ## [11.0.0] - 2018-02-06
 
-[11.0.0]: https://github.com/electron/electron-packager/compare/v10.1.2...v11.0.0
+[11.0.0]: https://github.com/electron/packager/compare/v10.1.2...v11.0.0
 
 ### Added
 
@@ -472,7 +473,7 @@
 
 ## [10.1.2] - 2018-01-26
 
-[10.1.2]: https://github.com/electron/electron-packager/compare/v10.1.1...v10.1.2
+[10.1.2]: https://github.com/electron/packager/compare/v10.1.1...v10.1.2
 
 ### Fixed
 
@@ -480,7 +481,7 @@
 
 ## [10.1.1] - 2018-01-02
 
-[10.1.1]: https://github.com/electron/electron-packager/compare/v10.1.0...v10.1.1
+[10.1.1]: https://github.com/electron/packager/compare/v10.1.0...v10.1.1
 
 ### Fixed
 
@@ -489,7 +490,7 @@
 
 ## [10.1.0] - 2017-11-19
 
-[10.1.0]: https://github.com/electron/electron-packager/compare/v10.0.0...v10.1.0
+[10.1.0]: https://github.com/electron/packager/compare/v10.0.0...v10.1.0
 
 ### Added
 
@@ -501,7 +502,7 @@
 
 ## [10.0.0] - 2017-11-19
 
-[10.0.0]: https://github.com/electron/electron-packager/compare/v9.1.0...v10.0.0
+[10.0.0]: https://github.com/electron/packager/compare/v9.1.0...v10.0.0
 
 ### Changed
 
@@ -514,7 +515,7 @@
 
 ## [9.1.0] - 2017-09-15
 
-[9.1.0]: https://github.com/electron/electron-packager/compare/v9.0.1...v9.1.0
+[9.1.0]: https://github.com/electron/packager/compare/v9.0.1...v9.1.0
 
 ### Added
 
@@ -530,7 +531,7 @@
 
 ## [9.0.1] - 2017-09-02
 
-[9.0.1]: https://github.com/electron/electron-packager/compare/v9.0.0...v9.0.1
+[9.0.1]: https://github.com/electron/packager/compare/v9.0.0...v9.0.1
 
 ### Fixed
 
@@ -538,7 +539,7 @@
 
 ## [9.0.0] - 2017-08-23
 
-[9.0.0]: https://github.com/electron/electron-packager/compare/v8.7.2...v9.0.0
+[9.0.0]: https://github.com/electron/packager/compare/v8.7.2...v9.0.0
 
 ### Added
 
@@ -579,7 +580,7 @@
 
 ## [8.7.2] - 2017-06-25
 
-[8.7.2]: https://github.com/electron/electron-packager/compare/v8.7.1...v8.7.2
+[8.7.2]: https://github.com/electron/packager/compare/v8.7.1...v8.7.2
 
 ### Fixed
 
@@ -587,7 +588,7 @@
 
 ## [8.7.1] - 2017-06-05
 
-[8.7.1]: https://github.com/electron/electron-packager/compare/v8.7.0...v8.7.1
+[8.7.1]: https://github.com/electron/packager/compare/v8.7.0...v8.7.1
 
 ### Fixed
 
@@ -595,7 +596,7 @@
 
 ## [8.7.0] - 2017-05-01
 
-[8.7.0]: https://github.com/electron/electron-packager/compare/v8.6.0...v8.7.0
+[8.7.0]: https://github.com/electron/packager/compare/v8.6.0...v8.7.0
 
 ### Added
 
@@ -609,7 +610,7 @@
 
 ## [8.6.0] - 2017-03-14
 
-[8.6.0]: https://github.com/electron/electron-packager/compare/v8.5.2...v8.6.0
+[8.6.0]: https://github.com/electron/packager/compare/v8.5.2...v8.6.0
 
 ### Added
 
@@ -626,7 +627,7 @@
 
 ## [8.5.2] - 2017-02-19
 
-[8.5.2]: https://github.com/electron/electron-packager/compare/v8.5.1...v8.5.2
+[8.5.2]: https://github.com/electron/packager/compare/v8.5.1...v8.5.2
 
 ### Fixed
 
@@ -636,7 +637,7 @@
 
 ## [8.5.1] - 2017-01-22
 
-[8.5.1]: https://github.com/electron/electron-packager/compare/v8.5.0...v8.5.1
+[8.5.1]: https://github.com/electron/packager/compare/v8.5.0...v8.5.1
 
 ### Fixed
 
@@ -644,7 +645,7 @@
 
 ## [8.5.0] - 2017-01-10
 
-[8.5.0]: https://github.com/electron/electron-packager/compare/v8.4.0...v8.5.0
+[8.5.0]: https://github.com/electron/packager/compare/v8.4.0...v8.5.0
 
 ### Added
 
@@ -656,7 +657,7 @@
 
 ## [8.4.0] - 2016-12-08
 
-[8.4.0]: https://github.com/electron/electron-packager/compare/v8.3.0...v8.4.0
+[8.4.0]: https://github.com/electron/packager/compare/v8.3.0...v8.4.0
 
 ### Added
 
@@ -668,7 +669,7 @@
 
 ## [8.3.0] - 2016-11-16
 
-[8.3.0]: https://github.com/electron/electron-packager/compare/v8.2.0...v8.3.0
+[8.3.0]: https://github.com/electron/packager/compare/v8.2.0...v8.3.0
 
 ### Changed
 
@@ -680,7 +681,7 @@
 
 ## [8.2.0] - 2016-10-29
 
-[8.2.0]: https://github.com/electron/electron-packager/compare/v8.1.0...v8.2.0
+[8.2.0]: https://github.com/electron/packager/compare/v8.1.0...v8.2.0
 
 ### Added
 
@@ -693,7 +694,7 @@
 
 ## [8.1.0] - 2016-09-30
 
-[8.1.0]: https://github.com/electron/electron-packager/compare/v8.0.0...v8.1.0
+[8.1.0]: https://github.com/electron/packager/compare/v8.0.0...v8.1.0
 
 ### Added
 
@@ -705,7 +706,7 @@
 
 ## [8.0.0] - 2016-09-03
 
-[8.0.0]: https://github.com/electron/electron-packager/compare/v7.7.0...v8.0.0
+[8.0.0]: https://github.com/electron/packager/compare/v7.7.0...v8.0.0
 
 ### Added
 
@@ -737,7 +738,7 @@
 
 ## [7.7.0] - 2016-08-20
 
-[7.7.0]: https://github.com/electron/electron-packager/compare/v7.6.0...v7.7.0
+[7.7.0]: https://github.com/electron/packager/compare/v7.6.0...v7.7.0
 
 ### Added
 
@@ -750,7 +751,7 @@
 
 ## [7.6.0] - 2016-08-14
 
-[7.6.0]: https://github.com/electron/electron-packager/compare/v7.5.1...v7.6.0
+[7.6.0]: https://github.com/electron/packager/compare/v7.5.1...v7.6.0
 
 ### Added
 
@@ -768,7 +769,7 @@
 
 ## [7.5.1] - 2016-08-06
 
-[7.5.1]: https://github.com/electron/electron-packager/compare/v7.5.0...v7.5.1
+[7.5.1]: https://github.com/electron/packager/compare/v7.5.0...v7.5.1
 
 ### Fixed
 
@@ -776,7 +777,7 @@
 
 ## [7.5.0] - 2016-08-04
 
-[7.5.0]: https://github.com/electron/electron-packager/compare/v7.4.0...v7.5.0
+[7.5.0]: https://github.com/electron/packager/compare/v7.4.0...v7.5.0
 
 ### Added
 
@@ -784,7 +785,7 @@
 
 ## [7.4.0] - 2016-07-31
 
-[7.4.0]: https://github.com/electron/electron-packager/compare/v7.3.0...v7.4.0
+[7.4.0]: https://github.com/electron/packager/compare/v7.3.0...v7.4.0
 
 ### Added
 
@@ -800,7 +801,7 @@
 
 ## [7.3.0] - 2016-07-10
 
-[7.3.0]: https://github.com/electron/electron-packager/compare/v7.2.0...v7.3.0
+[7.3.0]: https://github.com/electron/packager/compare/v7.2.0...v7.3.0
 
 ### Added
 
@@ -814,7 +815,7 @@
 
 ## [7.2.0] - 2016-07-03
 
-[7.2.0]: https://github.com/electron/electron-packager/compare/v7.1.0...v7.2.0
+[7.2.0]: https://github.com/electron/packager/compare/v7.1.0...v7.2.0
 
 ### Added
 
@@ -826,7 +827,7 @@
 
 ## [7.1.0] - 2016-06-22
 
-[7.1.0]: https://github.com/electron/electron-packager/compare/v7.0.4...v7.1.0
+[7.1.0]: https://github.com/electron/packager/compare/v7.0.4...v7.1.0
 
 ### Added
 
@@ -834,7 +835,7 @@
 
 ## [7.0.4] - 2016-06-14
 
-[7.0.4]: https://github.com/electron/electron-packager/compare/v7.0.3...v7.0.4
+[7.0.4]: https://github.com/electron/packager/compare/v7.0.3...v7.0.4
 
 ### Fixed
 
@@ -842,7 +843,7 @@
 
 ## [7.0.3] - 2016-05-31
 
-[7.0.3]: https://github.com/electron/electron-packager/compare/v7.0.2...v7.0.3
+[7.0.3]: https://github.com/electron/packager/compare/v7.0.2...v7.0.3
 
 ### Changed
 
@@ -854,7 +855,7 @@
 
 ## [7.0.2] - 2016-05-18
 
-[7.0.2]: https://github.com/electron/electron-packager/compare/v7.0.1...v7.0.2
+[7.0.2]: https://github.com/electron/packager/compare/v7.0.1...v7.0.2
 
 ### Fixed
 
@@ -864,7 +865,7 @@
 
 ## [7.0.1] - 2016-04-21
 
-[7.0.1]: https://github.com/electron/electron-packager/compare/v7.0.0...v7.0.1
+[7.0.1]: https://github.com/electron/packager/compare/v7.0.0...v7.0.1
 
 ### Fixed
 
@@ -872,7 +873,7 @@
 
 ## [7.0.0] - 2016-04-17
 
-[7.0.0]: https://github.com/electron/electron-packager/compare/v6.0.2...v7.0.0
+[7.0.0]: https://github.com/electron/packager/compare/v6.0.2...v7.0.0
 
 ### Added
 
@@ -899,7 +900,7 @@
 
 ## [6.0.2] - 2016-04-09
 
-[6.0.2]: https://github.com/electron/electron-packager/compare/v6.0.1...v6.0.2
+[6.0.2]: https://github.com/electron/packager/compare/v6.0.1...v6.0.2
 
 ### Changed
 
@@ -908,12 +909,12 @@
 
 ## [6.0.1] - 2016-04-08
 
-[6.0.1]: https://github.com/electron/electron-packager/compare/v6.0.0...v6.0.1
+[6.0.1]: https://github.com/electron/packager/compare/v6.0.0...v6.0.1
 
 ### Changed
 
 * [win32] `rcedit` dependency updated to 0.4.x. **A new DLL is required to run the new version
-  of rcedit, please see [the documentation](https://github.com/electron/electron-packager/blob/main/README.md#building-windows-apps-from-non-windows-platforms)
+  of rcedit, please see [the documentation](https://github.com/electron/packager/blob/main/README.md#building-windows-apps-from-non-windows-platforms)
   for details**
 * API documentation moved from readme.md to docs/api.md (#296)
 
@@ -925,7 +926,7 @@
 
 ## [6.0.0] - 2016-03-28
 
-[6.0.0]: https://github.com/electron/electron-packager/compare/v5.2.1...v6.0.0
+[6.0.0]: https://github.com/electron/packager/compare/v5.2.1...v6.0.0
 
 ### Added
 
@@ -967,7 +968,7 @@
 
 ## [5.2.1] - 2016-01-17
 
-[5.2.1]: https://github.com/electron/electron-packager/compare/v5.2.0...v5.2.1
+[5.2.1]: https://github.com/electron/packager/compare/v5.2.0...v5.2.1
 
 ### Changed
 
@@ -987,7 +988,7 @@
 
 ## [5.2.0] - 2015-12-16
 
-[5.2.0]: https://github.com/electron/electron-packager/compare/v5.1.1...v5.2.0
+[5.2.0]: https://github.com/electron/packager/compare/v5.1.1...v5.2.0
 
 ### Added
 

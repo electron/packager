@@ -7,7 +7,7 @@ labels: "bug :bug:"
 ### Preflight Checklist
 <!-- Please ensure you've completed the following steps by replacing [ ] with [x]-->
 
-* [ ] I have read the [contribution documentation](https://github.com/electron/electron-packager/blob/main/CONTRIBUTING.md) for this project.
+* [ ] I have read the [contribution documentation](https://github.com/electron/packager/blob/main/CONTRIBUTING.md) for this project.
 * [ ] I agree to follow the [code of conduct](https://github.com/electron/electron/blob/main/CODE_OF_CONDUCT.md) that this project follows, as appropriate.
 * [ ] I have searched the issue tracker for a bug that matches the one I want to file, without success.
 
