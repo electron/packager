@@ -5311,9 +5311,9 @@ rc@1.2.8, rc@^1.2.8:
     strip-json-comments "~2.0.1"
 
 rcedit@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-4.0.0.tgz#6c5436470266f613f29d84098847957f4fb6e9ba"
-  integrity sha512-OIPwu2e0b2WF4urFMcdiYUZGjmwh5pa52Mt847MK7ovxHkjpiPaI4Ov2atjeKTNFo4Tas0G31Qm7K21t87hp+g==
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-4.0.1.tgz#892ac47a19204a380f49e00ea38ce070443343c2"
+  integrity sha512-bZdaQi34krFWhrDn+O53ccBDw0MkAT2Vhu75SqhtvhQu4OPyFM4RoVheyYiVQYdjhUi6EJMVWQ0tR6bCIYVkUg==
   dependencies:
     cross-spawn-windows-exe "^1.1.0"
 
@@ -6563,6 +6563,7 @@ wordwrap@^1.0.0:
   integrity sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
