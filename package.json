@@ -29,7 +29,7 @@
     "@electron/get": "^3.0.0",
     "@electron/notarize": "^2.1.0",
     "@electron/osx-sign": "^1.0.5",
-    "@electron/universal": "^1.3.2",
+    "@electron/universal": "^2.0.0",
     "cross-spawn-windows-exe": "^1.2.0",
     "debug": "^4.0.1",
     "extract-zip": "^2.0.0",
