@@ -85,6 +85,6 @@ test.serial('prebuilt asar', util.testSinglePlatform(async (t, opts) => {
   await util.assertPathNotExists(t, path.join(resourcesPath, 'app'), 'app subdirectory should NOT exist when app.asar is built')
 }))
 
-test('prebuiltAsar: fail when set to directory', failedPrebuiltAsarTest({ prebuiltAsar: util.fixtureSubdir('asar-prebuilt') }, /must be an asar file/))
-test('prebuiltAsar: fail when specifying afterCopy', incompatibleOptionWithPrebuiltAsarTest({ afterCopy: [] }))
-test('prebuiltAsar: fail when specifying afterPrune', incompatibleOptionWithPrebuiltAsarTest({ afterPrune: [] }))
+test.serial('prebuiltAsar: fail when set to directory', failedPrebuiltAsarTest({ prebuiltAsar: util.fixtureSubdir('asar-prebuilt') }, /must be an asar file/))
+test.serial('prebuiltAsar: fail when specifying afterCopy', incompatibleOptionWithPrebuiltAsarTest({ afterCopy: [] }))
+test.serial('prebuiltAsar: fail when specifying afterPrune', incompatibleOptionWithPrebuiltAsarTest({ afterPrune: [] }))

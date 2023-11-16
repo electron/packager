@@ -73,7 +73,7 @@ async function assertHelper (t, prefix, appName, helperSuffix) {
 }
 
 async function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
-  const opts = { ...baseOpts, ...extraOpts }
+  const opts = { ...baseOpts, ...extraOpts, electronVersion: '1.4.13' }
 
   if (!expectedName) {
     expectedName = opts.name
@@ -170,6 +170,8 @@ async function appBundleTest (t, opts, appBundleId) {
 }
 
 async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
+  opts.electronVersion = '1.4.13'
+
   if (helperBundleId) {
     opts.helperBundleId = helperBundleId
   }
@@ -488,11 +490,11 @@ if (!(process.env.CI && process.platform === 'win32')) {
     const finalPath = (await packager(opts))[0]
     const plistObj = await parseInfoPlist(t, opts, finalPath)
     t.is(typeof plistObj.ElectronAsarIntegrity, 'object')
-    // Note: If updating thr basic app fixture (used here in baseOpts), ths hash should also be updated.
+    // Note: If updating the basic app fixture (used here in baseOpts), ths hash should also be updated.
     t.deepEqual(plistObj.ElectronAsarIntegrity, {
       'Resources/app.asar': {
         algorithm: 'SHA256',
-        hash: '4fcfc041675bfbad16cb6c3c4acfa339cd59e891944a27bc9e64076635f1825a'
+        hash: '2ec82b43414573ce1414a09859d6d30d1fc8bcbd0b33b404125f557e18d3b536'
       }
     })
   }))

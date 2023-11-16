@@ -3,6 +3,6 @@
   "productName": "MainJS",
   "description": "Removing electron from dependencies",
   "dependencies": {
-    "electron": "1.4.13"
+    "electron": "27.0.0"
   }
 }
