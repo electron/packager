@@ -1,5 +1,5 @@
 import { promisify } from 'util';
-import { FinalizePackageTargetsHookFunction, HookFunction } from './types';
+import { FinalizePackageTargetsHookFunction, HookFunction, HookFunctionErrorCallback } from './types';
 
 export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined, args?: unknown[]) {
   if (!hooks || !Array.isArray(hooks)) {
@@ -10,16 +10,40 @@ export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTarg
 }
 
 /**
- * @TODO(erikian): we're not really using this anywhere - should we remove it?
+ * By default, the functions are called in parallel (via
+ * [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
+ * If you need the functions called serially, you can use the `serialHooks` utility function:
+ *
+ * ```javascript
+ * const { packager, serialHooks } = require('@electron/packager')
+ *
+ * packager({
+ *   // ...
+ *   afterCopy: [serialHooks([
+ *     (buildPath, electronVersion, platform, arch, callback) => {
+ *       setTimeout(() => {
+ *         console.log('first function')
+ *         callback()
+ *       }, 1000)
+ *     },
+ *     (buildPath, electronVersion, platform, arch, callback) => {
+ *       console.log('second function')
+ *       callback()
+ *     }
+ *   ])],
+ *   // ...
+ * })
+ * ```
  */
-// export function serialHooks(hooks) {
-//   return async function() {
-//     const args = Array.prototype.splice.call(arguments, 0, arguments.length - 1);
-//     const done = arguments[arguments.length - 1];
-//     for (const hook of hooks) {
-//       await hook.apply(this, args);
-//     }
-//
-//     return done(); // eslint-disable-line promise/no-callback-in-promise
-//   };
-// }
+export function serialHooks(hooks: Parameters<typeof promisifyHooks>[0] = []) {
+  return async function runSerialHook(...serialHookParams: Parameters<HookFunction | FinalizePackageTargetsHookFunction>) {
+    const args = Array.prototype.slice.call(serialHookParams, 0, -1) as Parameters<HookFunction>;
+    const [done] = (Array.prototype.slice.call(serialHookParams, -1)) as [HookFunctionErrorCallback];
+
+    for (const hook of hooks) {
+      await (hook as HookFunction).apply(runSerialHook, args);
+    }
+
+    return done();
+  };
+}

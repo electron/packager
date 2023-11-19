@@ -1,7 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
-const { promisifyHooks } = require('../dist/hooks')
+const { promisifyHooks, serialHooks } = require('../dist/hooks')
 const { packager } = require('../dist')
 const test = require('ava')
 const util = require('./_util')
@@ -69,26 +69,23 @@ test('promisifyHooks executes functions in parallel', async t => {
   t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order')
 })
 
-/**
- * @TODO(erikian): remove this?
- */
-// test('serialHooks executes functions serially', async t => {
-//   let output = '0'
-//   const timeoutFunc = (number, msTimeout) => {
-//     return () => new Promise(resolve => { // eslint-disable-line promise/avoid-new
-//       setTimeout(() => {
-//         output += ` ${number}`
-//         resolve()
-//       }, msTimeout)
-//     })
-//   }
-//   const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
-//     timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
-//   )
-//
-//   const result = await hooks.serialHooks(testHooks)(() => output)
-//   t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order')
-// })
+test('serialHooks executes functions serially', async t => {
+  let output = '0'
+  const timeoutFunc = (number, msTimeout) => {
+    return () => new Promise(resolve => { // eslint-disable-line promise/avoid-new
+      setTimeout(() => {
+        output += ` ${number}`
+        resolve()
+      }, msTimeout)
+    })
+  }
+  const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
+    timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
+  )
+
+  const result = await serialHooks(testHooks)(() => output)
+  t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order')
+})
 
 test.serial('prune hook does not get called when prune=false', util.packagerTest((t, opts) => {
   opts.prune = false

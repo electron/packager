@@ -58,6 +58,8 @@ export type SupportedPlatform = OfficialPlatform | 'all';
 
 export type IgnoreFunction = (path: string) => boolean;
 
+export type HookFunctionErrorCallback = (err?: Error | null) => void
+
 /**
  * A function that is called on the completion of a packaging stage.
  *
@@ -108,14 +110,14 @@ export type HookFunction =
     electronVersion: string,
     platform: TargetArch,
     arch: TargetArch,
-    callback: (err?: Error | null) => void,
+    callback: HookFunctionErrorCallback,
   ) => void;
 
 export type TargetDefinition = {
   arch: TargetArch;
   platform: TargetPlatform;
 }
-export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: (err?: Error | null) => void) => void;
+export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: HookFunctionErrorCallback) => void;
 
 /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
 export type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
