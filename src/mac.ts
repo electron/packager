@@ -5,7 +5,7 @@ import path from 'path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
 import { signApp } from '@electron/osx-sign';
-import { ComboOptions, OsxNotarizeOptions } from './types';
+import { ComboOptions } from './types';
 import { SignOptions } from '@electron/osx-sign/dist/cjs/types';
 
 type NSUsageDescription = {
@@ -495,14 +495,11 @@ export function createSignOpts(properties: ComboOptions['osxSign'], platform: Co
   return signOpts;
 }
 
-export function createNotarizeOpts(properties: OsxNotarizeOptions, appBundleId: string, appPath: string,
+export function createNotarizeOpts(properties: ComboOptions['osxNotarize'], appBundleId: string, appPath: string,
   quiet: boolean): NotarizeOptions {
   // osxNotarize options are handed off to the @electron/notarize module, but with a few
   // additions from the main options. The user may think they can pass appPath,
   // but it will be ignored.
-  if (properties.tool !== 'notarytool') {
-    subOptionWarning(properties as unknown as Record<string, unknown>, 'osxNotarize', 'appBundleId', appBundleId, quiet);
-  }
   subOptionWarning(properties as unknown as Record<string, unknown>, 'osxNotarize', 'appPath', appPath, quiet);
   return properties as NotarizeOptions;
 }

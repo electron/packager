@@ -304,12 +304,6 @@ if (!(process.env.CI && process.platform === 'win32')) {
     t.is(notarizeOpts.appBundleId, 'overwritten', 'appBundleId is taken from user-supplied options')
   })
 
-  test('osxNotarize: appBundleId not overwritten', t => {
-    const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'no' }
-    const notarizeOpts = createNotarizeOpts(args, 'yes', 'appPath', true)
-    t.is(notarizeOpts.appBundleId, 'yes', 'appBundleId is taken from arguments')
-  })
-
   test('osxNotarize: appPath not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appPath: 'no' }
     const notarizeOpts = createNotarizeOpts(args, 'appBundleId', 'yes', true)
