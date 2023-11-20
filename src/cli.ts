@@ -102,20 +102,6 @@ export function parseArgs(argv: string[]) {
 /* istanbul ignore next */ export async function run(argv: string[]) {
   const args = parseArgs(argv);
 
-  // @TODO: remove this whole hack if possible
-  type Handle = {
-    _handle?: {
-      setBlocking?: (blocking: boolean) => void
-    }
-  }
-
-  // temporary fix for https://github.com/nodejs/node/issues/6456
-  for (const stdioWriter of [process.stdout, process.stderr] as Handle[]) {
-    if (stdioWriter._handle && stdioWriter._handle.setBlocking) {
-      stdioWriter._handle.setBlocking(true);
-    }
-  }
-
   if (args.help) {
     await printUsageAndExit(false);
   } else if (args.version) {
