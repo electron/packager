@@ -63,18 +63,6 @@ export function isPlatformMac(platform: ComboOptions['platform']) {
   return platform === 'darwin' || platform === 'mas';
 }
 
-// @TODO(erikian): the only uses of this function are in its own test - remove it?
-export function deprecatedParameter(properties: Record<string, unknown>, oldName: string, newName: string,
-  newCLIName: string, quiet: boolean) {
-  if (Object.prototype.hasOwnProperty.call(properties, oldName)) {
-    warning(`The ${oldName} parameter is deprecated, use ${newName} (or --${newCLIName} in the CLI) instead`, quiet);
-    if (!Object.prototype.hasOwnProperty.call(properties, newName)) {
-      properties[newName] = properties[oldName];
-    }
-    delete properties[oldName];
-  }
-}
-
 export function baseTempDir(opts: Options) {
   return path.join(opts.tmpdir || os.tmpdir(), 'electron-packager');
 }

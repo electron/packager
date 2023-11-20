@@ -1,6 +1,6 @@
 'use strict'
 
-const { info, warning, isPlatformMac, validateElectronApp, sanitizeAppName, generateFinalBasename, deprecatedParameter } = require('../dist/common')
+const { info, warning, isPlatformMac, validateElectronApp, sanitizeAppName, generateFinalBasename } = require('../dist/common')
 const { createDownloadOpts, downloadElectronZip } = require('../dist/download')
 const fs = require('fs-extra')
 const { getHostArch } = require('@electron/get')
@@ -68,23 +68,6 @@ test('cannot build apps where the name ends in " Helper"', async t => {
   }
 
   await t.throwsAsync(async () => packager(opts), { message: 'Application names cannot end in " Helper" due to limitations on macOS' })
-})
-
-test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
-  const opts = {
-    old: 'value'
-  }
-  deprecatedParameter(opts, 'old', 'new', 'new-value', false)
-
-  t.false(Object.prototype.hasOwnProperty.call(opts, 'old'), 'old property is not set')
-  t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
-
-  opts.not_overwritten_old = 'another'
-  deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value', false)
-
-  t.false(Object.prototype.hasOwnProperty.call(opts, 'not_overwritten_old'), 'not_overwritten_old property is not set')
-  t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
-  t.is(opts.new, 'value', 'new property is not overwritten')
 })
 
 test.serial('defaults', util.testSinglePlatform(async (t, opts) => {
