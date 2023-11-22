@@ -46,7 +46,6 @@
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {
-    "@continuous-auth/semantic-release-npm": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "ava": "^3.10.1",
