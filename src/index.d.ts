@@ -11,7 +11,8 @@
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
 import { NotaryToolCredentials } from '@electron/notarize/lib/types';
-import { SignOptions } from '@electron/osx-sign/dist/esm/types';
+import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign/dist/esm/types';
+import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
 
 type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
@@ -108,12 +109,12 @@ declare namespace electronPackager {
      * @param callback - Must be called once you have completed your actions.
      */
     (
-    buildPath: string,
-    electronVersion: string,
-    platform: TargetArch,
-    arch: TargetArch,
-    callback: (err?: Error | null) => void
-  ) => void;
+      buildPath: string,
+      electronVersion: string,
+      platform: TargetArch,
+      arch: TargetArch,
+      callback: (err?: Error | null) => void
+    ) => void;
 
   type TargetDefinition = {
     arch: TargetArch;
@@ -122,7 +123,7 @@ declare namespace electronPackager {
   type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: (err?: Error | null) => void) => void;
 
   /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
-  type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
+  type OsxSignOptions = Omit<OSXInternalSignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
 
   /**
    * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
@@ -144,6 +145,14 @@ declare namespace electronPackager {
      * `CFBundleURLSchemes` metadata property.
      */
     schemes: string[];
+  }
+
+  /**
+   * See the documentation for [`@electron/windows-sign`](https://github.com/electron/windows-sign)
+   * for details.
+   */
+  interface WindowsSignOptions extends Omit<WindowsInternalSignOptions, 'appDirectory'> {
+    continueOnError?: boolean
   }
 
   /**
@@ -487,6 +496,14 @@ declare namespace electronPackager {
      *
      * Defaults to the current working directory.
      */
+    /**
+     * If present, signs Windows binary files.
+     * When the value is `true`, pass default configuration to the signing module. See
+     * [@electron/windows-sign](https://npm.im/@electron/windows-sign) for sub-option descriptions and
+     * their defaults.
+     * @category Windows
+     */
+    windowsSign?: true | WindowsSignOptions;
     out?: string;
     /**
      * Whether to replace an already existing output directory for a given platform (`true`) or

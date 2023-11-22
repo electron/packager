@@ -86,6 +86,24 @@ test('CLI argument: --out without a value is the same as not passing --out', t =
   t.is(args.out, null)
 })
 
+test('CLI argument: --windows-sign=true', t => {
+  const args = cli.parseArgs(['--windows-sign=true'])
+  t.true(args.windowsSign)
+})
+
+test('CLI argument: --windows-sign and --windows-sign subproperties should not be mixed', t => {
+  util.setupConsoleWarnSpy()
+  cli.parseArgs(['--windows-sign', '--windows-sign.identity=identity'])
+  util.assertWarning(t, 'WARNING: Remove --windows-sign (the bare flag) from the command line, only specify sub-properties (see --help)')
+})
+
+test('CLI argument: --windows-sign is object', t => {
+  const args = cli.parseArgs([
+    '--windows-sign.identity=identity'
+  ])
+  t.is(args.windowsSign.identity, 'identity')
+})
+
 test('CLI argument: --protocol with a corresponding --protocol-name', t => {
   const args = cli.parseArgs(['--protocol=foo', '--protocol-name=Foo'])
   t.deepEqual(args.protocols, [{ schemes: ['foo'], name: 'Foo' }])

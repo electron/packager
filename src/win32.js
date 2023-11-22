@@ -3,6 +3,7 @@
 const debug = require('debug')('electron-packager')
 const path = require('path')
 const { WrapperError } = require('cross-spawn-windows-exe')
+const { sign } = require('@electron/windows-sign')
 
 const App = require('./platform')
 const common = require('./common')
@@ -98,13 +99,51 @@ class WindowsApp extends App {
     }
   }
 
+  async signAppIfSpecified () {
+    const windowsSignOpt = this.opts.windowsSign
+    const windowsMetaData = this.opts.win32metadata
+
+    if (windowsSignOpt) {
+      const signOpts = createSignOpts(windowsSignOpt, windowsMetaData, this.renamedAppPath)
+      debug(`Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`)
+      try {
+        await sign(signOpts)
+      } catch (err) {
+        // Although not signed successfully, the application is packed.
+        if (signOpts.continueOnError) {
+          common.warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet)
+        } else {
+          throw err
+        }
+      }
+    }
+  }
+
   async create () {
     await this.initialize()
     await this.renameElectron()
     await this.copyExtraResources()
     await this.runRcedit()
+    await this.signAppIfSpecified()
     return this.move()
   }
+}
+
+function createSignOpts (properties, windowsMetaData, appDirectory) {
+  let result = { appDirectory }
+
+  if (typeof properties === 'object') {
+    result = { ...properties, appDirectory }
+  }
+
+  // A little bit of convenience
+  if (windowsMetaData) {
+    if (windowsMetaData.FileDescription) {
+      result.description = windowsMetaData.FileDescription
+    }
+  }
+
+  return result
 }
 
 module.exports = {

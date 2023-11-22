@@ -64,6 +64,19 @@ module.exports = {
       args.asar = true
     }
 
+    // windows-sign: `Object` or `true`
+    if (args.windowsSign === 'true') {
+      warning('--windows-sign does not take any arguments, it only has sub-properties (see --help)', args.quiet)
+      args.windowsSign = true
+    } else if (typeof args['windows-sign'] === 'object') {
+      if (Array.isArray(args['windows-sign'])) {
+        warning('Remove --windows-sign (the bare flag) from the command line, only specify sub-properties (see --help)', args.quiet)
+      } else {
+        // Keep kebab case of sub properties
+        args.windowsSign = args['windows-sign']
+      }
+    }
+
     // osx-sign: `Object` or `true`
     if (args.osxSign === 'true') {
       warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)', args.quiet)
