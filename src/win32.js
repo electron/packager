@@ -137,10 +137,8 @@ function createSignOpts (properties, windowsMetaData, appDirectory) {
   }
 
   // A little bit of convenience
-  if (windowsMetaData) {
-    if (windowsMetaData.FileDescription) {
-      result.description = windowsMetaData.FileDescription
-    }
+  if (windowsMetaData && windowsMetaData.FileDescription && !result.description) {
+    result.description = windowsMetaData.FileDescription
   }
 
   return result
