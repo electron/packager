@@ -28,7 +28,7 @@ async function packageUniversalMac (packageForPlatformAndArchWithOpts, buildDir,
 
   const tempPackages = {}
 
-  for (const tempArch of ['x64', 'arm64']) {
+  await Promise.all(['x64', 'arm64'].map(async (tempArch) => {
     const tempOpts = {
       ...comboOpts,
       arch: tempArch,
@@ -43,7 +43,7 @@ async function packageUniversalMac (packageForPlatformAndArchWithOpts, buildDir,
     delete tempOpts.osxNotarize
 
     tempPackages[tempArch] = await packageForPlatformAndArchWithOpts(tempOpts, tempDownloadOpts)
-  }
+  }))
 
   const x64AppPath = tempPackages.x64
   const arm64AppPath = tempPackages.arm64
