@@ -43,6 +43,7 @@ jobs:
             - run: yarn run lint
             - run: yarn run coverage
             - run: yarn run codecov
+            - run: yarn run docs:build
           use-test-steps: true
           node-version: << parameters.node-version >>
 

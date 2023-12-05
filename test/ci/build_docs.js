@@ -3,12 +3,12 @@
 
 const { Application } = require('typedoc')
 
+/** @type import('typedoc').TypeDocOptions */
 const config = {
   excludeExternals: true,
   excludePrivate: true,
   excludeProtected: true,
-  includeDeclarations: true,
-  mode: 'file'
+  entryPoints: ['src/index.ts']
 }
 
 const replaceRef = /^refs\/(head|tag)s\//
@@ -29,13 +29,13 @@ if (gitRevision) {
   }
 }
 
-const app = new Application()
-app.bootstrap(config)
+Application.bootstrap(config).then(async app => {
+  const project = await app.convert()
+  if (project) {
+    await app.generateDocs(project, 'typedoc')
+  } else {
+    console.error('Could not generate API documentation from TypeScript definition!')
+    process.exit(1)
+  }
+})
 
-const project = app.convert(['src/index.d.ts'])
-if (project) {
-  app.generateDocs(project, 'typedoc')
-} else {
-  console.error('Could not generate API documentation from TypeScript definition!')
-  process.exit(1)
-}
