@@ -642,9 +642,9 @@
     xmlbuilder ">=11.0.1"
 
 "@types/resolve@^1.20.4":
-  version "1.20.4"
-  resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.20.4.tgz#d2df996a35695c843dbf180e26bc2c7a0f1a3e12"
-  integrity sha512-BKGK0T1VgB1zD+PwQR4RRf0ais3NyvH1qjLUrHI5SEiccYaJrhLstLuoXFWJ+2Op9whGizSPUMGPJY/Qtb/A2w==
+  version "1.20.6"
+  resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.20.6.tgz#e6e60dad29c2c8c206c026e6dd8d6d1bdda850b8"
+  integrity sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==
 
 "@types/responselike@*", "@types/responselike@^1.0.0":
   version "1.0.0"
