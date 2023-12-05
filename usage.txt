@@ -103,6 +103,10 @@ osx-universal      (macOS host platform only, requires --arch=universal) Options
                    e.g. --osx-universal.mergeASARs="true"
                    For info on supported values see
                    https://electron.github.io/packager/main/modules/electronpackager.html#osxuniversaloptions
+windows-sign       Whether to sign Windows binary files with a codesigning certificate. You can either
+                   pass --windows-sign by itself to use the default configuration or use dot notation to configure
+                   a list of sub-properties, e.g. --windows-sign.certificateFile="C:\cert.pfx".
+                   For info on supported values see https://npm.im/@electron/windows-sign.
 protocol           URL protocol scheme to register the app as an opener of.
                    For example, `--protocol=myapp` would register the app to open
                    URLs such as `myapp://path`. This argument requires a `--protocol-name`
