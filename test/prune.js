@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const prune = require('../src/prune')
+const { isModule } = require('../dist/prune')
 const test = require('ava')
 const util = require('./_util')
 
@@ -52,8 +52,8 @@ test.serial('prune electron in dependencies', util.testSinglePlatform(async (t, 
 test.serial('prune: false', util.testSinglePlatform(createPruneOptionTest, false, 'package.json devDependency should exist under app/node_modules'))
 
 test('isModule properly detects module folders', async t => {
-  const isModule = name => prune.isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', name)))
-  const [mod, notMod, namespaced] = await Promise.all([isModule('module'), isModule('not-module'), isModule('@user/namespaced')])
+  const isMod = name => isModule(util.fixtureSubdir(path.join('prune-is-module', 'node_modules', name)))
+  const [mod, notMod, namespaced] = await Promise.all([isMod('module'), isMod('not-module'), isMod('@user/namespaced')])
   t.true(mod, 'module folder should be detected as module')
   t.false(notMod, 'not-module subfolder should not be detected as module')
   t.true(namespaced, '@user/namespaced folder should be detected as module')

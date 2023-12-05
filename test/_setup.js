@@ -1,7 +1,7 @@
 'use strict'
 
-const common = require('../src/common')
-const download = require('../src/download')
+const { isPlatformMac } = require('../dist/common')
+const { createDownloadCombos, downloadElectronZip: packagerDownloadElectronZip } = require('../dist/download')
 const { downloadArtifact } = require('@electron/get')
 const config = require('./config.json')
 const childProcess = require('child_process')
@@ -9,7 +9,7 @@ const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
 const { promisify } = require('util')
-const targets = require('../src/targets')
+const { officialArchs, officialPlatforms } = require('../dist/targets')
 
 childProcess.exec = promisify(childProcess.exec)
 
@@ -28,12 +28,12 @@ function fixtureSubdir (subdir) {
  * (see https://github.com/electron/packager/issues/71)
  */
 function skipDownloadingMacZips (platform, arch) {
-  return common.isPlatformMac(platform) && process.platform === 'win32'
+  return isPlatformMac(platform) && process.platform === 'win32'
 }
 
 async function downloadAll (version) {
   console.log(`Downloading Electron v${version} before running tests...`)
-  const combinations = download.createDownloadCombos({ electronVersion: config.version, all: true }, targets.officialPlatforms, targets.officialArchs, skipDownloadingMacZips)
+  const combinations = createDownloadCombos({ electronVersion: config.version, all: true }, officialPlatforms, officialArchs, skipDownloadingMacZips)
 
   await downloadElectronChecksum(version)
   return Promise.all(
@@ -57,7 +57,7 @@ async function downloadElectronChecksum (version) {
 }
 
 async function downloadElectronZip (version, options) {
-  return download.downloadElectronZip({
+  return packagerDownloadElectronZip({
     ...options,
     artifactName: 'electron',
     cacheRoot: path.join(os.homedir(), '.electron'),

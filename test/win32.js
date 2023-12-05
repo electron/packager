@@ -1,11 +1,11 @@
 'use strict'
 
 const config = require('./config.json')
-const packager = require('..')
+const { packager } = require('../dist')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
-const win32 = require('../src/win32')
+const { updateWineMissingException, WindowsApp } = require('../dist/win32')
 const { WrapperError } = require('cross-spawn-windows-exe')
 
 const win32Opts = {
@@ -17,7 +17,7 @@ const win32Opts = {
 }
 
 function generateRceditOptionsSansIcon (opts) {
-  return new win32.App(opts).generateRceditOptionsSansIcon()
+  return new WindowsApp(opts).generateRceditOptionsSansIcon()
 }
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
@@ -139,14 +139,14 @@ test('better error message when wine is not found', t => {
   const err = new WrapperError('wine-nonexistent')
 
   t.notRegex(err.message, /win32metadata/)
-  const augmentedError = win32.updateWineMissingException(err)
+  const augmentedError = updateWineMissingException(err)
   t.regex(augmentedError.message, /win32metadata/)
 })
 
 test('error message unchanged when error not about wine missing', t => {
   const notWrapperError = Error('Not a wrapper error')
 
-  const returnedError = win32.updateWineMissingException(notWrapperError)
+  const returnedError = updateWineMissingException(notWrapperError)
   t.is(returnedError.message, 'Not a wrapper error')
 })
 

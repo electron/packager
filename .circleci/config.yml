@@ -24,6 +24,7 @@ jobs:
             - run: test/ci/before_install.sh
           override-ci-command: yarn install --frozen-lockfile --ignore-engines
           test-steps:
+            - run: yarn build
             - restore_cache:
                 name: Restoring Electron cache
                 paths:
@@ -40,7 +41,6 @@ jobs:
                   - $HOME/.cache/electron
                 key: v1-electron-cache-{{ arch }}
             - run: yarn run lint
-            - run: yarn run tsd
             - run: yarn run coverage
             - run: yarn run codecov
           use-test-steps: true

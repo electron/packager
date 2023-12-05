@@ -2,11 +2,11 @@
 
 // Keeping this module because it handles non-buffers gracefully
 const bufferEqual = require('buffer-equal')
-const common = require('../src/common')
+const { isPlatformMac } = require('../dist/common')
 const config = require('./config.json')
 const fs = require('fs-extra')
 const os = require('os')
-const packager = require('..')
+const { packager } = require('../dist')
 const path = require('path')
 const plist = require('plist')
 const setup = require('./_setup')
@@ -79,7 +79,7 @@ module.exports = {
   },
   fixtureSubdir: setup.fixtureSubdir,
   generateResourcesPath: function generateResourcesPath (opts) {
-    if (common.isPlatformMac(opts.platform)) {
+    if (isPlatformMac(opts.platform)) {
       return path.join(opts.name + '.app', 'Contents', 'Resources')
     } else {
       return 'resources'

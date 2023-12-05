@@ -13,3 +13,4 @@ typedoc
 .DS_Store
 .nyc_output
 npm-debug.log
+dist/

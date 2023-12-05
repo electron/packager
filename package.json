@@ -2,8 +2,8 @@
   "name": "@electron/packager",
   "version": "0.0.0-development",
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "electron-packager": "bin/electron-packager.js"
   },
@@ -21,7 +21,7 @@
     "collaborators.md",
     "bin",
     "docs/*.md",
-    "src",
+    "dist",
     "usage.txt"
   ],
   "dependencies": {
@@ -47,12 +47,18 @@
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.1",
+    "@types/debug": "^4.1.10",
+    "@types/fs-extra": "^11.0.3",
+    "@types/parse-author": "^2.0.2",
+    "@types/plist": "^3.0.4",
+    "@types/resolve": "^1.20.4",
+    "@types/yargs-parser": "^21.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
     "ava": "^3.10.1",
     "buffer-equal": "^1.0.0",
     "codecov": "^3.0.0",
-    "eslint": "^7.12.1",
+    "eslint": "^8.52.0",
     "eslint-config-standard": "^16.0.0",
     "eslint-plugin-ava": "^13.2.0",
     "eslint-plugin-import": "^2.22.1",
@@ -61,23 +67,22 @@
     "nyc": "^15.0.0",
     "pkg-up": "^4.0.0",
     "sinon": "^17.0.0",
-    "tsd": "^0.14.0",
     "typedoc": "^0.19.0",
-    "typescript": "^4.0.2"
+    "typescript": "^5.2.2"
   },
   "engines": {
     "node": ">= 16.4.0"
   },
   "scripts": {
     "ava": "ava test/index.js",
+    "build": "tsc",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "coverage": "nyc ava test/index.js",
     "docs:build": "node test/ci/build_docs.js",
-    "lint": "npm run lint:js && npm run lint:ts",
-    "lint:js": "eslint .",
-    "lint:ts": "eslint --config .eslintrc.typescript.js --ext .ts .",
-    "test": "npm run lint && npm run tsd && npm run coverage",
-    "tsd": "tsd"
+    "lint": "eslint --ext .ts .",
+    "prepublish": "npm run build",
+    "pretest": "npm run build",
+    "test": "npm run lint && npm run coverage"
   },
   "directories": {
     "test": "test"
@@ -90,46 +95,6 @@
   ],
   "ava": {
     "timeout": "60s"
-  },
-  "eslintConfig": {
-    "extends": [
-      "eslint:recommended",
-      "plugin:ava/recommended",
-      "plugin:import/errors",
-      "plugin:import/warnings",
-      "plugin:promise/recommended",
-      "standard"
-    ],
-    "parserOptions": {
-      "sourceType": "script"
-    },
-    "plugins": [
-      "ava"
-    ],
-    "rules": {
-      "ava/no-import-test-files": 0,
-      "ava/no-ignored-test-files": 0,
-      "indent": [
-        "error",
-        2,
-        {
-          "CallExpression": {
-            "arguments": "first"
-          },
-          "SwitchCase": 1
-        }
-      ],
-      "no-console": 0,
-      "strict": "error"
-    }
-  },
-  "eslintIgnore": [
-    "typedoc/**/*",
-    "**/test/fixtures/**/node_modules/**",
-    "**/test/work/*"
-  ],
-  "tsd": {
-    "directory": "test"
   },
   "funding": {
     "url": "https://github.com/electron/packager?sponsor=1"

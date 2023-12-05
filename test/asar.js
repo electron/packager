@@ -1,21 +1,21 @@
 'use strict'
 
-const common = require('../src/common')
+const { createAsarOpts } = require('../dist/common')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
 
 test('asar argument: asar is not set', t => {
-  const asarOpts = common.createAsarOpts({})
+  const asarOpts = createAsarOpts({})
   t.false(asarOpts, 'createAsarOpts returns false')
 })
 
 test('asar argument: asar is true', t => {
-  t.deepEqual(common.createAsarOpts({ asar: true }), {})
+  t.deepEqual(createAsarOpts({ asar: true }), {})
 })
 
 test('asar argument: asar is not an Object or a bool', t => {
-  t.false(common.createAsarOpts({ asar: 'string' }), 'createAsarOpts returns false')
+  t.false(createAsarOpts({ asar: 'string' }), 'createAsarOpts returns false')
 })
 
 test.serial('default_app.asar removal', util.testSinglePlatform(async (t, opts) => {

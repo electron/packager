@@ -1,10 +1,10 @@
 'use strict'
 
-const common = require('../src/common')
-const download = require('../src/download')
+const { info, warning, isPlatformMac, validateElectronApp, sanitizeAppName, generateFinalBasename } = require('../dist/common')
+const { createDownloadOpts, downloadElectronZip } = require('../dist/download')
 const fs = require('fs-extra')
 const { getHostArch } = require('@electron/get')
-const packager = require('..')
+const { packager } = require('../dist')
 const path = require('path')
 const sinon = require('sinon')
 const test = require('ava')
@@ -14,7 +14,7 @@ const util = require('./_util')
 // Returns the Helper.app location on darwin since the top-level .app is already tested for the
 // resources path; on other OSes, returns the executable.
 function generateNamePath (opts) {
-  if (common.isPlatformMac(opts.platform)) {
+  if (isPlatformMac(opts.platform)) {
     return path.join(`${opts.name}.app`, 'Contents', 'Frameworks', `${opts.name} Helper.app`)
   }
 
@@ -25,9 +25,9 @@ test('setting the quiet option does not print messages', t => {
   util.setupConsoleWarnSpy()
   sinon.spy(console, 'error')
 
-  common.warning('warning', true)
+  warning('warning', true)
   t.true(console.warn.notCalled, 'quieted common.warning should not call console.warn')
-  common.info('info', true)
+  info('info', true)
   t.true(console.error.notCalled, 'quieted common.info should not call console.info')
 })
 
@@ -42,12 +42,12 @@ test('download argument: download.{arch,platform,version,artifactName} does not 
     electronVersion: '0.36.0'
   }
 
-  const downloadOpts = download.createDownloadOpts(opts, 'linux', 'x64')
+  const downloadOpts = createDownloadOpts(opts, 'linux', 'x64')
   t.deepEqual(downloadOpts, { arch: 'x64', platform: 'linux', version: '0.36.0', artifactName: 'electron' })
 })
 
 test('sanitize app name for use in file/directory names', t => {
-  t.is(common.sanitizeAppName('@username/package'), '@username-package', 'slash should be replaced')
+  t.is(sanitizeAppName('@username/package'), '@username-package', 'slash should be replaced')
 })
 
 test('sanitize app name for use in the out directory name', t => {
@@ -56,7 +56,7 @@ test('sanitize app name for use in the out directory name', t => {
     name: '@username/package-name',
     platform: 'linux'
   }
-  t.is(common.generateFinalBasename(opts), '@username-package-name-linux-x64', 'generateFinalBasename output should be sanitized')
+  t.is(generateFinalBasename(opts), '@username-package-name-linux-x64', 'generateFinalBasename output should be sanitized')
 })
 
 test('cannot build apps where the name ends in " Helper"', async t => {
@@ -68,23 +68,6 @@ test('cannot build apps where the name ends in " Helper"', async t => {
   }
 
   await t.throwsAsync(async () => packager(opts), { message: 'Application names cannot end in " Helper" due to limitations on macOS' })
-})
-
-test('deprecatedParameter moves value in deprecated param to new param if new param is not set', (t) => {
-  const opts = {
-    old: 'value'
-  }
-  common.deprecatedParameter(opts, 'old', 'new', 'new-value', false)
-
-  t.false(Object.prototype.hasOwnProperty.call(opts, 'old'), 'old property is not set')
-  t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
-
-  opts.not_overwritten_old = 'another'
-  common.deprecatedParameter(opts, 'not_overwritten_old', 'new', 'new-value', false)
-
-  t.false(Object.prototype.hasOwnProperty.call(opts, 'not_overwritten_old'), 'not_overwritten_old property is not set')
-  t.true(Object.prototype.hasOwnProperty.call(opts, 'new'), 'new property is set')
-  t.is(opts.new, 'value', 'new property is not overwritten')
 })
 
 test.serial('defaults', util.testSinglePlatform(async (t, opts) => {
@@ -104,13 +87,13 @@ test.serial('defaults', util.testSinglePlatform(async (t, opts) => {
   t.is(paths.length, 1, 'Single-target run should resolve to a 1-item array')
 
   const finalPath = paths[0]
-  t.is(finalPath, path.join(t.context.workDir, common.generateFinalBasename(defaultOpts)),
+  t.is(finalPath, path.join(t.context.workDir, generateFinalBasename(defaultOpts)),
        'Path should follow the expected format and be in the cwd')
   await util.assertDirectory(t, finalPath, 'The expected output directory should exist')
   const resourcesPath = path.join(finalPath, util.generateResourcesPath(defaultOpts))
   const appPath = path.join(finalPath, generateNamePath(defaultOpts))
 
-  if (common.isPlatformMac(defaultOpts.platform)) {
+  if (isPlatformMac(defaultOpts.platform)) {
     await util.assertDirectory(t, appPath, 'The Helper.app should reflect opts.name')
   } else {
     await util.assertFile(t, appPath, 'The executable should reflect opts.name')
@@ -129,7 +112,7 @@ test.serial('out', util.testSinglePlatform(async (t, opts) => {
   opts.out = 'dist'
 
   const finalPath = (await packager(opts))[0]
-  t.is(finalPath, path.join('dist', common.generateFinalBasename(opts)),
+  t.is(finalPath, path.join('dist', generateFinalBasename(opts)),
        'Path should follow the expected format and be under the folder specified in `out`')
   await util.assertDirectory(t, finalPath, 'The expected output directory should exist')
   await util.assertDirectory(t, path.join(finalPath, util.generateResourcesPath(opts)), 'The output directory should contain the expected resources subdirectory')
@@ -280,7 +263,7 @@ test.serial('electronZipDir success', util.testSinglePlatform(async (t, opts) =>
   opts.dir = util.fixtureSubdir('basic')
   opts.electronZipDir = customDir
   await fs.ensureDir(customDir)
-  const zipPath = await download.downloadElectronZip(download.createDownloadOpts(opts, 'linux', 'x64'))
+  const zipPath = await downloadElectronZip(createDownloadOpts(opts, 'linux', 'x64'))
   await fs.copy(zipPath, path.join(customDir, path.basename(zipPath)))
 
   const paths = await packager(opts)
@@ -305,27 +288,27 @@ test.serial('electronZipDir: ZIP file does not exist', util.testSinglePlatform(a
 }))
 
 test('validateElectronApp succeeds on a well-formed Electron app containing a main field', async t => {
-  await t.notThrowsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-success-with-main')))
+  await t.notThrowsAsync(async () => await validateElectronApp('original-dir', util.fixtureSubdir('validate-success-with-main')))
 })
 
 test('validateElectronApp succeeds on a well-formed Electron app without a main field', async t => {
-  await t.notThrowsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-success-without-main')))
+  await t.notThrowsAsync(async () => await validateElectronApp('original-dir', util.fixtureSubdir('validate-success-without-main')))
 })
 
 test('validateElectronApp fails on an Electron app without package.json', async t => {
-  await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-package-json')), {
+  await t.throwsAsync(async () => await validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-package-json')), {
     message: `Application manifest was not found. Make sure "${path.join('original-dir', 'package.json')}" exists and does not get ignored by your ignore option`
   })
 })
 
 test('validateElectronApp fails on an Electron app with a package.json with a main field missing main entry point', async t => {
-  await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-main-or-index')), {
+  await t.throwsAsync(async () => await validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-without-main-or-index')), {
     message: `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'index.js')}" exists and does not get ignored by your ignore option`
   })
 })
 
 test('validateElectronApp fails on an Electron app with a package.json without a main field missing main entry point', async t => {
-  await t.throwsAsync(async () => await common.validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-with-main-without-entry-point')), {
+  await t.throwsAsync(async () => await validateElectronApp('original-dir', util.fixtureSubdir('validate-failure-with-main-without-entry-point')), {
     message: `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'main.js')}" exists and does not get ignored by your ignore option`
   })
 })

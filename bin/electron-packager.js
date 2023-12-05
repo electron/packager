@@ -12,5 +12,5 @@ if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   process.exit(1)
 }
 
-var cli = require('../src/cli')
+var cli = require('../dist/cli')
 cli.run(process.argv.slice(2))

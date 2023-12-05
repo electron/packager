@@ -4,8 +4,8 @@ const config = require('./config.json')
 const childProcess = require('child_process')
 const crypto = require('crypto')
 const fs = require('fs-extra')
-const mac = require('../src/mac')
-const packager = require('..')
+const { createNotarizeOpts, createSignOpts, filterCFBundleIdentifier } = require('../dist/mac')
+const { packager } = require('../dist')
 const path = require('path')
 const plist = require('plist')
 const { promisify } = require('util')
@@ -162,7 +162,7 @@ async function appBundleTest (t, opts, appBundleId) {
   }
 
   const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
-  const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+  const appBundleIdentifier = filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
   const obj = await packageAndParseInfoPlist(t, opts)
   assertPlistStringValue(t, obj, 'CFBundleDisplayName', opts.name, 'CFBundleDisplayName should reflect opts.name')
   assertPlistStringValue(t, obj, 'CFBundleName', opts.name, 'CFBundleName should reflect opts.name')
@@ -177,8 +177,8 @@ async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
     opts.appBundleId = appBundleId
   }
   const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
-  const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
-  const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
+  const appBundleIdentifier = filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+  const helperBundleIdentifier = filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
   const finalPath = (await packager(opts))[0]
   const frameworksPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks')
@@ -202,8 +202,8 @@ async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
 async function appHelpersBundleElectron6Test (t, opts) {
   opts.electronVersion = '6.0.0'
   const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`
-  const appBundleIdentifier = mac.filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
-  const helperBundleIdentifier = mac.filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
+  const appBundleIdentifier = filterCFBundleIdentifier(opts.appBundleId || defaultBundleName)
+  const helperBundleIdentifier = filterCFBundleIdentifier(opts.helperBundleId || appBundleIdentifier + '.helper')
 
   const finalPath = (await packager(opts))[0]
   const frameworksPath = path.join(finalPath, `${opts.name}.app`, 'Contents', 'Frameworks')
@@ -300,56 +300,56 @@ if (!(process.env.CI && process.platform === 'win32')) {
 
   test('osxNotarize: appBundleId can be overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appBundleId: 'overwritten' }
-    const notarizeOpts = mac.createNotarizeOpts(args, 'original', 'appPath', true)
+    const notarizeOpts = createNotarizeOpts(args, 'original', 'appPath', true)
     t.is(notarizeOpts.appBundleId, 'overwritten', 'appBundleId is taken from user-supplied options')
   })
 
   test('osxNotarize: appPath not overwritten', t => {
     const args = { appleId: '1', appleIdPassword: '2', appPath: 'no' }
-    const notarizeOpts = mac.createNotarizeOpts(args, 'appBundleId', 'yes', true)
+    const notarizeOpts = createNotarizeOpts(args, 'appBundleId', 'yes', true)
     t.is(notarizeOpts.appPath, 'yes', 'appPath is taken from arguments')
   })
 
   test('osxSign: default args', t => {
     const args = true
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: identity=true sets autodiscovery mode', t => {
     const args = { identity: true }
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { identity: null, app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: optionsForFile passed to @electron/osx-sign', t => {
     const optionsForFile = () => ({ entitlements: 'path-to-entitlements' })
     const args = { optionsForFile }
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', optionsForFile, continueOnError: true })
   })
 
   test('osxSign: app not overwritten', t => {
     const args = { app: 'some-other-path' }
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: platform not overwritten', t => {
     const args = { platform: 'mas' }
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: binaries not set', t => {
     const args = { binaries: ['binary1', 'binary2'] }
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: true })
   })
 
   test('osxSign: continueOnError=false', t => {
     const args = { continueOnError: false }
-    const signOpts = mac.createSignOpts(args, 'darwin', 'out', 'version')
+    const signOpts = createSignOpts(args, 'darwin', 'out', 'version')
     t.deepEqual(signOpts, { app: 'out', platform: 'darwin', version: 'version', continueOnError: false })
   })
 
