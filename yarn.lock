@@ -629,9 +629,9 @@
   integrity sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==
 
 "@types/parse-author@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@types/parse-author/-/parse-author-2.0.2.tgz#dfcf4490d74f7a78cb3af64533385591e2fe06b7"
-  integrity sha512-erPq9bzt/xzhfDBzSctZFDCbLmU5CEAUOWy/vfwkv9N9RVNcG7UIrTwA7llH+u2LKfuVO5WwQ8kfBIgxmz5wrg==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@types/parse-author/-/parse-author-2.0.3.tgz#fbf92ab0770f057483ba535c3087664f4b2800d5"
+  integrity sha512-pgRW2K/GVQoogylrGJXDl7PBLW9A6T4OOc9Hy9MLT5f7vgufK2GQ8FcfAbjFHR5HjcN9ByzuCczAORk49REqoA==
 
 "@types/plist@^3.0.4":
   version "3.0.4"
