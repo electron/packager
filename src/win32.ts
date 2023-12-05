@@ -1,10 +1,11 @@
 import path from 'path';
 import { WrapperError } from 'cross-spawn-windows-exe';
-
+import { sign } from '@electron/windows-sign';
+import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
 import { App } from './platform';
-import { debug, sanitizeAppName } from './common';
+import { debug, sanitizeAppName, warning } from './common';
 import rcedit, { Options as RceditOptions } from 'rcedit';
-import { Options } from './types';
+import { ComboOptions, Options, WindowsSignOptions } from './types';
 
 export function updateWineMissingException(err: Error) {
   if (err instanceof WrapperError) {
@@ -99,13 +100,50 @@ export class WindowsApp extends App {
     }
   }
 
+  async signAppIfSpecified() {
+    const windowsSignOpt = this.opts.windowsSign;
+    const windowsMetaData = this.opts.win32metadata;
+
+    if (windowsSignOpt) {
+      const signOpts = createSignOpts(windowsSignOpt, windowsMetaData);
+      debug(`Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`);
+      try {
+        await sign(signOpts as WindowsInternalSignOptions);
+      } catch (err) {
+        // Although not signed successfully, the application is packed.
+        if (signOpts.continueOnError) {
+          warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet);
+        } else {
+          throw err;
+        }
+      }
+    }
+  }
+
   async create() {
     await this.initialize();
     await this.renameElectron();
     await this.copyExtraResources();
     await this.runRcedit();
+    await this.signAppIfSpecified();
     return this.move();
   }
+}
+
+function createSignOpts(properties: ComboOptions['windowsSign'],
+  windowsMetaData: ComboOptions['win32metadata']): WindowsSignOptions {
+  let result: WindowsSignOptions = {};
+
+  if (typeof properties === 'object') {
+    result = { ...properties };
+  }
+
+  // A little bit of convenience
+  if (windowsMetaData && windowsMetaData.FileDescription && !result.description) {
+    result.description = windowsMetaData.FileDescription;
+  }
+
+  return result;
 }
 
 export { WindowsApp as App };

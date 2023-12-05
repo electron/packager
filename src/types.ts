@@ -11,7 +11,8 @@
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
 import { NotaryToolCredentials } from '@electron/notarize/lib/types';
-import { SignOptions } from '@electron/osx-sign/dist/esm/types';
+import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign/dist/esm/types';
+import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
 
 export type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
@@ -114,7 +115,7 @@ export type TargetDefinition = {
 export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: HookFunctionErrorCallback) => void;
 
 /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
-export type OsxSignOptions = Omit<SignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
+export type OsxSignOptions = Omit<OSXInternalSignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
 
 /**
  * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
@@ -138,6 +139,14 @@ export interface MacOSProtocol {
    * `CFBundleURLSchemes` metadata property.
    */
   schemes: string[];
+}
+
+/**
+ * See the documentation for [`@electron/windows-sign`](https://github.com/electron/windows-sign)
+ * for details.
+ */
+export interface WindowsSignOptions extends Omit<WindowsInternalSignOptions, 'appDirectory'> {
+  continueOnError?: boolean
 }
 
 /**
@@ -585,6 +594,14 @@ export interface Options {
    * @category Windows
    */
   win32metadata?: Win32MetadataOptions;
+  /**
+   * If present, signs Windows binary files.
+   * When the value is `true`, pass default configuration to the signing module. See
+   * [@electron/windows-sign](https://npm.im/@electron/windows-sign) for sub-option descriptions and
+   * their defaults.
+   * @category Windows
+   */
+  windowsSign?: true | WindowsSignOptions;
 }
 
 interface OptionsWithRequiredArchAndPlatform extends Options {

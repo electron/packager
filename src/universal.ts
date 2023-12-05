@@ -30,7 +30,7 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts: Pac
 
   const tempPackages = {} as Record<SupportedArch, string>;
 
-  for (const tempArch of ['x64', 'arm64'] as SupportedArch[]) {
+  await Promise.all((['x64', 'arm64'] as SupportedArch[]).map(async(tempArch) => {
     const tempOpts = {
       ...comboOpts,
       arch: tempArch,
@@ -46,7 +46,7 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts: Pac
 
     // @TODO(erikian): I don't like this type cast, the return type for `packageForPlatformAndArchWithOpts` is probably wrong
     tempPackages[tempArch] = (await packageForPlatformAndArchWithOpts(tempOpts, tempDownloadOpts)) as string;
-  }
+  }));
 
   const x64AppPath = tempPackages.x64;
   const arm64AppPath = tempPackages.arm64;
