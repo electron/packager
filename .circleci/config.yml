@@ -22,7 +22,6 @@ jobs:
       - node/test:
           post-node-js-install-steps:
             - run: test/ci/before_install.sh
-          override-ci-command: yarn install --frozen-lockfile --ignore-engines
           test-steps:
             - run: yarn build
             - restore_cache:
@@ -63,7 +62,7 @@ workflows:
               node-version:
                 - 20.2.0
                 - 18.14.0
-                - 16.4.0
+                - 16.13.0
           filters:
             branches: { ignore: gh-pages }
       - cfa/release:
