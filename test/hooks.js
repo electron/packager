@@ -9,7 +9,7 @@ const util = require('./_util')
 async function hookTest (wantHookCalled, hookName, t, opts, validator) {
   let hookCalled = false
   opts.dir = util.fixtureSubdir('basic')
-  opts.electronVersion = config.version
+  opts.electronVersion = '1.4.13'
   opts.arch = 'ia32'
   opts.platform = 'all'
 
