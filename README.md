@@ -74,7 +74,7 @@ via [Homebrew](https://brew.sh/).
 
 ### Via JavaScript
 
-JavaScript API usage can be found in the [API documentation](https://electron.github.io/packager/main/modules/electronpackager.html).
+JavaScript API usage can be found in the [API documentation](https://electron.github.io/packager/main/).
 
 ### From the command line
 
@@ -101,7 +101,7 @@ This will:
 
 For an overview of the other optional flags, run `electron-packager --help` or see
 [usage.txt](https://github.com/electron/packager/blob/main/usage.txt). For
-detailed descriptions, see the [API documentation](https://electron.github.io/packager/main/modules/electronpackager.html).
+detailed descriptions, see the [API documentation](https://electron.github.io/packager/main/).
 
 For flags that are structured as objects, you can pass each option as via dot notation as such:
 
