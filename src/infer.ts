@@ -32,7 +32,7 @@ function errorMessageForProperty(prop: string) {
 
   return `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
     'For more information, please see\n' +
-    `https://electron.github.io/packager/main/interfaces/electronpackager.options.html#${hash}\n`;
+    `https://electron.github.io/packager/main/interfaces/Options.html#${hash}\n`;
 }
 
 function resolvePromise(id: string, options: AsyncOpts) {

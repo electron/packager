@@ -55,7 +55,7 @@ extra-resource     a file to copy into the app's resources directory
 icon               the local path to an icon file to use as the icon for the app.
                    Note: Format depends on platform.
 ignore             do not copy files into app whose filenames RegExp.match this string. See also:
-                   https://electron.github.io/packager/main/interfaces/electronpackager.options.html#ignore
+                   https://electron.github.io/packager/main/interfaces/Options.html#ignore
                    and --no-prune. Can be specified multiple times
 no-deref-symlinks  make sure symlinks are not dereferenced within the app source
 no-junk            do not ignore system junk files from the packaged app
@@ -102,7 +102,7 @@ osx-universal      (macOS host platform only, requires --arch=universal) Options
                    when packaging a Universal macOS binary. You must use dot notation to configure a list of sub-properties,
                    e.g. --osx-universal.mergeASARs="true"
                    For info on supported values see
-                   https://electron.github.io/packager/main/modules/electronpackager.html#osxuniversaloptions
+                   https://electron.github.io/packager/main/types/OsxUniversalOptions.html
 windows-sign       Whether to sign Windows binary files with a codesigning certificate. You can either
                    pass --windows-sign by itself to use the default configuration or use dot notation to configure
                    a list of sub-properties, e.g. --windows-sign.certificateFile="C:\cert.pfx".
