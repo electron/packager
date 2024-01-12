@@ -340,8 +340,6 @@ export interface Options {
    * include, but are not limited to:
    * - `cacheRoot` (*string*): The directory where prebuilt, pre-packaged Electron downloads are cached.
    * - `mirrorOptions` (*Object*): Options to override the default Electron download location.
-   * - `rejectUnauthorized` (*boolean* - default: `true`): Whether SSL certificates are required to be
-   *   valid when downloading Electron.
    *
    * **Note:** `download` sub-options will have no effect if the {@link electronZipDir} option is set.
    */

@@ -11,16 +11,6 @@ test('CLI argument: --electron-version populates opts.electronVersion', t => {
   t.is(args.electronVersion, '1.2.3')
 })
 
-test('CLI argument: --download.rejectUnauthorized default', t => {
-  const args = parseArgs([])
-  t.true(args.download.rejectUnauthorized, 'default for --download.rejectUnauthorized is true')
-})
-
-test('CLI argument: --no-download.rejectUnauthorized makes rejectUnauthorized false', t => {
-  const args = parseArgs(['--no-download.rejectUnauthorized'])
-  t.false(args.download.rejectUnauthorized, 'download.rejectUnauthorized should be false')
-})
-
 test('CLI argument: --asar=true', t => {
   const args = parseArgs(['--asar=true'])
   t.true(args.asar)

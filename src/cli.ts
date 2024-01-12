@@ -19,7 +19,6 @@ export function parseArgs(argv: string[]) {
     boolean: [
       'all',
       'deref-symlinks',
-      'download.rejectUnauthorized',
       'junk',
       'overwrite',
       'prune',
@@ -27,7 +26,6 @@ export function parseArgs(argv: string[]) {
     ],
     default: {
       'deref-symlinks': true,
-      'download.rejectUnauthorized': true,
       junk: true,
       prune: true
     },
