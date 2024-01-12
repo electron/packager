@@ -44,9 +44,6 @@ download           a list of sub-options to pass to @electron/get. They are spec
                      @electron/get documentation
                    - mirrorOptions: alternate URL options for downloading Electron zips. See
                      @electron/get documentation for details
-                   - rejectUnauthorized: whether SSL certs are required to be valid when downloading
-                     Electron. Defaults to true, use --no-download.rejectUnauthorized to disable
-                     checks.
 electron-version   the version of Electron that is being packaged, see
                    https://github.com/electron/electron/releases
 electron-zip-dir   the local path to a directory containing Electron ZIP files
