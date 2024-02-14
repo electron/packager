@@ -54,7 +54,7 @@
     "@types/plist": "^3.0.4",
     "@types/resolve": "^1.20.4",
     "@types/yargs-parser": "^21.0.2",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^6.9.1",
     "ava": "^3.10.1",
     "buffer-equal": "^1.0.0",
