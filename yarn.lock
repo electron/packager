@@ -332,9 +332,9 @@
     plist "^3.1.0"
 
 "@electron/windows-sign@^1.0.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@electron/windows-sign/-/windows-sign-1.1.1.tgz#4ac6a2f782e70251cc1bd7349485a764ee07320f"
-  integrity sha512-g8/atfOCKuuGedjVE6Xu/rlBtJvfDrmBH9UokBrjrvBVWdVz3SGV7DTjPTLvl7F+XUlmqj4genub62r3jKHIHw==
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@electron/windows-sign/-/windows-sign-1.1.2.tgz#5489861ca62348d2300407e85d949af95849955e"
+  integrity sha512-eXEiZjDtxW3QORCWfRUarANPRTlH9B6At4jqBZJ0NzokSGutXQUVLPA6WmGpIhDW6w2yCMdHW1EJd1HrXtU5sg==
   dependencies:
     cross-dirname "^0.1.0"
     debug "^4.3.4"
