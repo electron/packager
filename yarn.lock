@@ -307,9 +307,9 @@
     promise-retry "^2.0.1"
 
 "@electron/osx-sign@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@electron/osx-sign/-/osx-sign-1.0.5.tgz#0af7149f2fce44d1a8215660fd25a9fb610454d8"
-  integrity sha512-k9ZzUQtamSoweGQDV2jILiRIHUu7lYlJ3c6IEmjv1hC17rclE+eb9U+f6UFlOOETo0JzY1HNlXy4YOlCvl+Lww==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@electron/osx-sign/-/osx-sign-1.1.0.tgz#461ee8cbec833768ced5a99ed61b0f6fdce78852"
+  integrity sha512-9xxNAyTu2YEAfn2TOQXC5fcTZ9hxVT/zAgWOONpOvxivv5rU97RldGbJrxz+OBKXGAiQRJUYOY07mJI++S/iYw==
   dependencies:
     compare-version "^0.1.2"
     debug "^4.3.4"
