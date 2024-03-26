@@ -33,6 +33,7 @@ export class WindowsApp extends App {
       fileVersion: this.opts.buildVersion || this.opts.appVersion,
       legalCopyright: this.opts.appCopyright,
       productName: this.opts.win32metadata?.ProductName || this.opts.name,
+      asarIntegrity: this.asarIntegrity,
       win32Metadata,
     };
   }
