@@ -10,7 +10,6 @@ export type ExeMetadata = {
   productName?: string;
   iconPath?: string;
   win32Metadata?: Win32MetadataOptions;
-  // TODO: Support manifest and requested-execution-level
 }
 
 type ParsedVersionNumerics = [number, number, number, number];
@@ -33,6 +32,9 @@ function parseVersionString(str: string): ParsedVersionNumerics {
   }) as ParsedVersionNumerics;
 }
 
+// Ref: Link MSDN
+const RT_MANIFEST_TYPE = 24;
+
 export async function rcedit(exePath: string, options: ExeMetadata) {
   const resedit = await loadResEdit();
 
@@ -44,7 +46,7 @@ export async function rcedit(exePath: string, options: ExeMetadata) {
     // Icon Info
     const existingIconGroups = resedit.Resource.IconGroupEntry.fromEntries(res.entries);
     if (existingIconGroups.length !== 1) {
-      throw new Error('wat?');
+      throw new Error('Failed to parse win32 executable resources, failed to locate existing icon group');
     }
     const iconFile = resedit.Data.IconFile.from(await fs.readFile(options.iconPath));
     resedit.Resource.IconGroupEntry.replaceIconsForResource(
@@ -55,16 +57,41 @@ export async function rcedit(exePath: string, options: ExeMetadata) {
     );
   }
 
+  // Manifest
+  if (options.win32Metadata?.['application-manifest'] || options.win32Metadata?.['requested-execution-level']) {
+    if (options.win32Metadata?.['application-manifest'] && options.win32Metadata?.['requested-execution-level']) {
+      throw new Error('application-manifest and requested-execution-level are mutually exclusive, only provide one');
+    }
+
+    const manifests = res.entries.filter(e => e.type === RT_MANIFEST_TYPE);
+    if (manifests.length !== 1) {
+      throw new Error('Failed to parse win32 executable resources, failed to locate existing manifest');
+    }
+    const manifestEntry = manifests[0];
+    if (options.win32Metadata?.['application-manifest']) {
+      manifestEntry.bin = (await fs.readFile(options.win32Metadata?.['application-manifest'])).buffer;
+    } else if (options.win32Metadata?.['requested-execution-level']) {
+      // This implementation matches what rcedit used to do, in theory we can be Smarter
+      // and use an actual XML parser, but for now let's match the old impl
+      const currentManifestContent = Buffer.from(manifestEntry.bin).toString('utf-8');
+      const newContent = currentManifestContent.replace(
+        /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
+        `$1${options.win32Metadata?.['requested-execution-level']}$2`
+      );
+      manifestEntry.bin = Buffer.from(newContent, 'utf-8');
+    }
+  }
+
   // Version Info
   const versionInfo = resedit.Resource.VersionInfo.fromEntries(res.entries);
   if (versionInfo.length !== 1) {
-    throw new Error('wat?');
+    throw new Error('Failed to parse win32 executable resources, failed to locate existing version info');
   }
   if (options.fileVersion) versionInfo[0].setFileVersion(...parseVersionString(options.fileVersion));
   if (options.productVersion) versionInfo[0].setProductVersion(...parseVersionString(options.productVersion));
   const languageInfo = versionInfo[0].getAllLanguagesForStringValues();
   if (languageInfo.length !== 1) {
-    throw new Error('wat?');
+    throw new Error('Failed to parse win32 executable resources, failed to locate existing language info');
   }
   // Empty strings retain original value
   const newStrings: Record<string, string> = {
