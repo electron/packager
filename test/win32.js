@@ -4,6 +4,7 @@ const config = require('./config.json')
 const { packager } = require('../dist')
 const path = require('path')
 const test = require('ava')
+const _ = require('lodash')
 const util = require('./_util')
 const { WindowsApp } = require('../dist/win32')
 
@@ -30,13 +31,7 @@ function generateVersionStringTest (metadataProperties, extraOpts, expectedValue
     metadataProperties.forEach((property, i) => {
       const value = expectedValues[i]
       const msg = assertionMsgs[i]
-      if (property === 'version-string') {
-        for (const subkey in value) {
-          t.is(rcOpts[property][subkey], value[subkey], `${msg} (${subkey})`)
-        }
-      } else {
-        t.is(rcOpts[property], value, msg)
-      }
+      t.is(_.get(rcOpts, property), value, msg)
     })
   }
 }
@@ -49,7 +44,7 @@ function setFileVersionTest (buildVersion) {
   }
 
   return generateVersionStringTest(
-    ['product-version', 'file-version'],
+    ['productVersion', 'fileVersion'],
     opts,
     [appVersion, buildVersion],
     ['Product version should match app version',
@@ -59,7 +54,7 @@ function setFileVersionTest (buildVersion) {
 
 function setProductVersionTest (appVersion) {
   return generateVersionStringTest(
-    ['product-version', 'file-version'],
+    ['productVersion', 'fileVersion'],
     { appVersion: appVersion },
     [appVersion, appVersion],
     ['Product version should match app version',
@@ -72,7 +67,7 @@ function setCopyrightTest (appCopyright) {
     appCopyright: appCopyright
   }
 
-  return generateVersionStringTest('version-string', opts, { LegalCopyright: appCopyright }, 'Legal copyright should match app copyright')
+  return generateVersionStringTest(['legalCopyright'], opts, [appCopyright], 'Legal copyright should match app copyright')
 }
 
 function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
@@ -84,9 +79,9 @@ function setCopyrightAndCompanyNameTest (appCopyright, companyName) {
   }
 
   return generateVersionStringTest(
-    'version-string',
+    ['legalCopyright', 'win32Metadata.CompanyName'],
     opts,
-    { LegalCopyright: appCopyright, CompanyName: companyName },
+    [appCopyright, companyName],
     'Legal copyright should match app copyright and Company name should match win32metadata value'
   )
 }
@@ -99,9 +94,9 @@ function setRequestedExecutionLevelTest (requestedExecutionLevel) {
   }
 
   return generateVersionStringTest(
-    'requested-execution-level',
+    ['win32Metadata.requested-execution-level'],
     opts,
-    requestedExecutionLevel,
+    [requestedExecutionLevel],
     'requested-execution-level in win32metadata should match rcOpts value'
   )
 }
@@ -114,9 +109,9 @@ function setApplicationManifestTest (applicationManifest) {
   }
 
   return generateVersionStringTest(
-    'application-manifest',
+    ['win32Metadata.application-manifest'],
     opts,
-    applicationManifest,
+    [applicationManifest],
     'application-manifest in win32metadata should match rcOpts value'
   )
 }
@@ -128,9 +123,9 @@ function setCompanyNameTest (companyName) {
     }
   }
 
-  return generateVersionStringTest('version-string',
+  return generateVersionStringTest(['win32Metadata.CompanyName'],
                                    opts,
-                                   { CompanyName: companyName },
+                                   [companyName],
                                    'Company name should match win32metadata value')
 }
 
