@@ -32,7 +32,7 @@ function parseVersionString(str: string): ParsedVersionNumerics {
   }) as ParsedVersionNumerics;
 }
 
-// Ref: Link MSDN
+// Ref: https://learn.microsoft.com/en-us/windows/win32/menurc/resource-types
 const RT_MANIFEST_TYPE = 24;
 
 export async function resedit(exePath: string, options: ExeMetadata) {

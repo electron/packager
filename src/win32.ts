@@ -35,16 +35,6 @@ export class WindowsApp extends App {
       productName: this.opts.name,
       win32Metadata,
     };
-
-    // TODO
-    // const manifestProperties = ['application-manifest', 'requested-execution-level'];
-    // for (const manifestProperty of manifestProperties) {
-    //   if (win32metadata[manifestProperty as keyof typeof win32metadata]) {
-    //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //     // @ts-ignore
-    //     rcOpts[manifestProperty] = win32metadata[manifestProperty];
-    //   }
-    // }
   }
 
   async getIconPath() {
