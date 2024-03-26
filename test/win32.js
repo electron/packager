@@ -5,8 +5,7 @@ const { packager } = require('../dist')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
-const { updateWineMissingException, WindowsApp } = require('../dist/win32')
-const { WrapperError } = require('cross-spawn-windows-exe')
+const { WindowsApp } = require('../dist/win32')
 
 const win32Opts = {
   name: 'basicTest',
@@ -135,48 +134,14 @@ function setCompanyNameTest (companyName) {
                                    'Company name should match win32metadata value')
 }
 
-test('better error message when wine is not found', t => {
-  const err = new WrapperError('wine-nonexistent')
-
-  t.notRegex(err.message, /win32metadata/)
-  const augmentedError = updateWineMissingException(err)
-  t.regex(augmentedError.message, /win32metadata/)
-})
-
-test('error message unchanged when error not about wine missing', t => {
-  const notWrapperError = Error('Not a wrapper error')
-
-  const returnedError = updateWineMissingException(notWrapperError)
-  t.is(returnedError.message, 'Not a wrapper error')
-})
-
-// Wine-using platforms only; macOS exhibits a strange behavior in CI,
-// so we're disabling it there as well.
-if (process.platform === 'linux') {
-  test.serial('win32 integration: catches a missing wine executable', util.packagerTest(async (t, opts) => {
-    process.env.WINE_BINARY = 'wine-nonexistent'
-    try {
-      await t.throwsAsync(() => packager({
-        ...opts,
-        ...win32Opts
-      }), {
-        instanceOf: WrapperError,
-        message: /wine-nonexistent.*win32metadata/ms
-      })
-    } finally {
-      delete process.env.WINE_BINARY
-    }
-  }))
-}
-
 test('win32metadata defaults', t => {
   const opts = { name: 'Win32 App' }
   const rcOpts = generateRceditOptionsSansIcon(opts)
 
-  t.is(rcOpts['version-string'].FileDescription, opts.name, 'default FileDescription')
-  t.is(rcOpts['version-string'].InternalName, opts.name, 'default InternalName')
-  t.is(rcOpts['version-string'].OriginalFilename, 'Win32 App.exe', 'default OriginalFilename')
-  t.is(rcOpts['version-string'].ProductName, opts.name, 'default ProductName')
+  t.is(rcOpts.win32Metadata.FileDescription, opts.name, 'default FileDescription')
+  t.is(rcOpts.win32Metadata.InternalName, opts.name, 'default InternalName')
+  t.is(rcOpts.win32Metadata.OriginalFilename, 'Win32 App.exe', 'default OriginalFilename')
+  t.is(rcOpts.productName, opts.name, 'default ProductName')
 })
 
 function win32Test (extraOpts, executableBasename, executableMessage) {
