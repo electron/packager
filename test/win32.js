@@ -18,14 +18,14 @@ const win32Opts = {
   platform: 'win32'
 }
 
-function generateRceditOptionsSansIcon (opts) {
-  return new WindowsApp(opts).generateRceditOptionsSansIcon()
+function generateReseditOptionsSansIcon (opts) {
+  return new WindowsApp(opts).generateReseditOptionsSansIcon()
 }
 
 function generateVersionStringTest (metadataProperties, extraOpts, expectedValues, assertionMsgs) {
   return t => {
     const opts = { ...win32Opts, ...extraOpts }
-    const rcOpts = generateRceditOptionsSansIcon(opts)
+    const rcOpts = generateReseditOptionsSansIcon(opts)
 
     metadataProperties = [].concat(metadataProperties)
     expectedValues = [].concat(expectedValues)
@@ -133,7 +133,7 @@ function setCompanyNameTest (companyName) {
 
 test('win32metadata defaults', t => {
   const opts = { name: 'Win32 App' }
-  const rcOpts = generateRceditOptionsSansIcon(opts)
+  const rcOpts = generateReseditOptionsSansIcon(opts)
 
   t.is(rcOpts.win32Metadata.FileDescription, opts.name, 'default FileDescription')
   t.is(rcOpts.win32Metadata.InternalName, opts.name, 'default InternalName')
@@ -204,7 +204,6 @@ test.serial('win32: requested execution level is set correctly in final exe', as
 
   const manifest = res.entries.find(e => e.type === 24)
   const manifestString = Buffer.from(manifest.bin).toString('utf-8')
-  console.log(manifestString)
   t.is(manifestString.includes('requireAdministrator'), true, 'should have the new level in the manifest')
 })
 

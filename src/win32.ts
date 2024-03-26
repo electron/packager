@@ -4,7 +4,7 @@ import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sig
 import { App } from './platform';
 import { debug, sanitizeAppName, warning } from './common';
 import { ComboOptions, Options, WindowsSignOptions } from './types';
-import { ExeMetadata, rcedit } from './rcedit';
+import { ExeMetadata, resedit } from './resedit';
 
 export class WindowsApp extends App {
   get originalElectronName() {
@@ -19,7 +19,7 @@ export class WindowsApp extends App {
     return path.join(this.stagingPath, this.newElectronName);
   }
 
-  generateRceditOptionsSansIcon(): ExeMetadata {
+  generateReseditOptionsSansIcon(): ExeMetadata {
     const win32Metadata: Options['win32metadata'] = {
       FileDescription: this.opts.name,
       InternalName: this.opts.name,
@@ -55,17 +55,17 @@ export class WindowsApp extends App {
     return this.normalizeIconExtension('.ico');
   }
 
-  needsRcedit() {
+  needsResedit() {
     return Boolean(this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion || this.opts.name);
   }
 
-  async runRcedit() {
+  async runResedit() {
     /* istanbul ignore if */
-    if (!this.needsRcedit()) {
+    if (!this.needsResedit()) {
       return Promise.resolve();
     }
 
-    const rcOpts = this.generateRceditOptionsSansIcon();
+    const rcOpts = this.generateReseditOptionsSansIcon();
 
     // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
     const icon = await this.getIconPath();
@@ -73,8 +73,8 @@ export class WindowsApp extends App {
       rcOpts.iconPath = icon;
     }
 
-    debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`);
-    await rcedit(this.electronBinaryPath, rcOpts);
+    debug(`Running resedit with the options ${JSON.stringify(rcOpts)}`);
+    await resedit(this.electronBinaryPath, rcOpts);
   }
 
   async signAppIfSpecified() {
@@ -101,7 +101,7 @@ export class WindowsApp extends App {
     await this.initialize();
     await this.renameElectron();
     await this.copyExtraResources();
-    await this.runRcedit();
+    await this.runResedit();
     await this.signAppIfSpecified();
     return this.move();
   }

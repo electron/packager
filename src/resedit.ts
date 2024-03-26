@@ -35,7 +35,7 @@ function parseVersionString(str: string): ParsedVersionNumerics {
 // Ref: Link MSDN
 const RT_MANIFEST_TYPE = 24;
 
-export async function rcedit(exePath: string, options: ExeMetadata) {
+export async function resedit(exePath: string, options: ExeMetadata) {
   const resedit = await loadResEdit();
 
   const exeData = await fs.readFile(exePath);
