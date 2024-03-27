@@ -6,10 +6,6 @@ orbs:
 
 jobs:
   test:
-    environment:
-      # prevent Wine popup dialogs about installing additional packages
-      WINEDLLOVERRIDES: mscoree,mshtml=
-      WINEDEBUG: -all
     executor: <<parameters.executor>>
     parameters:
       executor:

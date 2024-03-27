@@ -151,8 +151,6 @@ export interface WindowsSignOptions extends Omit<WindowsInternalSignOptions, 'ap
 
 /**
  * A collection of application metadata to embed into the Windows executable.
- *
- * For more information, read the [`rcedit` Node module documentation](https://github.com/electron/node-rcedit#docs).
  */
 export interface Win32MetadataOptions {
   /** Defaults to the `author` name from the nearest `package.json`. */

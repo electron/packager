@@ -13,12 +13,6 @@ const { officialArchs, officialPlatforms } = require('../dist/targets')
 
 childProcess.exec = promisify(childProcess.exec)
 
-if (process.env.CI && process.platform === 'darwin') {
-  // stub out rcedit due to Wine not being able to be configured in CI
-  require('rcedit')
-  require.cache[path.resolve(__dirname, '../node_modules/rcedit/lib/rcedit.js')].exports = function () {}
-}
-
 function fixtureSubdir (subdir) {
   return path.join(__dirname, 'fixtures', subdir)
 }

@@ -1,22 +1,10 @@
 import path from 'path';
-import { WrapperError } from 'cross-spawn-windows-exe';
 import { sign } from '@electron/windows-sign';
 import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
 import { App } from './platform';
 import { debug, sanitizeAppName, warning } from './common';
-import rcedit, { Options as RceditOptions } from 'rcedit';
 import { ComboOptions, Options, WindowsSignOptions } from './types';
-
-export function updateWineMissingException(err: Error) {
-  if (err instanceof WrapperError) {
-    err.message += '\n\n' +
-      'Wine is required to use the appCopyright, appVersion, buildVersion, icon, and \n' +
-      'win32metadata parameters for Windows targets.\n\n' +
-      'See https://github.com/electron/packager#building-windows-apps-from-non-windows-platforms for details.';
-  }
-
-  return err;
-}
+import { ExeMetadata, resedit } from './resedit';
 
 export class WindowsApp extends App {
   get originalElectronName() {
@@ -31,8 +19,8 @@ export class WindowsApp extends App {
     return path.join(this.stagingPath, this.newElectronName);
   }
 
-  generateRceditOptionsSansIcon(): RceditOptions {
-    const win32metadata: Options['win32metadata'] = {
+  generateReseditOptionsSansIcon(): ExeMetadata {
+    const win32Metadata: Options['win32metadata'] = {
       FileDescription: this.opts.name,
       InternalName: this.opts.name,
       OriginalFilename: this.newElectronName,
@@ -40,30 +28,13 @@ export class WindowsApp extends App {
       ...this.opts.win32metadata,
     };
 
-    const rcOpts: RceditOptions = { 'version-string': win32metadata };
-
-    if (this.opts.appVersion) {
-      rcOpts['product-version'] = rcOpts['file-version'] = this.opts.appVersion;
-    }
-
-    if (this.opts.buildVersion) {
-      rcOpts['file-version'] = this.opts.buildVersion;
-    }
-
-    if (this.opts.appCopyright) {
-      rcOpts['version-string']!.LegalCopyright = this.opts.appCopyright;
-    }
-
-    const manifestProperties = ['application-manifest', 'requested-execution-level'];
-    for (const manifestProperty of manifestProperties) {
-      if (win32metadata[manifestProperty as keyof typeof win32metadata]) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        rcOpts[manifestProperty] = win32metadata[manifestProperty];
-      }
-    }
-
-    return rcOpts;
+    return {
+      productVersion: this.opts.appVersion,
+      fileVersion: this.opts.buildVersion || this.opts.appVersion,
+      legalCopyright: this.opts.appCopyright,
+      productName: this.opts.win32metadata?.ProductName || this.opts.name,
+      win32Metadata,
+    };
   }
 
   async getIconPath() {
@@ -74,30 +45,26 @@ export class WindowsApp extends App {
     return this.normalizeIconExtension('.ico');
   }
 
-  needsRcedit() {
-    return Boolean(this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion);
+  needsResedit() {
+    return Boolean(this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion || this.opts.name);
   }
 
-  async runRcedit() {
+  async runResedit() {
     /* istanbul ignore if */
-    if (!this.needsRcedit()) {
+    if (!this.needsResedit()) {
       return Promise.resolve();
     }
 
-    const rcOpts = this.generateRceditOptionsSansIcon();
+    const resOpts = this.generateReseditOptionsSansIcon();
 
     // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
     const icon = await this.getIconPath();
     if (icon) {
-      rcOpts.icon = icon;
+      resOpts.iconPath = icon;
     }
 
-    debug(`Running rcedit with the options ${JSON.stringify(rcOpts)}`);
-    try {
-      await rcedit(this.electronBinaryPath, rcOpts);
-    } catch (err) {
-      throw updateWineMissingException(err as Error);
-    }
+    debug(`Running resedit with the options ${JSON.stringify(resOpts)}`);
+    await resedit(this.electronBinaryPath, resOpts);
   }
 
   async signAppIfSpecified() {
@@ -124,7 +91,7 @@ export class WindowsApp extends App {
     await this.initialize();
     await this.renameElectron();
     await this.copyExtraResources();
-    await this.runRcedit();
+    await this.runResedit();
     await this.signAppIfSpecified();
     return this.move();
   }
