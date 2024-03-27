@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-unresolved
 import { load as loadResEdit } from 'resedit/cjs';
 import { Win32MetadataOptions } from './types';
+import { FileRecord } from '@electron/asar';
 
 export type ExeMetadata = {
   productVersion?: string;
@@ -9,6 +10,7 @@ export type ExeMetadata = {
   legalCopyright?: string;
   productName?: string;
   iconPath?: string;
+  asarIntegrity?: Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>>;
   win32Metadata?: Win32MetadataOptions;
 }
 
@@ -111,6 +113,17 @@ export async function resedit(exePath: string, options: ExeMetadata) {
 
   // Output version info
   versionInfo[0].outputToResourceEntries(res.entries);
+
+  // Asar Integrity
+  if (options.asarIntegrity) {
+    res.entries.push({
+      type: 'Integrity',
+      id: 'ElectronAsar',
+      bin: Buffer.from(JSON.stringify(options.asarIntegrity)).buffer,
+      lang: languageInfo[0].lang,
+      codepage: languageInfo[0].codepage,
+    });
+  }
 
   res.outputResource(exe);
 
