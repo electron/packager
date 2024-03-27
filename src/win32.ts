@@ -32,7 +32,7 @@ export class WindowsApp extends App {
       productVersion: this.opts.appVersion,
       fileVersion: this.opts.buildVersion || this.opts.appVersion,
       legalCopyright: this.opts.appCopyright,
-      productName: this.opts.name,
+      productName: this.opts.win32metadata?.ProductName || this.opts.name,
       win32Metadata,
     };
   }
@@ -55,16 +55,16 @@ export class WindowsApp extends App {
       return Promise.resolve();
     }
 
-    const rcOpts = this.generateReseditOptionsSansIcon();
+    const resOpts = this.generateReseditOptionsSansIcon();
 
     // Icon might be omitted or only exist in one OS's format, so skip it if normalizeExt reports an error
     const icon = await this.getIconPath();
     if (icon) {
-      rcOpts.iconPath = icon;
+      resOpts.iconPath = icon;
     }
 
-    debug(`Running resedit with the options ${JSON.stringify(rcOpts)}`);
-    await resedit(this.electronBinaryPath, rcOpts);
+    debug(`Running resedit with the options ${JSON.stringify(resOpts)}`);
+    await resedit(this.electronBinaryPath, resOpts);
   }
 
   async signAppIfSpecified() {
