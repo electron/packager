@@ -116,10 +116,15 @@ export async function resedit(exePath: string, options: ExeMetadata) {
 
   // Asar Integrity
   if (options.asarIntegrity) {
+    const integrityList = Object.keys(options.asarIntegrity).map((file) => ({
+      file,
+      alg: options.asarIntegrity![file].algorithm,
+      value: options.asarIntegrity![file].hash,
+    }));
     res.entries.push({
-      type: 'Integrity',
-      id: 'ElectronAsar',
-      bin: Buffer.from(JSON.stringify(options.asarIntegrity)).buffer,
+      type: 'INTEGRITY',
+      id: 'ELECTRONASAR',
+      bin: Buffer.from(JSON.stringify(integrityList), 'utf-8'),
       lang: languageInfo[0].lang,
       codepage: languageInfo[0].codepage,
     });
