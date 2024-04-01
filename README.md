@@ -72,7 +72,7 @@ JavaScript API usage can be found in the [API documentation](https://electron.gi
 Running Electron Packager from the command line has this basic form:
 
 ```
-npx electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
+npx @electron/packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
 
 > **Note**:
@@ -97,7 +97,7 @@ detailed descriptions, see the [API documentation](https://electron.github.io/pa
 For flags that are structured as objects, you can pass each option as via dot notation as such:
 
 ```sh
-npx electron-packager --flag.foo="bar"
+npx @electron/packager --flag.foo="bar"
 # will pass in { flag: { foo: "bar"} } as an option to the Electron Packager API
 ```
 
@@ -138,10 +138,10 @@ foobar
 When one runs the following command for the first time in the `foobar` directory:
 
 ```
-npx electron-packager .
+npx @electron/packager .
 ```
 
-`electron-packager` will do the following:
+`@electron/packager` will do the following:
 
 * Use the current directory for the `sourcedir`
 * Infer the `appname` from the `productName` in `package.json`
