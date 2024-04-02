@@ -43,7 +43,7 @@ platform, target arch, and <a href="https://github.com/electron/electron/release
 <p>It is <strong>not</strong> recommended to install <code>@electron/packager</code> globally.</p>
 <a id="md:usage" class="tsd-anchor"></a><h2><a href="#md:usage">Usage</a></h2><a id="md:via-javascript" class="tsd-anchor"></a><h3><a href="#md:via-javascript">Via JavaScript</a></h3><p>JavaScript API usage can be found in the <a href="https://electron.github.io/packager/main/">API documentation</a>.</p>
 <a id="md:from-the-command-line" class="tsd-anchor"></a><h3><a href="#md:from-the-command-line">From the command line</a></h3><p>Running Electron Packager from the command line has this basic form:</p>
-<pre><code><span class="hl-4">npx</span><span class="hl-1"> </span><span class="hl-4">electron</span><span class="hl-1">-</span><span class="hl-4">packager</span><span class="hl-1"> &lt;</span><span class="hl-4">sourcedir</span><span class="hl-1">&gt; &lt;</span><span class="hl-5">appname</span><span class="hl-1">&gt; --</span><span class="hl-4">platform</span><span class="hl-1">=&lt;</span><span class="hl-5">platform</span><span class="hl-1">&gt; --</span><span class="hl-4">arch</span><span class="hl-1">=&lt;</span><span class="hl-5">arch</span><span class="hl-1">&gt; [</span><span class="hl-4">optional</span><span class="hl-1"> </span><span class="hl-4">flags</span><span class="hl-1">...]</span>
+<pre><code><span class="hl-4">npx</span><span class="hl-1"> @</span><span class="hl-4">electron</span><span class="hl-1">/</span><span class="hl-4">packager</span><span class="hl-1"> &lt;</span><span class="hl-4">sourcedir</span><span class="hl-1">&gt; &lt;</span><span class="hl-5">appname</span><span class="hl-1">&gt; --</span><span class="hl-4">platform</span><span class="hl-1">=&lt;</span><span class="hl-5">platform</span><span class="hl-1">&gt; --</span><span class="hl-4">arch</span><span class="hl-1">=&lt;</span><span class="hl-5">arch</span><span class="hl-1">&gt; [</span><span class="hl-4">optional</span><span class="hl-1"> </span><span class="hl-4">flags</span><span class="hl-1">...]</span>
 </code><button>Copy</button></pre>
 <blockquote>
 <p><strong>Note</strong>:
@@ -65,7 +65,7 @@ platforms/architectures will be created.</li>
 <a href="https://github.com/electron/packager/blob/main/usage.txt">usage.txt</a>. For
 detailed descriptions, see the <a href="https://electron.github.io/packager/main/">API documentation</a>.</p>
 <p>For flags that are structured as objects, you can pass each option as via dot notation as such:</p>
-<pre><code class="language-sh"><span class="hl-0">npx</span><span class="hl-1"> </span><span class="hl-2">electron-packager</span><span class="hl-1"> </span><span class="hl-3">--flag.foo=</span><span class="hl-2">&quot;bar&quot;</span><br/><span class="hl-6"># will pass in { flag: { foo: &quot;bar&quot;} } as an option to the Electron Packager API</span>
+<pre><code class="language-sh"><span class="hl-0">npx</span><span class="hl-1"> </span><span class="hl-2">@electron/packager</span><span class="hl-1"> </span><span class="hl-3">--flag.foo=</span><span class="hl-2">&quot;bar&quot;</span><br/><span class="hl-6"># will pass in { flag: { foo: &quot;bar&quot;} } as an option to the Electron Packager API</span>
 </code><button>Copy</button></pre>
 <p>If <code>appname</code> is omitted, this will use the name specified by &quot;productName&quot; or &quot;name&quot; in the nearest package.json.</p>
 <p><strong>Characters in the Electron app name which are not allowed in all target platforms&#39; filenames
@@ -89,9 +89,9 @@ Examples include <code>--ignore=\.gitignore</code> or <code>--ignore=&quot;\.git
 <li><code>npm install</code> for the <code>Foo Bar</code> app has been run at least once</li>
 </ul>
 <p>When one runs the following command for the first time in the <code>foobar</code> directory:</p>
-<pre><code><span class="hl-4">npx</span><span class="hl-1"> </span><span class="hl-4">electron</span><span class="hl-1">-</span><span class="hl-4">packager</span><span class="hl-1"> .</span>
+<pre><code><span class="hl-4">npx</span><span class="hl-1"> @</span><span class="hl-4">electron</span><span class="hl-1">/</span><span class="hl-4">packager</span><span class="hl-1"> .</span>
 </code><button>Copy</button></pre>
-<p><code>electron-packager</code> will do the following:</p>
+<p><code>@electron/packager</code> will do the following:</p>
 <ul>
 <li>Use the current directory for the <code>sourcedir</code></li>
 <li>Infer the <code>appname</code> from the <code>productName</code> in <code>package.json</code></li>
