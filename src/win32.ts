@@ -74,6 +74,7 @@ export class WindowsApp extends App {
 
     if (windowsSignOpt) {
       const signOpts = createSignOpts(windowsSignOpt, windowsMetaData);
+      signOpts.appDirectory = this.stagingPath;
       debug(`Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`);
       try {
         await sign(signOpts as WindowsInternalSignOptions);
