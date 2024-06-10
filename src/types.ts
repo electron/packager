@@ -266,7 +266,7 @@ export interface Options {
    * Arbitrary combinations of individual architectures are also supported via a comma-delimited
    * string or array of strings. The non-`all` values correspond to the architecture names used
    * by [Electron releases](https://github.com/electron/electron/releases). This value
-   * is not restricted to the official set if [[download|`download.mirrorOptions`]] is set.
+   * is not restricted to the official set if {@link download|`download.mirrorOptions`} is set.
    *
    * Defaults to the arch of the host computer running Electron Packager.
    *
@@ -427,7 +427,7 @@ export interface Options {
    *   to show up in the dock/window list.* Setting the icon in the file manager is not currently supported.
    *
    * If the file extension is omitted, it is auto-completed to the correct extension based on the
-   * platform, including when [[platform|`platform: 'all'`]] is in effect.
+   * platform, including when {@link platform |`platform: 'all'`} is in effect.
    */
   icon?: string;
   /**
@@ -516,7 +516,7 @@ export interface Options {
    *
    * The official non-`all` values correspond to the platform names used by [Electron
    * releases](https://github.com/electron/electron/releases). This value is not restricted to
-   * the official set if [[download|`download.mirrorOptions]] is set.
+   * the official set if {@link download|`download.mirrorOptions`} is set.
    *
    * Defaults to the platform of the host computer running Electron Packager.
    *
@@ -579,7 +579,7 @@ export interface Options {
    * Valid properties are the [Cocoa keys for MacOS](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html)
    * of the pattern `NS(.*)UsageDescription`, where the captured group is the key to use.
    *
-   * Example:
+   * @example
    *
    * ```javascript
    * {
