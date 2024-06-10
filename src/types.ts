@@ -15,6 +15,9 @@ import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign/dist/e
 import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
 import type { makeUniversalApp } from '@electron/universal';
 
+/**
+ * @internal
+ */
 export type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
 
 /**
@@ -48,7 +51,7 @@ export type SupportedPlatform = OfficialPlatform | 'all';
 /**
  * A predicate function that, given an absolute file `path`, returns `true` if the file should be
  * ignored, or `false` if the file should be kept. *This does not use any of the default ignored
- * files/directories listed for the {@link ignore} option.*
+ * files/directories listed for the {@link Options.ignore | ignore} option.*
  */
 
 export type IgnoreFunction = (path: string) => boolean;
@@ -61,7 +64,18 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void
  * By default, the functions are called in parallel (via
  * [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
  * If you need the functions called serially, there is a utility function provided. Please note that
- * **callback-style functions are not supported by `serialHooks`.** For example:
+ * **callback-style functions are not supported by `serialHooks`.**
+ *
+ * @param buildPath - For {@link Options.afterExtract | afterExtract}, the path to the temporary folder where the prebuilt
+ * Electron binary has been extracted to. For {@link Options.afterCopy | afterCopy} and {@link Options.afterPrune | afterPrune}, the path to the
+ * folder where the Electron app has been copied to. For {@link Options.afterComplete | afterComplete}, the final directory
+ * of the packaged application.
+ * @param electronVersion - the version of Electron that is being bundled with the application.
+ * @param platform - The target platform you are packaging for.
+ * @param arch - The target architecture you are packaging for.
+ * @param callback - Must be called once you have completed your actions.
+ *
+ * @example
  *
  * ```javascript
  * const packager = require('@electron/packager')
@@ -90,16 +104,6 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void
  * plugins](https://github.com/electron/packager#plugins).
  */
 export type HookFunction =
-/**
- * @param buildPath - For {@link afterExtract}, the path to the temporary folder where the prebuilt
- * Electron binary has been extracted to. For {@link afterCopy} and {@link afterPrune}, the path to the
- * folder where the Electron app has been copied to. For {@link afterComplete}, the final directory
- * of the packaged application.
- * @param electronVersion - the version of Electron that is being bundled with the application.
- * @param platform - The target platform you are packaging for.
- * @param arch - The target architecture you are packaging for.
- * @param callback - Must be called once you have completed your actions.
- */
   (
     buildPath: string,
     electronVersion: string,
@@ -114,15 +118,21 @@ export type TargetDefinition = {
 }
 export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: HookFunctionErrorCallback) => void;
 
-/** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details. */
+/** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
+ * @interface
+ */
 export type OsxSignOptions = Omit<OSXInternalSignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
 
 /**
  * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
  * for details.
+ * @interface
  */
 export type OsxUniversalOptions = Omit<MakeUniversalOpts, 'x64AppPath' | 'arm64AppPath' | 'outAppPath' | 'force'>
 
+/**
+ * @internal
+ */
 export type IgnoreFunc = (platform: string, arch: string) => boolean;
 
 /**
@@ -516,7 +526,7 @@ export interface Options {
    * - `mas` (macOS, specifically for submitting to the Mac App Store)
    * - `win32`
    */
-  platform?: PlatformOption | PlatformOption[];
+  platform?: TargetPlatform | 'all' | Array<TargetPlatform | 'all'>;
   /**
    * The path to a prebuilt ASAR file.
    *
@@ -598,16 +608,25 @@ export interface Options {
   windowsSign?: true | WindowsSignOptions;
 }
 
+/**
+ * @internal
+ */
 interface OptionsWithRequiredArchAndPlatform extends Options {
   arch: Exclude<Options['arch'], undefined>;
   platform: Exclude<Options['platform'], undefined>;
 }
 
+/**
+ * @internal
+ */
 export interface DownloadOptions extends OptionsWithRequiredArchAndPlatform {
   artifactName: string;
   version: string;
 }
 
+/**
+ * @internal
+ */
 export interface ComboOptions extends Options {
   arch: OptionsWithRequiredArchAndPlatform['arch']
   platform: OptionsWithRequiredArchAndPlatform['platform']

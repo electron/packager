@@ -69,7 +69,7 @@
     "nyc": "^15.0.0",
     "pkg-up": "^4.0.0",
     "sinon": "^17.0.0",
-    "typedoc": "^0.25.4",
+    "typedoc": "~0.25.4",
     "typescript": "^5.2.2"
   },
   "engines": {
@@ -81,7 +81,7 @@
     "postbuild": "copyfiles -f ./temp/targets.js ./src",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "coverage": "nyc ava test/index.js",
-    "docs:build": "node test/ci/build_docs.js",
+    "docs:build": "npx typedoc",
     "lint": "eslint --ext .ts .",
     "prepublish": "npm run build",
     "pretest": "npm run build",
