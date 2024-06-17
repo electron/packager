@@ -73,7 +73,7 @@ export class WindowsApp extends App {
     const windowsMetaData = this.opts.win32metadata;
 
     if (windowsSignOpt) {
-      const signOpts = createSignOpts(windowsSignOpt, windowsMetaData);
+      const signOpts = createSignOpts(windowsSignOpt, windowsMetaData, this.stagingPath);
       debug(`Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`);
       try {
         await sign(signOpts as WindowsInternalSignOptions);
@@ -98,8 +98,11 @@ export class WindowsApp extends App {
   }
 }
 
-function createSignOpts(properties: ComboOptions['windowsSign'],
-  windowsMetaData: ComboOptions['win32metadata']): WindowsSignOptions {
+function createSignOpts(
+  properties: ComboOptions['windowsSign'],
+  windowsMetaData: ComboOptions['win32metadata'],
+  appDirectory: string,
+): WindowsSignOptions & WindowsInternalSignOptions {
   let result: WindowsSignOptions = {};
 
   if (typeof properties === 'object') {
@@ -111,7 +114,7 @@ function createSignOpts(properties: ComboOptions['windowsSign'],
     result.description = windowsMetaData.FileDescription;
   }
 
-  return result;
+  return { ...result, appDirectory };
 }
 
 export { WindowsApp as App };
