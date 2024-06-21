@@ -107,7 +107,7 @@ export type HookFunction =
   (
     buildPath: string,
     electronVersion: string,
-    platform: TargetArch,
+    platform: TargetPlatform,
     arch: TargetArch,
     callback: HookFunctionErrorCallback,
   ) => void;
