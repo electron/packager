@@ -34,7 +34,7 @@ async function hookTest (wantHookCalled, hookName, t, opts, validator) {
 }
 
 function createHookTest (hookName, validator) {
-  return util.packagerTest(async (t, opts) => hookTest(true, hookName, t, opts, validator))
+  return util.packagerTest(async (t, opts) => await hookTest(true, hookName, t, opts, validator))
 }
 
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
