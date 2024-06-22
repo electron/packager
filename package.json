@@ -80,7 +80,7 @@
     "build": "tsc",
     "postbuild": "copyfiles -f ./temp/targets.js ./src",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "coverage": "DEBUG=electron-packager nyc ava test/index.js",
+    "coverage": "nyc ava test/index.js",
     "docs:build": "node test/ci/build_docs.js",
     "lint": "eslint --ext .ts .",
     "prepublish": "npm run build",
