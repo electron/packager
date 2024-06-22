@@ -37,8 +37,6 @@ function createHookTest (hookName, validator) {
   return util.packagerTest(async (t, opts) => await hookTest(true, hookName, t, opts, validator))
 }
 
-process.env.DEBUG=electron-packager
-
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
 test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets, callback) => {
