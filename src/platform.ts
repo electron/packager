@@ -281,7 +281,12 @@ export class App {
 
     if (this.opts.tmpdir !== false) {
       debug(`Moving ${this.stagingPath} to ${finalPath}`);
-      await fs.move(this.stagingPath, finalPath);
+      try {
+        await fs.move(this.stagingPath, finalPath);
+      } catch (e) {
+        console.error('@@@@', e, { finalPath });
+        throw e;
+      }
     }
 
     if (this.opts.afterComplete) {
