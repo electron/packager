@@ -35,7 +35,7 @@ async function hookTest (wantHookCalled, hookName, t, opts, validator) {
   t.is(finalPaths.length, 4, 'packager call should resolve with expected number of paths')
   t.is(wantHookCalled, hookCalled, `${hookName} methods ${wantHookCalled ? 'should' : 'should not'} have been called`)
   const exists = await util.verifyPackageExistence(finalPaths)
-  t.deepEqual(exists, [true, true, true, true], 'Packages should be generated for both 32-bit platforms')
+  t.deepEqual(exists, [true, true, true, true], 'Packages should be generated for all x64 platforms')
 }
 
 function createHookTest (hookName, validator) {

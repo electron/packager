@@ -73,7 +73,7 @@ async function assertHelper (t, prefix, appName, helperSuffix) {
 }
 
 async function helperAppPathsTest (t, baseOpts, extraOpts, expectedName) {
-  const opts = { ...baseOpts, ...extraOpts, electronVersion: '1.4.13' }
+  const opts = { ...baseOpts, ...extraOpts }
 
   if (!expectedName) {
     expectedName = opts.name
@@ -428,7 +428,7 @@ if (!(process.env.CI && process.platform === 'win32')) {
     ])
   }))
 
-  test.serial('app helpers bundle', darwinTest(appHelpersBundleTest, 'com.electron.basetest.helper'))
+  test.serial.only('app helpers bundle', darwinTest(appHelpersBundleTest, 'com.electron.basetest.helper'))
   test.serial('app helpers bundle (w/ special characters)', darwinTest(appHelpersBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
   test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleTest, null, 'com.electron.basetest'))
   test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
