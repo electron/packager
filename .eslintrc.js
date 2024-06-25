@@ -1,21 +1,17 @@
+'use strict'
 const eslintConfig = {
   extends: [
-    'eslint:recommended',
-    'plugin:ava/recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:promise/recommended',
-    'standard',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/typescript',
+    'eslint:recommended'
   ],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
-    sourceType: 'module',
+    "ecmaVersion": "latest"
+  },
+  env: {
+    "es6": true,
+    "node": true
   },
   plugins: [
-    'ava',
+    'ava'
   ],
   rules: {
     'ava/no-import-test-files': 0,
@@ -25,17 +21,45 @@ const eslintConfig = {
       2,
       {
         CallExpression: {
-          arguments: 'first',
+          arguments: 'first'
         },
-        SwitchCase: 1,
-      },
+        SwitchCase: 1
+      }
     ],
     'no-console': 0,
     strict: 'error',
-    'comma-dangle': ['error', 'only-multiline'],
-    semi: ['error', 'always'],
-    'space-before-function-paren': ['error', 'never']
+    'comma-dangle': ['error', 'never'],
+    semi: ['error', 'never'],
+    'space-before-function-paren': ['error', 'always']
   },
-};
+  overrides: [
+    {
+      files: ["**/*.ts"],
+      extends: [
+        'eslint:recommended',
+        'plugin:ava/recommended',
+        'plugin:import/errors',
+        'plugin:import/warnings',
+        'plugin:promise/recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:import/typescript'
+      ],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        sourceType: 'module'
+      },
+      rules: {
+        'comma-dangle': ['error', 'always-multiline'],
+        semi: ['error', 'always'],
+        'space-before-function-paren': ['error', {
+          "anonymous": "never",
+          "named": "never",
+          "asyncArrow": "always"
+        }]
+      }
+    }
+  ]
+}
 
-module.exports = eslintConfig;
+module.exports = eslintConfig

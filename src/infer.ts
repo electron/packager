@@ -127,7 +127,7 @@ export async function getMetadataFromPackageJSON(platforms: SupportedPlatform[],
       'dependencies.electron',
       'devDependencies.electron',
       'dependencies.electron-nightly',
-      'devDependencies.electron-nightly'
+      'devDependencies.electron-nightly',
     ]);
   }
 

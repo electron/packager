@@ -30,7 +30,7 @@ export async function packageUniversalMac(packageForPlatformAndArchWithOpts: Pac
 
   const tempPackages = {} as Record<SupportedArch, string>;
 
-  await Promise.all((['x64', 'arm64'] as SupportedArch[]).map(async(tempArch) => {
+  await Promise.all((['x64', 'arm64'] as SupportedArch[]).map(async (tempArch) => {
     const tempOpts = {
       ...comboOpts,
       arch: tempArch,

@@ -2,3 +2,4 @@ typedoc/**/*
 **/test/fixtures/**/node_modules/**
 **/test/work/*
 dist/
+src/targets.js
