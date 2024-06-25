@@ -9,8 +9,8 @@ const util = require('./_util')
 async function hookTest (wantHookCalled, hookName, t, opts, validator) {
   let hookCalled = false
   opts.dir = util.fixtureSubdir('basic')
-  opts.electronVersion = '1.4.13'
-  opts.arch = 'ia32'
+  opts.electronVersion = config.version
+  opts.arch = 'x64'
   opts.platform = 'all'
 
   opts[hookName] = [validator
@@ -27,10 +27,10 @@ async function hookTest (wantHookCalled, hookName, t, opts, validator) {
 
   // 2 packages will be built during this test
   const finalPaths = await packager(opts)
-  t.is(finalPaths.length, 2, 'packager call should resolve with expected number of paths')
+  t.is(finalPaths.length, 4, 'packager call should resolve with expected number of paths')
   t.is(wantHookCalled, hookCalled, `${hookName} methods ${wantHookCalled ? 'should' : 'should not'} have been called`)
   const exists = await util.verifyPackageExistence(finalPaths)
-  t.deepEqual(exists, [true, true], 'Packages should be generated for both 32-bit platforms')
+  t.deepEqual(exists, [true, true, true, true], 'Packages should be generated for all x64 platforms')
 }
 
 function createHookTest (hookName, validator) {
@@ -40,11 +40,15 @@ function createHookTest (hookName, validator) {
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
 test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets, callback) => {
-  t.is(targets.length, 2, 'target list should have two items')
-  t.is(targets[0].arch, 'ia32')
-  t.is(targets[0].platform, 'linux')
-  t.is(targets[1].arch, 'ia32')
-  t.is(targets[1].platform, 'win32')
+  t.is(targets.length, 4, 'target list should have four items')
+  t.is(targets[0].arch, 'x64')
+  t.is(targets[0].platform, 'darwin')
+  t.is(targets[1].arch, 'x64')
+  t.is(targets[1].platform, 'linux')
+  t.is(targets[2].arch, 'x64')
+  t.is(targets[2].platform, 'mas')
+  t.is(targets[3].arch, 'x64')
+  t.is(targets[3].platform, 'win32')
   callback()
 }))
 test.serial('platform=all (one arch) for afterPrune hook', createHookTest('afterPrune'))

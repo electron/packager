@@ -4,12 +4,13 @@ const { packager } = require('../dist')
 const path = require('path')
 const test = require('ava')
 const util = require('./_util')
+const config = require('./config.json')
 
 if (!(process.env.CI && process.platform === 'win32')) {
   const masOpts = {
     name: 'masTest',
     dir: util.fixtureSubdir('basic'),
-    electronVersion: '2.0.0-beta.1',
+    electronVersion: config.version,
     arch: 'x64',
     platform: 'mas'
   }

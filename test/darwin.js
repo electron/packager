@@ -169,7 +169,7 @@ async function appBundleTest (t, opts, appBundleId) {
   assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
 }
 
-async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
+async function appHelpersBundleLegacyTest (t, opts, helperBundleId, appBundleId) {
   opts.electronVersion = '1.4.13'
 
   if (helperBundleId) {
@@ -428,11 +428,11 @@ if (!(process.env.CI && process.platform === 'win32')) {
     ])
   }))
 
-  test.serial('app helpers bundle', darwinTest(appHelpersBundleTest, 'com.electron.basetest.helper'))
-  test.serial('app helpers bundle (w/ special characters)', darwinTest(appHelpersBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
-  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleTest, null, 'com.electron.basetest'))
-  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
-  test.serial('app helpers bundle helper-bundle-id & app-bundle-id fallback', darwinTest(appHelpersBundleTest))
+  test.serial('app helpers bundle', darwinTest(appHelpersBundleLegacyTest, 'com.electron.basetest.helper'))
+  test.serial('app helpers bundle (w/ special characters)', darwinTest(appHelpersBundleLegacyTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
+  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleLegacyTest, null, 'com.electron.basetest'))
+  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleLegacyTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
+  test.serial('app helpers bundle helper-bundle-id & app-bundle-id fallback', darwinTest(appHelpersBundleLegacyTest))
 
   test.serial('app helpers bundle with renderer/plugin helpers', darwinTest(appHelpersBundleElectron6Test))
 
