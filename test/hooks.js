@@ -1,9 +1,5 @@
 'use strict'
 
-const path = require('path')
-const os = require('os')
-const fs = require('fs-extra')
-
 const config = require('./config.json')
 const { promisifyHooks, serialHooks } = require('../dist/hooks')
 const { packager } = require('../dist')
@@ -16,7 +12,6 @@ async function hookTest (wantHookCalled, hookName, t, opts, validator) {
   opts.electronVersion = config.version
   opts.arch = 'x64'
   opts.platform = 'all'
-  opts.out = await fs.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-output-'))
 
   opts[hookName] = [validator
     ? (...args) => {
