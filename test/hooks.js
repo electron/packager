@@ -32,11 +32,10 @@ async function hookTest (wantHookCalled, hookName, t, opts, validator) {
 
   // 2 packages will be built during this test
   const finalPaths = await packager(opts)
-  console.log('@@@@@', {finalPaths})
   t.is(finalPaths.length, 4, 'packager call should resolve with expected number of paths')
   t.is(wantHookCalled, hookCalled, `${hookName} methods ${wantHookCalled ? 'should' : 'should not'} have been called`)
   const exists = await util.verifyPackageExistence(finalPaths)
-  t.deepEqual(exists, [true, true], 'Packages should be generated for both 32-bit platforms')
+  t.deepEqual(exists, [true, true, true, true], 'Packages should be generated for both 32-bit platforms')
 }
 
 function createHookTest (hookName, validator) {
@@ -46,7 +45,8 @@ function createHookTest (hookName, validator) {
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
 test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets, callback) => {
-  t.is(targets.length, 2, 'target list should have two items')
+  console.log("@@@@@@", targets)
+  t.is(targets.length, 4, 'target list should have four items')
   t.is(targets[0].arch, 'x64')
   t.is(targets[0].platform, 'linux')
   t.is(targets[1].arch, 'x64')
