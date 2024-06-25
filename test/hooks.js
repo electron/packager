@@ -13,8 +13,8 @@ const util = require('./_util')
 async function hookTest (wantHookCalled, hookName, t, opts, validator) {
   let hookCalled = false
   opts.dir = util.fixtureSubdir('basic')
-  opts.electronVersion = '1.4.13'
-  opts.arch = 'ia32'
+  opts.electronVersion = config.version
+  opts.arch = 'x64'
   opts.platform = 'all'
   opts.out = await fs.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-output-'))
 
