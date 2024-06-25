@@ -45,7 +45,6 @@ function createHookTest (hookName, validator) {
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
 test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets, callback) => {
-  console.log("@@@@@@", targets)
   t.is(targets.length, 4, 'target list should have four items')
   t.is(targets[0].arch, 'x64')
   t.is(targets[0].platform, 'darwin')
