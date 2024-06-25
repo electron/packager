@@ -40,7 +40,7 @@ jobs:
                 name: Run tests
                 command: yarn run coverage
                 environment:
-                  DEBUG: electron-packager*,@electon/get*
+                  DEBUG: electron-packager*,@electron/get*
             - run: yarn run codecov
             - run: yarn run docs:build
           use-test-steps: true
