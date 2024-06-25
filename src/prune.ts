@@ -5,7 +5,7 @@ import path from 'path';
 
 const ELECTRON_MODULES = [
   'electron',
-  'electron-nightly'
+  'electron-nightly',
 ];
 
 export class Pruner {
@@ -20,7 +20,7 @@ export class Pruner {
     this.quiet = quiet;
     this.galactus = new DestroyerOfModules({
       rootDirectory: dir,
-      shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep)
+      shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep),
     });
   }
 

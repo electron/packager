@@ -55,7 +55,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
       res.entries,
       existingIconGroups[0].id,
       existingIconGroups[0].lang,
-      iconFile.icons.map((item) => item.data)
+      iconFile.icons.map((item) => item.data),
     );
   }
 
@@ -78,7 +78,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
       const currentManifestContent = Buffer.from(manifestEntry.bin).toString('utf-8');
       const newContent = currentManifestContent.replace(
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
-        `$1${options.win32Metadata?.['requested-execution-level']}$2`
+        `$1${options.win32Metadata?.['requested-execution-level']}$2`,
       );
       manifestEntry.bin = Buffer.from(newContent, 'utf-8');
     }

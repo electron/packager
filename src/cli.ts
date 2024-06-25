@@ -22,17 +22,17 @@ export function parseArgs(argv: string[]) {
       'junk',
       'overwrite',
       'prune',
-      'quiet'
+      'quiet',
     ],
     default: {
       'deref-symlinks': true,
       junk: true,
-      prune: true
+      prune: true,
     },
     string: [
       'electron-version',
-      'out'
-    ]
+      'out',
+    ],
   });
 
   args.dir = args._[0];

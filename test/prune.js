@@ -18,7 +18,7 @@ async function assertDependencyExists (t, resourcesPath, moduleName) {
   await util.assertDirectory(t, modulePath, 'module is a directory')
 }
 
-async function createPruneOptionTest (t, baseOpts, prune, testMessage) {
+async function createPruneOptionTest (t, baseOpts, prune) {
   const opts = {
     ...baseOpts,
     name: 'pruneTest',
