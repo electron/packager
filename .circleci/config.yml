@@ -36,7 +36,11 @@ jobs:
                   - $HOME/.cache/electron
                 key: v1-electron-cache-{{ arch }}
             - run: yarn run lint
-            - run: yarn run coverage
+            - run:
+                name: Run tests
+                command: yarn run coverage
+                environment:
+                  DEBUG: electron-packager*
             - run: yarn run codecov
             - run: yarn run docs:build
           use-test-steps: true
