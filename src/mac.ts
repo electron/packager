@@ -495,11 +495,13 @@ export function createSignOpts(properties: ComboOptions['osxSign'], platform: Co
   return signOpts;
 }
 
+type CreateNotarizeOptsResult = Exclude<NotarizeOptions, { tool?: 'legacy' }>
+
 export function createNotarizeOpts(properties: ComboOptions['osxNotarize'], appBundleId: string, appPath: string,
-  quiet: boolean): NotarizeOptions {
+  quiet: boolean): CreateNotarizeOptsResult {
   // osxNotarize options are handed off to the @electron/notarize module, but with a few
   // additions from the main options. The user may think they can pass appPath,
   // but it will be ignored.
   subOptionWarning(properties as unknown as Record<string, unknown>, 'osxNotarize', 'appPath', appPath, quiet);
-  return properties as NotarizeOptions;
+  return properties as CreateNotarizeOptsResult;
 }
