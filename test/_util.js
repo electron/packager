@@ -15,7 +15,7 @@ const test = require('ava')
 
 const ORIGINAL_CWD = process.cwd()
 
-test.before(async t => {
+test.before(async () => {
   if (!process.env.CI) {
     await setup.setupTestsuite()
     process.chdir(setup.WORK_CWD)
@@ -23,7 +23,7 @@ test.before(async t => {
   return Promise.resolve(process.chdir(setup.WORK_CWD))
 })
 
-test.after.always(async t => {
+test.after.always(async () => {
   process.chdir(ORIGINAL_CWD)
   await fs.remove(setup.WORK_CWD)
 })
