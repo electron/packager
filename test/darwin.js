@@ -498,4 +498,22 @@ if (!(process.env.CI && process.platform === 'win32')) {
       }
     })
   }))
+
+  test.serial('prebuilt asar integrity hashes are automatically inserted', darwinTest(async (t, baseOpts) => {
+    const opts = {
+      ...baseOpts,
+      dir: util.fixtureSubdir('asar-prebuilt')
+    }
+    opts.prebuiltAsar = path.join(opts.dir, 'app.asar')
+    const finalPath = (await packager(opts))[0]
+    const plistObj = await parseInfoPlist(t, opts, finalPath)
+    t.is(typeof plistObj.ElectronAsarIntegrity, 'object')
+    // Note: If you update test/fixtures/asar-prebuilt/app.asar, ths hash should also be updated.
+    t.deepEqual(plistObj.ElectronAsarIntegrity, {
+      'Resources/app.asar': {
+        algorithm: 'SHA256',
+        hash: '5efe069acf1f8d2622f2da149fcedcd5e17f9e7f4bc6f7ffe89255ee96647d4f'
+      }
+    })
+  }))
 }

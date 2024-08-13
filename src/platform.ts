@@ -137,6 +137,9 @@ export class App {
     await this.removeDefaultApp();
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
+      this.asarIntegrity = {
+        [this.appRelativePath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
+      };
     } else {
       await this.buildApp();
     }
@@ -243,16 +246,20 @@ export class App {
     await promisifyHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
 
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions);
-    const { headerString } = asar.getRawHeader(this.appAsarPath);
     this.asarIntegrity = {
-      [this.appRelativePath(this.appAsarPath)]: {
-        algorithm: 'SHA256',
-        hash: crypto.createHash('SHA256').update(headerString).digest('hex'),
-      },
+      [this.appRelativePath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
     };
     await fs.remove(this.originalResourcesAppDir);
 
     await promisifyHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
+  }
+
+  getAsarIntegrity(path: string): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
+    const { headerString } = asar.getRawHeader(path);
+    return {
+      algorithm: 'SHA256',
+      hash: crypto.createHash('SHA256').update(headerString).digest('hex'),
+    };
   }
 
   async copyExtraResources() {
