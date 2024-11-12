@@ -138,7 +138,7 @@ export class App {
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
       this.asarIntegrity = {
-        [this.appRelativePath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
+        [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
       };
     } else {
       await this.buildApp();
@@ -232,8 +232,12 @@ export class App {
     await fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true });
   }
 
-  appRelativePath(p: string) {
-    return path.relative(this.stagingPath, p);
+  appRelativePlatformPath(p: string) {
+    if (this.opts.platform === 'win32') {
+      return path.win32.relative(this.stagingPath, p);
+    }
+
+    return path.posix.relative(this.stagingPath, p);
   }
 
   async asarApp() {
@@ -247,7 +251,7 @@ export class App {
 
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions);
     this.asarIntegrity = {
-      [this.appRelativePath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
+      [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
     };
     await fs.remove(this.originalResourcesAppDir);
 
