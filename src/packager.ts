@@ -192,7 +192,7 @@ async function packageAllSpecifiedCombos(opts: Options, archs: SupportedArch[], 
  * - finds or downloads the correct release of Electron
  * - uses that version of Electron to create a app in `<out>/<appname>-<platform>-<arch>`
  *
- * Short example:
+ * @example
  *
  * ```javascript
  * const packager = require('@electron/packager')
