@@ -2,7 +2,7 @@
 
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![CircleCI Build Status](https://circleci.com/gh/electron/packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/packager/tree/main)
+[![Test](https://github.com/electron/packager/actions/workflows/test.yml/badge.svg)](https://github.com/electron/packager/actions/workflows/test.yml)
 [![electron-nightly Canary](https://github.com/electron/packager/actions/workflows/canary.yml/badge.svg)](https://github.com/electron/packager/actions/workflows/canary.yml)
 [![Coverage Status](https://codecov.io/gh/electron/packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/packager)
 [![npm](https://img.shields.io/npm/v/@electron/packager.svg?style=flat)](https://npm.im/@electron/packager)
