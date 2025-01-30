@@ -47,7 +47,7 @@ We use the label [`help wanted`](https://github.com/electron/packager/issues?q=i
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
 
-* CircleCI and AppVeyor are used to make sure that the project builds packages as expected on the
+* GitHub Actions is used to make sure that the project builds packages as expected on the
   supported platforms, using supported Node.js versions.
 * Unless it's impractical, please write tests for your changes. This will help us so that we can
   spot regressions much easier.

@@ -137,6 +137,9 @@ export class App {
     await this.removeDefaultApp();
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
+      this.asarIntegrity = {
+        [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
+      };
     } else {
       await this.buildApp();
     }
@@ -229,8 +232,12 @@ export class App {
     await fs.copy(src, this.appAsarPath, { overwrite: false, errorOnExist: true });
   }
 
-  appRelativePath(p: string) {
-    return path.relative(this.stagingPath, p);
+  appRelativePlatformPath(p: string) {
+    if (this.opts.platform === 'win32') {
+      return path.win32.relative(this.stagingPath, p);
+    }
+
+    return path.posix.relative(this.stagingPath, p);
   }
 
   async asarApp() {
@@ -243,16 +250,20 @@ export class App {
     await promisifyHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
 
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions);
-    const { headerString } = asar.getRawHeader(this.appAsarPath);
     this.asarIntegrity = {
-      [this.appRelativePath(this.appAsarPath)]: {
-        algorithm: 'SHA256',
-        hash: crypto.createHash('SHA256').update(headerString).digest('hex'),
-      },
+      [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
     };
     await fs.remove(this.originalResourcesAppDir);
 
     await promisifyHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
+  }
+
+  getAsarIntegrity(path: string): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
+    const { headerString } = asar.getRawHeader(path);
+    return {
+      algorithm: 'SHA256',
+      hash: crypto.createHash('SHA256').update(headerString).digest('hex'),
+    };
   }
 
   async copyExtraResources() {

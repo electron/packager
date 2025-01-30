@@ -26,7 +26,7 @@
     "usage.txt"
   ],
   "dependencies": {
-    "@electron/asar": "^3.2.1",
+    "@electron/asar": "^3.2.13",
     "@electron/get": "^3.0.0",
     "@electron/notarize": "^2.1.0",
     "@electron/osx-sign": "^1.0.5",
@@ -58,7 +58,6 @@
     "@typescript-eslint/parser": "^6.9.1",
     "ava": "^3.10.1",
     "buffer-equal": "^1.0.0",
-    "codecov": "^3.0.0",
     "copyfiles": "^2.4.1",
     "eslint": "^8.52.0",
     "eslint-plugin-ava": "^14.0.0",
@@ -75,12 +74,15 @@
   "engines": {
     "node": ">= 16.13.0"
   },
+  "publishConfig": {
+    "provenance": true
+  },
   "scripts": {
     "ava": "ava test/index.js",
     "build": "tsc",
     "postbuild": "copyfiles -f ./temp/targets.js ./src",
-    "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "coverage": "nyc ava test/index.js",
+    "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
     "docs:build": "npx typedoc",
     "lint": "eslint .",
     "prepublish": "npm run build",

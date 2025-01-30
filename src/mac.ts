@@ -233,8 +233,8 @@ export class MacApp extends App implements Plists {
     return [...plists, ...(optional as LoadPlistParams[]).filter(item => item)];
   }
 
-  appRelativePath(p: string) {
-    return path.relative(this.contentsPath, p);
+  appRelativePlatformPath(p: string) {
+    return path.posix.relative(this.contentsPath, p);
   }
 
   async updatePlistFiles() {

@@ -1,0 +1,62 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 22 * * 3'
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    strategy:
+      matrix:
+        node-version:
+          - '22.9'
+          - '20.2'
+          - '18.14'
+          - '16.13'
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    runs-on: "${{ matrix.os }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "${{ matrix.node-version }}"
+          cache: 'yarn'
+      - name: Setup CI Environment
+        run: test/ci/before_install.sh
+      - name: Install
+        run: yarn install --frozen-lockfile
+      - name: Build
+        run: yarn build
+      - name: Electron Cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.cache/electron
+          key: v1-electron-cache-${{ matrix.os }}
+      - name: Download Electron binaries
+        run: node test/ci/_before_script.js
+      - name: Lint
+        run: yarn run lint
+      - name: Test & Report Coverage
+        run: |
+          yarn run coverage
+          yarn run coverage:report
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565303 # v5.1.2
+        with:
+          files: ./coverage.lcov
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Build Docs
+        run: yarn run docs:build

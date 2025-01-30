@@ -12,13 +12,13 @@ jobs:
         os: [windows-latest, macOS-latest, ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # tag: v4.1.7
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # tag: v4.2.2
         with:
           repository: electron/electron-quick-start
           ref: refs/heads/main
           path: electron-quick-start
       - name: Setup Node.js
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # tag: v4.0.3
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # tag: v4.1.0
         with:
           node-version: lts/*
       - name: Replace electron with electron-nightly
