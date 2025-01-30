@@ -1,0 +1,14 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "./typedoc",
+  "excludeInternal": true,
+  "sort": ["kind", "required-first", "alphabetical"],
+  "externalSymbolLinkMappings": {
+    "@electron/notarize": {
+      "NotaryToolCredentials": "https://packages.electronjs.org/notarize/main/types/NotaryToolCredentials.html"
+    },
+    "@electron/get": {
+      "ElectronDownloadRequestOptions": "https://github.com/electron/get/blob/79dab2b26df3a6841062b676f11d3e7bb1f8995e/src/types.ts#L57"
+    }
+  }
+}
