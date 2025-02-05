@@ -3,12 +3,12 @@ import { populateIgnoredPaths } from './copy-filter';
 import { createDownloadCombos, downloadElectronZip } from './download';
 import fs from 'fs-extra';
 import { getMetadataFromPackageJSON } from './infer';
-import { promisifyHooks } from './hooks';
+import { runHooks } from './hooks';
 import path from 'path';
 import { createPlatformArchPairs, osModules, validateListFromOptions } from './targets';
 import { extractElectronZip } from './unzip';
 import { packageUniversalMac } from './universal';
-import { ComboOptions, DownloadOptions, OfficialPlatform, Options, SupportedArch, SupportedPlatform } from './types';
+import { ComboOptions, DownloadOptions, FinalizePackageTargetsHookFunction, OfficialPlatform, Options, SupportedArch, SupportedPlatform } from './types';
 import { App } from './platform';
 
 function debugHostInfo() {
@@ -75,11 +75,11 @@ export class Packager {
   async extractElectronZip(comboOpts: ComboOptions, zipPath: string, buildDir: string) {
     debug(`Extracting ${zipPath} to ${buildDir}`);
     await extractElectronZip(zipPath, buildDir);
-    await promisifyHooks(this.opts.afterExtract, [
+    await runHooks(this.opts.afterExtract, [
       buildDir,
-      comboOpts.electronVersion,
-      comboOpts.platform,
-      comboOpts.arch,
+      comboOpts.electronVersion as string,
+      comboOpts.platform as string,
+      comboOpts.arch as string,
     ]);
   }
 
@@ -240,7 +240,7 @@ export async function packager(opts: Options): Promise<string[]> {
 
   populateIgnoredPaths(opts);
 
-  await promisifyHooks(opts.afterFinalizePackageTargets, [
+  await runHooks<FinalizePackageTargetsHookFunction>(opts.afterFinalizePackageTargets, [
     createPlatformArchPairs(opts, platforms, archs).map(([platform, arch]) => ({ platform, arch })),
   ]);
   const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms);

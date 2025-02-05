@@ -243,11 +243,10 @@ if (!(process.env.CI && process.platform === 'win32')) {
     let expectedChecksum
     opts.icon = path.join(__dirname, 'fixtures', 'nonexistent')
     opts.afterExtract = [
-      async (extractPath, _electronVersion, _platform, _arch, callback) => {
+      async (extractPath) => {
         const hash = crypto.createHash('sha256')
         hash.update(await fs.readFile(path.join(extractPath, 'Electron.app', 'Contents', 'Resources', 'electron.icns')))
         expectedChecksum = hash.digest('hex')
-        callback()
       }
     ]
 
@@ -443,10 +442,9 @@ if (!(process.env.CI && process.platform === 'win32')) {
     ]
     const opts = {
       ...baseOpts,
-      afterExtract: [(buildPath, electronVersion, platform, arch, cb) => {
+      afterExtract: [(buildPath) => {
         return Promise.all(helpers.map(async helper => {
           await fs.remove(getHelperAppPath(buildPath, 'Electron', helper))
-          cb()
         }))
       }]
     }
