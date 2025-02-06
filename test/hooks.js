@@ -1,7 +1,7 @@
 'use strict'
 
 const config = require('./config.json')
-const { promisifyHooks, serialHooks } = require('../dist/hooks')
+const { runHooks, serialHooks } = require('../dist/hooks')
 const { packager } = require('../dist')
 const test = require('ava')
 const util = require('./_util')
@@ -18,11 +18,10 @@ async function hookTest (wantHookCalled, hookName, t, opts, validator) {
       hookCalled = true
       validator(t, ...args)
     }
-    : (buildPath, electronVersion, platform, arch, callback) => {
+    : (_buildPath, electronVersion, _platform, arch) => {
       hookCalled = true
       t.is(electronVersion, opts.electronVersion, `${hookName} electronVersion should be the same as the options object`)
       t.is(arch, opts.arch, `${hookName} arch should be the same as the options object`)
-      callback()
     }]
 
   // 2 packages will be built during this test
@@ -39,7 +38,7 @@ function createHookTest (hookName, validator) {
 
 test.serial('platform=all (one arch) for beforeCopy hook', createHookTest('beforeCopy'))
 test.serial('platform=all (one arch) for afterCopy hook', createHookTest('afterCopy'))
-test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets, callback) => {
+test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', createHookTest('afterFinalizePackageTargets', (t, targets) => {
   t.is(targets.length, 4, 'target list should have four items')
   t.is(targets[0].arch, 'x64')
   t.is(targets[0].platform, 'darwin')
@@ -49,34 +48,15 @@ test.serial('platform=all (one arch) for afterFinalizePackageTargets hook', crea
   t.is(targets[2].platform, 'mas')
   t.is(targets[3].arch, 'x64')
   t.is(targets[3].platform, 'win32')
-  callback()
 }))
 test.serial('platform=all (one arch) for afterPrune hook', createHookTest('afterPrune'))
 test.serial('platform=all (one arch) for afterExtract hook', createHookTest('afterExtract'))
 test.serial('platform=all (one arch) for afterComplete hook', createHookTest('afterComplete'))
 
-test('promisifyHooks executes functions in parallel', async t => {
+test('runHooks executes functions in parallel', async t => {
   let output = '0'
-  const timeoutFunc = (number, msTimeout) => {
-    return done => {
-      setTimeout(() => {
-        output += ` ${number}`
-        done()
-      }, msTimeout)
-    }
-  }
-  const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
-    timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
-  )
-
-  await promisifyHooks(testHooks)
-  t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order')
-})
-
-test('serialHooks executes functions serially', async t => {
-  let output = '0'
-  const timeoutFunc = (number, msTimeout) => {
-    return () => new Promise(resolve => { // eslint-disable-line promise/avoid-new
+  const timeoutFunc = async (number, msTimeout) => {
+    await new Promise(resolve => {
       setTimeout(() => {
         output += ` ${number}`
         resolve()
@@ -84,11 +64,29 @@ test('serialHooks executes functions serially', async t => {
     })
   }
   const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
-    timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
+    () => timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
   )
 
-  const result = await serialHooks(testHooks)(() => output)
-  t.is(result, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order')
+  await runHooks(testHooks)
+  t.not(output, '0 1 2 3 4 5 6 7 8 9 10', 'should not be in sequential order')
+})
+
+test('serialHooks executes functions serially', async t => {
+  let output = '0'
+  const timeoutFunc = async (number, msTimeout) => {
+    await new Promise(resolve => {
+      setTimeout(() => {
+        output += ` ${number}`
+        resolve()
+      }, msTimeout)
+    })
+  }
+  const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(number =>
+    () => timeoutFunc(number, number % 2 === 0 ? 1000 : 0)
+  )
+
+  await serialHooks(testHooks)()
+  t.is(output, '0 1 2 3 4 5 6 7 8 9 10', 'should be in sequential order')
 })
 
 test.serial('prune hook does not get called when prune=false', util.packagerTest((t, opts) => {

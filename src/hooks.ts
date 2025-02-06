@@ -1,12 +1,14 @@
-import { promisify } from 'util';
-import { FinalizePackageTargetsHookFunction, HookFunction, HookFunctionErrorCallback } from './types';
+import { FinalizePackageTargetsHookFunction, HookFunction } from './types';
 
-export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined, args?: unknown[]) {
-  if (!hooks || !Array.isArray(hooks)) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Fn = (...args: any[]) => Promise<void> | void;
+
+export async function runHooks<T extends Fn>(hooks: T[] | undefined, args?: Parameters<T>) {
+  if (hooks === undefined || !Array.isArray(hooks)) {
     return Promise.resolve();
   }
 
-  await Promise.all(hooks.map(hookFn => promisify(hookFn).apply(promisifyHooks, args)));
+  await Promise.all(hooks.map(hookFn => args ? hookFn(...args): hookFn()));
 }
 
 /**
@@ -20,30 +22,26 @@ export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTarg
  * packager({
  *   // ...
  *   afterCopy: [serialHooks([
- *     (buildPath, electronVersion, platform, arch, callback) => {
- *       setTimeout(() => {
- *         console.log('first function')
- *         callback()
- *       }, 1000)
+ *     async (buildPath, electronVersion, platform, arch) => {
+ *       await new Promise(resolve => setTimeout(() => {
+ *         console.log('first function');
+ *         resolve()
+ *       }, 1000))
  *     },
- *     (buildPath, electronVersion, platform, arch, callback) => {
+ *     (buildPath, electronVersion, platform, arch) => {
  *       console.log('second function')
- *       callback()
  *     }
  *   ])],
  *   // ...
  * })
  * ```
  */
-export function serialHooks(hooks: Parameters<typeof promisifyHooks>[0] = []) {
+export function serialHooks(hooks: Parameters<typeof runHooks>[0] = []) {
   return async function runSerialHook(...serialHookParams: Parameters<HookFunction | FinalizePackageTargetsHookFunction>) {
     const args = Array.prototype.slice.call(serialHookParams, 0, -1) as Parameters<HookFunction>;
-    const [done] = (Array.prototype.slice.call(serialHookParams, -1)) as [HookFunctionErrorCallback];
 
     for (const hook of hooks) {
       await (hook as HookFunction).apply(runSerialHook, args);
     }
-
-    return done();
   };
 }

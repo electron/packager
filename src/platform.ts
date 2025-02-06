@@ -12,9 +12,9 @@ import {
   warning,
 } from './common';
 import { userPathFilter } from './copy-filter';
-import { promisifyHooks } from './hooks';
+import { runHooks } from './hooks';
 import crypto from 'crypto';
-import { ComboOptions } from './types';
+import { ComboOptions, HookFunction } from './types';
 
 export class App {
   asarIntegrity: Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>> | undefined = undefined;
@@ -91,15 +91,15 @@ export class App {
     return path.join(this.originalResourcesDir, 'app.asar');
   }
 
-  get commonHookArgs() {
+  get commonHookArgs(): [string, string, string] {
     return [
-      this.opts.electronVersion,
-      this.opts.platform,
-      this.opts.arch,
-    ];
+      this.opts.electronVersion as string,
+      this.opts.platform as string,
+      this.opts.arch as string,
+    ] as const;
   }
 
-  get hookArgsWithOriginalResourcesAppDir() {
+  get hookArgsWithOriginalResourcesAppDir(): [string, string, string, string] {
     return [
       this.originalResourcesAppDir,
       ...this.commonHookArgs,
@@ -144,7 +144,7 @@ export class App {
       await this.buildApp();
     }
 
-    await promisifyHooks(this.opts.afterInitialize, this.hookArgsWithOriginalResourcesAppDir);
+    await runHooks<HookFunction>(this.opts.afterInitialize, this.hookArgsWithOriginalResourcesAppDir);
   }
 
   async buildApp() {
@@ -154,15 +154,15 @@ export class App {
   }
 
   async copyTemplate() {
-    await promisifyHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
+    await runHooks<HookFunction>(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
       filter: userPathFilter(this.opts),
       dereference: this.opts.derefSymlinks,
     });
-    await promisifyHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
+    await runHooks<HookFunction>(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
     if (this.opts.prune) {
-      await promisifyHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
+      await runHooks<HookFunction>(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
     }
   }
 
@@ -247,7 +247,7 @@ export class App {
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`);
 
-    await promisifyHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
+    await runHooks<HookFunction>(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
 
     await asar.createPackageWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions);
     this.asarIntegrity = {
@@ -255,7 +255,7 @@ export class App {
     };
     await fs.remove(this.originalResourcesAppDir);
 
-    await promisifyHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
+    await runHooks<HookFunction>(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
   }
 
   getAsarIntegrity(path: string): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
@@ -273,18 +273,18 @@ export class App {
 
     const extraResources = ensureArray(this.opts.extraResource);
 
-    const hookArgs = [
+    const hookArgs: [string, string, string, string] = [
       this.stagingPath,
       ...this.commonHookArgs,
     ];
 
-    await promisifyHooks(this.opts.beforeCopyExtraResources, hookArgs);
+    await runHooks<HookFunction>(this.opts.beforeCopyExtraResources, hookArgs);
 
     await Promise.all(extraResources.map(
       resource => fs.copy(resource, path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource))),
     ));
 
-    await promisifyHooks(this.opts.afterCopyExtraResources, hookArgs);
+    await runHooks<HookFunction>(this.opts.afterCopyExtraResources, hookArgs);
   }
 
   async move() {
@@ -296,12 +296,12 @@ export class App {
     }
 
     if (this.opts.afterComplete) {
-      const hookArgs = [
+      const hookArgs: [string, string, string, string] = [
         finalPath,
         ...this.commonHookArgs,
       ];
 
-      await promisifyHooks(this.opts.afterComplete, hookArgs);
+      await runHooks<HookFunction>(this.opts.afterComplete, hookArgs);
     }
 
     return finalPath;
