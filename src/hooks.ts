@@ -1,7 +1,7 @@
 import { FinalizePackageTargetsHookFunction, HookFunction } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Fn = (...args: any[]) => Promise<void>;
+type Fn = (...args: any[]) => Promise<void> | void;
 
 export async function runHooks<T extends Fn>(hooks: T[] | undefined, args?: Parameters<T>) {
   if (hooks === undefined || !Array.isArray(hooks)) {
@@ -22,15 +22,14 @@ export async function runHooks<T extends Fn>(hooks: T[] | undefined, args?: Para
  * packager({
  *   // ...
  *   afterCopy: [serialHooks([
- *     (buildPath, electronVersion, platform, arch, callback) => {
- *       setTimeout(() => {
- *         console.log('first function')
- *         callback()
- *       }, 1000)
+ *     async (buildPath, electronVersion, platform, arch) => {
+ *       await new Promise(resolve => setTimeout(() => {
+ *         console.log('first function');
+ *         resolve()
+ *       }, 1000))
  *     },
- *     (buildPath, electronVersion, platform, arch, callback) => {
+ *     (buildPath, electronVersion, platform, arch) => {
  *       console.log('second function')
- *       callback()
  *     }
  *   ])],
  *   // ...

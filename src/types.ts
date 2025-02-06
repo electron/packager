@@ -107,13 +107,13 @@ export type HookFunction =
     electronVersion: string,
     platform: TargetPlatform,
     arch: TargetArch,
-  ) => Promise<void>;
+  ) => Promise<void> | void;
 
 export type TargetDefinition = {
   arch: TargetArch;
   platform: TargetPlatform;
 }
-export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[]) => Promise<void>;
+export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[]) => Promise<void> | void;
 
 /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
  * @interface
