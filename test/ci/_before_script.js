@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-'use strict'
+'use strict';
 
-require('../_setup').setupTestsuite()
+require('../_setup').setupTestsuite();

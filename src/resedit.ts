@@ -10,9 +10,12 @@ export type ExeMetadata = {
   legalCopyright?: string;
   productName?: string;
   iconPath?: string;
-  asarIntegrity?: Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>>;
+  asarIntegrity?: Record<
+    string,
+    Pick<FileRecord['integrity'], 'algorithm' | 'hash'>
+  >;
   win32Metadata?: Win32MetadataOptions;
-}
+};
 
 type ParsedVersionNumerics = [number, number, number, number];
 
@@ -23,12 +26,16 @@ type ParsedVersionNumerics = [number, number, number, number];
 function parseVersionString(str: string): ParsedVersionNumerics {
   const parts = str.split('.');
   if (parts.length === 0 || parts.length > 4) {
-    throw new Error(`Incorrectly formatted version string: "${str}". Should have at least one and at most four components`);
+    throw new Error(
+      `Incorrectly formatted version string: "${str}". Should have at least one and at most four components`,
+    );
   }
   return parts.map((part) => {
     const parsed = parseInt(part, 10);
     if (isNaN(parsed)) {
-      throw new Error(`Incorrectly formatted version string: "${str}". Component "${part}" could not be parsed as an integer`);
+      throw new Error(
+        `Incorrectly formatted version string: "${str}". Component "${part}" could not be parsed as an integer`,
+      );
     }
     return parsed;
   }) as ParsedVersionNumerics;
@@ -46,11 +53,17 @@ export async function resedit(exePath: string, options: ExeMetadata) {
 
   if (options.iconPath) {
     // Icon Info
-    const existingIconGroups = resedit.Resource.IconGroupEntry.fromEntries(res.entries);
+    const existingIconGroups = resedit.Resource.IconGroupEntry.fromEntries(
+      res.entries,
+    );
     if (existingIconGroups.length !== 1) {
-      throw new Error('Failed to parse win32 executable resources, failed to locate existing icon group');
+      throw new Error(
+        'Failed to parse win32 executable resources, failed to locate existing icon group',
+      );
     }
-    const iconFile = resedit.Data.IconFile.from(await fs.readFile(options.iconPath));
+    const iconFile = resedit.Data.IconFile.from(
+      await fs.readFile(options.iconPath),
+    );
     resedit.Resource.IconGroupEntry.replaceIconsForResource(
       res.entries,
       existingIconGroups[0].id,
@@ -60,22 +73,36 @@ export async function resedit(exePath: string, options: ExeMetadata) {
   }
 
   // Manifest
-  if (options.win32Metadata?.['application-manifest'] || options.win32Metadata?.['requested-execution-level']) {
-    if (options.win32Metadata?.['application-manifest'] && options.win32Metadata?.['requested-execution-level']) {
-      throw new Error('application-manifest and requested-execution-level are mutually exclusive, only provide one');
+  if (
+    options.win32Metadata?.['application-manifest'] ||
+    options.win32Metadata?.['requested-execution-level']
+  ) {
+    if (
+      options.win32Metadata?.['application-manifest'] &&
+      options.win32Metadata?.['requested-execution-level']
+    ) {
+      throw new Error(
+        'application-manifest and requested-execution-level are mutually exclusive, only provide one',
+      );
     }
 
-    const manifests = res.entries.filter(e => e.type === RT_MANIFEST_TYPE);
+    const manifests = res.entries.filter((e) => e.type === RT_MANIFEST_TYPE);
     if (manifests.length !== 1) {
-      throw new Error('Failed to parse win32 executable resources, failed to locate existing manifest');
+      throw new Error(
+        'Failed to parse win32 executable resources, failed to locate existing manifest',
+      );
     }
     const manifestEntry = manifests[0];
     if (options.win32Metadata?.['application-manifest']) {
-      manifestEntry.bin = (await fs.readFile(options.win32Metadata?.['application-manifest'])).buffer;
+      manifestEntry.bin = (
+        await fs.readFile(options.win32Metadata?.['application-manifest'])
+      ).buffer;
     } else if (options.win32Metadata?.['requested-execution-level']) {
       // This implementation matches what rcedit used to do, in theory we can be Smarter
       // and use an actual XML parser, but for now let's match the old impl
-      const currentManifestContent = Buffer.from(manifestEntry.bin).toString('utf-8');
+      const currentManifestContent = Buffer.from(manifestEntry.bin).toString(
+        'utf-8',
+      );
       const newContent = currentManifestContent.replace(
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
         `$1${options.win32Metadata?.['requested-execution-level']}$2`,
@@ -87,13 +114,21 @@ export async function resedit(exePath: string, options: ExeMetadata) {
   // Version Info
   const versionInfo = resedit.Resource.VersionInfo.fromEntries(res.entries);
   if (versionInfo.length !== 1) {
-    throw new Error('Failed to parse win32 executable resources, failed to locate existing version info');
+    throw new Error(
+      'Failed to parse win32 executable resources, failed to locate existing version info',
+    );
   }
-  if (options.fileVersion) versionInfo[0].setFileVersion(...parseVersionString(options.fileVersion));
-  if (options.productVersion) versionInfo[0].setProductVersion(...parseVersionString(options.productVersion));
+  if (options.fileVersion)
+    versionInfo[0].setFileVersion(...parseVersionString(options.fileVersion));
+  if (options.productVersion)
+    versionInfo[0].setProductVersion(
+      ...parseVersionString(options.productVersion),
+    );
   const languageInfo = versionInfo[0].getAllLanguagesForStringValues();
   if (languageInfo.length !== 1) {
-    throw new Error('Failed to parse win32 executable resources, failed to locate existing language info');
+    throw new Error(
+      'Failed to parse win32 executable resources, failed to locate existing language info',
+    );
   }
   // Empty strings retain original value
   const newStrings: Record<string, string> = {

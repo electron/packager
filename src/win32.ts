@@ -47,7 +47,14 @@ export class WindowsApp extends App {
   }
 
   needsResedit() {
-    return Boolean(this.opts.icon || this.opts.win32metadata || this.opts.appCopyright || this.opts.appVersion || this.opts.buildVersion || this.opts.name);
+    return Boolean(
+      this.opts.icon ||
+        this.opts.win32metadata ||
+        this.opts.appCopyright ||
+        this.opts.appVersion ||
+        this.opts.buildVersion ||
+        this.opts.name,
+    );
   }
 
   async runResedit() {
@@ -73,14 +80,23 @@ export class WindowsApp extends App {
     const windowsMetaData = this.opts.win32metadata;
 
     if (windowsSignOpt) {
-      const signOpts = createSignOpts(windowsSignOpt, windowsMetaData, this.stagingPath);
-      debug(`Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`);
+      const signOpts = createSignOpts(
+        windowsSignOpt,
+        windowsMetaData,
+        this.stagingPath,
+      );
+      debug(
+        `Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`,
+      );
       try {
         await sign(signOpts as WindowsInternalSignOptions);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {
-          warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet);
+          warning(
+            `Code sign failed; please retry manually. ${err}`,
+            this.opts.quiet,
+          );
         } else {
           throw err;
         }
@@ -110,7 +126,11 @@ function createSignOpts(
   }
 
   // A little bit of convenience
-  if (windowsMetaData && windowsMetaData.FileDescription && !result.description) {
+  if (
+    windowsMetaData &&
+    windowsMetaData.FileDescription &&
+    !result.description
+  ) {
     result.description = windowsMetaData.FileDescription;
   }
 

@@ -1,4 +1,10 @@
-import { baseTempDir, debug, ensureArray, generateFinalBasename, normalizePath } from './common';
+import {
+  baseTempDir,
+  debug,
+  ensureArray,
+  generateFinalBasename,
+  normalizePath,
+} from './common';
 import junk from 'junk';
 import path from 'path';
 import { isModule, Pruner } from './prune';
@@ -16,9 +22,10 @@ const DEFAULT_IGNORES = [
 ];
 
 export function populateIgnoredPaths(opts: Options) {
-  (opts as Options & { originalIgnore: Options['ignore'] }).originalIgnore = opts.ignore;
+  (opts as Options & { originalIgnore: Options['ignore'] }).originalIgnore =
+    opts.ignore;
 
-  if (typeof (opts.ignore) !== 'function') {
+  if (typeof opts.ignore !== 'function') {
     if (opts.ignore) {
       opts.ignore = [...ensureArray(opts.ignore), ...DEFAULT_IGNORES];
     } else {
@@ -37,14 +44,18 @@ export function generateIgnoredOutDirs(opts: ComboOptions): string[] {
   const ignoredOutDirs: string[] = [];
 
   if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (const [platform, archs] of Object.entries(officialPlatformArchCombos)) {
+    for (const [platform, archs] of Object.entries(
+      officialPlatformArchCombos,
+    )) {
       for (const arch of archs) {
         const basenameOpts = {
           arch: arch,
           name: opts.name,
           platform: platform,
         };
-        ignoredOutDirs.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)));
+        ignoredOutDirs.push(
+          path.join(process.cwd(), generateFinalBasename(basenameOpts)),
+        );
       }
     }
   } else {
@@ -56,14 +67,16 @@ export function generateIgnoredOutDirs(opts: ComboOptions): string[] {
   return ignoredOutDirs;
 }
 
-function generateFilterFunction(ignore: Exclude<ComboOptions['ignore'], undefined>): (file: string) => boolean {
-  if (typeof (ignore) === 'function') {
-    return file => !ignore(file);
+function generateFilterFunction(
+  ignore: Exclude<ComboOptions['ignore'], undefined>,
+): (file: string) => boolean {
+  if (typeof ignore === 'function') {
+    return (file) => !ignore(file);
   } else {
     const ignoredRegexes = ensureArray(ignore);
 
     return function filterByRegexes(file) {
-      return !ignoredRegexes.some(regex => file.match(regex));
+      return !ignoredRegexes.some((regex) => file.match(regex));
     };
   }
 }
@@ -80,7 +93,8 @@ export function userPathFilter(opts: ComboOptions): CopyFilterAsync {
       return false;
     }
 
-    if (opts.junk !== false) { // defaults to true
+    if (opts.junk !== false) {
+      // defaults to true
       if (junk.is(path.basename(fullPath))) {
         return false;
       }

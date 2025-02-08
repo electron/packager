@@ -12,7 +12,9 @@ export function sanitizeAppName(name: string) {
   return filenamify(name, { replacement: '-' });
 }
 
-export function generateFinalBasename(opts: Pick<ComboOptions, 'arch' | 'name' | 'platform'>) {
+export function generateFinalBasename(
+  opts: Pick<ComboOptions, 'arch' | 'name' | 'platform'>,
+) {
   return `${sanitizeAppName(opts.name!)}-${opts.platform}-${opts.arch}`;
 }
 
@@ -32,9 +34,18 @@ export function warning(message: unknown, quiet?: boolean) {
   }
 }
 
-export function subOptionWarning(properties: Record<string, unknown>, optionName: string, parameter: string, value: unknown, quiet?: boolean) {
+export function subOptionWarning(
+  properties: Record<string, unknown>,
+  optionName: string,
+  parameter: string,
+  value: unknown,
+  quiet?: boolean,
+) {
   if (Object.prototype.hasOwnProperty.call(properties, parameter)) {
-    warning(`${optionName}.${parameter} will be inferred from the main options`, quiet);
+    warning(
+      `${optionName}.${parameter} will be inferred from the main options`,
+      quiet,
+    );
   }
   properties[parameter] = value;
 }
@@ -48,7 +59,10 @@ export function createAsarOpts(opts: ComboOptions): false | AsarOptions {
   } else if (opts.asar === false || opts.asar === undefined) {
     return false;
   } else {
-    warning(`asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`, opts.quiet);
+    warning(
+      `asar parameter set to an invalid value (${opts.asar}), ignoring and disabling asar`,
+      opts.quiet,
+    );
     return false;
   }
 
@@ -83,14 +97,19 @@ export function normalizePath(pathToNormalize: string) {
  * @param appDir - the directory specified by the user
  * @param bundledAppDir - the directory where the appDir is copied to in the bundled Electron app
  */
-export async function validateElectronApp(appDir: string, bundledAppDir: string) {
+export async function validateElectronApp(
+  appDir: string,
+  bundledAppDir: string,
+) {
   debug('Validating bundled Electron app');
   debug('Checking for a package.json file');
 
   const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json');
   if (!(await fs.pathExists(bundledPackageJSONPath))) {
     const originalPackageJSONPath = path.join(appDir, 'package.json');
-    throw new Error(`Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`);
+    throw new Error(
+      `Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`,
+    );
   }
 
   debug('Checking for the main entry point file');
@@ -99,7 +118,9 @@ export async function validateElectronApp(appDir: string, bundledAppDir: string)
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
   if (!(await fs.pathExists(mainScript))) {
     const originalMainScript = path.join(appDir, mainScriptBasename);
-    throw new Error(`The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`);
+    throw new Error(
+      `The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`,
+    );
   }
 
   debug('Validation complete');
@@ -109,7 +130,9 @@ export function hostInfo() {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const metadata = require('../package.json');
 
-  return `Electron Packager ${metadata.version}\n` +
+  return (
+    `Electron Packager ${metadata.version}\n` +
     `Node ${process.version}\n` +
-    `Host Operating system: ${process.platform} ${os.release()} (${process.arch})`;
+    `Host Operating system: ${process.platform} ${os.release()} (${process.arch})`
+  );
 }

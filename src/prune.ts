@@ -3,10 +3,7 @@ import { DestroyerOfModules, DepType, Module, ModuleMap } from 'galactus';
 import fs from 'fs-extra';
 import path from 'path';
 
-const ELECTRON_MODULES = [
-  'electron',
-  'electron-nightly',
-];
+const ELECTRON_MODULES = ['electron', 'electron-nightly'];
 
 export class Pruner {
   baseDir: string;
@@ -20,12 +17,15 @@ export class Pruner {
     this.quiet = quiet;
     this.galactus = new DestroyerOfModules({
       rootDirectory: dir,
-      shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep),
+      shouldKeepModuleTest: (module, isDevDep) =>
+        this.shouldKeepModule(module, isDevDep),
     });
   }
 
   setModules(moduleMap: ModuleMap) {
-    const modulePaths = Array.from(moduleMap.keys()).map(modulePath => `/${normalizePath(modulePath)}`);
+    const modulePaths = Array.from(moduleMap.keys()).map(
+      (modulePath) => `/${normalizePath(modulePath)}`,
+    );
     this.modules = new Set(modulePaths);
     this.walkedTree = true;
   }
@@ -34,7 +34,9 @@ export class Pruner {
     if (this.walkedTree) {
       return this.isProductionModule(name);
     } else {
-      const moduleMap = await this.galactus.collectKeptModules({ relativePaths: true });
+      const moduleMap = await this.galactus.collectKeptModules({
+        relativePaths: true,
+      });
       this.setModules(moduleMap);
       return this.isProductionModule(name);
     }
@@ -46,7 +48,10 @@ export class Pruner {
     }
 
     if (ELECTRON_MODULES.includes(module.name)) {
-      warning(`Found '${module.name}' but not as a devDependency, pruning anyway`, this.quiet);
+      warning(
+        `Found '${module.name}' but not as a devDependency, pruning anyway`,
+        this.quiet,
+      );
       return false;
     }
 
@@ -59,10 +64,17 @@ export class Pruner {
 }
 
 function isNodeModuleFolder(pathToCheck: string) {
-  return path.basename(path.dirname(pathToCheck)) === 'node_modules' ||
-    (path.basename(path.dirname(pathToCheck)).startsWith('@') && path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) === 'node_modules');
+  return (
+    path.basename(path.dirname(pathToCheck)) === 'node_modules' ||
+    (path.basename(path.dirname(pathToCheck)).startsWith('@') &&
+      path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) ===
+        'node_modules')
+  );
 }
 
 export async function isModule(pathToCheck: string) {
-  return (await fs.pathExists(path.join(pathToCheck, 'package.json'))) && isNodeModuleFolder(pathToCheck);
+  return (
+    (await fs.pathExists(path.join(pathToCheck, 'package.json'))) &&
+    isNodeModuleFolder(pathToCheck)
+  );
 }

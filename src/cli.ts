@@ -8,7 +8,9 @@ import { Options } from './types';
 
 /* istanbul ignore next */
 async function printUsageAndExit(isError: boolean) {
-  const usage = (await fs.readFile(path.resolve(__dirname, '..', 'usage.txt'))).toString();
+  const usage = (
+    await fs.readFile(path.resolve(__dirname, '..', 'usage.txt'))
+  ).toString();
   const print = isError ? console.error : console.log;
   print(usage);
   process.exit(isError ? 1 : 0);
@@ -16,23 +18,13 @@ async function printUsageAndExit(isError: boolean) {
 
 export function parseArgs(argv: string[]) {
   const args = yargs(argv, {
-    boolean: [
-      'all',
-      'deref-symlinks',
-      'junk',
-      'overwrite',
-      'prune',
-      'quiet',
-    ],
+    boolean: ['all', 'deref-symlinks', 'junk', 'overwrite', 'prune', 'quiet'],
     default: {
       'deref-symlinks': true,
       junk: true,
       prune: true,
     },
-    string: [
-      'electron-version',
-      'out',
-    ],
+    string: ['electron-version', 'out'],
   });
 
   args.dir = args._[0];
@@ -41,14 +33,21 @@ export function parseArgs(argv: string[]) {
   const protocolSchemes = [].concat(args.protocol || []);
   const protocolNames = [].concat(args.protocolName || []);
 
-  if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
-    args.protocols = protocolSchemes.map(function(scheme, i) {
+  if (
+    protocolSchemes &&
+    protocolNames &&
+    protocolNames.length === protocolSchemes.length
+  ) {
+    args.protocols = protocolSchemes.map(function (scheme, i) {
       return { schemes: [scheme], name: protocolNames[i] };
     });
   }
 
   if (args.out === '') {
-    warning('Specifying --out= without a value is the same as the default value', args.quiet);
+    warning(
+      'Specifying --out= without a value is the same as the default value',
+      args.quiet,
+    );
     args.out = null;
   }
 
@@ -56,17 +55,26 @@ export function parseArgs(argv: string[]) {
 
   // asar: `Object` or `true`
   if (args.asar === 'true' || args.asar instanceof Array) {
-    warning('--asar does not take any arguments, it only has sub-properties (see --help)', args.quiet);
+    warning(
+      '--asar does not take any arguments, it only has sub-properties (see --help)',
+      args.quiet,
+    );
     args.asar = true;
   }
 
   // windows-sign: `Object` or `true`
   if (args.windowsSign === 'true') {
-    warning('--windows-sign does not take any arguments, it only has sub-properties (see --help)', args.quiet);
+    warning(
+      '--windows-sign does not take any arguments, it only has sub-properties (see --help)',
+      args.quiet,
+    );
     args.windowsSign = true;
   } else if (typeof args['windows-sign'] === 'object') {
     if (Array.isArray(args['windows-sign'])) {
-      warning('Remove --windows-sign (the bare flag) from the command line, only specify sub-properties (see --help)', args.quiet);
+      warning(
+        'Remove --windows-sign (the bare flag) from the command line, only specify sub-properties (see --help)',
+        args.quiet,
+      );
     } else {
       // Keep kebab case of sub properties
       args.windowsSign = args['windows-sign'];
@@ -75,11 +83,17 @@ export function parseArgs(argv: string[]) {
 
   // osx-sign: `Object` or `true`
   if (args.osxSign === 'true') {
-    warning('--osx-sign does not take any arguments, it only has sub-properties (see --help)', args.quiet);
+    warning(
+      '--osx-sign does not take any arguments, it only has sub-properties (see --help)',
+      args.quiet,
+    );
     args.osxSign = true;
   } else if (typeof args['osx-sign'] === 'object') {
     if (Array.isArray(args['osx-sign'])) {
-      warning('Remove --osx-sign (the bare flag) from the command line, only specify sub-properties (see --help)', args.quiet);
+      warning(
+        'Remove --osx-sign (the bare flag) from the command line, only specify sub-properties (see --help)',
+        args.quiet,
+      );
     } else {
       // Keep kebab case of sub properties
       args.osxSign = args['osx-sign'];
@@ -88,11 +102,20 @@ export function parseArgs(argv: string[]) {
 
   if (args.osxNotarize) {
     let notarize = true;
-    if (typeof args.osxNotarize !== 'object' || Array.isArray(args.osxNotarize)) {
-      warning('--osx-notarize does not take any arguments, it only has sub-properties (see --help)', args.quiet);
+    if (
+      typeof args.osxNotarize !== 'object' ||
+      Array.isArray(args.osxNotarize)
+    ) {
+      warning(
+        '--osx-notarize does not take any arguments, it only has sub-properties (see --help)',
+        args.quiet,
+      );
       notarize = false;
     } else if (!args.osxSign) {
-      warning('Notarization was enabled but macOS code signing was not, code signing is a requirement for notarization, notarize will not run', args.quiet);
+      warning(
+        'Notarization was enabled but macOS code signing was not, code signing is a requirement for notarization, notarize will not run',
+        args.quiet,
+      );
       notarize = false;
     }
 
@@ -103,7 +126,10 @@ export function parseArgs(argv: string[]) {
 
   // tmpdir: `String` or `false`
   if (args.tmpdir === 'false') {
-    warning('--tmpdir=false is deprecated, use --no-tmpdir instead', args.quiet);
+    warning(
+      '--tmpdir=false is deprecated, use --no-tmpdir instead',
+      args.quiet,
+    );
     args.tmpdir = false;
   }
 
@@ -117,7 +143,9 @@ export function parseArgs(argv: string[]) {
     await printUsageAndExit(false);
   } else if (args.version) {
     if (typeof args.version !== 'boolean') {
-      console.error('--version does not take an argument. Perhaps you meant --app-version or --electron-version?\n');
+      console.error(
+        '--version does not take an argument. Perhaps you meant --app-version or --electron-version?\n',
+      );
     }
     console.log(hostInfo());
     process.exit(0);

@@ -1,2 +1,2 @@
-'use strict'
-module.exports = require('../dist/targets')
+'use strict';
+module.exports = require('../dist/targets');

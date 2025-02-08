@@ -1,4 +1,8 @@
-import getPackageInfo, { GetPackageInfoError, GetPackageInfoResult, GetPackageInfoResultSourceItem } from 'get-package-info';
+import getPackageInfo, {
+  GetPackageInfoError,
+  GetPackageInfoResult,
+  GetPackageInfoResultSourceItem,
+} from 'get-package-info';
 import parseAuthor from 'parse-author';
 import path from 'path';
 import resolve, { AsyncOpts } from 'resolve';
@@ -6,7 +10,9 @@ import { debug } from './common';
 import { Options, SupportedPlatform } from './types';
 
 function isMissingRequiredProperty(props: string[]) {
-  return props.some(prop => prop === 'productName' || prop === 'dependencies.electron');
+  return props.some(
+    (prop) => prop === 'productName' || prop === 'dependencies.electron',
+  );
 }
 
 function errorMessageForProperty(prop: string) {
@@ -30,37 +36,51 @@ function errorMessageForProperty(prop: string) {
       propDescription = `[Unknown Property (${prop})]`;
   }
 
-  return `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
+  return (
+    `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
     'For more information, please see\n' +
-    `https://electron.github.io/packager/main/interfaces/Options.html#${hash}\n`;
+    `https://electron.github.io/packager/main/interfaces/Options.html#${hash}\n`
+  );
 }
 
 function resolvePromise(id: string, options: AsyncOpts) {
-  // eslint-disable-next-line promise/param-names
-  return new Promise<[string | undefined, { version: string }]>((accept, reject) => {
-    resolve(id, options, (err, mainPath, pkg) => {
-      if (err) {
-        /* istanbul ignore next */
-        reject(err);
-      } else {
-        accept([mainPath as string | undefined, pkg as { version: string }]);
-      }
-    });
-  });
+  return new Promise<[string | undefined, { version: string }]>(
+    // eslint-disable-next-line promise/param-names
+    (accept, reject) => {
+      resolve(id, options, (err, mainPath, pkg) => {
+        if (err) {
+          /* istanbul ignore next */
+          reject(err);
+        } else {
+          accept([mainPath as string | undefined, pkg as { version: string }]);
+        }
+      });
+    },
+  );
 }
 
-async function getVersion(opts: Options, electronProp: GetPackageInfoResultSourceItem) {
+async function getVersion(
+  opts: Options,
+  electronProp: GetPackageInfoResultSourceItem,
+) {
   const [, packageName] = electronProp.prop.split('.');
   const src = electronProp.src;
 
-  const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1];
+  const pkg = (
+    await resolvePromise(packageName, { basedir: path.dirname(src) })
+  )[1];
   debug(`Inferring target Electron version from ${packageName} in ${src}`);
   opts.electronVersion = pkg.version;
 }
 
-async function handleMetadata(opts: Options, result: GetPackageInfoResult): Promise<void> {
+async function handleMetadata(
+  opts: Options,
+  result: GetPackageInfoResult,
+): Promise<void> {
   if (result.values.productName) {
-    debug(`Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`);
+    debug(
+      `Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`,
+    );
     opts.name = result.values.productName as string;
   }
 
@@ -76,13 +96,17 @@ async function handleMetadata(opts: Options, result: GetPackageInfoResult): Prom
   if (result.values.author) {
     const author = result.values.author as string | { name: string };
 
-    debug(`Inferring win32metadata.CompanyName from author in ${result.source.author.src}`);
+    debug(
+      `Inferring win32metadata.CompanyName from author in ${result.source.author.src}`,
+    );
     if (typeof author === 'string') {
       opts.win32metadata!.CompanyName = parseAuthor(author).name;
     } else if (author.name) {
       opts.win32metadata!.CompanyName = author.name;
     } else {
-      debug('Cannot infer win32metadata.CompanyName from author, no name found');
+      debug(
+        'Cannot infer win32metadata.CompanyName from author, no name found',
+      );
     }
   }
 
@@ -95,7 +119,7 @@ async function handleMetadata(opts: Options, result: GetPackageInfoResult): Prom
 }
 
 function handleMissingProperties(opts: Options, err: GetPackageInfoError) {
-  const missingProps = err.missingProps.map(prop => {
+  const missingProps = err.missingProps.map((prop) => {
     return Array.isArray(prop) ? prop[0] : prop;
   });
 
@@ -111,7 +135,11 @@ function handleMissingProperties(opts: Options, err: GetPackageInfoError) {
   }
 }
 
-export async function getMetadataFromPackageJSON(platforms: SupportedPlatform[], opts: Options, dir: string): Promise<void> {
+export async function getMetadataFromPackageJSON(
+  platforms: SupportedPlatform[],
+  opts: Options,
+  dir: string,
+): Promise<void> {
   const props: Array<string | string[]> = [];
 
   if (!opts.name) {
@@ -131,8 +159,13 @@ export async function getMetadataFromPackageJSON(platforms: SupportedPlatform[],
     ]);
   }
 
-  if (platforms.includes('win32') && !(opts.win32metadata && opts.win32metadata.CompanyName)) {
-    debug('Requiring author in package.json, as CompanyName was not specified for win32metadata');
+  if (
+    platforms.includes('win32') &&
+    !(opts.win32metadata && opts.win32metadata.CompanyName)
+  ) {
+    debug(
+      'Requiring author in package.json, as CompanyName was not specified for win32metadata',
+    );
     props.push('author');
   }
 

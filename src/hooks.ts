@@ -1,12 +1,21 @@
 import { promisify } from 'util';
-import { FinalizePackageTargetsHookFunction, HookFunction, HookFunctionErrorCallback } from './types';
+import {
+  FinalizePackageTargetsHookFunction,
+  HookFunction,
+  HookFunctionErrorCallback,
+} from './types';
 
-export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined, args?: unknown[]) {
+export async function promisifyHooks(
+  hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined,
+  args?: unknown[],
+) {
   if (!hooks || !Array.isArray(hooks)) {
     return Promise.resolve();
   }
 
-  await Promise.all(hooks.map(hookFn => promisify(hookFn).apply(promisifyHooks, args)));
+  await Promise.all(
+    hooks.map((hookFn) => promisify(hookFn).apply(promisifyHooks, args)),
+  );
 }
 
 /**
@@ -36,9 +45,19 @@ export async function promisifyHooks(hooks: HookFunction[] | FinalizePackageTarg
  * ```
  */
 export function serialHooks(hooks: Parameters<typeof promisifyHooks>[0] = []) {
-  return async function runSerialHook(...serialHookParams: Parameters<HookFunction | FinalizePackageTargetsHookFunction>) {
-    const args = Array.prototype.slice.call(serialHookParams, 0, -1) as Parameters<HookFunction>;
-    const [done] = (Array.prototype.slice.call(serialHookParams, -1)) as [HookFunctionErrorCallback];
+  return async function runSerialHook(
+    ...serialHookParams: Parameters<
+      HookFunction | FinalizePackageTargetsHookFunction
+    >
+  ) {
+    const args = Array.prototype.slice.call(
+      serialHookParams,
+      0,
+      -1,
+    ) as Parameters<HookFunction>;
+    const [done] = Array.prototype.slice.call(serialHookParams, -1) as [
+      HookFunctionErrorCallback,
+    ];
 
     for (const hook of hooks) {
       await (hook as HookFunction).apply(runSerialHook, args);
