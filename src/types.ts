@@ -18,13 +18,19 @@ import type { makeUniversalApp } from '@electron/universal';
 /**
  * @internal
  */
-export type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0]
+export type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0];
 
 /**
  * Architectures that have been supported by the official Electron prebuilt binaries, past
  * and present.
  */
-export type OfficialArch = 'ia32' | 'x64' | 'armv7l' | 'arm64' | 'mips64el' | 'universal';
+export type OfficialArch =
+  | 'ia32'
+  | 'x64'
+  | 'armv7l'
+  | 'arm64'
+  | 'mips64el'
+  | 'universal';
 
 /**
  * Platforms that have been supported by the official Electron prebuilt binaries, past and present.
@@ -56,7 +62,7 @@ export type SupportedPlatform = OfficialPlatform | 'all';
 
 export type IgnoreFunction = (path: string) => boolean;
 
-export type HookFunctionErrorCallback = (err?: Error | null) => void
+export type HookFunctionErrorCallback = (err?: Error | null) => void;
 
 /**
  * A function that is called on the completion of a packaging stage.
@@ -79,7 +85,7 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void
  *
  * ```javascript
  * const packager = require('@electron/packager')
-   * const { serialHooks } = require('@electron/packager/src/hooks')
+ * const { serialHooks } = require('@electron/packager/src/hooks')
  *
  * packager({
  *   // ...
@@ -103,32 +109,40 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void
  * For real-world examples of `HookFunction`s, see the [list of related
  * plugins](https://github.com/electron/packager#plugins).
  */
-export type HookFunction =
-  (
-    buildPath: string,
-    electronVersion: string,
-    platform: TargetPlatform,
-    arch: TargetArch,
-    callback: HookFunctionErrorCallback,
-  ) => void;
+export type HookFunction = (
+  buildPath: string,
+  electronVersion: string,
+  platform: TargetPlatform,
+  arch: TargetArch,
+  callback: HookFunctionErrorCallback,
+) => void;
 
 export type TargetDefinition = {
   arch: TargetArch;
   platform: TargetPlatform;
-}
-export type FinalizePackageTargetsHookFunction = (targets: TargetDefinition[], callback: HookFunctionErrorCallback) => void;
+};
+export type FinalizePackageTargetsHookFunction = (
+  targets: TargetDefinition[],
+  callback: HookFunctionErrorCallback,
+) => void;
 
 /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
  * @interface
  */
-export type OsxSignOptions = Omit<OSXInternalSignOptions, 'app' | 'binaries' | 'platform' | 'version'>;
+export type OsxSignOptions = Omit<
+  OSXInternalSignOptions,
+  'app' | 'binaries' | 'platform' | 'version'
+>;
 
 /**
  * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
  * for details.
  * @interface
  */
-export type OsxUniversalOptions = Omit<MakeUniversalOpts, 'x64AppPath' | 'arm64AppPath' | 'outAppPath' | 'force'>
+export type OsxUniversalOptions = Omit<
+  MakeUniversalOpts,
+  'x64AppPath' | 'arm64AppPath' | 'outAppPath' | 'force'
+>;
 
 /**
  * @internal
@@ -155,8 +169,9 @@ export interface MacOSProtocol {
  * See the documentation for [`@electron/windows-sign`](https://github.com/electron/windows-sign)
  * for details.
  */
-export interface WindowsSignOptions extends Omit<WindowsInternalSignOptions, 'appDirectory'> {
-  continueOnError?: boolean
+export interface WindowsSignOptions
+  extends Omit<WindowsInternalSignOptions, 'appDirectory'> {
+  continueOnError?: boolean;
 }
 
 /**
@@ -174,7 +189,10 @@ export interface Win32MetadataOptions {
   /** Defaults to either `productName` or `name` from the nearest `package.json`. */
   InternalName?: string;
   /** See [MSDN](https://msdn.microsoft.com/en-us/library/6ad1fshk.aspx#Anchor_9) for details. */
-  'requested-execution-level'?: 'asInvoker' | 'highestAvailable' | 'requireAdministrator';
+  'requested-execution-level'?:
+    | 'asInvoker'
+    | 'highestAvailable'
+    | 'requireAdministrator';
   /**
    * Path to a local manifest file.
    *
@@ -356,8 +374,8 @@ export interface Options {
    * The Electron version with which the app is built (without the leading 'v') - for example,
    * [`1.4.13`](https://github.com/electron/electron/releases/tag/v1.4.13). See [Electron
    * releases](https://github.com/electron/electron/releases) for valid versions. If omitted, it
-     * will use the version of the nearest local installation of `electron` or `electron-nightly`
-     *  defined in `package.json` in either `devDependencies` or `dependencies`.
+   * will use the version of the nearest local installation of `electron` or `electron-nightly`
+   *  defined in `package.json` in either `devDependencies` or `dependencies`.
    */
   electronVersion?: string;
   /**
@@ -382,7 +400,7 @@ export interface Options {
    * merged into the app's `Info.plist`.
    *
    * Entries from `extendInfo` override entries in the base `Info.plist` file supplied by
-     * `electron` or `electron-nightly`, but are overridden by other
+   * `electron` or `electron-nightly`, but are overridden by other
    * options such as {@link appVersion} or {@link appBundleId}.
    *
    * @category macOS
@@ -395,7 +413,7 @@ export interface Options {
    * merged into all the Helper apps' `Info.plist` files.
    *
    * Entries from `extendHelperInfo` override entries in the helper apps' `Info.plist` file supplied by
-     * `electron` or `electron-nightly`, but are overridden by other
+   * `electron` or `electron-nightly`, but are overridden by other
    * options such as {@link appVersion} or {@link appBundleId}.
    *
    * @category macOS
@@ -443,7 +461,7 @@ export interface Options {
    * - the temporary directory used to build the Electron app
    * - `node_modules/.bin`
    * - `node_modules/electron`
-     * - `node_modules/electron-nightly`
+   * - `node_modules/electron-nightly`
    * - `.git`
    * - files and folders ending in `.o` and `.obj`
    *
@@ -628,6 +646,6 @@ export interface DownloadOptions extends OptionsWithRequiredArchAndPlatform {
  * @internal
  */
 export interface ComboOptions extends Options {
-  arch: OptionsWithRequiredArchAndPlatform['arch']
-  platform: OptionsWithRequiredArchAndPlatform['platform']
+  arch: OptionsWithRequiredArchAndPlatform['arch'];
+  platform: OptionsWithRequiredArchAndPlatform['platform'];
 }
