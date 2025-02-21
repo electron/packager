@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "lib": [
-      "ES2021"
-    ],
+    "lib": ["ES2021"],
     "module": "CommonJS",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
@@ -14,7 +12,5 @@
     "outDir": "dist",
     "sourceMap": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
