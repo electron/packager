@@ -92,7 +92,7 @@
     "prepublish": "npm run build",
     "pretest": "npm run build",
     "test": "npm run lint && npm run coverage",
-    "postinstall": "husky install"
+    "prepare": "husky install"
   },
   "directories": {
     "test": "test"
