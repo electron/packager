@@ -167,7 +167,7 @@ export class App {
 
     await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
       filter: userPathFilter(this.opts),
-      dereference: this.opts.derefSymlinks,
+      dereference: this.opts.derefSymlinks ?? true,
     });
     await promisifyHooks(
       this.opts.afterCopy,
