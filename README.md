@@ -118,7 +118,7 @@ Examples include `--ignore=\.gitignore` or `--ignore="\.git(ignore|modules)"`.
 
 #### Example
 
-Let's assume that you have made an app based on the [electron-quick-start](https://github.com/electron/electron-quick-start) repository on a macOS host platform with the following file structure:
+Let's assume that you have made an app based on the [minimal-repro](https://github.com/electron/minimal-repro) repository on a macOS host platform with the following file structure:
 
 ```
 foobar
