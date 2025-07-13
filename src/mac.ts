@@ -7,6 +7,7 @@ import { notarize, NotarizeOptions } from '@electron/notarize';
 import { signApp } from '@electron/osx-sign';
 import { ComboOptions } from './types';
 import { SignOptions } from '@electron/osx-sign/dist/cjs/types';
+import { generateAssetCatalogForIcon } from './icon-composer';
 
 type NSUsageDescription = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,6 +26,7 @@ type BasePList = {
 interface Plists {
   appPlist?: BasePList & {
     CFBundleIconFile: string;
+    CFBundleIconName: string;
     // eslint-disable-next-line no-use-before-define
     CFBundleURLTypes: MacApp['protocols'];
     ElectronAsarIntegrity: App['asarIntegrity'];
@@ -380,6 +382,10 @@ export class MacApp extends App implements Plists {
       }
     }
 
+    // Copying the icon compose icon mutates the appPlist so must
+    // be run before we update plist files
+    await this.copyIconComposerIcon(this.appPlist);
+
     await Promise.all(
       plists.map(([filename, varName]) =>
         fs.writeFile(
@@ -447,19 +453,42 @@ export class MacApp extends App implements Plists {
     );
   }
 
+  async copyIconComposerIcon(appPlist: NonNullable<Plists['appPlist']>) {
+    if (!this.opts.icon) {
+      return;
+    }
+
+    let iconComposerIcon: string | null = null;
+
+    try {
+      iconComposerIcon = (await this.normalizeIconExtension('.icon')) || null;
+    } catch {
+      // Ignore error if icon doesn't exist, in case only the .icns format was provided
+    }
+    if (iconComposerIcon) {
+      debug(
+        `Generating asset catalog for icon composer "${iconComposerIcon}" file`,
+      );
+      const assetCatalog = await generateAssetCatalogForIcon(iconComposerIcon);
+      appPlist.CFBundleIconName = 'Icon';
+      await fs.writeFile(
+        path.join(this.originalResourcesDir, 'Assets.car'),
+        assetCatalog,
+      );
+    }
+  }
+
   async copyIcon() {
     if (!this.opts.icon) {
       return Promise.resolve();
     }
 
-    let icon;
+    let icon: string | null = null;
 
     try {
-      icon = await this.normalizeIconExtension('.icns');
+      icon = (await this.normalizeIconExtension('.icns')) || null;
     } catch {
       // Ignore error if icon doesn't exist, in case it's only available for other OSes
-      /* istanbul ignore next */
-      return Promise.resolve();
     }
     if (icon) {
       debug(
@@ -540,6 +569,7 @@ export class MacApp extends App implements Plists {
   async create() {
     await this.initialize();
     await this.updatePlistFiles();
+    // Copying icons depends on the plist files being updated
     await this.copyIcon();
     await this.renameElectron();
     await this.renameAppAndHelpers();

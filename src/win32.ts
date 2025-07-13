@@ -38,9 +38,12 @@ export class WindowsApp extends App {
     };
   }
 
-  async getIconPath() {
+  async getIconPath(): Promise<string | void> {
     if (!this.opts.icon) {
       return Promise.resolve();
+    }
+    if (Array.isArray(this.opts.icon)) {
+      throw new Error('opts.path must be a single path on windows');
     }
 
     return this.normalizeIconExtension('.ico');
