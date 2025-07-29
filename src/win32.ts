@@ -43,7 +43,7 @@ export class WindowsApp extends App {
       return Promise.resolve();
     }
     if (Array.isArray(this.opts.icon)) {
-      throw new Error('opts.path must be a single path on windows');
+      throw new Error('opts.path must be a single path on Windows');
     }
 
     return this.normalizeIconExtension('.ico');

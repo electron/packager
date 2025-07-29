@@ -1,12 +1,18 @@
 import { spawn } from '@malept/cross-spawn-promise';
-import * as fs from 'node:fs/promises';
-import * as os from 'node:os';
-import * as path from 'node:path';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 
 import plist from 'plist';
-import * as semver from 'semver';
+import semver from 'semver';
 
 export async function generateAssetCatalogForIcon(inputPath: string) {
+  if (!semver.gte(os.version(), '25.0.0')) {
+    throw new Error(
+      `actool .icon support is currently limited to macOS 26 and higher`
+    );
+  }
+
   const acToolVersionOutput = await spawn('actool', ['--version']);
   const versionInfo = plist.parse(acToolVersionOutput) as Record<
     string,
@@ -18,7 +24,7 @@ export async function generateAssetCatalogForIcon(inputPath: string) {
     !versionInfo['com.apple.actool.version']['short-bundle-version']
   ) {
     throw new Error(
-      'Incompatible actool, must be on actool from Xcode 26 or higher',
+      'Unable to query actool version. Is Xcode 26 or higher installed? See output of the `actool --version` CLI command for more details.',
     );
   }
 
@@ -26,7 +32,7 @@ export async function generateAssetCatalogForIcon(inputPath: string) {
     versionInfo['com.apple.actool.version']['short-bundle-version'];
   if (!semver.gte(semver.coerce(acToolVersion)!, '26.0.0')) {
     throw new Error(
-      `actool is not new enough, must be on actool from Xcode 26 or higher but found ${acToolVersion}`,
+      `Unsupported actool version. Must be on actool 26.0.0 or higher but found ${acToolVersion}. Install XCode 26 or higher to get a supported version of actool.`,
     );
   }
 
