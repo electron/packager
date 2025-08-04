@@ -434,10 +434,14 @@ export interface Options {
   helperBundleId?: string;
   /**
    * The local path to the icon file, if the target platform supports setting embedding an icon.
+   * 
+   * Only macOS supports multiple paths, every other platform must be a single path. On macOS you can provide
+   * **both** an `.icns` and an `.icon` file. The `.icns` file will be used on macOS < 26 and `.icon` will be used
+   * on macOS >= 26.
    *
    * Currently you must look for conversion tools in order to supply an icon in the format required by the platform:
    *
-   * - macOS: `.icns`
+   * - macOS: `.icon` from Icon Composer (only supported if Xcode 26 or higher is present) or `.icns`
    * - Windows: `.ico` ([See the readme](https://github.com/electron/packager#building-windows-apps-from-non-windows-platforms) for details on non-Windows platforms)
    * - Linux: this option is not supported, as the dock/window list icon is set via
    *   [the `icon` option in the `BrowserWindow` constructor](https://electronjs.org/docs/api/browser-window/#new-browserwindowoptions).
@@ -447,7 +451,7 @@ export interface Options {
    * If the file extension is omitted, it is auto-completed to the correct extension based on the
    * platform, including when {@link platform |`platform: 'all'`} is in effect.
    */
-  icon?: string;
+  icon?: string | string[];
   /**
    * One or more additional [regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
    * patterns which specify which files to ignore when copying files to create the app bundle(s). The

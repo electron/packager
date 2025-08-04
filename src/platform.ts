@@ -195,29 +195,33 @@ export class App {
    *
    * This error path is used by win32 if no icon is specified.
    */
-  async normalizeIconExtension(targetExt: string) {
+  async normalizeIconExtension(targetExt: string): Promise<string | void> {
     if (!this.opts.icon) {
       throw new Error('No filename specified to normalizeIconExtension');
     }
 
-    let iconFilename = this.opts.icon;
-    const ext = path.extname(iconFilename);
-    if (ext !== targetExt) {
-      iconFilename = path.join(
-        path.dirname(iconFilename),
-        path.basename(iconFilename, ext) + targetExt,
-      );
+    const iconFilenames = Array.isArray(this.opts.icon)
+      ? this.opts.icon
+      : [this.opts.icon];
+    for (let iconFilename of iconFilenames) {
+      const ext = path.extname(iconFilename);
+      if (ext !== targetExt) {
+        iconFilename = path.join(
+          path.dirname(iconFilename),
+          path.basename(iconFilename, ext) + targetExt,
+        );
+      }
+
+      if (await fs.pathExists(iconFilename)) {
+        return iconFilename;
+      }
     }
 
-    if (await fs.pathExists(iconFilename)) {
-      return iconFilename;
-    } else {
-      /* istanbul ignore next */
-      warning(
-        `Could not find icon "${iconFilename}", not updating app icon`,
-        this.opts.quiet,
-      );
-    }
+    /* istanbul ignore next */
+    warning(
+      `Could not find icon "${this.opts.icon}" with extension "${targetExt}", skipping this app icon format`,
+      this.opts.quiet,
+    );
   }
 
   prebuiltAsarWarning(option: keyof ComboOptions, triggerWarning: unknown) {
