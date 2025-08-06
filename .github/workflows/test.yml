@@ -59,4 +59,4 @@ jobs:
           files: ./coverage.lcov
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Build Docs
-        run: yarn run docs:build
+        run: yarn run build:docs

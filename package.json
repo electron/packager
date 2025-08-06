@@ -87,7 +87,7 @@
     "postbuild": "copyfiles -f ./temp/targets.js ./src",
     "coverage": "nyc ava test/index.js",
     "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
-    "docs:build": "npx typedoc",
+    "build:docs": "npx typedoc",
     "lint": "prettier --check \"*.{ts,js,json}\" && eslint . --cache",
     "prepublish": "npm run build",
     "pretest": "npm run build",
