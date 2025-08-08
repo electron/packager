@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2021",
     "lib": ["ES2021"],
-    "module": "CommonJS",
+    "module": "node16",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

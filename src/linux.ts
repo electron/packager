@@ -1,5 +1,5 @@
-import { App } from './platform';
-import { sanitizeAppName } from './common';
+import { App } from './platform.js';
+import { sanitizeAppName } from './common.js';
 
 export class LinuxApp extends App {
   get originalElectronName() {

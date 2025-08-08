@@ -1,13 +1,13 @@
-import { App } from './platform';
-import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
+import { App } from './platform.js';
+import { debug, sanitizeAppName, subOptionWarning, warning } from './common.js';
 import fs from 'fs-extra';
 import path from 'path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
-import { signApp } from '@electron/osx-sign';
-import { ComboOptions } from './types';
-import { SignOptions } from '@electron/osx-sign/dist/cjs/types';
-import { generateAssetCatalogForIcon } from './icon-composer';
+import { sign } from '@electron/osx-sign';
+import { ComboOptions } from './types.js';
+import { SignOptions } from '@electron/osx-sign';
+import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -534,7 +534,7 @@ export class MacApp extends App implements Plists {
         `Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`,
       );
       try {
-        await signApp(signOpts as SignOptions);
+        await sign(signOpts as SignOptions);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {

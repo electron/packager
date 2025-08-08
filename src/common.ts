@@ -1,9 +1,9 @@
 import filenamify from 'filenamify';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 import createDebug from 'debug';
-import { ComboOptions, Options } from './types';
+import { ComboOptions, Options } from './types.js';
 import { CreateOptions as AsarOptions } from '@electron/asar';
 
 export const debug = createDebug('electron-packager');
