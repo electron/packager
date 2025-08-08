@@ -5,20 +5,20 @@ import {
   hostInfo,
   info,
   isPlatformMac,
-} from './common';
-import { populateIgnoredPaths } from './copy-filter';
-import { createDownloadCombos, downloadElectronZip } from './download';
+} from './common.js';
+import { populateIgnoredPaths } from './copy-filter.js';
+import { createDownloadCombos, downloadElectronZip } from './download.js';
 import fs from 'fs-extra';
-import { getMetadataFromPackageJSON } from './infer';
-import { promisifyHooks } from './hooks';
+import { getMetadataFromPackageJSON } from './infer.js';
+import { promisifyHooks } from './hooks.js';
 import path from 'path';
 import {
   createPlatformArchPairs,
   osModules,
   validateListFromOptions,
-} from './targets';
-import { extractElectronZip } from './unzip';
-import { packageUniversalMac } from './universal';
+} from './targets.js';
+import { extractElectronZip } from './unzip.js';
+import { packageUniversalMac } from './universal.js';
 import {
   ComboOptions,
   DownloadOptions,
@@ -26,8 +26,8 @@ import {
   Options,
   SupportedArch,
   SupportedPlatform,
-} from './types';
-import { App } from './platform';
+} from './types.js';
+import { App } from './platform.js';
 
 function debugHostInfo() {
   debug(hostInfo());

@@ -4,6 +4,7 @@
   "description": "Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "bin": {
     "electron-packager": "bin/electron-packager.js"
   },
@@ -26,12 +27,12 @@
     "usage.txt"
   ],
   "dependencies": {
-    "@electron/asar": "^3.2.13",
-    "@electron/get": "^3.0.0",
-    "@electron/notarize": "^2.1.0",
-    "@electron/osx-sign": "^1.0.5",
-    "@electron/universal": "^2.0.1",
-    "@electron/windows-sign": "^1.0.0",
+    "@electron/asar": "^4.0.1",
+    "@electron/get": "^4.0.2",
+    "@electron/notarize": "^3.0.1",
+    "@electron/osx-sign": "^2.0.0",
+    "@electron/universal": "^3.0.1",
+    "@electron/windows-sign": "^2.0.2",
     "debug": "^4.0.1",
     "extract-zip": "^2.0.0",
     "filenamify": "^4.1.0",
@@ -108,9 +109,6 @@
   },
   "funding": {
     "url": "https://github.com/electron/packager?sponsor=1"
-  },
-  "resolutions": {
-    "got": "11.8.5"
   },
   "lint-staged": {
     "*.{json}": "prettier --write",

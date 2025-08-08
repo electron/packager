@@ -1,4 +1,4 @@
-import { warning } from './common';
+import { warning } from './common.js';
 import { getHostArch } from '@electron/get';
 import semver from 'semver';
 import {
@@ -7,7 +7,7 @@ import {
   Options,
   SupportedArch,
   SupportedPlatform,
-} from './types';
+} from './types.js';
 
 export const officialArchs = [
   'ia32',
