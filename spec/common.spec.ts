@@ -4,11 +4,12 @@ import {
   sanitizeAppName,
   generateFinalBasename,
   validateElectronApp,
+  createAsarOpts,
 } from '../src/common';
 import { createDownloadOpts } from '../src/download';
 
 import { describe, it, expect, vi } from 'vitest';
-import { Options } from '../src/types';
+import { ComboOptions, Options } from '../src/types';
 import path from 'node:path';
 
 describe('logger', () => {
@@ -122,5 +123,28 @@ describe('validateElectronApp', () => {
     await expect(validateElectronApp('original-dir', fixture)).rejects.toThrow(
       `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'main.js')}" exists and does not get ignored by your ignore option`,
     );
+  });
+});
+
+describe('createAsarOpts', () => {
+  it('returns false if asar is not set', () => {
+    expect(createAsarOpts({} as ComboOptions)).toBe(false);
+  });
+  it('returns false if asar is false', () => {
+    expect(createAsarOpts({ asar: false } as ComboOptions)).toBe(false);
+  });
+
+  it('sets asar options to {} if true', () => {
+    expect(createAsarOpts({ asar: true } as ComboOptions)).toEqual({});
+  });
+
+  it('sets asar options to the value if it is an object', () => {
+    expect(createAsarOpts({ asar: { dot: true } } as ComboOptions)).toEqual({
+      dot: true,
+    });
+  });
+
+  it('returns false if asar is not an object or a boolean', () => {
+    expect(createAsarOpts({ asar: 'test' } as unknown as ComboOptions)).toBe(false);
   });
 });
