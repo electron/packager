@@ -7,6 +7,7 @@ import { generateFinalBasename } from '../src/common';
 import { getHostArch } from '@electron/get';
 import { generateNamePath, generateResourcesPath } from './utils';
 import { Options } from '../src';
+import { createDownloadOpts, downloadElectronZip } from '../src/download';
 
 describe('packager', () => {
   let workDir: string;
@@ -28,15 +29,25 @@ describe('packager', () => {
 
   it('cannot build apps where the name ends in "Helper"', async () => {
     const opts: Options = {
-      arch: 'x64',
       dir: path.join(__dirname, 'fixtures', 'basic'),
       name: 'Bad Helper',
-      platform: 'linux',
     };
 
     await expect(packager(opts)).rejects.toThrowError(
       'Application names cannot end in " Helper" due to limitations on macOS',
     );
+  });
+
+  it('cannot build with invalid version', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      name: 'invalidElectronTest',
+      electronVersion: '0.0.1',
+      platform: 'linux',
+      arch: 'x64',
+    };
+
+    await expect(packager(opts)).rejects.toThrow(expect.any(Error));
   });
 
   it('packages with defaults', async () => {
@@ -226,5 +237,164 @@ describe('packager', () => {
     expect(file.isSymbolicLink()).toBe(true);
 
     await fs.rm(dest, { force: true });
+  });
+
+  describe.runIf(process.platform !== 'win32')('extraResource', () => {
+    it('can package with extraResource string', async () => {
+      const extra1Base = 'data1.txt';
+      const extra1Path = path.join(__dirname, 'fixtures', extra1Base);
+
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'extraResourceTest',
+        out: workDir,
+        tmpdir: tmpDir,
+        extraResource: extra1Path,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const resourcesPath = path.join(
+        paths[0],
+        generateResourcesPath({
+          name: opts.name,
+          platform: process.platform,
+        }),
+      );
+
+      expect(fs.readFileSync(extra1Path, 'utf8')).toEqual(
+        fs.readFileSync(path.join(resourcesPath, extra1Base), 'utf8'),
+      );
+    });
+
+    it('can package with extraResource array', async () => {
+      const extra1Base = 'data1.txt';
+      const extra2Base = 'extrainfo.plist';
+      const extra1Path = path.join(__dirname, 'fixtures', extra1Base);
+      const extra2Path = path.join(__dirname, 'fixtures', extra2Base);
+
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'extraResourceTest',
+        out: workDir,
+        tmpdir: tmpDir,
+        extraResource: [extra1Path, extra2Path],
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const resourcesPath = path.join(
+        paths[0],
+        generateResourcesPath({
+          name: opts.name,
+          platform: process.platform,
+        }),
+      );
+
+      expect(fs.readFileSync(extra1Path, 'utf8')).toEqual(
+        fs.readFileSync(path.join(resourcesPath, extra1Base), 'utf8'),
+      );
+
+      expect(fs.readFileSync(extra2Path, 'utf8')).toEqual(
+        fs.readFileSync(path.join(resourcesPath, extra2Base), 'utf8'),
+      );
+    });
+  });
+
+  describe.runIf(process.platform === 'linux')('Linux', async () => {
+    it('sanitizes binary name', async () => {
+      const opts: Options = {
+        name: '@username/package-name',
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const binary = path.join(paths[0], '@username-package-name');
+      expect(binary).toBeFile();
+    });
+
+    it('honours the executableName option', async () => {
+      const opts: Options = {
+        name: 'PackageName',
+        executableName: 'my-package',
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const binary = path.join(paths[0], 'my-package');
+      expect(binary).toBeFile();
+    });
+  });
+
+  it('can package with dir: relative path', async () => {
+    const opts: Options = {
+      dir: path.join('.', 'spec', 'fixtures', 'basic'), // dir is relative to process.cwd()
+      name: 'relativePathTest',
+      out: workDir,
+      tmpdir: tmpDir,
+    };
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    expect(paths[0]).toEqual(
+      path.join(
+        workDir,
+        generateFinalBasename({
+          name: opts.name,
+          platform: process.platform,
+          arch: getHostArch(),
+        }),
+      ),
+    );
+  });
+
+  describe('electronZipDir', () => {
+    it('can package with electronZipDir', async () => {
+      const customDir = path.join(tmpDir, 'download');
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'electronZipDirTest',
+        electronZipDir: customDir,
+        out: workDir,
+        tmpdir: tmpDir,
+        platform: 'linux',
+        arch: 'x64',
+        electronVersion: '27.0.0',
+      };
+      await fs.ensureDir(customDir);
+      const zipPath = await downloadElectronZip(
+        createDownloadOpts(opts, 'linux', 'x64'),
+      );
+      await fs.copy(zipPath, path.join(customDir, path.basename(zipPath)));
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      expect(paths[0]).toBeDirectory();
+    });
+
+    it('throws if electronZipDir does not exist', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'electronZipDirTest',
+        electronZipDir: path.join(tmpDir, 'does-not-exist'),
+        out: workDir,
+        tmpdir: tmpDir,
+        platform: 'linux',
+        arch: 'x64',
+        electronVersion: '27.0.0',
+      };
+
+      await expect(packager(opts)).rejects.toThrowError(
+        'Electron ZIP directory does not exist',
+      );
+    });
   });
 });
