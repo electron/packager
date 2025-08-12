@@ -9,7 +9,7 @@ import {
   SupportedPlatform,
 } from './types';
 
-export const officialArchs = [
+export const officialArchs: SupportedArch[] = [
   'ia32',
   'x64',
   'armv7l',
@@ -18,7 +18,7 @@ export const officialArchs = [
   'universal',
 ];
 
-export const officialPlatforms = ['darwin', 'linux', 'mas', 'win32'];
+export const officialPlatforms: SupportedPlatform[] = ['darwin', 'linux', 'mas', 'win32'];
 
 export const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
