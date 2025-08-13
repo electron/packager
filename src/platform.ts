@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import asar, { FileRecord } from '@electron/asar';
+import * as asar from '@electron/asar';
 
 import {
   baseTempDir,
@@ -10,15 +10,15 @@ import {
   generateFinalPath,
   validateElectronApp,
   warning,
-} from './common';
-import { userPathFilter } from './copy-filter';
-import { promisifyHooks } from './hooks';
+} from './common.js';
+import { userPathFilter } from './copy-filter.js';
+import { promisifyHooks } from './hooks.js';
 import crypto from 'crypto';
-import { ComboOptions } from './types';
+import { ComboOptions } from './types.js';
 
 export class App {
   asarIntegrity:
-    | Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>>
+    | Record<string, Pick<asar.FileRecord['integrity'], 'algorithm' | 'hash'>>
     | undefined = undefined;
   asarOptions: ReturnType<typeof createAsarOpts>;
   cachedStagingPath: string | undefined = undefined;
@@ -315,7 +315,7 @@ export class App {
 
   getAsarIntegrity(
     path: string,
-  ): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
+  ): Pick<asar.FileRecord['integrity'], 'algorithm' | 'hash'> {
     const { headerString } = asar.getRawHeader(path);
     return {
       algorithm: 'SHA256',

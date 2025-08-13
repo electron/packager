@@ -1,4 +1,4 @@
-import { normalizePath, warning } from './common';
+import { normalizePath, warning } from './common.js';
 import { DestroyerOfModules, DepType, Module, ModuleMap } from 'galactus';
 import fs from 'fs-extra';
 import path from 'path';
