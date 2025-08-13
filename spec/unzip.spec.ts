@@ -17,7 +17,7 @@ describe('extractElectronZip', () => {
     };
   });
 
-  it('extractElectronZip preserves symbolic links', async (t) => {
+  it('extractElectronZip preserves symbolic links', async () => {
     const downloadOpts = createDownloadOpts(
       {
         electronVersion: '27.0.0',

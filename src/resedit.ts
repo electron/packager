@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-// eslint-disable-next-line import/no-unresolved
 import { load as loadResEdit } from 'resedit/cjs';
 import { Win32MetadataOptions } from './types';
 import { FileRecord } from '@electron/asar';
