@@ -5,5 +5,6 @@ export default defineConfig({
     setupFiles: ['./spec/vitest.setup.ts'],
     include: ['./spec/**/*.spec.ts'],
     globals: true,
+    clearMocks: true,
   },
 });
