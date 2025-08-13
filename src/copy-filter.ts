@@ -15,6 +15,7 @@ import { CopyFilterAsync } from 'fs-extra';
 const DEFAULT_IGNORES = [
   '/package-lock\\.json$',
   '/yarn\\.lock$',
+  '/pnpm-lock\\.yaml$',
   '/\\.git($|/)',
   '/node_modules/\\.bin($|/)',
   '\\.o(bj)?$',

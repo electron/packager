@@ -126,6 +126,7 @@ test(
     const targetDir = await copyDirToTempDirWithIgnores(t, opts);
     await assertFileIgnored(t, targetDir, 'package-lock.json');
     await assertFileIgnored(t, targetDir, 'yarn.lock');
+    await assertFileIgnored(t, targetDir, 'pnpm-lock.yaml');
   }),
 );
 test(
