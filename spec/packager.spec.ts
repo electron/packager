@@ -239,6 +239,11 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
+  it.todo('can package for all target platforms at once');
+
+  it.todo('fails with invalid arch');
+  it.todo('fails with invalid platform');
+
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
     it('can package with extraResource string', async () => {
       const extra1Base = 'data1.txt';
@@ -486,59 +491,77 @@ describe('packager', () => {
         'WARNING: prebuiltAsar and derefSymlinks are incompatible, ignoring the derefSymlinks option',
       );
     });
+
+    it('throws if prebuiltAsar is a directory', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+        prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+        name: 'prebuiltAsarTest',
+        out: workDir,
+        tmpdir: tmpDir,
+      };
+
+      await expect(packager(opts)).rejects.toThrowError(
+        'prebuiltAsar must be an asar file',
+      );
+    });
+
+    it('throws if prebuiltAsar is true and afterCopy is specified', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+        prebuiltAsar: path.join(
+          __dirname,
+          'fixtures',
+          'asar-prebuilt',
+          'app.asar',
+        ),
+        name: 'prebuiltAsarTest',
+        out: workDir,
+        tmpdir: tmpDir,
+        afterCopy: [],
+      };
+
+      await expect(packager(opts)).rejects.toThrowError(
+        'afterCopy is incompatible with prebuiltAsar',
+      );
+    });
+
+    it('throws if prebuiltAsar is true and afterPrune is specified', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+        prebuiltAsar: path.join(
+          __dirname,
+          'fixtures',
+          'asar-prebuilt',
+          'app.asar',
+        ),
+        name: 'prebuiltAsarTest',
+        out: workDir,
+        tmpdir: tmpDir,
+        afterPrune: [],
+      };
+
+      await expect(packager(opts)).rejects.toThrowError(
+        'afterPrune is incompatible with prebuiltAsar',
+      );
+    });
   });
 
-  it('throws if prebuiltAsar is a directory', async () => {
-    const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-      prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-      name: 'prebuiltAsarTest',
-      out: workDir,
-      tmpdir: tmpDir,
-    };
-
-    await expect(packager(opts)).rejects.toThrowError(
-      'prebuiltAsar must be an asar file',
-    );
+  describe('out dir', () => {
+    it.todo('should ignore the out dir');
+    it.todo('should ignore the out dir (unnormalized path)');
+    it.todo('should ignore the out dir (implicit path)');
+    it.todo('should ignore the out dir (already exists)');
+  });
+  describe.todo('hooks', () => {
+    it.todo('can package with afterCopy');
+    it.todo('can package with afterPrune');
+    it.todo('can package with afterBuild');
+    it.todo('can package with afterExtract');
+    it.todo('can package with afterSign');
+    it.todo('can package with afterBuild');
+    it.todo('can package with afterExtract');
   });
 
-  it('throws if prebuiltAsar is true and afterCopy is specified', async () => {
-    const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-      prebuiltAsar: path.join(
-        __dirname,
-        'fixtures',
-        'asar-prebuilt',
-        'app.asar',
-      ),
-      name: 'prebuiltAsarTest',
-      out: workDir,
-      tmpdir: tmpDir,
-      afterCopy: [],
-    };
-
-    await expect(packager(opts)).rejects.toThrowError(
-      'afterCopy is incompatible with prebuiltAsar',
-    );
-  });
-
-  it('throws if prebuiltAsar is true and afterPrune is specified', async () => {
-    const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-      prebuiltAsar: path.join(
-        __dirname,
-        'fixtures',
-        'asar-prebuilt',
-        'app.asar',
-      ),
-      name: 'prebuiltAsarTest',
-      out: workDir,
-      tmpdir: tmpDir,
-      afterPrune: [],
-    };
-
-    await expect(packager(opts)).rejects.toThrowError(
-      'afterPrune is incompatible with prebuiltAsar',
-    );
-  });
+  describe.todo('prune');
 });
