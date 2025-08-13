@@ -6,14 +6,12 @@ import path from 'path';
 const ELECTRON_MODULES = ['electron', 'electron-nightly'];
 
 export class Pruner {
-  baseDir: string;
-  galactus: DestroyerOfModules;
-  modules = new Set<string>();
-  quiet: boolean;
-  walkedTree = false;
+  private galactus: DestroyerOfModules;
+  private modules = new Set<string>();
+  private quiet: boolean;
+  private walkedTree = false;
 
   constructor(dir: string, quiet: boolean) {
-    this.baseDir = normalizePath(dir);
     this.quiet = quiet;
     this.galactus = new DestroyerOfModules({
       rootDirectory: dir,
@@ -22,7 +20,7 @@ export class Pruner {
     });
   }
 
-  setModules(moduleMap: ModuleMap) {
+  private setModules(moduleMap: ModuleMap) {
     const modulePaths = Array.from(moduleMap.keys()).map(
       (modulePath) => `/${normalizePath(modulePath)}`,
     );
@@ -30,7 +28,7 @@ export class Pruner {
     this.walkedTree = true;
   }
 
-  async pruneModule(name: string) {
+  public async pruneModule(name: string) {
     if (this.walkedTree) {
       return this.isProductionModule(name);
     } else {
@@ -42,7 +40,7 @@ export class Pruner {
     }
   }
 
-  shouldKeepModule(module: Module, isDevDep: boolean) {
+  private shouldKeepModule(module: Module, isDevDep: boolean) {
     if (isDevDep || module.depType === DepType.ROOT) {
       return false;
     }
@@ -58,7 +56,7 @@ export class Pruner {
     return true;
   }
 
-  isProductionModule(name: string) {
+  private isProductionModule(name: string) {
     return this.modules.has(name);
   }
 }
