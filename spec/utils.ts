@@ -2,6 +2,7 @@ import path from 'node:path';
 import plist, { PlistObject } from 'plist';
 import fs from 'fs-extra';
 import type { Options } from '../src/types';
+import { sanitizeAppName } from '../src/common';
 
 export function generateResourcesPath(
   opts: Pick<Options, 'name' | 'platform'>,
@@ -27,24 +28,33 @@ export function generateNamePath(opts: Pick<Options, 'name' | 'platform'>) {
 }
 
 export function parseInfoPlist(basePath: string): PlistObject {
-  const appName = `${path.basename(basePath).split('-')[0]}`;
+  const parts = path.basename(basePath).split('-');
+  const appName = parts.slice(0, parts.length - 2).join('-');
+  const sanitizedAppName = sanitizeAppName(appName);
   const plistPath = path.join(
     basePath,
-    `${appName}.app`,
+    `${sanitizedAppName}.app`,
     'Contents',
     'Info.plist',
   );
   return plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
 }
 
-export function parseHelperInfoPlist(basePath: string): PlistObject {
-  const appName = `${path.basename(basePath).split('-')[0]}`;
+export function parseHelperInfoPlist(
+  basePath: string,
+  helperType?: 'GPU' | 'Renderer' | 'Plugin',
+): PlistObject {
+  const parts = path.basename(basePath).split('-');
+  const appName = parts.slice(0, parts.length - 2).join('-');
+  const sanitizedAppName = sanitizeAppName(appName);
   const plistPath = path.join(
     basePath,
-    `${appName}.app`,
+    `${sanitizedAppName}.app`,
     'Contents',
     'Frameworks',
-    `${appName} Helper.app`,
+    helperType
+      ? `${sanitizedAppName} Helper (${helperType}).app`
+      : `${sanitizedAppName} Helper.app`,
     'Contents',
     'Info.plist',
   );

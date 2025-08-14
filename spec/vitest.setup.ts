@@ -33,6 +33,20 @@ expect.extend({
       };
     }
   },
+  toBeSymlink(received) {
+    const pass = fs.lstatSync(received).isSymbolicLink();
+    if (pass) {
+      return {
+        message: () => `expected ${received} not to be a symlink`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected ${received} to be a symlink`,
+        pass: false,
+      };
+    }
+  },
 });
 
 // import { isPlatformMac } from '../src/common';

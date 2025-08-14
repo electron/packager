@@ -15,6 +15,7 @@ import {
 import { Options } from '../src';
 import { createDownloadOpts, downloadElectronZip } from '../src/download';
 import plist, { PlistObject } from 'plist';
+import { filterCFBundleIdentifier } from '../src/mac';
 
 describe('packager', () => {
   let workDir: string;
@@ -741,5 +742,472 @@ describe('packager', () => {
         expect(helperInfoPlist.CFBundlePackageType).toBe('APPL');
       });
     });
+
+    it('can enable dark mode support in macOS Mojave', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'darkModeTest',
+        out: workDir,
+        tmpdir: tmpDir,
+        darwinDarkModeSupport: true,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.NSRequiresAquaSystemAppearance).toBe(false);
+    });
+
+    it('can pass protocol schemes to the Info.plist', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'protocolTest',
+        out: workDir,
+        tmpdir: tmpDir,
+        protocols: [
+          {
+            name: 'Foo',
+            schemes: ['foo'],
+          },
+          {
+            name: 'Bar',
+            schemes: ['bar', 'baz'],
+          },
+        ],
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.CFBundleURLTypes).toEqual([
+        {
+          CFBundleURLName: 'Foo',
+          CFBundleURLSchemes: ['foo'],
+        },
+        {
+          CFBundleURLName: 'Bar',
+          CFBundleURLSchemes: ['bar', 'baz'],
+        },
+      ]);
+    });
+
+    describe('executable name', () => {
+      it.each([
+        {
+          type: 'name',
+          testOpts: {
+            name: 'myName',
+          },
+          expectedAppName: 'myName',
+          expectedExecutableName: 'myName',
+        },
+        {
+          type: 'name with slashes',
+          testOpts: {
+            name: '@username/package-name',
+          },
+          expectedAppName: '@username-package-name',
+          expectedExecutableName: '@username-package-name',
+        },
+        {
+          type: 'name and executableName',
+          testOpts: {
+            name: 'myName',
+            executableName: 'myExecutableName',
+          },
+          expectedAppName: 'myName',
+          expectedExecutableName: 'myExecutableName',
+        },
+      ])(
+        'names the executable correctly with $type',
+        async ({
+          testOpts,
+          expectedAppName: expectedAppName,
+          expectedExecutableName,
+        }) => {
+          const opts: Options = {
+            dir: path.join(__dirname, 'fixtures', 'basic'),
+            out: workDir,
+            tmpdir: tmpDir,
+            ...testOpts,
+          };
+
+          const paths = await packager(opts);
+          expect(paths).toHaveLength(1);
+          const binaryPath = path.join(
+            paths[0],
+            `${expectedAppName}.app`,
+            'Contents',
+            'MacOS',
+            expectedExecutableName,
+          );
+          expect(binaryPath).toBeFile();
+        },
+      );
+
+      it('sets the correct Info.plist values', async () => {
+        const appBundleIdentifier = 'com.electron.username-package-name';
+        const expectedSanitizedName = '@username-package-name';
+
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          out: workDir,
+          tmpdir: tmpDir,
+          name: '@username/package-name',
+        };
+
+        const paths = await packager(opts);
+        expect(paths).toHaveLength(1);
+        const infoPlist = parseInfoPlist(paths[0]);
+
+        // CFBundleName is the sanitized app name and CFBundleDisplayName is the non-sanitized app name
+        expect(infoPlist.CFBundleDisplayName).toBe(opts.name);
+        expect(infoPlist.CFBundleName).toBe(expectedSanitizedName);
+        expect(infoPlist.CFBundleIdentifier).toBe(appBundleIdentifier);
+      });
+    });
   });
+
+  it.each([
+    {
+      appVersion: '1.0.0',
+      buildVersion: '1.0.0.1234',
+    },
+    {
+      appVersion: 12,
+      buildVersion: 1234,
+    },
+    {
+      appVersion: '1.0.0',
+    },
+    {},
+  ])(
+    'sets the correct Info.plist values for the app version',
+    async (testOpts) => {
+      // @ts-expect-error - integers aren't valid according to the types?
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        ...testOpts,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.CFBundleVersion).toBe(
+        String(opts.buildVersion ?? opts.appVersion ?? '4.99.101'),
+      );
+      expect(infoPlist.CFBundleShortVersionString).toBe(
+        String(opts.appVersion ?? '4.99.101'),
+      );
+    },
+  );
+
+  it('sets the correct Info.plist values for the appCategoryType', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      out: workDir,
+      tmpdir: tmpDir,
+      appCategoryType: 'public.app-category.developer-tools',
+    };
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    const infoPlist = parseInfoPlist(paths[0]);
+    expect(infoPlist.LSApplicationCategoryType).toBe(opts.appCategoryType);
+  });
+
+  describe('appBundleId', () => {
+    it.each([
+      'com.electron.app-test',
+      'com.electron."bãśè tëßt!@#$%^&*()?\'',
+      undefined,
+    ])(
+      'sets the correct app Info.plist values for appBundleId value %s',
+      async (appBundleId) => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          out: workDir,
+          tmpdir: tmpDir,
+          name: 'appBundleIdTest',
+          appBundleId,
+        };
+
+        const defaultBundleName = `com.electron.${opts.name!.toLowerCase()}`;
+        const appBundleIdentifier = filterCFBundleIdentifier(
+          opts.appBundleId ?? defaultBundleName,
+        );
+
+        const paths = await packager(opts);
+        expect(paths).toHaveLength(1);
+        const infoPlist = parseInfoPlist(paths[0]);
+        expect(infoPlist.CFBundleIdentifier).toBe(appBundleIdentifier);
+      },
+    );
+
+    it.each([
+      {
+        testOpts: {
+          helperBundleId: 'com.electron.app-test.helper',
+        },
+        expectedHelperBundleId: 'com.electron.app-test.helper',
+      },
+      {
+        testOpts: {
+          appBundleId: 'com.electron.app-test',
+        },
+        expectedHelperBundleId: 'com.electron.app-test.helper',
+      },
+    ])(
+      'sets the correct legacy helper Info.plist values for $testOpts',
+      async ({ testOpts, expectedHelperBundleId }) => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          out: workDir,
+          tmpdir: tmpDir,
+          name: 'appBundleIdTest',
+          electronVersion: '1.4.13',
+          arch: 'x64',
+          platform: 'darwin',
+          ...testOpts,
+        };
+
+        const paths = await packager(opts);
+        expect(paths).toHaveLength(1);
+
+        const plistPath = path.join(
+          paths[0],
+          `${opts.name}.app`,
+          'Contents',
+          'Frameworks',
+          `${opts.name} Helper NP.app`,
+          'Contents',
+          'Info.plist',
+        );
+        const infoPlist = plist.parse(
+          fs.readFileSync(plistPath, 'utf8'),
+        ) as PlistObject;
+        expect(infoPlist.CFBundleIdentifier).toBe(
+          `${expectedHelperBundleId}.NP`,
+        );
+        expect(infoPlist.CFBundleName).toBe(`${opts.name} Helper NP`);
+        expect(infoPlist.CFBundleDisplayName).toBe(`${opts.name} Helper NP`);
+        expect(infoPlist.CFBundleExecutable).toBe(`${opts.name} Helper NP`);
+      },
+    );
+
+    it.each([
+      {
+        testOpts: {
+          helperBundleId: 'com.electron.app-test.helper',
+        },
+        expectedHelperBundleId: 'com.electron.app-test.helper',
+      },
+      {
+        testOpts: {
+          appBundleId: 'com.electron.app-test',
+        },
+        expectedHelperBundleId: 'com.electron.app-test.helper',
+      },
+    ])(
+      'sets the correct helper Info.plist values for $testOpts',
+      async ({ testOpts, expectedHelperBundleId }) => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          out: workDir,
+          tmpdir: tmpDir,
+          name: 'appBundleIdTest',
+          ...testOpts,
+        };
+
+        const paths = await packager(opts);
+        expect(paths).toHaveLength(1);
+
+        const helperPlist = parseHelperInfoPlist(paths[0]);
+        expect(helperPlist.CFBundleIdentifier).toBe(expectedHelperBundleId);
+        expect(helperPlist.CFBundleName).toBe(`${opts.name}`);
+
+        for (const helperType of ['GPU', 'Renderer', 'Plugin'] as const) {
+          const helperPlist = parseHelperInfoPlist(paths[0], helperType);
+          expect(helperPlist.CFBundleName).toBe(
+            `${opts.name} Helper (${helperType})`,
+          );
+          expect(helperPlist.CFBundleExecutable).toBe(
+            `${opts.name} Helper (${helperType})`,
+          );
+          expect(helperPlist.CFBundleIdentifier).toBe(
+            `${expectedHelperBundleId}`,
+          );
+        }
+      },
+    );
+  });
+
+  it('symlinks frameworks', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      out: workDir,
+      tmpdir: tmpDir,
+      name: 'frameworkSymlinkTest',
+    };
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+
+    const frameworkPath = path.join(
+      paths[0],
+      `${opts.name}.app`,
+      'Contents',
+      'Frameworks',
+      'Electron Framework.framework',
+    );
+
+    expect(frameworkPath).toBeDirectory();
+    expect(path.join(frameworkPath, 'Electron Framework')).toBeSymlink();
+    expect(path.join(frameworkPath, 'Versions', 'Current')).toBeSymlink();
+  });
+
+  it('does not handle EH and NP helpers for modern Electron versions', async () => {
+    const helpers = ['Helper EH', 'Helper NP'];
+    const helperPaths: string[] = [];
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      out: workDir,
+      tmpdir: tmpDir,
+      afterExtract: [
+        (buildPath, _electronVersion, _platform, _arch, cb) => {
+          return Promise.all(
+            helpers.map(async (helper) => {
+              const helperPath = path.join(
+                buildPath,
+                `${opts.name}.app`,
+                'Contents',
+                'Frameworks',
+                `${opts.name} ${helper}.app`,
+              );
+              helperPaths.push(helperPath);
+              await fs.rm(helperPath, {
+                recursive: true,
+                force: true,
+              });
+              cb();
+            }),
+          );
+        },
+      ],
+    };
+
+    await packager(opts);
+    for (const helperPath of helperPaths) {
+      expect(fs.existsSync(helperPath)).toBe(false);
+    }
+  });
+
+  it('maps appCopyright to NSHumanReadableCopyright', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      out: workDir,
+      tmpdir: tmpDir,
+      appCopyright: 'Copyright © 2013–2025 Organization. All rights reserved.',
+    };
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    const infoPlist = parseInfoPlist(paths[0]);
+    expect(infoPlist.NSHumanReadableCopyright).toBe(opts.appCopyright);
+  });
+
+  it('maps usageDescription to the correct keys', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      out: workDir,
+      tmpdir: tmpDir,
+      usageDescription: {
+        Microphone: 'I am a Karaoke app',
+      },
+    };
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    const infoPlist = parseInfoPlist(paths[0]);
+    expect(infoPlist.NSMicrophoneUsageDescription).toBe(
+      opts.usageDescription!.Microphone,
+    );
+  });
+
+  it('can package an app named Electron', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      out: workDir,
+      tmpdir: tmpDir,
+      name: 'Electron',
+    };
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    const appPath = path.join(paths[0], 'Electron.app');
+    expect(appPath).toBeDirectory();
+    expect(path.join(appPath, 'Contents', 'MacOS', 'Electron')).toBeFile();
+  });
+
+  describe('asar integrity hashes', () => {
+    it('does not insert hashes when asar is disabled', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        asar: false,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.ElectronAsarIntegrity).toBeUndefined();
+    });
+
+    it('inserts hashes when asar is enabled', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        asar: true,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.ElectronAsarIntegrity).toEqual({
+        'Resources/app.asar': {
+          algorithm: 'SHA256',
+          hash: 'f4a18a4219d839f07a75a4e93d18f410b020d339c4fe8b5b25a9b380515ef71c',
+        },
+      });
+    });
+
+    it('inserts hashes when prebuilt asar is used', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+        out: workDir,
+        tmpdir: tmpDir,
+        prebuiltAsar: path.join(
+          __dirname,
+          'fixtures',
+          'asar-prebuilt',
+          'app.asar',
+        ),
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.ElectronAsarIntegrity).toEqual({
+        'Resources/app.asar': {
+          algorithm: 'SHA256',
+          hash: '5efe069acf1f8d2622f2da149fcedcd5e17f9e7f4bc6f7ffe89255ee96647d4f',
+        },
+      });
+    });
+  });
+
+  describe.todo('e2e codesign');
 });

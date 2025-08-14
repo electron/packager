@@ -3,6 +3,7 @@ import 'vitest';
 interface CustomMatchers<R = unknown> {
   toBeDirectory: () => R;
   toBeFile: () => R;
+  toBeSymlink: () => R;
 }
 
 declare module 'vitest' {
