@@ -50,6 +50,7 @@ describe('populateIgnoredPaths', () => {
     expect(fs.existsSync(path.join(targetDir, 'package-lock.json'))).toBe(
       false,
     );
+    expect(fs.existsSync(path.join(targetDir, 'pnpm-lock.yaml'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'yarn.lock'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'Thumbs.db'))).toBe(false);
 

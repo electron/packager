@@ -32,6 +32,7 @@
     "@electron/osx-sign": "^1.0.5",
     "@electron/universal": "^2.0.1",
     "@electron/windows-sign": "^1.0.0",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "debug": "^4.0.1",
     "extract-zip": "^2.0.0",
     "filenamify": "^4.1.0",
