@@ -20,8 +20,6 @@ describe('packager', () => {
   let tmpDir: string;
 
   beforeEach(async () => {
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
     workDir = await fs.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-'),
     );

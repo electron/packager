@@ -1,6 +1,9 @@
 import fs from 'fs-extra';
 import { expect } from 'vitest';
 
+vi.spyOn(console, 'info').mockImplementation(() => {});
+vi.spyOn(console, 'warn').mockImplementation(() => {});
+
 expect.extend({
   toBeDirectory(received) {
     const pass = fs.statSync(received).isDirectory();
