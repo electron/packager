@@ -44,7 +44,7 @@ jobs:
           path: ~/.cache/electron
           key: v1-electron-cache-${{ matrix.os }}
       - name: Download Electron binaries
-        run: node test/ci/_before_script.js
+        run: tsx spec/ci/download-electron.ts
       - name: Lint
         run: yarn run lint
       - name: Test
