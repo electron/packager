@@ -1,4 +1,6 @@
 import path from 'node:path';
+import plist, { PlistObject } from 'plist';
+import fs from 'fs-extra';
 import type { Options } from '../src/types';
 
 export function generateResourcesPath(
@@ -22,4 +24,10 @@ export function generateNamePath(opts: Pick<Options, 'name' | 'platform'>) {
   }
 
   return opts.name + (opts.platform === 'win32' ? '.exe' : '');
+}
+
+export function parseInfoPlist(basePath: string): PlistObject {
+  const appName = `${path.basename(basePath).split('-')[0]}.app`;
+  const plistPath = path.join(basePath, appName, 'Contents', 'Info.plist');
+  return plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
 }

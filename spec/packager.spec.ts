@@ -1,19 +1,27 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { packager } from '../src/packager';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'fs-extra';
 import { generateFinalBasename } from '../src/common';
 import { getHostArch } from '@electron/get';
-import { generateNamePath, generateResourcesPath } from './utils';
+import {
+  generateNamePath,
+  generateResourcesPath,
+  parseInfoPlist,
+} from './utils';
 import { Options } from '../src';
 import { createDownloadOpts, downloadElectronZip } from '../src/download';
+import plist, { PlistObject } from 'plist';
 
 describe('packager', () => {
   let workDir: string;
   let tmpDir: string;
 
   beforeEach(async () => {
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     workDir = await fs.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-'),
     );
@@ -564,4 +572,131 @@ describe('packager', () => {
   });
 
   describe.todo('prune');
+
+  describe.runIf(process.platform === 'darwin')('macOS', () => {
+    describe('icon', () => {
+      const iconBase = path.join(__dirname, 'fixtures', 'monochrome');
+      it.each(['.icns', '.ico', ''])(
+        'can package an icon with "%s" extension',
+        async (type) => {
+          const opts = {
+            dir: path.join(__dirname, 'fixtures', 'basic'),
+            name: 'iconTest',
+            out: workDir,
+            tmpdir: tmpDir,
+            icon: `${iconBase}${type}`,
+          };
+
+          const paths = await packager(opts);
+          expect(paths).toHaveLength(1);
+          const infoPlist = parseInfoPlist(paths[0]);
+          const bundleIconPath = path.join(
+            paths[0],
+            `${opts.name}.app`,
+            'Contents',
+            'Resources',
+            infoPlist.CFBundleIconFile as string,
+          );
+          expect(fs.existsSync(bundleIconPath)).toBe(true);
+
+          // We replace all icon formats with .icns
+          expect(fs.readFileSync(bundleIconPath, 'utf8')).toEqual(
+            fs.readFileSync(path.join(`${iconBase}.icns`), 'utf8'),
+          );
+        },
+      );
+
+      it('skips icon packaging if icon path is invalid', async () => {
+        let expectedChecksum;
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          name: 'iconTest',
+          out: workDir,
+          tmpdir: tmpDir,
+          icon: 'foo/bar/baz',
+          afterExtract: [
+            async (
+              extractPath,
+              _electronVersion,
+              _platform,
+              _arch,
+              callback,
+            ) => {
+              const hash = crypto.createHash('sha256');
+              hash.update(
+                await fs.readFile(
+                  path.join(
+                    extractPath,
+                    'Electron.app',
+                    'Contents',
+                    'Resources',
+                    'electron.icns',
+                  ),
+                ),
+              );
+              expectedChecksum = hash.digest('hex');
+              callback();
+            },
+          ],
+        };
+
+        const paths = await packager(opts);
+        expect(paths).toHaveLength(1);
+        const hash = crypto.createHash('sha256');
+        hash.update(
+          await fs.readFile(
+            path.join(
+              paths[0],
+              `${opts.name}.app`,
+              'Contents',
+              'Resources',
+              'electron.icns',
+            ),
+          ),
+        );
+
+        expect(hash.digest('hex')).toEqual(expectedChecksum);
+      });
+    });
+
+    describe('extendInfo', () => {
+      const extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist');
+      const extraInfoParams = plist.parse(
+        fs.readFileSync(extraInfoPath).toString(),
+      ) as PlistObject;
+      it.each([
+        { type: 'path', extraInfo: extraInfoPath },
+        { type: 'object', extraInfo: extraInfoParams },
+      ])('can package with extendInfo', async ({ extraInfo }) => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          name: 'extendInfoTest',
+          out: workDir,
+          tmpdir: tmpDir,
+          appBundleId: 'com.electron.extratest',
+          appCategoryType: 'public.app-category.music',
+          buildVersion: '3.2.1',
+          extendInfo: extraInfo,
+        };
+
+        const paths = await packager(opts);
+        const infoPlist = parseInfoPlist(paths[0]);
+        expect(infoPlist.TestKeyString).toBe('String data');
+        expect(infoPlist.TestKeyInt).toBe(12345);
+        expect(infoPlist.TestKeyBool).toBe(true);
+        expect(infoPlist.TestKeyArray).toEqual([
+          'public.content',
+          'public.data',
+        ]);
+        expect(infoPlist.TestKeyDict).toEqual({
+          Number: 98765,
+          CFBundleVersion: '0.0.0',
+        });
+        expect(infoPlist.CFBundleVersion).toBe(opts.buildVersion);
+        expect(infoPlist.CFBundleIdentifier).toBe(opts.appBundleId);
+        expect(infoPlist.LSApplicationCategoryType).toBe(opts.appCategoryType);
+        expect(infoPlist.CFBundlePackageType).toBe('APPL');
+      });
+    });
+  });
 });

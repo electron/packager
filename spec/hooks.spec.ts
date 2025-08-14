@@ -6,14 +6,13 @@ describe('promisifyHooks', () => {
     const timeoutFunc = (number: number, msTimeout: number) => {
       return (done: () => void) => {
         setTimeout(() => {
-          console.log();
           output += ` ${number}`;
           done();
         }, msTimeout);
       };
     };
     const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) =>
-      timeoutFunc(number, number % 2 === 0 ? 200 : 0),
+      timeoutFunc(number, number % 2 === 0 ? 100 : 0),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +28,6 @@ describe('promisifyHooks', () => {
       const timeoutFunc = (number: number, msTimeout: number) => {
         return () =>
           new Promise<void>((resolve) => {
-            // eslint-disable-line promise/avoid-new
             setTimeout(() => {
               output += ` ${number}`;
               resolve();
@@ -37,7 +35,7 @@ describe('promisifyHooks', () => {
           });
       };
       const testHooks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) =>
-        timeoutFunc(number, number % 2 === 0 ? 200 : 0),
+        timeoutFunc(number, number % 2 === 0 ? 100 : 0),
       );
 
       const result = await serialHooks(testHooks)('', '', '', '', () => output);
