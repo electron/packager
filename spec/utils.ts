@@ -27,7 +27,26 @@ export function generateNamePath(opts: Pick<Options, 'name' | 'platform'>) {
 }
 
 export function parseInfoPlist(basePath: string): PlistObject {
-  const appName = `${path.basename(basePath).split('-')[0]}.app`;
-  const plistPath = path.join(basePath, appName, 'Contents', 'Info.plist');
+  const appName = `${path.basename(basePath).split('-')[0]}`;
+  const plistPath = path.join(
+    basePath,
+    `${appName}.app`,
+    'Contents',
+    'Info.plist',
+  );
+  return plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
+}
+
+export function parseHelperInfoPlist(basePath: string): PlistObject {
+  const appName = `${path.basename(basePath).split('-')[0]}`;
+  const plistPath = path.join(
+    basePath,
+    `${appName}.app`,
+    'Contents',
+    'Frameworks',
+    `${appName} Helper.app`,
+    'Contents',
+    'Info.plist',
+  );
   return plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
 }

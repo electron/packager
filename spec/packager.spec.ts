@@ -9,6 +9,7 @@ import { getHostArch } from '@electron/get';
 import {
   generateNamePath,
   generateResourcesPath,
+  parseHelperInfoPlist,
   parseInfoPlist,
 } from './utils';
 import { Options } from '../src';
@@ -694,6 +695,50 @@ describe('packager', () => {
         expect(infoPlist.CFBundleIdentifier).toBe(opts.appBundleId);
         expect(infoPlist.LSApplicationCategoryType).toBe(opts.appCategoryType);
         expect(infoPlist.CFBundlePackageType).toBe('APPL');
+      });
+    });
+
+    describe('extendHelperInfo', () => {
+      const extraHelperInfoPath = path.join(
+        __dirname,
+        'fixtures',
+        'extrainfo.plist',
+      );
+      const extraHelperInfoParams = plist.parse(
+        fs.readFileSync(extraHelperInfoPath).toString(),
+      ) as PlistObject;
+      it.each([
+        { type: 'path', extraHelperInfo: extraHelperInfoPath },
+        { type: 'object', extraHelperInfo: extraHelperInfoParams },
+      ])('can package with extendHelperInfo', async ({ extraHelperInfo }) => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          name: 'extendHelperInfoTest',
+          out: workDir,
+          tmpdir: tmpDir,
+          appBundleId: 'com.electron.extratest',
+          buildVersion: '3.2.1',
+          extendHelperInfo: extraHelperInfo,
+        };
+
+        const paths = await packager(opts);
+        const helperInfoPlist = parseHelperInfoPlist(paths[0]);
+        expect(helperInfoPlist.TestKeyString).toBe('String data');
+        expect(helperInfoPlist.TestKeyInt).toBe(12345);
+        expect(helperInfoPlist.TestKeyBool).toBe(true);
+        expect(helperInfoPlist.TestKeyArray).toEqual([
+          'public.content',
+          'public.data',
+        ]);
+        expect(helperInfoPlist.TestKeyDict).toEqual({
+          Number: 98765,
+          CFBundleVersion: '0.0.0',
+        });
+        expect(helperInfoPlist.CFBundleVersion).toBe(opts.buildVersion);
+        expect(helperInfoPlist.CFBundleIdentifier).toBe(
+          `${opts.appBundleId}.helper`,
+        );
+        expect(helperInfoPlist.CFBundlePackageType).toBe('APPL');
       });
     });
   });
