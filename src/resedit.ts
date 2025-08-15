@@ -1,6 +1,4 @@
 import * as fs from 'fs-extra';
-// eslint-disable-next-line import/no-unresolved
-import { load as loadResEdit } from 'resedit/cjs';
 import { Win32MetadataOptions } from './types';
 import { FileRecord } from '@electron/asar';
 
@@ -45,7 +43,7 @@ function parseVersionString(str: string): ParsedVersionNumerics {
 const RT_MANIFEST_TYPE = 24;
 
 export async function resedit(exePath: string, options: ExeMetadata) {
-  const resedit = await loadResEdit();
+  const resedit = await import('resedit');
 
   const exeData = await fs.readFile(exePath);
   const exe = resedit.NtExecutable.from(exeData);
