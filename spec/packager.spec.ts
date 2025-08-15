@@ -571,6 +571,7 @@ describe('packager', () => {
     it.todo('should ignore the out dir (implicit path)');
     it.todo('should ignore the out dir (already exists)');
   });
+
   describe('hooks', () => {
     it.each([
       {
@@ -736,7 +737,61 @@ describe('packager', () => {
     );
   });
 
-  describe.todo('prune');
+  describe('prune', () => {
+    it('should prune devDependencies and keep dependencies', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        name: 'pruneTest',
+        out: workDir,
+        tmpdir: tmpDir,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const resourcesPath = path.join(
+        paths[0],
+        generateResourcesPath({ name: opts.name, platform: process.platform }),
+      );
+
+      expect(
+        fs.existsSync(
+          path.join(resourcesPath, 'app', 'node_modules', 'run-series'),
+        ),
+      ).toBe(true);
+      expect(
+        fs.existsSync(
+          path.join(resourcesPath, 'app', 'node_modules', '@types', 'node'),
+        ),
+      ).toBe(true);
+      expect(
+        fs.existsSync(
+          path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'),
+        ),
+      ).toBe(false);
+    });
+
+    it('should prune electron in dependencies', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'electron-in-dependencies'),
+        name: 'pruneTest',
+        out: workDir,
+        tmpdir: tmpDir,
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const resourcesPath = path.join(
+        paths[0],
+        generateResourcesPath({ name: opts.name, platform: process.platform }),
+      );
+
+      expect(
+        fs.existsSync(
+          path.join(resourcesPath, 'app', 'node_modules', 'electron'),
+        ),
+      ).toBe(false);
+    });
+  });
 
   describe.runIf(process.platform === 'darwin')('macOS', () => {
     describe('icon', () => {
