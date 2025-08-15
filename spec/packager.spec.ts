@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { packager } from '../src/packager';
+import { exec } from 'node:child_process';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
+import util from 'node:util';
 import fs from 'fs-extra';
 import { generateFinalBasename } from '../src/common';
 import { getHostArch } from '@electron/get';
@@ -46,13 +48,20 @@ describe('packager', () => {
     );
   });
 
-  it('cannot build with invalid version', async () => {
+  it.each([
+    {
+      electronVersion: '0.0.1',
+    },
+    { platform: 'android' },
+    { arch: 'z80' },
+  ])('cannot build with invalid option %s', async (testOpts) => {
     const opts: Options = {
       dir: path.join(__dirname, 'fixtures', 'basic'),
       name: 'invalidElectronTest',
-      electronVersion: '0.0.1',
+      electronVersion: '27.0.0',
       platform: 'linux',
       arch: 'x64',
+      ...testOpts,
     };
 
     await expect(packager(opts)).rejects.toThrow(expect.any(Error));
@@ -258,9 +267,6 @@ describe('packager', () => {
     const paths = await packager(opts);
     expect(paths).toHaveLength(12);
   });
-
-  it.todo('fails with invalid arch');
-  it.todo('fails with invalid platform');
 
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
     it('can package with extraResource string', async () => {
@@ -565,11 +571,32 @@ describe('packager', () => {
     });
   });
 
-  describe('out dir', () => {
-    it.todo('should ignore the out dir');
-    it.todo('should ignore the out dir (unnormalized path)');
-    it.todo('should ignore the out dir (implicit path)');
-    it.todo('should ignore the out dir (already exists)');
+  it('should ignore previously-packaged out dir', async () => {
+    const fixture = path.join(__dirname, 'fixtures', 'basic');
+    const opts: Options = {
+      dir: workDir,
+      name: 'ignoreOutDirTest',
+      out: path.join(workDir, 'out'),
+      tmpdir: tmpDir,
+      electronVersion: '27.0.0',
+    };
+
+    await fs.copy(fixture, workDir, {
+      dereference: true,
+      filter: (file) => path.basename(file) !== 'node_modules',
+    });
+
+    await fs.ensureDir(opts.out!);
+    await fs.writeFile(path.join(opts.out!, 'ignoreMe'), 'test');
+
+    const [p] = await packager(opts);
+    const resourcesPath = path.join(
+      p,
+      generateResourcesPath({ name: opts.name, platform: process.platform }),
+    );
+    expect(
+      fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out!))),
+    ).toBe(false);
   });
 
   describe('hooks', () => {
@@ -1428,7 +1455,25 @@ describe('packager', () => {
         });
       });
     });
-    describe.todo('e2e codesign');
+
+    describe('codesign', () => {
+      it('can sign the app', async () => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          out: workDir,
+          tmpdir: tmpDir,
+          osxSign: { identity: 'codesign.electronjs.org' },
+        };
+
+        const [finalPath] = await packager(opts);
+        const appPath = path.join(finalPath, `${opts.name}.app`);
+        expect(appPath).toBeDirectory();
+        await expect(
+          util.promisify(exec)(`codesign --verify --verbose ${appPath}`),
+        ).resolves.toBe(expect.anything());
+      });
+    });
+
     describe('Mac App Store', () => {
       it('can package for MAS', async () => {
         const opts: Options = {
