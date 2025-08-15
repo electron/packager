@@ -1470,7 +1470,7 @@ describe('packager', () => {
         expect(appPath).toBeDirectory();
         await expect(
           util.promisify(exec)(`codesign --verify --verbose ${appPath}`),
-        ).resolves.toBe(expect.anything());
+        ).resolves.toEqual(expect.anything());
       });
     });
 
