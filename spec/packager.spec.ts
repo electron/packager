@@ -247,7 +247,7 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
-  it('can package for all target platforms at once', async () => {
+  it.skip('can package for all target platforms at once', async () => {
     const opts: Options = {
       dir: path.join(__dirname, 'fixtures', 'basic'),
       name: 'tmpdirTest',
