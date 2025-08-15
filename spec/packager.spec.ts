@@ -1208,7 +1208,50 @@ describe('packager', () => {
         });
       });
     });
-  });
+    describe.todo('e2e codesign');
+    describe('Mac App Store', () => {
+      it('can package for MAS', async () => {
+        const opts: Options = {
+          name: 'masTest',
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          electronVersion: '27.0.0',
+          arch: 'x64',
+          platform: 'mas',
+          tmpdir: tmpDir,
+          out: workDir,
+        };
 
-  describe.todo('e2e codesign');
+        const paths = await packager(opts);
+        expect(paths).toHaveLength(1);
+
+        expect(console.warn).toHaveBeenCalledWith(
+          'WARNING: signing is required for mas builds. Provide the osx-sign option, or manually sign the app later.',
+        );
+
+        const helperName = `${opts.name} Login Helper`;
+        const helperPath = path.join(
+          paths[0],
+          `${opts.name}.app`,
+          'Contents',
+          'Library',
+          'LoginItems',
+          `${helperName}.app`,
+        );
+
+        expect(helperPath).toBeDirectory();
+        const plistPath = path.join(helperPath, 'Contents', 'Info.plist');
+        const plistData = plist.parse(
+          fs.readFileSync(plistPath, 'utf8'),
+        ) as PlistObject;
+        expect(plistData.CFBundleExecutable).toBe(helperName);
+        expect(plistData.CFBundleName).toBe(helperName);
+        expect(plistData.CFBundleIdentifier).toBe(
+          'com.electron.mastest.loginhelper',
+        );
+
+        const contentsPath = path.join(helperPath, 'Contents');
+        expect(path.join(contentsPath, 'MacOS', helperName)).toBeFile();
+      });
+    });
+  });
 });
