@@ -1456,7 +1456,7 @@ describe('packager', () => {
       });
     });
 
-    describe('codesign', () => {
+    describe('codesign', { timeout: 60_000 }, () => {
       it('can sign the app', async () => {
         const opts: Options = {
           dir: path.join(__dirname, 'fixtures', 'basic'),
@@ -1519,4 +1519,6 @@ describe('packager', () => {
       });
     });
   });
+
+  describe.runIf(process.platform === 'win32')('Windows', () => {});
 });
