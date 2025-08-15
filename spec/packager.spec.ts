@@ -571,14 +571,169 @@ describe('packager', () => {
     it.todo('should ignore the out dir (implicit path)');
     it.todo('should ignore the out dir (already exists)');
   });
-  describe.todo('hooks', () => {
-    it.todo('can package with afterCopy');
-    it.todo('can package with afterPrune');
-    it.todo('can package with afterBuild');
-    it.todo('can package with afterExtract');
-    it.todo('can package with afterSign');
-    it.todo('can package with afterBuild');
-    it.todo('can package with afterExtract');
+  describe('hooks', () => {
+    it.each([
+      {
+        testOpts: {},
+        expectedOutput: [
+          'afterFinalizePackageTargets',
+          'afterExtract',
+          'beforeCopy',
+          'afterCopy',
+          'afterPrune',
+          'afterInitialize',
+          'afterComplete',
+        ],
+      },
+      {
+        testOpts: { asar: true },
+        expectedOutput: [
+          'afterFinalizePackageTargets',
+          'afterExtract',
+          'beforeCopy',
+          'afterCopy',
+          'afterPrune',
+          'afterAsar',
+          'afterInitialize',
+          'afterComplete',
+        ],
+      },
+      {
+        testOpts: { prune: false },
+        expectedOutput: [
+          'afterFinalizePackageTargets',
+          'afterExtract',
+          'beforeCopy',
+          'afterCopy',
+          'afterInitialize',
+          'afterComplete',
+        ],
+      },
+    ])(
+      'runs expected hooks in order with options $testOpts',
+      async ({ testOpts, expectedOutput }) => {
+        const output: string[] = [];
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'basic'),
+          name: 'hooksTest',
+          out: workDir,
+          tmpdir: tmpDir,
+          platform: 'darwin',
+          arch: 'x64',
+          electronVersion: '27.0.0',
+          afterAsar: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterAsar');
+              callback();
+            },
+          ],
+          afterCopy: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterCopy');
+              callback();
+            },
+          ],
+          afterComplete: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterComplete');
+              callback();
+            },
+          ],
+          afterCopyExtraResources: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterCopyExtraResources');
+              callback();
+            },
+          ],
+          afterExtract: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterExtract');
+              callback();
+            },
+          ],
+          afterFinalizePackageTargets: [
+            (targets, callback) => {
+              output.push('afterFinalizePackageTargets');
+              expect(targets).toEqual([
+                {
+                  arch: 'x64',
+                  platform: 'darwin',
+                },
+              ]);
+              callback();
+            },
+          ],
+          afterInitialize: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterInitialize');
+              callback();
+            },
+          ],
+          afterPrune: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('afterPrune');
+              callback();
+            },
+          ],
+          beforeCopy: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('beforeCopy');
+              callback();
+            },
+          ],
+          beforeCopyExtraResources: [
+            (buildPath, electronVersion, platform, arch, callback) => {
+              output.push('beforeCopyExtraResources');
+              callback();
+            },
+          ],
+          ...testOpts,
+        };
+
+        await packager(opts);
+        expect(output).toEqual(expectedOutput);
+      },
+    );
+
+    it.each([
+      {
+        hook: 'beforeCopy',
+      },
+      {
+        hook: 'afterCopy',
+      },
+      {
+        hook: 'afterPrune',
+      },
+    ])(
+      'throws an error if prebuiltAsar and $hook is specified',
+      async ({ hook }) => {
+        const opts: Options = {
+          dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+          prebuiltAsar: path.join(
+            __dirname,
+            'fixtures',
+            'asar-prebuilt',
+            'app.asar',
+          ),
+          [hook]: [
+            (
+              _: string,
+              __: string,
+              ___: string,
+              ____: string,
+              callback: () => void,
+            ) => {
+              callback();
+            },
+          ],
+        };
+
+        await expect(packager(opts)).rejects.toThrowError(
+          `${hook} is incompatible with prebuiltAsar`,
+        );
+      },
+    );
   });
 
   describe.todo('prune');
