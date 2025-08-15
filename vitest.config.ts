@@ -6,5 +6,6 @@ export default defineConfig({
     include: ['./spec/**/*.spec.ts'],
     globals: true,
     clearMocks: true,
+    testTimeout: 15_000,
   },
 });

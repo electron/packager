@@ -247,21 +247,17 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
-  it(
-    'can package for all target platforms at once',
-    { timeout: 20_000 },
-    async () => {
-      const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'tmpdirTest',
-        out: workDir,
-        tmpdir: tmpDir,
-        all: true,
-      };
-      const paths = await packager(opts);
-      expect(paths).toHaveLength(12);
-    },
-  );
+  it('can package for all target platforms at once', async () => {
+    const opts: Options = {
+      dir: path.join(__dirname, 'fixtures', 'basic'),
+      name: 'tmpdirTest',
+      out: workDir,
+      tmpdir: tmpDir,
+      all: true,
+    };
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(12);
+  });
 
   it.todo('fails with invalid arch');
   it.todo('fails with invalid platform');
