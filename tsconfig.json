@@ -15,5 +15,5 @@
     "types": ["vitest/globals", "node"],
     "resolveJsonModule": true
   },
-  "include": ["src", "spec/vitest.d.ts", "spec/**/*.ts"]
+  "include": ["src", "test/vitest.d.ts", "test/**/*.ts"]
 }

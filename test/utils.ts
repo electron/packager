@@ -6,6 +6,7 @@ import fs from 'fs-extra';
 import { it as originalIt } from 'vitest';
 import type { Options } from '../src/types';
 import { sanitizeAppName } from '../src/common';
+import config from './config.json';
 
 export function generateResourcesPath(
   opts: Pick<Options, 'name' | 'platform'>,
@@ -83,7 +84,7 @@ export const it = originalIt.extend<ItContext>({
     const opts: Options = {
       name: 'packagerTest',
       dir: path.join(__dirname, 'fixtures', 'basic'),
-      electronVersion: '27.0.0',
+      electronVersion: config.version,
       out: workDir,
       tmpdir: tmpDir,
     };

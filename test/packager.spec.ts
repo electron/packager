@@ -329,7 +329,7 @@ describe('packager', () => {
     const opts: Options = {
       ...baseOpts,
       name: 'relativePathTest',
-      dir: path.join('.', 'spec', 'fixtures', 'basic'), // dir is relative to process.cwd()
+      dir: path.join('.', 'test', 'fixtures', 'basic'), // dir is relative to process.cwd()
     };
 
     const paths = await packager(opts);
@@ -1318,7 +1318,7 @@ describe('packager', () => {
       });
     });
 
-    describe('codesign', { timeout: 60_000 }, () => {
+    describe.skipIf(!process.env.CI)('codesign', { timeout: 60_000 }, () => {
       it('can sign the app', async ({ baseOpts }) => {
         const opts: Options = {
           ...baseOpts,
@@ -1338,6 +1338,7 @@ describe('packager', () => {
       it('can package for MAS', async ({ baseOpts }) => {
         const opts: Options = {
           ...baseOpts,
+          name: 'masTest',
           arch: 'x64',
           platform: 'mas',
         };

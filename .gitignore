@@ -4,11 +4,11 @@
 *.pem
 node_modules
 package-lock.json
-!spec/fixtures/**/node_modules
-spec/fixtures/basic/main-link.js
-!spec/fixtures/prune-is-module/node_modules
-!spec/fixtures/ignore-package-lock/*
-spec/work
+!test/fixtures/**/node_modules
+test/fixtures/basic/main-link.js
+!test/fixtures/prune-is-module/node_modules
+!test/fixtures/ignore-package-lock/*
+test/work
 typedoc
 .DS_Store
 .nyc_output
