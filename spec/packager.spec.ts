@@ -1520,5 +1520,11 @@ describe('packager', () => {
     });
   });
 
-  describe.runIf(process.platform === 'win32')('Windows', () => {});
+  describe.runIf(process.platform === 'win32')('Windows', () => {
+    it.todo('sanitizes the executable name');
+    it.todo('uses the executableName option');
+    it.todo('sets an icon');
+    it.todo('sets the correct version info in the exe');
+    it.todo('sets the requested execution level in the exe');
+  });
 });
