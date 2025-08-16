@@ -1,8 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { packager } from '../src/packager';
 import { exec } from 'node:child_process';
 import crypto from 'node:crypto';
-import os from 'node:os';
 import path from 'node:path';
 import util from 'node:util';
 import fs from 'fs-extra';
@@ -11,10 +9,11 @@ import { getHostArch } from '@electron/get';
 import {
   generateNamePath,
   generateResourcesPath,
+  it,
   parseHelperInfoPlist,
   parseInfoPlist,
 } from './utils';
-import { Options } from '../src';
+import { Options } from '../src/types';
 import { createDownloadOpts, downloadElectronZip } from '../src/download';
 import plist, { PlistObject } from 'plist';
 import { filterCFBundleIdentifier } from '../src/mac';
@@ -24,26 +23,11 @@ import { dynamicImport } from '../src/dynamicImport';
 import type { NtExecutable, NtExecutableResource } from 'resedit';
 
 describe('packager', () => {
-  let workDir: string;
-  let tmpDir: string;
-
-  beforeEach(async () => {
-    workDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), 'electron-packager-test-'),
-    );
-    tmpDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), 'electron-packager-test-'),
-    );
-
-    return async () => {
-      await fs.rm(workDir, { recursive: true, force: true });
-      await fs.rm(tmpDir, { recursive: true, force: true });
-    };
-  });
-
-  it('cannot build apps where the name ends in "Helper"', async () => {
+  it('cannot build apps where the name ends in "Helper"', async ({
+    baseOpts,
+  }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
+      ...baseOpts,
       name: 'Bad Helper',
     };
 
@@ -52,31 +36,26 @@ describe('packager', () => {
     );
   });
 
-  it.each([
+  it.for([
     {
       electronVersion: '0.0.1',
     },
     { platform: 'android' },
     { arch: 'z80' },
-  ])('cannot build with invalid option %s', async (testOpts) => {
+  ])('cannot build with invalid option %s', async (testOpts, { baseOpts }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'invalidElectronTest',
-      electronVersion: '27.0.0',
-      platform: 'linux',
+      platform: 'linux', // required for electronVersion to fail
       arch: 'x64',
+      ...baseOpts,
       ...testOpts,
     };
 
     await expect(packager(opts)).rejects.toThrow(expect.any(Error));
   });
 
-  it('packages with defaults', async () => {
+  it('packages with defaults', async ({ baseOpts }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'defaultsTest',
-      out: workDir,
-      tmpdir: tmpDir,
+      ...baseOpts,
     };
 
     const defaultOpts = {
@@ -89,7 +68,7 @@ describe('packager', () => {
     expect(paths).toHaveLength(1);
 
     expect(paths[0]).toEqual(
-      path.join(workDir, generateFinalBasename(defaultOpts)),
+      path.join(opts.out!, generateFinalBasename(defaultOpts)),
     );
     expect(fs.existsSync(paths[0])).toBe(true);
 
@@ -146,19 +125,16 @@ describe('packager', () => {
     );
   });
 
-  it('can overwrite older packages', async () => {
+  it('can overwrite older packages', async ({ baseOpts }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'overwriteTest',
-      out: workDir,
-      tmpdir: tmpDir,
+      ...baseOpts,
     };
 
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
     expect(paths[0]).toEqual(
       path.join(
-        workDir,
+        opts.out!,
         generateFinalBasename({
           name: opts.name,
           platform: process.platform,
@@ -177,11 +153,12 @@ describe('packager', () => {
     expect(fs.existsSync(testPath)).toBe(false);
   });
 
-  it('defaults the out directory to the current working directory', async () => {
+  it('defaults the out directory to the current working directory', async ({
+    baseOpts,
+  }) => {
     const opts = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'cwdTest',
-      tmpdir: tmpDir,
+      ...baseOpts,
+      out: undefined,
     };
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
@@ -199,12 +176,9 @@ describe('packager', () => {
     await fs.rm(paths[0], { recursive: true, force: true });
   });
 
-  it('can package with platform/arch set', async () => {
+  it('can package with platform/arch set', async ({ baseOpts }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'platformArchTest',
-      out: workDir,
-      tmpdir: tmpDir,
+      ...baseOpts,
       platform: 'linux',
       arch: 'x64',
     };
@@ -213,7 +187,7 @@ describe('packager', () => {
     expect(paths).toHaveLength(1);
     expect(paths[0]).toEqual(
       path.join(
-        workDir,
+        opts.out!,
         generateFinalBasename({
           platform: opts.platform as string,
           arch: opts.arch as string,
@@ -223,11 +197,9 @@ describe('packager', () => {
     );
   });
 
-  it('can package with tmpdir disabled', async () => {
+  it('can package with tmpdir disabled', async ({ baseOpts }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'tmpdirTest',
-      out: workDir,
+      ...baseOpts,
       tmpdir: false,
     };
     const paths = await packager(opts);
@@ -235,12 +207,9 @@ describe('packager', () => {
     expect(paths[0]).toBeDirectory();
   });
 
-  it('preserves symlinks with derefSymlinks disabled', async () => {
+  it('preserves symlinks with derefSymlinks disabled', async ({ baseOpts }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'derefSymlinksTest',
-      out: workDir,
-      tmpdir: tmpDir,
+      ...baseOpts,
       derefSymlinks: false,
       platform: 'linux',
       arch: 'x64',
@@ -260,12 +229,11 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
-  it.skip('can package for all target platforms at once', async () => {
+  it.skip('can package for all target platforms at once', async ({
+    baseOpts,
+  }) => {
     const opts: Options = {
-      dir: path.join(__dirname, 'fixtures', 'basic'),
-      name: 'tmpdirTest',
-      out: workDir,
-      tmpdir: tmpDir,
+      ...baseOpts,
       all: true,
     };
     const paths = await packager(opts);
@@ -273,15 +241,12 @@ describe('packager', () => {
   });
 
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
-    it('can package with extraResource string', async () => {
+    it('can package with extraResource string', async ({ baseOpts }) => {
       const extra1Base = 'data1.txt';
       const extra1Path = path.join(__dirname, 'fixtures', extra1Base);
 
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'extraResourceTest',
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         extraResource: extra1Path,
       };
 
@@ -301,17 +266,14 @@ describe('packager', () => {
       );
     });
 
-    it('can package with extraResource array', async () => {
+    it('can package with extraResource array', async ({ baseOpts }) => {
       const extra1Base = 'data1.txt';
       const extra2Base = 'extrainfo.plist';
       const extra1Path = path.join(__dirname, 'fixtures', extra1Base);
       const extra2Path = path.join(__dirname, 'fixtures', extra2Base);
 
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'extraResourceTest',
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         extraResource: [extra1Path, extra2Path],
       };
 
@@ -337,12 +299,10 @@ describe('packager', () => {
   });
 
   describe.runIf(process.platform === 'linux')('Linux', async () => {
-    it('sanitizes binary name', async () => {
+    it('sanitizes binary name', async ({ baseOpts }) => {
       const opts: Options = {
+        ...baseOpts,
         name: '@username/package-name',
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
       };
 
       const paths = await packager(opts);
@@ -351,13 +311,11 @@ describe('packager', () => {
       expect(binary).toBeFile();
     });
 
-    it('honours the executableName option', async () => {
+    it('honours the executableName option', async ({ baseOpts }) => {
       const opts: Options = {
+        ...baseOpts,
         name: 'PackageName',
         executableName: 'my-package',
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
       };
 
       const paths = await packager(opts);
@@ -367,19 +325,18 @@ describe('packager', () => {
     });
   });
 
-  it('can package with dir: relative path', async () => {
+  it('can package with dir: relative path', async ({ baseOpts }) => {
     const opts: Options = {
-      dir: path.join('.', 'spec', 'fixtures', 'basic'), // dir is relative to process.cwd()
+      ...baseOpts,
       name: 'relativePathTest',
-      out: workDir,
-      tmpdir: tmpDir,
+      dir: path.join('.', 'spec', 'fixtures', 'basic'), // dir is relative to process.cwd()
     };
 
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
     expect(paths[0]).toEqual(
       path.join(
-        workDir,
+        opts.out!,
         generateFinalBasename({
           name: opts.name,
           platform: process.platform,
@@ -390,17 +347,14 @@ describe('packager', () => {
   });
 
   describe('electronZipDir', () => {
-    it('can package with electronZipDir', async () => {
-      const customDir = path.join(tmpDir, 'download');
+    it('can package with electronZipDir', async ({ baseOpts }) => {
+      const customDir = path.join(baseOpts.tmpdir as string, 'download');
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
+        ...baseOpts,
         name: 'electronZipDirTest',
         electronZipDir: customDir,
-        out: workDir,
-        tmpdir: tmpDir,
         platform: 'linux',
         arch: 'x64',
-        electronVersion: '27.0.0',
       };
       await fs.ensureDir(customDir);
       const zipPath = await downloadElectronZip(
@@ -414,16 +368,10 @@ describe('packager', () => {
       expect(paths[0]).toBeDirectory();
     });
 
-    it('throws if electronZipDir does not exist', async () => {
+    it('throws if electronZipDir does not exist', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'electronZipDirTest',
-        electronZipDir: path.join(tmpDir, 'does-not-exist'),
-        out: workDir,
-        tmpdir: tmpDir,
-        platform: 'linux',
-        arch: 'x64',
-        electronVersion: '27.0.0',
+        ...baseOpts,
+        electronZipDir: path.join(baseOpts.tmpdir as string, 'does-not-exist'),
       };
 
       await expect(packager(opts)).rejects.toThrowError(
@@ -433,12 +381,9 @@ describe('packager', () => {
   });
 
   describe('asar', () => {
-    it('can package with asar', async () => {
+    it('can package with asar', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'asarTest',
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         asar: { unpack: '*.pac', unpackDir: 'dir_to_unpack' },
       };
 
@@ -464,9 +409,10 @@ describe('packager', () => {
       ).toBe(true);
     });
 
-    it('ignores asar options if prebuiltAsar is set', async () => {
+    it('ignores asar options if prebuiltAsar is set', async ({ baseOpts }) => {
       vi.spyOn(console, 'warn').mockImplementation(() => {});
       const opts: Options = {
+        ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
         prebuiltAsar: path.join(
           __dirname,
@@ -474,9 +420,6 @@ describe('packager', () => {
           'asar-prebuilt',
           'app.asar',
         ),
-        name: 'prebuiltAsarTest',
-        out: workDir,
-        tmpdir: tmpDir,
         asar: { unpack: '*.pac', unpackDir: 'dir_to_unpack' },
         ignore: ['foo'],
         prune: false,
@@ -520,72 +463,28 @@ describe('packager', () => {
       );
     });
 
-    it('throws if prebuiltAsar is a directory', async () => {
+    it('throws if prebuiltAsar is a directory', async ({ baseOpts }) => {
       const opts: Options = {
+        ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
         prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-        name: 'prebuiltAsarTest',
-        out: workDir,
-        tmpdir: tmpDir,
       };
 
       await expect(packager(opts)).rejects.toThrowError(
         'prebuiltAsar must be an asar file',
       );
     });
-
-    it('throws if prebuiltAsar is true and afterCopy is specified', async () => {
-      const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-        prebuiltAsar: path.join(
-          __dirname,
-          'fixtures',
-          'asar-prebuilt',
-          'app.asar',
-        ),
-        name: 'prebuiltAsarTest',
-        out: workDir,
-        tmpdir: tmpDir,
-        afterCopy: [],
-      };
-
-      await expect(packager(opts)).rejects.toThrowError(
-        'afterCopy is incompatible with prebuiltAsar',
-      );
-    });
-
-    it('throws if prebuiltAsar is true and afterPrune is specified', async () => {
-      const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-        prebuiltAsar: path.join(
-          __dirname,
-          'fixtures',
-          'asar-prebuilt',
-          'app.asar',
-        ),
-        name: 'prebuiltAsarTest',
-        out: workDir,
-        tmpdir: tmpDir,
-        afterPrune: [],
-      };
-
-      await expect(packager(opts)).rejects.toThrowError(
-        'afterPrune is incompatible with prebuiltAsar',
-      );
-    });
   });
 
-  it('should ignore previously-packaged out dir', async () => {
+  it('should ignore previously-packaged out dir', async ({ baseOpts }) => {
     const fixture = path.join(__dirname, 'fixtures', 'basic');
     const opts: Options = {
-      dir: workDir,
+      ...baseOpts,
       name: 'ignoreOutDirTest',
-      out: path.join(workDir, 'out'),
-      tmpdir: tmpDir,
-      electronVersion: '27.0.0',
+      out: path.join(baseOpts.out!, 'out'),
     };
 
-    await fs.copy(fixture, workDir, {
+    await fs.copy(fixture, opts.out!, {
       dereference: true,
       filter: (file) => path.basename(file) !== 'node_modules',
     });
@@ -604,7 +503,7 @@ describe('packager', () => {
   });
 
   describe('hooks', () => {
-    it.each([
+    it.for([
       {
         testOpts: {},
         expectedOutput: [
@@ -643,16 +542,12 @@ describe('packager', () => {
       },
     ])(
       'runs expected hooks in order with options $testOpts',
-      async ({ testOpts, expectedOutput }) => {
+      async ({ testOpts, expectedOutput }, { baseOpts }) => {
         const output: string[] = [];
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          name: 'hooksTest',
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           platform: 'darwin',
           arch: 'x64',
-          electronVersion: '27.0.0',
           afterAsar: [
             (buildPath, electronVersion, platform, arch, callback) => {
               output.push('afterAsar');
@@ -727,7 +622,7 @@ describe('packager', () => {
       },
     );
 
-    it.each([
+    it.for([
       {
         hook: 'beforeCopy',
       },
@@ -739,8 +634,9 @@ describe('packager', () => {
       },
     ])(
       'throws an error if prebuiltAsar and $hook is specified',
-      async ({ hook }) => {
+      async ({ hook }, { baseOpts }) => {
         const opts: Options = {
+          ...baseOpts,
           dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
           prebuiltAsar: path.join(
             __dirname,
@@ -769,12 +665,11 @@ describe('packager', () => {
   });
 
   describe('prune', () => {
-    it('should prune devDependencies and keep dependencies', async () => {
+    it('should prune devDependencies and keep dependencies', async ({
+      baseOpts,
+    }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'pruneTest',
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
       };
 
       const paths = await packager(opts);
@@ -801,12 +696,10 @@ describe('packager', () => {
       ).toBe(false);
     });
 
-    it('should prune electron in dependencies', async () => {
+    it('should prune electron in dependencies', async ({ baseOpts }) => {
       const opts: Options = {
+        ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'electron-in-dependencies'),
-        name: 'pruneTest',
-        out: workDir,
-        tmpdir: tmpDir,
       };
 
       const paths = await packager(opts);
@@ -827,14 +720,11 @@ describe('packager', () => {
   describe.runIf(process.platform === 'darwin')('macOS', () => {
     describe('icon', () => {
       const iconBase = path.join(__dirname, 'fixtures', 'monochrome');
-      it.each(['.icns', '.ico', ''])(
+      it.for(['.icns', '.ico', ''])(
         'can package an icon with "%s" extension',
-        async (type) => {
+        async (type, { baseOpts }) => {
           const opts = {
-            dir: path.join(__dirname, 'fixtures', 'basic'),
-            name: 'iconTest',
-            out: workDir,
-            tmpdir: tmpDir,
+            ...baseOpts,
             icon: `${iconBase}${type}`,
           };
 
@@ -857,13 +747,12 @@ describe('packager', () => {
         },
       );
 
-      it('skips icon packaging if icon path is invalid', async () => {
+      it('skips icon packaging if icon path is invalid', async ({
+        baseOpts,
+      }) => {
         let expectedChecksum;
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          name: 'iconTest',
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           icon: 'foo/bar/baz',
           afterExtract: [
             async (
@@ -915,15 +804,12 @@ describe('packager', () => {
       const extraInfoParams = plist.parse(
         fs.readFileSync(extraInfoPath).toString(),
       ) as PlistObject;
-      it.each([
+      it.for([
         { type: 'path', extraInfo: extraInfoPath },
         { type: 'object', extraInfo: extraInfoParams },
-      ])('can package with extendInfo', async ({ extraInfo }) => {
+      ])('can package with extendInfo', async ({ extraInfo }, { baseOpts }) => {
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          name: 'extendInfoTest',
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           appBundleId: 'com.electron.extratest',
           appCategoryType: 'public.app-category.music',
           buildVersion: '3.2.1',
@@ -959,47 +845,44 @@ describe('packager', () => {
       const extraHelperInfoParams = plist.parse(
         fs.readFileSync(extraHelperInfoPath).toString(),
       ) as PlistObject;
-      it.each([
+      it.for([
         { type: 'path', extraHelperInfo: extraHelperInfoPath },
         { type: 'object', extraHelperInfo: extraHelperInfoParams },
-      ])('can package with extendHelperInfo', async ({ extraHelperInfo }) => {
-        const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          name: 'extendHelperInfoTest',
-          out: workDir,
-          tmpdir: tmpDir,
-          appBundleId: 'com.electron.extratest',
-          buildVersion: '3.2.1',
-          extendHelperInfo: extraHelperInfo,
-        };
+      ])(
+        'can package with extendHelperInfo',
+        async ({ extraHelperInfo }, { baseOpts }) => {
+          const opts: Options = {
+            ...baseOpts,
+            appBundleId: 'com.electron.extratest',
+            buildVersion: '3.2.1',
+            extendHelperInfo: extraHelperInfo,
+          };
 
-        const paths = await packager(opts);
-        const helperInfoPlist = parseHelperInfoPlist(paths[0]);
-        expect(helperInfoPlist.TestKeyString).toBe('String data');
-        expect(helperInfoPlist.TestKeyInt).toBe(12345);
-        expect(helperInfoPlist.TestKeyBool).toBe(true);
-        expect(helperInfoPlist.TestKeyArray).toEqual([
-          'public.content',
-          'public.data',
-        ]);
-        expect(helperInfoPlist.TestKeyDict).toEqual({
-          Number: 98765,
-          CFBundleVersion: '0.0.0',
-        });
-        expect(helperInfoPlist.CFBundleVersion).toBe(opts.buildVersion);
-        expect(helperInfoPlist.CFBundleIdentifier).toBe(
-          `${opts.appBundleId}.helper`,
-        );
-        expect(helperInfoPlist.CFBundlePackageType).toBe('APPL');
-      });
+          const paths = await packager(opts);
+          const helperInfoPlist = parseHelperInfoPlist(paths[0]);
+          expect(helperInfoPlist.TestKeyString).toBe('String data');
+          expect(helperInfoPlist.TestKeyInt).toBe(12345);
+          expect(helperInfoPlist.TestKeyBool).toBe(true);
+          expect(helperInfoPlist.TestKeyArray).toEqual([
+            'public.content',
+            'public.data',
+          ]);
+          expect(helperInfoPlist.TestKeyDict).toEqual({
+            Number: 98765,
+            CFBundleVersion: '0.0.0',
+          });
+          expect(helperInfoPlist.CFBundleVersion).toBe(opts.buildVersion);
+          expect(helperInfoPlist.CFBundleIdentifier).toBe(
+            `${opts.appBundleId}.helper`,
+          );
+          expect(helperInfoPlist.CFBundlePackageType).toBe('APPL');
+        },
+      );
     });
 
-    it('can enable dark mode support in macOS Mojave', async () => {
+    it('can enable dark mode support in macOS Mojave', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'darkModeTest',
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         darwinDarkModeSupport: true,
       };
 
@@ -1009,12 +892,9 @@ describe('packager', () => {
       expect(infoPlist.NSRequiresAquaSystemAppearance).toBe(false);
     });
 
-    it('can pass protocol schemes to the Info.plist', async () => {
+    it('can pass protocol schemes to the Info.plist', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        name: 'protocolTest',
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         protocols: [
           {
             name: 'Foo',
@@ -1043,7 +923,7 @@ describe('packager', () => {
     });
 
     describe('executable name', () => {
-      it.each([
+      it.for([
         {
           type: 'name',
           testOpts: {
@@ -1071,15 +951,16 @@ describe('packager', () => {
         },
       ])(
         'names the executable correctly with $type',
-        async ({
-          testOpts,
-          expectedAppName: expectedAppName,
-          expectedExecutableName,
-        }) => {
+        async (
+          {
+            testOpts,
+            expectedAppName: expectedAppName,
+            expectedExecutableName,
+          },
+          { baseOpts },
+        ) => {
           const opts: Options = {
-            dir: path.join(__dirname, 'fixtures', 'basic'),
-            out: workDir,
-            tmpdir: tmpDir,
+            ...baseOpts,
             ...testOpts,
           };
 
@@ -1096,14 +977,12 @@ describe('packager', () => {
         },
       );
 
-      it('sets the correct Info.plist values', async () => {
+      it('sets the correct Info.plist values', async ({ baseOpts }) => {
         const appBundleIdentifier = 'com.electron.username-package-name';
         const expectedSanitizedName = '@username-package-name';
 
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           name: '@username/package-name',
         };
 
@@ -1118,7 +997,7 @@ describe('packager', () => {
       });
     });
 
-    it.each([
+    it.for([
       {
         appVersion: '1.0.0',
         buildVersion: '1.0.0.1234',
@@ -1133,12 +1012,10 @@ describe('packager', () => {
       {},
     ])(
       'sets the correct Info.plist values for the app version',
-      async (testOpts) => {
+      async (testOpts, { baseOpts }) => {
         // @ts-expect-error - integers aren't valid according to the types?
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           ...testOpts,
         };
 
@@ -1154,11 +1031,11 @@ describe('packager', () => {
       },
     );
 
-    it('sets the correct Info.plist values for the appCategoryType', async () => {
+    it('sets the correct Info.plist values for the appCategoryType', async ({
+      baseOpts,
+    }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         appCategoryType: 'public.app-category.developer-tools',
       };
       const paths = await packager(opts);
@@ -1168,18 +1045,15 @@ describe('packager', () => {
     });
 
     describe('appBundleId', () => {
-      it.each([
+      it.for([
         'com.electron.app-test',
         'com.electron."bãśè tëßt!@#$%^&*()?\'',
         undefined,
       ])(
         'sets the correct app Info.plist values for appBundleId value %s',
-        async (appBundleId) => {
+        async (appBundleId, { baseOpts }) => {
           const opts: Options = {
-            dir: path.join(__dirname, 'fixtures', 'basic'),
-            out: workDir,
-            tmpdir: tmpDir,
-            name: 'appBundleIdTest',
+            ...baseOpts,
             appBundleId,
           };
 
@@ -1195,7 +1069,7 @@ describe('packager', () => {
         },
       );
 
-      it.each([
+      it.for([
         {
           testOpts: {
             helperBundleId: 'com.electron.app-test.helper',
@@ -1210,12 +1084,9 @@ describe('packager', () => {
         },
       ])(
         'sets the correct legacy helper Info.plist values for $testOpts',
-        async ({ testOpts, expectedHelperBundleId }) => {
+        async ({ testOpts, expectedHelperBundleId }, { baseOpts }) => {
           const opts: Options = {
-            dir: path.join(__dirname, 'fixtures', 'basic'),
-            out: workDir,
-            tmpdir: tmpDir,
-            name: 'appBundleIdTest',
+            ...baseOpts,
             electronVersion: '1.4.13',
             arch: 'x64',
             platform: 'darwin',
@@ -1246,7 +1117,7 @@ describe('packager', () => {
         },
       );
 
-      it.each([
+      it.for([
         {
           testOpts: {
             helperBundleId: 'com.electron.app-test.helper',
@@ -1261,12 +1132,9 @@ describe('packager', () => {
         },
       ])(
         'sets the correct helper Info.plist values for $testOpts',
-        async ({ testOpts, expectedHelperBundleId }) => {
+        async ({ testOpts, expectedHelperBundleId }, { baseOpts }) => {
           const opts: Options = {
-            dir: path.join(__dirname, 'fixtures', 'basic'),
-            out: workDir,
-            tmpdir: tmpDir,
-            name: 'appBundleIdTest',
+            ...baseOpts,
             ...testOpts,
           };
 
@@ -1293,12 +1161,9 @@ describe('packager', () => {
       );
     });
 
-    it('symlinks frameworks', async () => {
+    it('symlinks frameworks', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
-        name: 'frameworkSymlinkTest',
+        ...baseOpts,
       };
 
       const paths = await packager(opts);
@@ -1317,13 +1182,13 @@ describe('packager', () => {
       expect(path.join(frameworkPath, 'Versions', 'Current')).toBeSymlink();
     });
 
-    it('does not handle EH and NP helpers for modern Electron versions', async () => {
+    it('does not handle EH and NP helpers for modern Electron versions', async ({
+      baseOpts,
+    }) => {
       const helpers = ['Helper EH', 'Helper NP'];
       const helperPaths: string[] = [];
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         afterExtract: [
           (buildPath, _electronVersion, _platform, _arch, cb) => {
             return Promise.all(
@@ -1353,11 +1218,11 @@ describe('packager', () => {
       }
     });
 
-    it('maps appCopyright to NSHumanReadableCopyright', async () => {
+    it('maps appCopyright to NSHumanReadableCopyright', async ({
+      baseOpts,
+    }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         appCopyright:
           'Copyright © 2013–2025 Organization. All rights reserved.',
       };
@@ -1368,11 +1233,9 @@ describe('packager', () => {
       expect(infoPlist.NSHumanReadableCopyright).toBe(opts.appCopyright);
     });
 
-    it('maps usageDescription to the correct keys', async () => {
+    it('maps usageDescription to the correct keys', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         usageDescription: {
           Microphone: 'I am a Karaoke app',
         },
@@ -1386,11 +1249,9 @@ describe('packager', () => {
       );
     });
 
-    it('can package an app named Electron', async () => {
+    it('can package an app named Electron', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         name: 'Electron',
       };
 
@@ -1402,11 +1263,11 @@ describe('packager', () => {
     });
 
     describe('asar integrity hashes', () => {
-      it('does not insert hashes when asar is disabled', async () => {
+      it('does not insert hashes when asar is disabled', async ({
+        baseOpts,
+      }) => {
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           asar: false,
         };
 
@@ -1416,11 +1277,9 @@ describe('packager', () => {
         expect(infoPlist.ElectronAsarIntegrity).toBeUndefined();
       });
 
-      it('inserts hashes when asar is enabled', async () => {
+      it('inserts hashes when asar is enabled', async ({ baseOpts }) => {
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           asar: true,
         };
 
@@ -1435,11 +1294,10 @@ describe('packager', () => {
         });
       });
 
-      it('inserts hashes when prebuilt asar is used', async () => {
+      it('inserts hashes when prebuilt asar is used', async ({ baseOpts }) => {
         const opts: Options = {
+          ...baseOpts,
           dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-          out: workDir,
-          tmpdir: tmpDir,
           prebuiltAsar: path.join(
             __dirname,
             'fixtures',
@@ -1461,11 +1319,9 @@ describe('packager', () => {
     });
 
     describe('codesign', { timeout: 60_000 }, () => {
-      it('can sign the app', async () => {
+      it('can sign the app', async ({ baseOpts }) => {
         const opts: Options = {
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          out: workDir,
-          tmpdir: tmpDir,
+          ...baseOpts,
           osxSign: { identity: 'codesign.electronjs.org' },
         };
 
@@ -1479,15 +1335,11 @@ describe('packager', () => {
     });
 
     describe('Mac App Store', () => {
-      it('can package for MAS', async () => {
+      it('can package for MAS', async ({ baseOpts }) => {
         const opts: Options = {
-          name: 'masTest',
-          dir: path.join(__dirname, 'fixtures', 'basic'),
-          electronVersion: '27.0.0',
+          ...baseOpts,
           arch: 'x64',
           platform: 'mas',
-          tmpdir: tmpDir,
-          out: workDir,
         };
 
         const paths = await packager(opts);
@@ -1525,11 +1377,9 @@ describe('packager', () => {
   });
 
   describe.runIf(process.platform === 'win32')('Windows', () => {
-    it('sanitizes the executable name', async () => {
+    it('sanitizes the executable name', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         name: '@username/package-name',
         platform: 'win32',
         arch: 'x64',
@@ -1541,11 +1391,9 @@ describe('packager', () => {
       expect(exePath).toBeFile();
     });
 
-    it('uses the executableName option', async () => {
+    it('uses the executableName option', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         name: '@username/package-name',
         executableName: 'my-app-executable',
         platform: 'win32',
@@ -1558,11 +1406,9 @@ describe('packager', () => {
       expect(exePath).toBeFile();
     });
 
-    it('sets an icon', async () => {
+    it('sets an icon', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         name: 'icon-test',
         icon: path.join(__dirname, 'fixtures', 'icon.ico'),
         platform: 'win32',
@@ -1575,11 +1421,9 @@ describe('packager', () => {
       expect(exePath).toBeFile();
     });
 
-    it('sets the correct metadata in the exe', async () => {
+    it('sets the correct metadata in the exe', async ({ baseOpts }) => {
       const opts: Options = {
-        dir: path.join(__dirname, 'fixtures', 'basic'),
-        out: workDir,
-        tmpdir: tmpDir,
+        ...baseOpts,
         name: 'versionInfoTest',
         platform: 'win32',
         arch: 'x64',

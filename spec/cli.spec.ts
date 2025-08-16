@@ -2,10 +2,6 @@ import { parseArgs } from '../src/cli';
 import { describe, it, expect } from 'vitest';
 
 describe('parseArgs', () => {
-  beforeEach(() => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-
   it('populates opts.electronVersion', () => {
     const emptyArgs = parseArgs([]);
     expect(emptyArgs.electronVersion).toBeUndefined();
