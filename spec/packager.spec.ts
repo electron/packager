@@ -19,6 +19,10 @@ import { createDownloadOpts, downloadElectronZip } from '../src/download';
 import plist, { PlistObject } from 'plist';
 import { filterCFBundleIdentifier } from '../src/mac';
 
+// @ts-expect-error - javascript file
+import { dynamicImport } from '../src/dynamicImport';
+import type { NtExecutable, NtExecutableResource } from 'resedit';
+
 describe('packager', () => {
   let workDir: string;
   let tmpDir: string;
@@ -1521,10 +1525,91 @@ describe('packager', () => {
   });
 
   describe.runIf(process.platform === 'win32')('Windows', () => {
-    it.todo('sanitizes the executable name');
-    it.todo('uses the executableName option');
-    it.todo('sets an icon');
-    it.todo('sets the correct version info in the exe');
-    it.todo('sets the requested execution level in the exe');
+    it('sanitizes the executable name', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        name: '@username/package-name',
+        platform: 'win32',
+        arch: 'x64',
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const exePath = path.join(paths[0], `@username-package-name.exe`);
+      expect(exePath).toBeFile();
+    });
+
+    it('uses the executableName option', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        name: '@username/package-name',
+        executableName: 'my-app-executable',
+        platform: 'win32',
+        arch: 'x64',
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const exePath = path.join(paths[0], `my-app-executable.exe`);
+      expect(exePath).toBeFile();
+    });
+
+    it('sets an icon', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        name: 'icon-test',
+        icon: path.join(__dirname, 'fixtures', 'icon.ico'),
+        platform: 'win32',
+        arch: 'x64',
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const exePath = path.join(paths[0], `icon-test.exe`);
+      expect(exePath).toBeFile();
+    });
+
+    it('sets the correct metadata in the exe', async () => {
+      const opts: Options = {
+        dir: path.join(__dirname, 'fixtures', 'basic'),
+        out: workDir,
+        tmpdir: tmpDir,
+        name: 'versionInfoTest',
+        platform: 'win32',
+        arch: 'x64',
+        appVersion: '1.2.3',
+        buildVersion: '4.5.6',
+        win32metadata: { 'requested-execution-level': 'requireAdministrator' },
+      };
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const resedit = await dynamicImport('resedit');
+      const exe = (resedit.NtExecutable as typeof NtExecutable).from(
+        await fs.readFile(path.join(paths[0], 'versionInfoTest.exe')),
+      );
+      const res = (
+        resedit.NtExecutableResource as typeof NtExecutableResource
+      ).from(exe);
+
+      const manifest = res.entries.find((e) => e.type === 24)!;
+      const manifestString = Buffer.from(manifest.bin).toString('utf-8');
+      expect(manifestString).toContain('requireAdministrator');
+
+      const versionInfo = resedit.Resource.VersionInfo.fromEntries(res.entries);
+      expect(versionInfo.length).toBe(1);
+      const version = versionInfo[0];
+      const langs = version.getAllLanguagesForStringValues();
+      expect(langs.length).toBe(1);
+      expect(version.getStringValues(langs[0]).FileVersion).toBe('4.5.6');
+      expect(version.getStringValues(langs[0]).ProductVersion).toBe('1.2.3');
+    });
   });
 });
