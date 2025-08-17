@@ -132,9 +132,12 @@ export async function validateElectronApp(
   debug('Validation complete');
 }
 
-export function hostInfo() {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const metadata = require('../package.json');
+export async function hostInfo() {
+  const packageJsonPath = path.resolve(import.meta.dirname, '../package.json');
+
+  const { default: metadata } = await import(packageJsonPath, {
+    with: { type: 'json' },
+  });
 
   return (
     `Electron Packager ${metadata.version}\n` +

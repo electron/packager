@@ -30,8 +30,8 @@ import {
 } from './types.js';
 import { App } from './platform.js';
 
-function debugHostInfo() {
-  debug(hostInfo());
+async function debugHostInfo() {
+  debug(await hostInfo());
 }
 
 export class Packager {
@@ -144,7 +144,9 @@ export class Packager {
     debug(`Creating ${buildDir}`);
     await fs.promises.mkdir(buildDir, { recursive: true });
     await this.extractElectronZip(comboOpts, zipPath, buildDir);
-    const os = await import(osModules[comboOpts.platform as OfficialPlatform]);
+    const os = await import(
+      `${osModules[comboOpts.platform as OfficialPlatform]}.js`
+    );
     const app = new os.App(comboOpts, buildDir) as App;
     return app.create();
   }
@@ -260,7 +262,7 @@ async function packageAllSpecifiedCombos(
  * @example
  *
  * ```javascript
- * const packager = require('@electron/packager')
+ * import { packager } from '@electron/packager'
  *
  * async function bundleElectronApp(options) {
  *   const appPaths = await packager(options)
@@ -273,7 +275,7 @@ async function packageAllSpecifiedCombos(
  * @returns A Promise containing the paths to the newly created application bundles.
  */
 export async function packager(opts: Options): Promise<string[]> {
-  debugHostInfo();
+  await debugHostInfo();
 
   if (debug.enabled) {
     debug(`Packager Options: ${JSON.stringify(opts)}`);

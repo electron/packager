@@ -149,7 +149,7 @@ export function parseArgs(argv: string[]) {
         '--version does not take an argument. Perhaps you meant --app-version or --electron-version?\n',
       );
     }
-    console.log(hostInfo());
+    console.log(await hostInfo());
     process.exit(0);
   } else if (!args.dir) {
     await printUsageAndExit(true);

@@ -84,8 +84,7 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void;
  * @example
  *
  * ```javascript
- * const packager = require('@electron/packager')
- * const { serialHooks } = require('@electron/packager/src/hooks')
+ * import { packager, serialHooks } from '@electron/packager'
  *
  * packager({
  *   // ...
