@@ -87,10 +87,10 @@
     "provenance": true
   },
   "scripts": {
-    "ava": "ava test/index.js",
+    "ava": "ava test/index.shim.cjs",
     "build": "tsc",
     "postbuild": "copyfiles -f ./temp/targets.js ./src",
-    "coverage": "nyc ava test/index.js",
+    "coverage": "nyc ava test/index.shim.cjs",
     "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
     "build:docs": "npx typedoc",
     "lint": "prettier --check \"*.{ts,js,json}\" && eslint . --cache",
@@ -109,7 +109,13 @@
     "app"
   ],
   "ava": {
-    "timeout": "120s"
+    "timeout": "120s",
+    "extensions": {
+      "cjs": true
+    },
+    "nonSemVerExperiments": {
+      "configurableModuleFormat": true
+    }
   },
   "funding": {
     "url": "https://github.com/electron/packager?sponsor=1"
