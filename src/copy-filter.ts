@@ -10,7 +10,7 @@ import path from 'node:path';
 import { isModule, Pruner } from './prune';
 import { officialPlatformArchCombos } from './targets';
 import { ComboOptions, Options } from './types';
-import { CopyFilterAsync } from 'fs-extra';
+import { CopyOptions } from 'node:fs';
 
 const DEFAULT_IGNORES = [
   '/package-lock\\.json$',
@@ -82,7 +82,7 @@ function generateFilterFunction(
   }
 }
 
-export function userPathFilter(opts: ComboOptions): CopyFilterAsync {
+export function userPathFilter(opts: ComboOptions): CopyOptions['filter'] {
   const filterFunc = generateFilterFunction(opts.ignore || []);
   const ignoredOutDirs = generateIgnoredOutDirs(opts);
   const pruner = opts.prune ? new Pruner(opts.dir, Boolean(opts.quiet)) : null;
@@ -116,5 +116,5 @@ export function userPathFilter(opts: ComboOptions): CopyFilterAsync {
     }
 
     return filterFunc(name);
-  } as CopyFilterAsync;
+  };
 }

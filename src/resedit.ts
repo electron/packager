@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import { promisifiedGracefulFs } from './util';
 // eslint-disable-next-line import/no-unresolved
 import { load as loadResEdit } from 'resedit/cjs';
 import { Win32MetadataOptions } from './types';
@@ -47,7 +47,7 @@ const RT_MANIFEST_TYPE = 24;
 export async function resedit(exePath: string, options: ExeMetadata) {
   const resedit = await loadResEdit();
 
-  const exeData = await fs.readFile(exePath);
+  const exeData = await promisifiedGracefulFs.readFile(exePath);
   const exe = resedit.NtExecutable.from(exeData);
   const res = resedit.NtExecutableResource.from(exe);
 
@@ -62,7 +62,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
       );
     }
     const iconFile = resedit.Data.IconFile.from(
-      await fs.readFile(options.iconPath),
+      await promisifiedGracefulFs.readFile(options.iconPath),
     );
     resedit.Resource.IconGroupEntry.replaceIconsForResource(
       res.entries,
@@ -95,7 +95,9 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     const manifestEntry = manifests[0];
     if (options.win32Metadata?.['application-manifest']) {
       manifestEntry.bin = (
-        await fs.readFile(options.win32Metadata?.['application-manifest'])
+        await promisifiedGracefulFs.readFile(
+          options.win32Metadata?.['application-manifest'],
+        )
       ).buffer;
     } else if (options.win32Metadata?.['requested-execution-level']) {
       // This implementation matches what rcedit used to do, in theory we can be Smarter
@@ -167,5 +169,5 @@ export async function resedit(exePath: string, options: ExeMetadata) {
 
   res.outputResource(exe);
 
-  await fs.writeFile(exePath, Buffer.from(exe.generate()));
+  await promisifiedGracefulFs.writeFile(exePath, Buffer.from(exe.generate()));
 }

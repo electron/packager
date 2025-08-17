@@ -8,7 +8,8 @@ import {
 } from './common';
 import { populateIgnoredPaths } from './copy-filter';
 import { createDownloadCombos, downloadElectronZip } from './download';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
+import { promisifiedGracefulFs } from './util';
 import { getMetadataFromPackageJSON } from './infer';
 import { promisifyHooks } from './hooks';
 import path from 'node:path';
@@ -47,15 +48,15 @@ export class Packager {
 
   async ensureTempDir() {
     if (this.useTempDir) {
-      await fs.remove(this.tempBase);
+      await fs.promises.rm(this.tempBase, { recursive: true, force: true });
     } else {
       return Promise.resolve();
     }
   }
 
   async testSymlink(comboOpts: ComboOptions, zipPath: string) {
-    await fs.mkdirp(this.tempBase);
-    const testPath = await fs.mkdtemp(
+    await fs.promises.mkdir(this.tempBase, { recursive: true });
+    const testPath = await fs.promises.mkdtemp(
       path.join(
         this.tempBase,
         `symlink-test-${comboOpts.platform}-${comboOpts.arch}-`,
@@ -65,14 +66,14 @@ export class Packager {
     const testLink = path.join(testPath, 'testlink');
 
     try {
-      await fs.outputFile(testFile, '');
-      await fs.symlink(testFile, testLink);
+      await promisifiedGracefulFs.writeFile(testFile, '');
+      await fs.promises.symlink(testFile, testLink);
       this.canCreateSymlinks = true;
     } catch (e) {
       /* istanbul ignore next */
       this.canCreateSymlinks = false;
     } finally {
-      await fs.remove(testPath);
+      await fs.promises.rm(testPath, { recursive: true, force: true });
     }
 
     if (this.canCreateSymlinks) {
@@ -98,7 +99,7 @@ export class Packager {
     zipPath: string,
   ) {
     debug(`Removing ${outDir} due to setting overwrite: true`);
-    await fs.remove(outDir);
+    await fs.promises.rm(outDir, { recursive: true, force: true });
     return this.createApp(comboOpts, zipPath);
   }
 
@@ -127,8 +128,8 @@ export class Packager {
     } else {
       buildParentDir = this.opts.out || process.cwd();
     }
-    await fs.mkdirp(buildParentDir);
-    return await fs.mkdtemp(
+    await fs.promises.mkdir(buildParentDir, { recursive: true });
+    return await fs.promises.mkdtemp(
       path.resolve(buildParentDir, `${platform}-${arch}-template-`),
     );
   }
@@ -141,7 +142,7 @@ export class Packager {
     );
 
     debug(`Creating ${buildDir}`);
-    await fs.ensureDir(buildDir);
+    await fs.promises.mkdir(buildDir, { recursive: true });
     await this.extractElectronZip(comboOpts, zipPath, buildDir);
     const os = await import(osModules[comboOpts.platform as OfficialPlatform]);
     const app = new os.App(comboOpts, buildDir) as App;
@@ -150,7 +151,7 @@ export class Packager {
 
   async checkOverwrite(comboOpts: ComboOptions, zipPath: string) {
     const finalPath = generateFinalPath(comboOpts);
-    if (await fs.pathExists(finalPath)) {
+    if (fs.existsSync(finalPath)) {
       if (this.opts.overwrite) {
         return this.overwriteAndCreateApp(finalPath, comboOpts, zipPath);
       } else {
@@ -167,12 +168,12 @@ export class Packager {
 
   async getElectronZipPath(downloadOpts: DownloadOptions) {
     if (this.opts.electronZipDir) {
-      if (await fs.pathExists(this.opts.electronZipDir)) {
+      if (fs.existsSync(this.opts.electronZipDir)) {
         const zipPath = path.resolve(
           this.opts.electronZipDir,
           `electron-v${downloadOpts.version}-${downloadOpts.platform}-${downloadOpts.arch}.zip`,
         );
-        if (!(await fs.pathExists(zipPath))) {
+        if (!fs.existsSync(zipPath)) {
           throw new Error(
             `The specified Electron ZIP file does not exist: ${zipPath}`,
           );

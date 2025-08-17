@@ -1,6 +1,6 @@
 import { normalizePath, warning } from './common';
 import { DestroyerOfModules, DepType, Module, ModuleMap } from 'galactus';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 import path from 'node:path';
 
 const ELECTRON_MODULES = ['electron', 'electron-nightly'];
@@ -74,7 +74,7 @@ function isNodeModuleFolder(pathToCheck: string) {
 
 export async function isModule(pathToCheck: string) {
   return (
-    (await fs.pathExists(path.join(pathToCheck, 'package.json'))) &&
+    fs.existsSync(path.join(pathToCheck, 'package.json')) &&
     isNodeModuleFolder(pathToCheck)
   );
 }

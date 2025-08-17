@@ -1,10 +1,11 @@
 import filenamify from 'filenamify';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 import os from 'node:os';
 import path from 'node:path';
 import createDebug from 'debug';
 import { ComboOptions, Options } from './types';
 import { CreateOptions as AsarOptions } from '@electron/asar';
+import { pathToFileURL } from 'node:url';
 
 export const debug = createDebug('electron-packager');
 
@@ -105,7 +106,7 @@ export async function validateElectronApp(
   debug('Checking for a package.json file');
 
   const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json');
-  if (!(await fs.pathExists(bundledPackageJSONPath))) {
+  if (!fs.existsSync(bundledPackageJSONPath)) {
     const originalPackageJSONPath = path.join(appDir, 'package.json');
     throw new Error(
       `Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`,
@@ -113,10 +114,15 @@ export async function validateElectronApp(
   }
 
   debug('Checking for the main entry point file');
-  const packageJSON = await fs.readJson(bundledPackageJSONPath);
+  const { default: packageJSON } = await import(
+    pathToFileURL(bundledPackageJSONPath).toString(),
+    {
+      with: { type: 'json' },
+    }
+  );
   const mainScriptBasename = packageJSON.main || 'index.js';
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
-  if (!(await fs.pathExists(mainScript))) {
+  if (!fs.existsSync(mainScript)) {
     const originalMainScript = path.join(appDir, mainScriptBasename);
     throw new Error(
       `The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`,

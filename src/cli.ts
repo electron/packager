@@ -1,5 +1,5 @@
 import { info, hostInfo, warning } from './common';
-import fs from 'fs-extra';
+import { promisifiedGracefulFs } from './util';
 import { initializeProxy } from '@electron/get';
 import { packager } from './packager';
 import path from 'node:path';
@@ -9,7 +9,9 @@ import { Options } from './types';
 /* istanbul ignore next */
 async function printUsageAndExit(isError: boolean) {
   const usage = (
-    await fs.readFile(path.resolve(__dirname, '..', 'usage.txt'))
+    await promisifiedGracefulFs.readFile(
+      path.resolve(import.meta.dirname, '..', 'usage.txt'),
+    )
   ).toString();
   const print = isError ? console.error : console.log;
   print(usage);
