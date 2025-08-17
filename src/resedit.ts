@@ -1,7 +1,6 @@
-import { promisifiedGracefulFs } from './util';
-// eslint-disable-next-line import/no-unresolved
-import { load as loadResEdit } from 'resedit/cjs';
-import { Win32MetadataOptions } from './types';
+import { promisifiedGracefulFs } from './util.js';
+import { Data, NtExecutable, NtExecutableResource, Resource } from 'resedit';
+import { Win32MetadataOptions } from './types.js';
 import { FileRecord } from '@electron/asar';
 
 export type ExeMetadata = {
@@ -45,15 +44,13 @@ function parseVersionString(str: string): ParsedVersionNumerics {
 const RT_MANIFEST_TYPE = 24;
 
 export async function resedit(exePath: string, options: ExeMetadata) {
-  const resedit = await loadResEdit();
-
   const exeData = await promisifiedGracefulFs.readFile(exePath);
-  const exe = resedit.NtExecutable.from(exeData);
-  const res = resedit.NtExecutableResource.from(exe);
+  const exe = NtExecutable.from(exeData);
+  const res = NtExecutableResource.from(exe);
 
   if (options.iconPath) {
     // Icon Info
-    const existingIconGroups = resedit.Resource.IconGroupEntry.fromEntries(
+    const existingIconGroups = Resource.IconGroupEntry.fromEntries(
       res.entries,
     );
     if (existingIconGroups.length !== 1) {
@@ -61,10 +58,10 @@ export async function resedit(exePath: string, options: ExeMetadata) {
         'Failed to parse win32 executable resources, failed to locate existing icon group',
       );
     }
-    const iconFile = resedit.Data.IconFile.from(
+    const iconFile = Data.IconFile.from(
       await promisifiedGracefulFs.readFile(options.iconPath),
     );
-    resedit.Resource.IconGroupEntry.replaceIconsForResource(
+    Resource.IconGroupEntry.replaceIconsForResource(
       res.entries,
       existingIconGroups[0].id,
       existingIconGroups[0].lang,
@@ -114,7 +111,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
   }
 
   // Version Info
-  const versionInfo = resedit.Resource.VersionInfo.fromEntries(res.entries);
+  const versionInfo = Resource.VersionInfo.fromEntries(res.entries);
   if (versionInfo.length !== 1) {
     throw new Error(
       'Failed to parse win32 executable resources, failed to locate existing version info',

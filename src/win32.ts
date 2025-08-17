@@ -1,10 +1,12 @@
 import path from 'node:path';
-import { sign } from '@electron/windows-sign';
-import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
-import { App } from './platform';
-import { debug, sanitizeAppName, warning } from './common';
-import { ComboOptions, Options, WindowsSignOptions } from './types';
-import { ExeMetadata, resedit } from './resedit';
+import {
+  sign,
+  SignOptions as WindowsInternalSignOptions,
+} from '@electron/windows-sign';
+import { App } from './platform.js';
+import { debug, sanitizeAppName, warning } from './common.js';
+import { ComboOptions, Options, WindowsSignOptions } from './types.js';
+import { ExeMetadata, resedit } from './resedit.js';
 
 export class WindowsApp extends App {
   get originalElectronName() {

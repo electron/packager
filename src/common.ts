@@ -3,7 +3,7 @@ import fs from 'graceful-fs';
 import os from 'node:os';
 import path from 'node:path';
 import createDebug from 'debug';
-import { ComboOptions, Options } from './types';
+import { ComboOptions, Options } from './types.js';
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { pathToFileURL } from 'node:url';
 

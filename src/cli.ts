@@ -1,10 +1,10 @@
-import { info, hostInfo, warning } from './common';
-import { promisifiedGracefulFs } from './util';
+import { info, hostInfo, warning } from './common.js';
+import { promisifiedGracefulFs } from './util.js';
 import { initializeProxy } from '@electron/get';
-import { packager } from './packager';
+import { packager } from './packager.js';
 import path from 'node:path';
 import yargs from 'yargs-parser';
-import { Options } from './types';
+import { Options } from './types.js';
 
 /* istanbul ignore next */
 async function printUsageAndExit(isError: boolean) {

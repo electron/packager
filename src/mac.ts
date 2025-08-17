@@ -1,14 +1,14 @@
-import { App } from './platform';
-import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
+import { App } from './platform.js';
+import { debug, sanitizeAppName, subOptionWarning, warning } from './common.js';
 import fs from 'graceful-fs';
-import { promisifiedGracefulFs } from './util';
+import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
 import { signApp } from '@electron/osx-sign';
-import { ComboOptions } from './types';
-import { SignOptions } from '@electron/osx-sign/dist/cjs/types';
-import { generateAssetCatalogForIcon } from './icon-composer';
+import { ComboOptions } from './types.js';
+import { SignOptions } from '@electron/osx-sign/dist/cjs/types.js';
+import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

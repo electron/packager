@@ -10,11 +10,11 @@ import {
   generateFinalPath,
   validateElectronApp,
   warning,
-} from './common';
-import { userPathFilter } from './copy-filter';
-import { promisifyHooks } from './hooks';
+} from './common.js';
+import { userPathFilter } from './copy-filter.js';
+import { promisifyHooks } from './hooks.js';
 import crypto from 'node:crypto';
-import { ComboOptions } from './types';
+import { ComboOptions } from './types.js';
 
 export class App {
   asarIntegrity:

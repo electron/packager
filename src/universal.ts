@@ -1,11 +1,11 @@
 import { makeUniversalApp } from '@electron/universal';
-import { generateFinalPath, info } from './common';
+import { generateFinalPath, info } from './common.js';
 import fs from 'graceful-fs';
-import { promisifiedGracefulFs } from './util';
+import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
-import { App } from './mac';
-import { ComboOptions, DownloadOptions, SupportedArch } from './types';
-import { Packager } from './packager';
+import { App } from './mac.js';
+import { ComboOptions, DownloadOptions, SupportedArch } from './types.js';
+import { Packager } from './packager.js';
 
 export async function packageUniversalMac(
   packageForPlatformAndArchWithOpts: Packager['packageForPlatformAndArchWithOpts'],

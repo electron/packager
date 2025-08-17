@@ -3,7 +3,7 @@ import {
   FinalizePackageTargetsHookFunction,
   HookFunction,
   HookFunctionErrorCallback,
-} from './types';
+} from './types.js';
 
 export async function promisifyHooks(
   hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined,

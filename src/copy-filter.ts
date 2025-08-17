@@ -4,12 +4,12 @@ import {
   ensureArray,
   generateFinalBasename,
   normalizePath,
-} from './common';
+} from './common.js';
 import junk from 'junk';
 import path from 'node:path';
-import { isModule, Pruner } from './prune';
-import { officialPlatformArchCombos } from './targets';
-import { ComboOptions, Options } from './types';
+import { isModule, Pruner } from './prune.js';
+import { officialPlatformArchCombos } from './targets.js';
+import { ComboOptions, Options } from './types.js';
 import { CopyOptions } from 'node:fs';
 
 const DEFAULT_IGNORES = [
