@@ -1,6 +1,10 @@
 import fs from 'graceful-fs';
 import path from 'node:path';
-import asar, { FileRecord } from '@electron/asar';
+import {
+  createPackageWithOptions,
+  FileRecord,
+  getRawHeader,
+} from '@electron/asar';
 
 import {
   baseTempDir,
@@ -303,7 +307,7 @@ export class App {
       this.hookArgsWithOriginalResourcesAppDir,
     );
 
-    await asar.createPackageWithOptions(
+    await createPackageWithOptions(
       this.originalResourcesAppDir,
       this.appAsarPath,
       this.asarOptions,
@@ -327,7 +331,7 @@ export class App {
   getAsarIntegrity(
     path: string,
   ): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
-    const { headerString } = asar.getRawHeader(path);
+    const { headerString } = getRawHeader(path);
     return {
       algorithm: 'SHA256',
       hash: crypto.createHash('SHA256').update(headerString).digest('hex'),

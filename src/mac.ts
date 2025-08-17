@@ -5,9 +5,8 @@ import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
-import { signApp } from '@electron/osx-sign';
+import { sign, SignOptions } from '@electron/osx-sign';
 import { ComboOptions } from './types.js';
-import { SignOptions } from '@electron/osx-sign/dist/cjs/types.js';
 import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
@@ -535,7 +534,7 @@ export class MacApp extends App implements Plists {
         `Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`,
       );
       try {
-        await signApp(signOpts as SignOptions);
+        await sign(signOpts);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {

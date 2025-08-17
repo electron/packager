@@ -10,9 +10,9 @@
 
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
-import { NotaryToolCredentials } from '@electron/notarize/lib/types.js';
-import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign/dist/esm/types.js';
-import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types.js';
+import { NotaryToolCredentials } from '@electron/notarize';
+import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign';
+import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign';
 import type { makeUniversalApp } from '@electron/universal';
 
 /**
