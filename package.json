@@ -24,7 +24,6 @@
     "bin",
     "docs/*.md",
     "dist",
-    "src/targets.js",
     "usage.txt"
   ],
   "dependencies": {
@@ -64,7 +63,6 @@
     "@typescript-eslint/parser": "^8.39.1",
     "ava": "^3.10.1",
     "buffer-equal": "^1.0.0",
-    "copyfiles": "^2.4.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-ava": "^14.0.0",
@@ -90,7 +88,6 @@
   "scripts": {
     "ava": "ava test/index.shim.cjs",
     "build": "tsc",
-    "postbuild": "copyfiles -f ./temp/targets.js ./src",
     "coverage": "nyc ava test/index.shim.cjs",
     "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
     "build:docs": "npx typedoc",
