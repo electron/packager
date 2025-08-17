@@ -50,9 +50,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
 
   if (options.iconPath) {
     // Icon Info
-    const existingIconGroups = Resource.IconGroupEntry.fromEntries(
-      res.entries,
-    );
+    const existingIconGroups = Resource.IconGroupEntry.fromEntries(res.entries);
     if (existingIconGroups.length !== 1) {
       throw new Error(
         'Failed to parse win32 executable resources, failed to locate existing icon group',
@@ -91,10 +89,10 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     }
     const manifestEntry = manifests[0];
     if (options.win32Metadata?.['application-manifest']) {
-      manifestEntry.bin = (
+      manifestEntry.bin = Buffer.from(
         await promisifiedGracefulFs.readFile(
           options.win32Metadata?.['application-manifest'],
-        )
+        ),
       ).buffer;
     } else if (options.win32Metadata?.['requested-execution-level']) {
       // This implementation matches what rcedit used to do, in theory we can be Smarter
@@ -106,7 +104,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
         `$1${options.win32Metadata?.['requested-execution-level']}$2`,
       );
-      manifestEntry.bin = Buffer.from(newContent, 'utf-8');
+      manifestEntry.bin = Buffer.from(newContent, 'utf-8').buffer;
     }
   }
 
@@ -158,7 +156,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     res.entries.push({
       type: 'INTEGRITY',
       id: 'ELECTRONASAR',
-      bin: Buffer.from(JSON.stringify(integrityList), 'utf-8'),
+      bin: Buffer.from(JSON.stringify(integrityList), 'utf-8').buffer,
       lang: languageInfo[0].lang,
       codepage: languageInfo[0].codepage,
     });

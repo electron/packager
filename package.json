@@ -78,7 +78,7 @@
     "pkg-up": "^4.0.0",
     "sinon": "^18.0.0",
     "typedoc": "~0.25.4",
-    "typescript": "^5.2.2"
+    "typescript": "^5.9.2"
   },
   "engines": {
     "node": ">= 22.12.0"
