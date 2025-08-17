@@ -2,7 +2,7 @@ import { info, hostInfo, warning } from './common';
 import fs from 'fs-extra';
 import { initializeProxy } from '@electron/get';
 import { packager } from './packager';
-import path from 'path';
+import path from 'node:path';
 import yargs from 'yargs-parser';
 import { Options } from './types';
 

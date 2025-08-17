@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import asar, { FileRecord } from '@electron/asar';
 
 import {
@@ -13,7 +13,7 @@ import {
 } from './common';
 import { userPathFilter } from './copy-filter';
 import { promisifyHooks } from './hooks';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { ComboOptions } from './types';
 
 export class App {

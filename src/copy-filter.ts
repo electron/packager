@@ -6,7 +6,7 @@ import {
   normalizePath,
 } from './common';
 import junk from 'junk';
-import path from 'path';
+import path from 'node:path';
 import { isModule, Pruner } from './prune';
 import { officialPlatformArchCombos } from './targets';
 import { ComboOptions, Options } from './types';

@@ -1,7 +1,7 @@
 import { normalizePath, warning } from './common';
 import { DestroyerOfModules, DepType, Module, ModuleMap } from 'galactus';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
 const ELECTRON_MODULES = ['electron', 'electron-nightly'];
 

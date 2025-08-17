@@ -1,7 +1,7 @@
 import { makeUniversalApp } from '@electron/universal';
 import { generateFinalPath, info } from './common';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { App } from './mac';
 import { ComboOptions, DownloadOptions, SupportedArch } from './types';
 import { Packager } from './packager';

@@ -11,7 +11,7 @@ import { createDownloadCombos, downloadElectronZip } from './download';
 import fs from 'fs-extra';
 import { getMetadataFromPackageJSON } from './infer';
 import { promisifyHooks } from './hooks';
-import path from 'path';
+import path from 'node:path';
 import {
   createPlatformArchPairs,
   osModules,

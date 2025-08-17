@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { sign } from '@electron/windows-sign';
 import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
 import { App } from './platform';

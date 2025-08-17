@@ -1,7 +1,7 @@
 import { App } from './platform';
 import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
 import { signApp } from '@electron/osx-sign';
