@@ -5,7 +5,7 @@ import {
   generateFinalBasename,
   normalizePath,
 } from './common.js';
-import junk from 'junk';
+import { isJunk } from 'junk';
 import path from 'node:path';
 import { isModule, Pruner } from './prune.js';
 import { officialPlatformArchCombos } from './targets.js';
@@ -96,7 +96,7 @@ export function userPathFilter(opts: ComboOptions): CopyOptions['filter'] {
 
     if (opts.junk !== false) {
       // defaults to true
-      if (junk.is(path.basename(fullPath))) {
+      if (isJunk(path.basename(fullPath))) {
         return false;
       }
     }

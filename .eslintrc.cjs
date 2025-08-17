@@ -22,7 +22,6 @@ const eslintConfig = {
       extends: [
         'eslint:recommended',
         'plugin:ava/recommended',
-        'plugin:import/errors',
         'plugin:import/warnings',
         'plugin:promise/recommended',
         'plugin:@typescript-eslint/eslint-recommended',

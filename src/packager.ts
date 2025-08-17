@@ -69,7 +69,7 @@ export class Packager {
       await promisifiedGracefulFs.writeFile(testFile, '');
       await fs.promises.symlink(testFile, testLink);
       this.canCreateSymlinks = true;
-    } catch (e) {
+    } catch {
       /* istanbul ignore next */
       this.canCreateSymlinks = false;
     } finally {
