@@ -59,11 +59,8 @@
     "@types/yargs-parser": "^21.0.2",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "^6.9.1",
-    "ava": "^3.10.1",
-    "buffer-equal": "^1.0.0",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-ava": "^14.0.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^6.2.0",
@@ -71,8 +68,6 @@
     "lint-staged": "^12.1.7",
     "lodash": "^4.17.21",
     "patch-package": "^8.0.0",
-    "pkg-up": "^4.0.0",
-    "sinon": "^18.0.0",
     "tsx": "^4.20.4",
     "typedoc": "~0.25.4",
     "typescript": "^5.2.2",
@@ -85,7 +80,6 @@
     "provenance": true
   },
   "scripts": {
-    "ava": "ava test/index.js",
     "build": "tsc",
     "build:docs": "npx typedoc",
     "lint": "prettier --check \"*.{ts,js,json}\" && eslint . --cache",
