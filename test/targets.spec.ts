@@ -13,7 +13,7 @@ import config from './config.json';
 describe('allOfficialArchsForPlatformAndVersion', () => {
   it('returns undefined for unknown platforms', () => {
     const result = allOfficialArchsForPlatformAndVersion(
-      // @ts-expect-error
+      // @ts-expect-error - we're faking an invalid platform value to see the behaviour on runtime
       'unknown',
       '1.0.0',
     );
