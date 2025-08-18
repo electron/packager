@@ -1,8 +1,0 @@
-{
-  "main": "main.js",
-  "productName": "MainJS",
-  "description": "Some description",
-  "devDependencies": {
-    "electron": "1.4.15"
-  }
-}
