@@ -105,9 +105,7 @@ describe('getMetadataFromPackageJSON', () => {
       await fs.writeJson(path.join(tempDir, 'package.json'), packageJSON);
       const opts: Options = {
         dir: tempDir,
-        electronVersion: '27.0.0',
-        // FIXME: this test is set up oddly. Not adding the `name` field causes the function to not throw and instead return an empty object.
-        name: 'MainJS',
+        appVersion: '1.0.0'
       };
       await expect(
         getMetadataFromPackageJSON(['win32'], opts, opts.dir),

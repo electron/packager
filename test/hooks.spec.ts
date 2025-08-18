@@ -38,8 +38,9 @@ describe('promisifyHooks', () => {
         timeoutFunc(number, number % 2 === 0 ? 100 : 0),
       );
 
-      const result = await serialHooks(testHooks)('', '', '', '', () => output);
-      expect(result).toBe('0 1 2 3 4 5 6 7 8 9 10');
+  const runSerialHook = serialHooks(testHooks);
+  await runSerialHook('', '', '', '', () => {});
+  expect(output).toBe('0 1 2 3 4 5 6 7 8 9 10');
     });
   });
 });

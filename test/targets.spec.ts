@@ -12,7 +12,8 @@ import { Options, SupportedPlatform, SupportedArch } from '../src/types';
 describe('allOfficialArchsForPlatformAndVersion', () => {
   it('returns undefined for unknown platforms', () => {
     const result = allOfficialArchsForPlatformAndVersion(
-      'unknown' as unknown as SupportedPlatform,
+      // @ts-expect-error
+      'unknown',
       '1.0.0',
     );
     expect(result).toBe(undefined);

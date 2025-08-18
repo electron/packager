@@ -13,9 +13,7 @@ export function generateResourcesPath(
 ) {
   if (opts.platform === 'darwin') {
     return path.join(`${opts.name}.app`, 'Contents', 'Resources');
-  } else {
-    return 'resources';
-  }
+  return 'resources';
 }
 
 export function generateNamePath(opts: Pick<Options, 'name' | 'platform'>) {
