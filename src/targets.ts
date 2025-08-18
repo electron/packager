@@ -9,7 +9,7 @@ import {
   SupportedPlatform,
 } from './types';
 
-export const officialArchs: SupportedArch[] = [
+export const officialArchs = [
   'ia32',
   'x64',
   'armv7l',
@@ -18,12 +18,7 @@ export const officialArchs: SupportedArch[] = [
   'universal',
 ];
 
-export const officialPlatforms: SupportedPlatform[] = [
-  'darwin',
-  'linux',
-  'mas',
-  'win32',
-];
+export const officialPlatforms = ['darwin', 'linux', 'mas', 'win32'];
 
 export const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
@@ -205,10 +200,7 @@ export function validateListFromOptions(
   const officialElectronPackages = usingOfficialElectronPackages(opts);
 
   for (const value of list) {
-    if (
-      officialElectronPackages &&
-      !(supported[name] as Set<string>).has(value)
-    ) {
+    if (officialElectronPackages && !supported[name].has(value)) {
       return unsupportedListOption(name, value, supported[name]);
     }
   }
