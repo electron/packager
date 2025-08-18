@@ -1,4 +1,3 @@
-import {} from '../src/resedit';
 import { WindowsApp } from '../src/win32';
 import _ from 'lodash';
 
