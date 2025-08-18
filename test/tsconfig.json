@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest/globals", "node"],
+    "resolveJsonModule": true
+  },
+  "include": ["../src", "./**/*.ts"]
+}

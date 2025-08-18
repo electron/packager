@@ -7,5 +7,8 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     testTimeout: 15_000,
+    typecheck: {
+      tsconfig: './tsconfig.json',
+    },
   },
 });

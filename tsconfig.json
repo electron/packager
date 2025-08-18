@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "ES2021",
     "lib": ["ES2021"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "CommonJS",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -11,9 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "sourceMap": true,
-    "types": ["vitest/globals", "node"],
-    "resolveJsonModule": true
+    "sourceMap": true
   },
-  "include": ["src", "test/vitest.d.ts", "test/**/*.ts"]
+  "include": ["src"]
 }
