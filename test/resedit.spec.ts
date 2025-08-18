@@ -8,9 +8,9 @@ describe('resedit', () => {
     const app = new WindowsApp(opts, '');
     const rcOpts = app.generateReseditOptionsSansIcon();
 
-    expect(rcOpts.win32Metadata?.FileDescription).toBe(opts.name);
-    expect(rcOpts.win32Metadata?.InternalName).toBe(opts.name);
-    expect(rcOpts.win32Metadata?.OriginalFilename).toBe('Win32 App.exe');
+    expect(rcOpts.win32Metadata.FileDescription).toBe(opts.name);
+    expect(rcOpts.win32Metadata.InternalName).toBe(opts.name);
+    expect(rcOpts.win32Metadata.OriginalFilename).toBe('Win32 App.exe');
     expect(rcOpts.productName).toBe(opts.name);
   });
 
