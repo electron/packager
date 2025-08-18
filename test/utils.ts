@@ -13,9 +13,7 @@ export function generateResourcesPath(
 ) {
   if (isPlatformMac(opts.platform)) {
     return path.join(`${opts.name}.app`, 'Contents', 'Resources');
-  } else {
-    return 'resources';
-  }
+  return 'resources';
 }
 
 export function generateNamePath(
