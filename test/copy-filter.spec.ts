@@ -157,6 +157,9 @@ describe('userPathFilter', () => {
 describe('generateIgnoredOutDirs', () => {
   it('ignores all possible platform/arch permutations', () => {
     const ignores = generateIgnoredOutDirs({ name: 'test' } as ComboOptions);
-    expect(ignores.length).toBe(14);
+    const relativeIgnores = ignores.map((ignore) =>
+      path.relative(process.cwd(), ignore),
+    );
+    expect(relativeIgnores).toMatchSnapshot();
   });
 });
