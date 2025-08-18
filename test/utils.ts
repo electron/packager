@@ -1,4 +1,3 @@
-/* eslint-disable no-empty-pattern */
 import path from 'node:path';
 import os from 'node:os';
 import plist, { PlistObject } from 'plist';
@@ -74,6 +73,7 @@ interface ItContext {
  * Extends Vitest's `it` function with additional context adding
  */
 export const it = originalIt.extend<ItContext>({
+  /* eslint-disable-next-line no-empty-pattern */
   baseOpts: async ({}, use) => {
     const workDir = await fs.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-workdir-'),
