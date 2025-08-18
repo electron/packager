@@ -4,6 +4,7 @@ import path from 'node:path';
 import { getMetadataFromPackageJSON } from '../src/infer';
 import { Options } from '../src/types';
 import semver from 'semver';
+import config from './config.json';
 
 describe('getMetadataFromPackageJSON', () => {
   it.each([
@@ -42,7 +43,7 @@ describe('getMetadataFromPackageJSON', () => {
 
     it('infers win32metadata', async () => {
       const opts: Options = {
-        electronVersion: '27.0.0',
+        electronVersion: config.version,
         dir: tempDir,
       };
       await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
@@ -51,7 +52,7 @@ describe('getMetadataFromPackageJSON', () => {
 
     it('does not infer win32metadata if it already exists', async () => {
       const opts: Options = {
-        electronVersion: '27.0.0',
+        electronVersion: config.version,
         dir: tempDir,
         win32metadata: {
           CompanyName: 'Existing',
@@ -73,7 +74,7 @@ describe('getMetadataFromPackageJSON', () => {
 
       const opts: Options = {
         dir: tempDir,
-        electronVersion: '27.0.0',
+        electronVersion: config.version,
       };
 
       await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
@@ -91,7 +92,7 @@ describe('getMetadataFromPackageJSON', () => {
 
       const opts: Options = {
         dir: tempDir,
-        electronVersion: '27.0.0',
+        electronVersion: config.version,
       };
 
       await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
@@ -105,7 +106,7 @@ describe('getMetadataFromPackageJSON', () => {
       await fs.writeJson(path.join(tempDir, 'package.json'), packageJSON);
       const opts: Options = {
         dir: tempDir,
-        electronVersion: '27.0.0',
+        electronVersion: config.version,
         // FIXME: this test is set up oddly. Not adding the `name` field causes the function to not throw and instead return an empty object.
         name: 'MainJS',
       };

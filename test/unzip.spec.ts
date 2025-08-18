@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import { extractElectronZip } from '../src/unzip';
+import config from './config.json';
 
 describe('extractElectronZip', () => {
   let tempDir: string;
@@ -20,7 +21,7 @@ describe('extractElectronZip', () => {
   it('extractElectronZip preserves symbolic links', async () => {
     const downloadOpts = createDownloadOpts(
       {
-        electronVersion: '27.0.0',
+        electronVersion: config.version,
         dir: path.join(__dirname, 'fixtures', 'basic'),
       },
       'darwin',

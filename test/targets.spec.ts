@@ -8,6 +8,7 @@ import {
 import path from 'node:path';
 
 import { Options, SupportedPlatform, SupportedArch } from '../src/types';
+import config from './config.json';
 
 describe('allOfficialArchsForPlatformAndVersion', () => {
   it('returns undefined for unknown platforms', () => {
@@ -19,7 +20,7 @@ describe('allOfficialArchsForPlatformAndVersion', () => {
   });
 
   it('returns the correct arches for a known platform', () => {
-    const result = allOfficialArchsForPlatformAndVersion('darwin', '27.0.0');
+    const result = allOfficialArchsForPlatformAndVersion('darwin', config.version);
     expect(result.sort()).toEqual(['arm64', 'x64', 'universal'].sort());
   });
 
@@ -157,7 +158,7 @@ describe('createPlatformArchPairs', () => {
     const opts: Options = {
       name: 'test',
       dir: path.join(__dirname, 'fixtures', 'basic'),
-      electronVersion: '27.0.0',
+      electronVersion: config.version,
       ...extraOpts,
     };
 
