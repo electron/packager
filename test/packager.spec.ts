@@ -1318,7 +1318,7 @@ describe('packager', () => {
       });
     });
 
-    describe.skip('codesign', () => {
+    describe('codesign', () => {
       it('can sign the app', { timeout: 60_000 }, async ({ baseOpts }) => {
         const opts: Options = {
           ...baseOpts,
