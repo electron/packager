@@ -35,7 +35,6 @@ describe('extractElectronZip', () => {
       tempDir,
       'Electron.app/Contents/Frameworks/Electron Framework.framework/Libraries',
     );
-    expect(fs.existsSync(libraries)).toBe(true);
-    expect(fs.lstatSync(libraries).isSymbolicLink()).toBe(true);
+    expect(libraries).toBeSymlink();
   });
 });

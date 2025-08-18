@@ -223,8 +223,7 @@ describe('packager', () => {
     expect(paths).toHaveLength(1);
 
     const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js');
-    const file = await fs.lstat(destLink);
-    expect(file.isSymbolicLink()).toBe(true);
+    expect(destLink).toBeSymlink();
 
     await fs.rm(dest, { force: true });
   });
