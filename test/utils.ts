@@ -4,22 +4,24 @@ import os from 'node:os';
 import plist, { PlistObject } from 'plist';
 import fs from 'fs-extra';
 import { it as originalIt } from 'vitest';
-import type { Options } from '../src/types';
-import { sanitizeAppName } from '../src/common';
+import type { ComboOptions, Options } from '../src/types';
+import { isPlatformMac, sanitizeAppName } from '../src/common';
 import config from './config.json';
 
 export function generateResourcesPath(
-  opts: Pick<Options, 'name' | 'platform'>,
+  opts: Pick<ComboOptions, 'name' | 'platform'>,
 ) {
-  if (opts.platform === 'darwin') {
+  if (isPlatformMac(opts.platform)) {
     return path.join(`${opts.name}.app`, 'Contents', 'Resources');
   } else {
     return 'resources';
   }
 }
 
-export function generateNamePath(opts: Pick<Options, 'name' | 'platform'>) {
-  if (opts.platform === 'darwin') {
+export function generateNamePath(
+  opts: Pick<ComboOptions, 'name' | 'platform'>,
+) {
+  if (isPlatformMac(opts.platform)) {
     return path.join(
       `${opts.name}.app`,
       'Contents',
