@@ -61,8 +61,7 @@ describe('createSignOpts', () => {
   });
 
   it('passes in continueOnError=false', () => {
-    const args = { continueOnError: false };
-    // @ts-expect-error - FIXME: Why isn't this allowed through types?
+    const args: Partial<ReturnType<typeof createSignOpts>> = { continueOnError: false };
     const signOpts = createSignOpts(args, 'darwin', 'out', 'version');
     expect(signOpts.continueOnError).toBe(false);
   });
