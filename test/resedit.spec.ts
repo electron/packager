@@ -1,5 +1,6 @@
 import { WindowsApp } from '../src/win32';
 import _ from 'lodash';
+import { describe, it, expect } from 'vitest';
 
 describe('resedit', () => {
   it('sets win32Metadata defaults', async () => {

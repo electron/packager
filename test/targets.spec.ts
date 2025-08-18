@@ -6,7 +6,7 @@ import {
 } from '../src/targets';
 
 import path from 'node:path';
-
+import { describe, it, expect, vi } from 'vitest';
 import { Options, SupportedPlatform, SupportedArch } from '../src/types';
 import config from './config.json';
 
@@ -21,7 +21,10 @@ describe('allOfficialArchsForPlatformAndVersion', () => {
   });
 
   it('returns the correct arches for a known platform', () => {
-    const result = allOfficialArchsForPlatformAndVersion('darwin', config.version);
+    const result = allOfficialArchsForPlatformAndVersion(
+      'darwin',
+      config.version,
+    );
     expect(result.sort()).toEqual(['arm64', 'x64', 'universal'].sort());
   });
 

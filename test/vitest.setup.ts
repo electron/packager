@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import { expect, vi } from 'vitest';
 
 vi.spyOn(console, 'info').mockImplementation(() => {});
 vi.spyOn(console, 'warn').mockImplementation(() => {});

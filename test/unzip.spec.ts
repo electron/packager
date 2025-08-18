@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { extractElectronZip } from '../src/unzip';
 import config from './config.json';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('extractElectronZip', () => {
   let tempDir: string;

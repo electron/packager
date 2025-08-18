@@ -3,6 +3,7 @@ import {
   createSignOpts,
   filterCFBundleIdentifier,
 } from '../src/mac';
+import { describe, it, expect } from 'vitest';
 
 describe('createNotarizeOpts', () => {
   it('does not allow appPath to be overwritten', () => {

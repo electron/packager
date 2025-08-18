@@ -5,6 +5,7 @@ import { getMetadataFromPackageJSON } from '../src/infer';
 import { Options } from '../src/types';
 import semver from 'semver';
 import config from './config.json';
+import { beforeEach, describe, it, expect } from 'vitest';
 
 describe('getMetadataFromPackageJSON', () => {
   it.each([
@@ -106,7 +107,7 @@ describe('getMetadataFromPackageJSON', () => {
       await fs.writeJson(path.join(tempDir, 'package.json'), packageJSON);
       const opts: Options = {
         dir: tempDir,
-        appVersion: '1.0.0'
+        appVersion: '1.0.0',
       };
       await expect(
         getMetadataFromPackageJSON(['win32'], opts, opts.dir),

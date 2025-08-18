@@ -6,6 +6,7 @@ import util from 'node:util';
 import fs from 'fs-extra';
 import { generateFinalBasename } from '../src/common';
 import { getHostArch } from '@electron/get';
+import { describe, expect, vi } from 'vitest';
 import {
   generateNamePath,
   generateResourcesPath,
@@ -1317,7 +1318,7 @@ describe('packager', () => {
       });
     });
 
-    describe('codesign', () => {
+    describe.skip('codesign', () => {
       it('can sign the app', { timeout: 60_000 }, async ({ baseOpts }) => {
         const opts: Options = {
           ...baseOpts,

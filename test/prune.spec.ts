@@ -1,5 +1,6 @@
 import { isModule } from '../src/prune';
 import path from 'node:path';
+import { describe, it, expect } from 'vitest';
 
 describe('isModule', () => {
   it('detects module folders', async () => {
