@@ -19,7 +19,8 @@ export class WindowsApp extends App {
     return path.join(this.stagingPath, this.newElectronName);
   }
 
-  generateReseditOptionsSansIcon(): ExeMetadata {
+  generateReseditOptionsSansIcon(): ExeMetadata &
+    Required<Pick<ExeMetadata, 'win32Metadata'>> {
     const win32Metadata: Options['win32metadata'] = {
       FileDescription: this.opts.name,
       InternalName: this.opts.name,
