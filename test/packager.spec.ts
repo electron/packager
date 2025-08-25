@@ -232,17 +232,59 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
-  it('can package for all target platforms at once', async ({
-    baseOpts,
-  }) => {
-    const opts: Options = {
-      ...baseOpts,
-      all: true,
-    };
-    const paths = await packager(opts);
-    const base = paths.map((p) => path.basename(p));
-    expect(base).toMatchSnapshot();
-  });
+  it.runIf(process.platform === 'darwin')(
+    'can package for all target platforms at once',
+    async ({ baseOpts }) => {
+      const opts: Options = {
+        ...baseOpts,
+        all: true,
+      };
+      const paths = await packager(opts);
+      const base = paths.map((p) => path.basename(p));
+      expect(base).toMatchInlineSnapshot(`
+        [
+          "packagerTest-win32-ia32",
+          "packagerTest-darwin-x64",
+          "packagerTest-linux-x64",
+          "packagerTest-mas-x64",
+          "packagerTest-win32-x64",
+          "packagerTest-linux-armv7l",
+          "packagerTest-darwin-arm64",
+          "packagerTest-linux-arm64",
+          "packagerTest-mas-arm64",
+          "packagerTest-win32-arm64",
+          "packagerTest-darwin-universal",
+          "packagerTest-mas-universal",
+        ]
+      `);
+    },
+  );
+
+  it.runIf(process.platform !== 'darwin')(
+    'can package for all target platforms at once (no universal on non-darwin)',
+    async ({ baseOpts }) => {
+      const opts: Options = {
+        ...baseOpts,
+        all: true,
+      };
+      const paths = await packager(opts);
+      const base = paths.map((p) => path.basename(p));
+      expect(base).toMatchInlineSnapshot(`
+        [
+          "packagerTest-win32-ia32",
+          "packagerTest-darwin-x64",
+          "packagerTest-linux-x64",
+          "packagerTest-mas-x64",
+          "packagerTest-win32-x64",
+          "packagerTest-linux-armv7l",
+          "packagerTest-darwin-arm64",
+          "packagerTest-linux-arm64",
+          "packagerTest-mas-arm64",
+          "packagerTest-win32-arm64",
+        ]
+      `);
+    },
+  );
 
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
     it('can package with extraResource string', async ({ baseOpts }) => {

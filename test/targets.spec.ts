@@ -97,7 +97,7 @@ describe('createPlatformArchPairs', () => {
     {
       testCase: 'all available official targets',
       extraOpts: { all: true },
-      expectedLength: 12,
+      expectedLength: process.platform === 'darwin' ? 12 : 10, // no universal on other platforms
     },
     {
       testCase:

@@ -1,4 +1,4 @@
-import { warning } from './common';
+import { debug, warning } from './common';
 import { getHostArch } from '@electron/get';
 import semver from 'semver';
 import {
@@ -68,6 +68,12 @@ export function createPlatformArchPairs(
   const combinations: Array<[SupportedPlatform, SupportedArch]> = [];
 
   for (const arch of selectedArchs) {
+    if (arch === 'universal' && process.platform !== 'darwin') {
+      debug(
+        `Skipping universal arch for ${process.platform} because @electron/universal only works on darwin`,
+      );
+      continue;
+    }
     for (const platform of selectedPlatforms) {
       if (usingOfficialElectronPackages(opts)) {
         if (!validOfficialPlatformArch(platform, arch)) {
