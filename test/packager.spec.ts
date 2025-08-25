@@ -232,7 +232,7 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
-  it.skip('can package for all target platforms at once', async ({
+  it('can package for all target platforms at once', async ({
     baseOpts,
   }) => {
     const opts: Options = {
@@ -240,7 +240,8 @@ describe('packager', () => {
       all: true,
     };
     const paths = await packager(opts);
-    expect(paths).toHaveLength(12);
+    const base = paths.map((p) => path.basename(p));
+    expect(base).toMatchSnapshot();
   });
 
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
