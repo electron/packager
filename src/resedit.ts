@@ -2,7 +2,6 @@ import * as fs from 'fs-extra';
 import { Win32MetadataOptions } from './types';
 import { FileRecord } from '@electron/asar';
 import type { Data, NtExecutable, NtExecutableResource } from 'resedit';
-// @ts-expect-error - javascript file
 import { dynamicImport } from './dynamicImport';
 
 export type ExeMetadata = {

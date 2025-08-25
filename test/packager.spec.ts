@@ -19,7 +19,6 @@ import { createDownloadOpts, downloadElectronZip } from '../src/download';
 import plist, { PlistObject } from 'plist';
 import { filterCFBundleIdentifier } from '../src/mac';
 
-// @ts-expect-error - javascript file
 import { dynamicImport } from '../src/dynamicImport';
 import type { NtExecutable, NtExecutableResource } from 'resedit';
 

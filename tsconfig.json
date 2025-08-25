@@ -10,7 +10,8 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "allowJs": true
   },
   "include": ["src"]
 }
