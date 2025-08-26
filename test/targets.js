@@ -113,7 +113,9 @@ test(
   'build for all available official targets',
   testMultiTarget(
     { all: true, electronVersion: config.version },
-    util.allPlatformArchCombosCount - 2,
+    util.allPlatformArchCombosCount -
+      2 -
+      (process.platform === 'darwin' ? 0 : 2),
     'Packages should be generated for all possible platforms (except linux/ia32 and linux/mips64el)',
   ),
 );
@@ -308,14 +310,17 @@ test(
   ),
 );
 
-test(
-  'platform=darwin and arch=universal with a supported official Electron version',
-  testMultiTarget(
-    { arch: 'universal', platform: 'darwin' },
-    1,
-    'Package should be generated for darwin/universal',
-  ),
-);
+if (process.platform === 'darwin') {
+  test(
+    'platform=darwin and arch=universal with a supported official Electron version',
+    testMultiTarget(
+      { arch: 'universal', platform: 'darwin' },
+      1,
+      'Package should be generated for darwin/universal',
+    ),
+  );
+}
+
 test(
   'platform=darwin and arch=universal with an unsupported official Electron version',
   testMultiTarget(
@@ -325,14 +330,17 @@ test(
   ),
 );
 
-test(
-  'platform=mas and arch=universal with a supported official Electron version',
-  testMultiTarget(
-    { arch: 'universal', platform: 'mas' },
-    1,
-    'Package should be generated for mas/universal',
-  ),
-);
+if (process.platform === 'darwin') {
+  test(
+    'platform=mas and arch=universal with a supported official Electron version',
+    testMultiTarget(
+      { arch: 'universal', platform: 'mas' },
+      1,
+      'Package should be generated for mas/universal',
+    ),
+  );
+}
+
 test(
   'platform=mas and arch=universal with an unsupported official Electron version',
   testMultiTarget(
