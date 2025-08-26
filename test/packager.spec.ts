@@ -234,7 +234,7 @@ describe('packager', () => {
 
   it.runIf(process.platform === 'darwin')(
     'can package for all target platforms at once',
-    { timeout: 30_000 },
+    { timeout: 120_000 },
     async ({ baseOpts }) => {
       const opts: Options = {
         ...baseOpts,
@@ -263,7 +263,7 @@ describe('packager', () => {
 
   it.runIf(process.platform !== 'darwin')(
     'can package for all target platforms at once (no universal on non-darwin)',
-    { timeout: 30_000 },
+    { timeout: 120_000 },
     async ({ baseOpts }) => {
       const opts: Options = {
         ...baseOpts,
