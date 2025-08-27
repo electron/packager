@@ -97,9 +97,6 @@
     "bundler",
     "app"
   ],
-  "ava": {
-    "timeout": "120s"
-  },
   "funding": {
     "url": "https://github.com/electron/packager?sponsor=1"
   },
