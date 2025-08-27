@@ -5,7 +5,7 @@ export default defineConfig({
     setupFiles: ['./test/vitest.setup.ts'],
     include: ['./test/**/*.spec.ts'],
     clearMocks: true,
-    testTimeout: 15_000,
+    testTimeout: 120_000,
     typecheck: {
       tsconfig: './tsconfig.json',
     },

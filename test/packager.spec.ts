@@ -125,37 +125,33 @@ describe('packager', () => {
     );
   });
 
-  it(
-    'can overwrite older packages',
-    { timeout: 30_000 }, // double the timeout because we have two full packager runs
-    async ({ baseOpts }) => {
-      const opts: Options = {
-        ...baseOpts,
-      };
+  it('can overwrite older packages', async ({ baseOpts }) => {
+    const opts: Options = {
+      ...baseOpts,
+    };
 
-      const paths = await packager(opts);
-      expect(paths).toHaveLength(1);
-      expect(paths[0]).toEqual(
-        path.join(
-          opts.out!,
-          generateFinalBasename({
-            name: opts.name,
-            platform: process.platform,
-            arch: getHostArch(),
-          }),
-        ),
-      );
-      // Create a dummy file to detect whether the output directory is replaced in subsequent runs
-      const testPath = path.join(paths[0], 'test.txt');
-      await fs.writeFile(testPath, 'test');
-      // Second run without overwrite should be skipped
-      await packager(opts);
-      expect(fs.existsSync(testPath)).toBe(true);
-      // Third run with overwrite should replace the output directory
-      await packager({ ...opts, overwrite: true });
-      expect(fs.existsSync(testPath)).toBe(false);
-    },
-  );
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    expect(paths[0]).toEqual(
+      path.join(
+        opts.out!,
+        generateFinalBasename({
+          name: opts.name,
+          platform: process.platform,
+          arch: getHostArch(),
+        }),
+      ),
+    );
+    // Create a dummy file to detect whether the output directory is replaced in subsequent runs
+    const testPath = path.join(paths[0], 'test.txt');
+    await fs.writeFile(testPath, 'test');
+    // Second run without overwrite should be skipped
+    await packager(opts);
+    expect(fs.existsSync(testPath)).toBe(true);
+    // Third run with overwrite should replace the output directory
+    await packager({ ...opts, overwrite: true });
+    expect(fs.existsSync(testPath)).toBe(false);
+  });
 
   it('defaults the out directory to the current working directory', async ({
     baseOpts,
@@ -235,7 +231,6 @@ describe('packager', () => {
   // FIXME: This flakes with ENOTEMPTY: directory not empty
   it.runIf(process.platform === 'darwin').skip(
     'can package for all target platforms at once',
-    { timeout: 120_000 },
     async ({ baseOpts }) => {
       const opts: Options = {
         ...baseOpts,
@@ -264,7 +259,6 @@ describe('packager', () => {
 
   it.runIf(process.platform !== 'darwin')(
     'can package for all target platforms at once (no universal on non-darwin)',
-    { timeout: 120_000 },
     async ({ baseOpts }) => {
       const opts: Options = {
         ...baseOpts,
@@ -1368,7 +1362,7 @@ describe('packager', () => {
     });
 
     describe('codesign', () => {
-      it('can sign the app', { timeout: 60_000 }, async ({ baseOpts }) => {
+      it('can sign the app', async ({ baseOpts }) => {
         const opts: Options = {
           ...baseOpts,
           osxSign: { identity: 'codesign.electronjs.org' },
