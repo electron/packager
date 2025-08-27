@@ -355,9 +355,11 @@ export interface Options {
   darwinDarkModeSupport?: boolean;
   /**
    * Whether symlinks should be dereferenced during the copying of the application source.
-   * Defaults to `true`.
    *
    * **Note:** `derefSymlinks` will have no effect if the {@link prebuiltAsar} option is set.
+   *
+   * @defaultValue false
+   *
    */
   derefSymlinks?: boolean;
   /**
@@ -434,7 +436,7 @@ export interface Options {
   helperBundleId?: string;
   /**
    * The local path to the icon file, if the target platform supports setting embedding an icon.
-   * 
+   *
    * Only macOS supports multiple paths, every other platform must be a single path. On macOS you can provide
    * **both** an `.icns` and an `.icon` file. The `.icns` file will be used on macOS < 26 and `.icon` will be used
    * on macOS >= 26.
