@@ -232,7 +232,8 @@ describe('packager', () => {
     await fs.rm(dest, { force: true });
   });
 
-  it.runIf(process.platform === 'darwin')(
+  // FIXME: This flakes with ENOTEMPTY: directory not empty
+  it.runIf(process.platform === 'darwin').skip(
     'can package for all target platforms at once',
     { timeout: 120_000 },
     async ({ baseOpts }) => {
