@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`packager > can package for all target platforms at once 1`] = `
+[
+  "packagerTest-win32-ia32",
+  "packagerTest-darwin-x64",
+  "packagerTest-linux-x64",
+  "packagerTest-mas-x64",
+  "packagerTest-win32-x64",
+  "packagerTest-linux-armv7l",
+  "packagerTest-darwin-arm64",
+  "packagerTest-linux-arm64",
+  "packagerTest-mas-arm64",
+  "packagerTest-win32-arm64",
+  "packagerTest-darwin-universal",
+  "packagerTest-mas-universal",
+]
+`;

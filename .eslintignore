@@ -1,5 +1,5 @@
 typedoc/**/*
 **/test/fixtures/**/node_modules/**
-**/test/work/*
+**/test/fixtures/infer-malformed-json
 dist/
 src/targets.js

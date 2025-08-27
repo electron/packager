@@ -1,8 +1,8 @@
 import * as fs from 'fs-extra';
-// eslint-disable-next-line import/no-unresolved
-import { load as loadResEdit } from 'resedit/cjs';
 import { Win32MetadataOptions } from './types';
 import { FileRecord } from '@electron/asar';
+import type { Data, NtExecutable, NtExecutableResource } from 'resedit';
+import { dynamicImport } from './dynamicImport';
 
 export type ExeMetadata = {
   productVersion?: string;
@@ -45,11 +45,11 @@ function parseVersionString(str: string): ParsedVersionNumerics {
 const RT_MANIFEST_TYPE = 24;
 
 export async function resedit(exePath: string, options: ExeMetadata) {
-  const resedit = await loadResEdit();
+  const resedit = await dynamicImport('resedit');
 
   const exeData = await fs.readFile(exePath);
-  const exe = resedit.NtExecutable.from(exeData);
-  const res = resedit.NtExecutableResource.from(exe);
+  const exe: NtExecutable = resedit.NtExecutable.from(exeData);
+  const res: NtExecutableResource = resedit.NtExecutableResource.from(exe);
 
   if (options.iconPath) {
     // Icon Info
@@ -68,7 +68,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
       res.entries,
       existingIconGroups[0].id,
       existingIconGroups[0].lang,
-      iconFile.icons.map((item) => item.data),
+      (iconFile.icons as Data.IconFileItem[]).map((item) => item.data),
     );
   }
 
