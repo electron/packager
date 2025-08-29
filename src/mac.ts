@@ -1,13 +1,13 @@
-import { App } from './platform';
-import { debug, sanitizeAppName, subOptionWarning, warning } from './common';
-import fs from 'fs-extra';
-import path from 'path';
+import { App } from './platform.js';
+import { debug, sanitizeAppName, subOptionWarning, warning } from './common.js';
+import fs from 'graceful-fs';
+import { promisifiedGracefulFs } from './util.js';
+import path from 'node:path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
-import { signApp } from '@electron/osx-sign';
-import { ComboOptions } from './types';
-import { SignOptions } from '@electron/osx-sign/dist/cjs/types';
-import { generateAssetCatalogForIcon } from './icon-composer';
+import { sign, SignOptions } from '@electron/osx-sign';
+import { ComboOptions } from './types.js';
+import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -218,7 +218,9 @@ export class MacApp extends App implements Plists {
   }
 
   async loadPlist(filename: string, propName?: PlistNames) {
-    const loadedPlist = plist.parse((await fs.readFile(filename)).toString());
+    const loadedPlist = plist.parse(
+      (await promisifiedGracefulFs.readFile(filename)).toString(),
+    );
     if (propName) {
       (this[propName] as unknown) = loadedPlist;
     }
@@ -258,7 +260,7 @@ export class MacApp extends App implements Plists {
 
     const optional = await Promise.all(
       possiblePlists.map(async (item) =>
-        (await fs.pathExists(item[0])) ? item : null,
+        fs.existsSync(item[0]) ? item : null,
       ),
     );
 
@@ -388,7 +390,7 @@ export class MacApp extends App implements Plists {
 
     await Promise.all(
       plists.map(([filename, varName]) =>
-        fs.writeFile(
+        promisifiedGracefulFs.writeFile(
           filename,
           plist.build(this[varName as PlistNames] as PlistValue),
         ),
@@ -408,7 +410,7 @@ export class MacApp extends App implements Plists {
     await Promise.all(
       helpers.map((suffix) => this.moveHelper(this.frameworksPath, suffix)),
     );
-    if (await fs.pathExists(this.loginItemsPath)) {
+    if (fs.existsSync(this.loginItemsPath)) {
       await this.moveHelper(this.loginItemsPath, ' Login Helper');
     }
   }
@@ -416,9 +418,7 @@ export class MacApp extends App implements Plists {
   async moveHelper(helperDirectory: string, suffix: string) {
     const originalBasename = `Electron${suffix}`;
 
-    if (
-      await fs.pathExists(path.join(helperDirectory, `${originalBasename}.app`))
-    ) {
+    if (fs.existsSync(path.join(helperDirectory, `${originalBasename}.app`))) {
       return this.renameHelperAndExecutable(
         helperDirectory,
         originalBasename,
@@ -471,7 +471,7 @@ export class MacApp extends App implements Plists {
       );
       const assetCatalog = await generateAssetCatalogForIcon(iconComposerIcon);
       appPlist.CFBundleIconName = 'Icon';
-      await fs.writeFile(
+      await promisifiedGracefulFs.writeFile(
         path.join(this.originalResourcesDir, 'Assets.car'),
         assetCatalog,
       );
@@ -494,7 +494,7 @@ export class MacApp extends App implements Plists {
       debug(
         `Copying icon "${icon}" to app's Resources as "${this.appPlist!.CFBundleIconFile}"`,
       );
-      await fs.copy(
+      await fs.promises.cp(
         icon,
         path.join(this.originalResourcesDir, this.appPlist!.CFBundleIconFile),
       );
@@ -503,7 +503,7 @@ export class MacApp extends App implements Plists {
 
   async renameAppAndHelpers() {
     await this.moveHelpers();
-    await fs.rename(this.electronAppPath, this.renamedAppPath);
+    await fs.promises.rename(this.electronAppPath, this.renamedAppPath);
   }
 
   async signAppIfSpecified() {
@@ -534,7 +534,7 @@ export class MacApp extends App implements Plists {
         `Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`,
       );
       try {
-        await signApp(signOpts as SignOptions);
+        await sign(signOpts);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {

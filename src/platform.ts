@@ -1,6 +1,10 @@
-import fs from 'fs-extra';
-import path from 'path';
-import asar, { FileRecord } from '@electron/asar';
+import fs from 'graceful-fs';
+import path from 'node:path';
+import {
+  createPackageWithOptions,
+  FileRecord,
+  getRawHeader,
+} from '@electron/asar';
 
 import {
   baseTempDir,
@@ -10,11 +14,12 @@ import {
   generateFinalPath,
   validateElectronApp,
   warning,
-} from './common';
-import { userPathFilter } from './copy-filter';
-import { promisifyHooks } from './hooks';
-import crypto from 'crypto';
-import { ComboOptions } from './types';
+} from './common.js';
+import { userPathFilter } from './copy-filter.js';
+import { promisifyHooks } from './hooks.js';
+import crypto from 'node:crypto';
+import { ComboOptions } from './types.js';
+import { promisifiedGracefulFs } from './util.js';
 
 export class App {
   asarIntegrity:
@@ -82,7 +87,7 @@ export class App {
     } else {
       if (!this.cachedStagingPath) {
         const tempDir = baseTempDir(this.opts);
-        fs.mkdirpSync(tempDir);
+        fs.mkdirSync(tempDir, { recursive: true });
         this.cachedStagingPath = fs.mkdtempSync(path.resolve(tempDir, 'tmp-'));
       }
       return this.cachedStagingPath;
@@ -103,7 +108,10 @@ export class App {
 
   async relativeRename(basePath: string, oldName: string, newName: string) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`);
-    await fs.rename(path.join(basePath, oldName), path.join(basePath, newName));
+    await promisifiedGracefulFs.rename(
+      path.join(basePath, oldName),
+      path.join(basePath, newName),
+    );
   }
 
   async renameElectron() {
@@ -134,7 +142,8 @@ export class App {
       `Initializing app in ${this.stagingPath} from ${this.templatePath} template`,
     );
 
-    await fs.move(this.templatePath, this.stagingPath, { overwrite: true });
+    await fs.promises.rm(this.stagingPath, { recursive: true, force: true });
+    await fs.promises.rename(this.templatePath, this.stagingPath);
     await this.removeDefaultApp();
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
@@ -165,9 +174,10 @@ export class App {
       this.hookArgsWithOriginalResourcesAppDir,
     );
 
-    await fs.copy(this.opts.dir, this.originalResourcesAppDir, {
+    await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, {
+      recursive: true,
       filter: userPathFilter(this.opts),
-      dereference: this.opts.derefSymlinks,
+      dereference: Boolean(this.opts.derefSymlinks),
     });
     await promisifyHooks(
       this.opts.afterCopy,
@@ -184,7 +194,10 @@ export class App {
   async removeDefaultApp() {
     await Promise.all(
       ['default_app', 'default_app.asar'].map(async (basename) =>
-        fs.remove(path.join(this.originalResourcesDir, basename)),
+        fs.promises.rm(path.join(this.originalResourcesDir, basename), {
+          recursive: true,
+          force: true,
+        }),
       ),
     );
   }
@@ -212,7 +225,7 @@ export class App {
         );
       }
 
-      if (await fs.pathExists(iconFilename)) {
+      if (fs.existsSync(iconFilename)) {
         return iconFilename;
       }
     }
@@ -263,14 +276,14 @@ export class App {
 
     const src = path.resolve(this.opts.prebuiltAsar!);
 
-    const stat = await fs.stat(src);
+    const stat = await fs.promises.stat(src);
     if (!stat.isFile()) {
       throw new Error(`${src} specified in prebuiltAsar must be an asar file.`);
     }
 
     debug(`Copying asar: ${src} to ${this.appAsarPath}`);
-    await fs.copy(src, this.appAsarPath, {
-      overwrite: false,
+    await fs.promises.cp(src, this.appAsarPath, {
+      force: false,
       errorOnExist: true,
     });
   }
@@ -295,7 +308,7 @@ export class App {
       this.hookArgsWithOriginalResourcesAppDir,
     );
 
-    await asar.createPackageWithOptions(
+    await createPackageWithOptions(
       this.originalResourcesAppDir,
       this.appAsarPath,
       this.asarOptions,
@@ -305,7 +318,10 @@ export class App {
         this.appAsarPath,
       ),
     };
-    await fs.remove(this.originalResourcesAppDir);
+    await fs.promises.rm(this.originalResourcesAppDir, {
+      recursive: true,
+      force: true,
+    });
 
     await promisifyHooks(
       this.opts.afterAsar,
@@ -316,7 +332,7 @@ export class App {
   getAsarIntegrity(
     path: string,
   ): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
-    const { headerString } = asar.getRawHeader(path);
+    const { headerString } = getRawHeader(path);
     return {
       algorithm: 'SHA256',
       hash: crypto.createHash('SHA256').update(headerString).digest('hex'),
@@ -336,7 +352,7 @@ export class App {
 
     await Promise.all(
       extraResources.map((resource) =>
-        fs.copy(
+        fs.promises.cp(
           resource,
           path.resolve(
             this.stagingPath,
@@ -355,7 +371,8 @@ export class App {
 
     if (this.opts.tmpdir !== false) {
       debug(`Moving ${this.stagingPath} to ${finalPath}`);
-      await fs.move(this.stagingPath, finalPath);
+      await fs.promises.mkdir(finalPath, { recursive: true });
+      await promisifiedGracefulFs.rename(this.stagingPath, finalPath);
     }
 
     if (this.opts.afterComplete) {

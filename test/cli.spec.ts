@@ -1,4 +1,4 @@
-import { parseArgs } from '../src/cli';
+import { parseArgs } from '../src/cli.js';
 import { describe, it, expect } from 'vitest';
 
 describe('parseArgs', () => {

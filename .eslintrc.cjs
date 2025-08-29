@@ -12,6 +12,9 @@ const eslintConfig = {
     'no-console': 0,
     strict: 'error',
   },
+  parserOptions: {
+    sourceType: 'module',
+  },
   overrides: [
     {
       files: ['**/*.ts'],
@@ -20,13 +23,11 @@ const eslintConfig = {
         'plugin:promise/recommended',
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
+        'plugin:import/warnings',
         'plugin:import/typescript',
         'prettier',
       ],
       parser: '@typescript-eslint/parser',
-      parserOptions: {
-        sourceType: 'module',
-      },
     },
   ],
 };

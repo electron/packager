@@ -1,8 +1,7 @@
-import * as fs from 'fs-extra';
-import { Win32MetadataOptions } from './types';
+import { promisifiedGracefulFs } from './util.js';
+import { Data, NtExecutable, NtExecutableResource, Resource } from 'resedit';
+import { Win32MetadataOptions } from './types.js';
 import { FileRecord } from '@electron/asar';
-import type { Data, NtExecutable, NtExecutableResource } from 'resedit';
-import { dynamicImport } from './dynamicImport';
 
 export type ExeMetadata = {
   productVersion?: string;
@@ -45,26 +44,22 @@ function parseVersionString(str: string): ParsedVersionNumerics {
 const RT_MANIFEST_TYPE = 24;
 
 export async function resedit(exePath: string, options: ExeMetadata) {
-  const resedit = await dynamicImport('resedit');
-
-  const exeData = await fs.readFile(exePath);
-  const exe: NtExecutable = resedit.NtExecutable.from(exeData);
-  const res: NtExecutableResource = resedit.NtExecutableResource.from(exe);
+  const exeData = await promisifiedGracefulFs.readFile(exePath);
+  const exe = NtExecutable.from(exeData);
+  const res = NtExecutableResource.from(exe);
 
   if (options.iconPath) {
     // Icon Info
-    const existingIconGroups = resedit.Resource.IconGroupEntry.fromEntries(
-      res.entries,
-    );
+    const existingIconGroups = Resource.IconGroupEntry.fromEntries(res.entries);
     if (existingIconGroups.length !== 1) {
       throw new Error(
         'Failed to parse win32 executable resources, failed to locate existing icon group',
       );
     }
-    const iconFile = resedit.Data.IconFile.from(
-      await fs.readFile(options.iconPath),
+    const iconFile = Data.IconFile.from(
+      await promisifiedGracefulFs.readFile(options.iconPath),
     );
-    resedit.Resource.IconGroupEntry.replaceIconsForResource(
+    Resource.IconGroupEntry.replaceIconsForResource(
       res.entries,
       existingIconGroups[0].id,
       existingIconGroups[0].lang,
@@ -94,8 +89,10 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     }
     const manifestEntry = manifests[0];
     if (options.win32Metadata?.['application-manifest']) {
-      manifestEntry.bin = (
-        await fs.readFile(options.win32Metadata?.['application-manifest'])
+      manifestEntry.bin = Buffer.from(
+        await promisifiedGracefulFs.readFile(
+          options.win32Metadata?.['application-manifest'],
+        ),
       ).buffer;
     } else if (options.win32Metadata?.['requested-execution-level']) {
       // This implementation matches what rcedit used to do, in theory we can be Smarter
@@ -107,12 +104,12 @@ export async function resedit(exePath: string, options: ExeMetadata) {
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
         `$1${options.win32Metadata?.['requested-execution-level']}$2`,
       );
-      manifestEntry.bin = Buffer.from(newContent, 'utf-8');
+      manifestEntry.bin = Buffer.from(newContent, 'utf-8').buffer;
     }
   }
 
   // Version Info
-  const versionInfo = resedit.Resource.VersionInfo.fromEntries(res.entries);
+  const versionInfo = Resource.VersionInfo.fromEntries(res.entries);
   if (versionInfo.length !== 1) {
     throw new Error(
       'Failed to parse win32 executable resources, failed to locate existing version info',
@@ -159,7 +156,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     res.entries.push({
       type: 'INTEGRITY',
       id: 'ELECTRONASAR',
-      bin: Buffer.from(JSON.stringify(integrityList), 'utf-8'),
+      bin: Buffer.from(JSON.stringify(integrityList), 'utf-8').buffer,
       lang: languageInfo[0].lang,
       codepage: languageInfo[0].codepage,
     });
@@ -167,5 +164,5 @@ export async function resedit(exePath: string, options: ExeMetadata) {
 
   res.outputResource(exe);
 
-  await fs.writeFile(exePath, Buffer.from(exe.generate()));
+  await promisifiedGracefulFs.writeFile(exePath, Buffer.from(exe.generate()));
 }

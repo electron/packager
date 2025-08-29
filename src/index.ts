@@ -1,16 +1,5 @@
-import { serialHooks } from './hooks';
-import { packager } from './packager';
-import { allOfficialArchsForPlatformAndVersion } from './targets';
+export { serialHooks } from './hooks.js';
+export { packager } from './packager.js';
+export { allOfficialArchsForPlatformAndVersion } from './targets.js';
 
-export default packager;
-
-export { allOfficialArchsForPlatformAndVersion, packager, serialHooks };
-
-export * from './types';
-
-module.exports = packager;
-module.exports.allOfficialArchsForPlatformAndVersion =
-  allOfficialArchsForPlatformAndVersion;
-module.exports.packager = packager;
-module.exports.serialHooks = serialHooks;
-module.exports.default = packager;
+export * from './types.js';
