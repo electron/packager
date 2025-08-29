@@ -1,8 +1,9 @@
-'use strict';
+//@ts-check
 
-const cp = require('child_process');
-const fs = require('fs');
-const path = require('path');
+
+import cp from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const certificatePath = process.argv[2];
 const outPath = process.argv[3];
