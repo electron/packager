@@ -19,6 +19,7 @@ import { userPathFilter } from './copy-filter.js';
 import { promisifyHooks } from './hooks.js';
 import crypto from 'node:crypto';
 import { ComboOptions } from './types.js';
+import { promisifiedGracefulFs } from './util.js';
 
 export class App {
   asarIntegrity:
@@ -107,7 +108,7 @@ export class App {
 
   async relativeRename(basePath: string, oldName: string, newName: string) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`);
-    await fs.promises.rename(
+    await promisifiedGracefulFs.rename(
       path.join(basePath, oldName),
       path.join(basePath, newName),
     );
@@ -371,7 +372,7 @@ export class App {
     if (this.opts.tmpdir !== false) {
       debug(`Moving ${this.stagingPath} to ${finalPath}`);
       await fs.promises.mkdir(finalPath, { recursive: true });
-      await fs.promises.rename(this.stagingPath, finalPath);
+      await promisifiedGracefulFs.rename(this.stagingPath, finalPath);
     }
 
     if (this.opts.afterComplete) {
