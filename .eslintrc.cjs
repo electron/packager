@@ -8,21 +8,16 @@ const eslintConfig = {
     es6: true,
     node: true,
   },
-  plugins: ['ava'],
   rules: {
-    'ava/no-import-test-files': 0,
-    'ava/no-ignored-test-files': 0,
     'no-console': 0,
     strict: 'error',
-    'import/enforce-node-protocol-usage': ['error', 'always'],
+    // 'import/enforce-node-protocol-usage': ['error', 'always'],
   },
   overrides: [
     {
       files: ['**/*.ts'],
       extends: [
         'eslint:recommended',
-        'plugin:ava/recommended',
-        'plugin:import/warnings',
         'plugin:promise/recommended',
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',

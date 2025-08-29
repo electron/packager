@@ -63,7 +63,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
       res.entries,
       existingIconGroups[0].id,
       existingIconGroups[0].lang,
-      iconFile.icons.map((item) => item.data),
+      (iconFile.icons as Data.IconFileItem[]).map((item) => item.data),
     );
   }
 

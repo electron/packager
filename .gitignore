@@ -14,5 +14,4 @@ typedoc
 .nyc_output
 npm-debug.log
 dist/
-coverage.lcov
 .eslintcache

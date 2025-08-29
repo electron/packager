@@ -7,9 +7,9 @@ import plist from 'plist';
 import semver from 'semver';
 
 export async function generateAssetCatalogForIcon(inputPath: string) {
-  if (!semver.gte(os.version(), '25.0.0')) {
+  if (!semver.gte(os.release(), '25.0.0')) {
     throw new Error(
-      `actool .icon support is currently limited to macOS 26 and higher`
+      `actool .icon support is currently limited to macOS 26 and higher`,
     );
   }
 

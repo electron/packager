@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateIgnoredOutDirs > ignores all possible platform/arch permutations 1`] = `
+[
+  "test-darwin-x64",
+  "test-darwin-arm64",
+  "test-darwin-universal",
+  "test-linux-ia32",
+  "test-linux-x64",
+  "test-linux-armv7l",
+  "test-linux-arm64",
+  "test-linux-mips64el",
+  "test-mas-x64",
+  "test-mas-arm64",
+  "test-mas-universal",
+  "test-win32-ia32",
+  "test-win32-x64",
+  "test-win32-arm64",
+]
+`;
