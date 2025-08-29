@@ -62,8 +62,6 @@
     "@types/yargs-parser": "^21.0.3",
     "@typescript-eslint/eslint-plugin": "8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
-    "ava": "^3.10.1",
-    "buffer-equal": "^1.0.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
@@ -104,9 +102,6 @@
   ],
   "funding": {
     "url": "https://github.com/electron/packager?sponsor=1"
-  },
-  "resolutions": {
-    "got": "11.8.5"
   },
   "lint-staged": {
     "*.json": "prettier --write",
