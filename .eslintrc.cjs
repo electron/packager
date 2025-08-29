@@ -11,7 +11,6 @@ const eslintConfig = {
   rules: {
     'no-console': 0,
     strict: 'error',
-    // 'import/enforce-node-protocol-usage': ['error', 'always'],
   },
   overrides: [
     {
@@ -21,6 +20,7 @@ const eslintConfig = {
         'plugin:promise/recommended',
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
+        'plugin:import/warnings',
         'plugin:import/typescript',
         'prettier',
       ],
