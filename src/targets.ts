@@ -3,13 +3,14 @@ import { getHostArch } from '@electron/get';
 import semver from 'semver';
 import {
   IgnoreFunc,
+  OfficialArch,
   OfficialPlatform,
   Options,
   SupportedArch,
   SupportedPlatform,
 } from './types.js';
 
-export const officialArchs = [
+export const officialArchs: OfficialArch[] = [
   'ia32',
   'x64',
   'armv7l',
@@ -18,7 +19,12 @@ export const officialArchs = [
   'universal',
 ];
 
-export const officialPlatforms = ['darwin', 'linux', 'mas', 'win32'];
+export const officialPlatforms: OfficialPlatform[] = [
+  'darwin',
+  'linux',
+  'mas',
+  'win32',
+];
 
 export const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
@@ -180,8 +186,9 @@ export function validateListFromOptions(
   opts: Options,
   name: keyof typeof supported,
 ) {
+  const set = supported[name] as Set<string>;
   if (opts.all) {
-    return Array.from(supported[name].values());
+    return Array.from(set.values());
   }
 
   let list = opts[name];
@@ -192,22 +199,22 @@ export function validateListFromOptions(
       list = process[name];
     }
   } else if (list === 'all') {
-    return Array.from(supported[name].values());
+    return Array.from(set.values());
   }
 
   if (!Array.isArray(list)) {
     if (typeof list === 'string') {
       list = list.split(/,\s*/);
     } else {
-      return unsupportedListOption(name, list, supported[name]);
+      return unsupportedListOption(name, list, set);
     }
   }
 
   const officialElectronPackages = usingOfficialElectronPackages(opts);
 
   for (const value of list) {
-    if (officialElectronPackages && !supported[name].has(value)) {
-      return unsupportedListOption(name, value, supported[name]);
+    if (officialElectronPackages && !set.has(value)) {
+      return unsupportedListOption(name, value, set);
     }
   }
 
