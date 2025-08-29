@@ -2,7 +2,7 @@ import {
   createNotarizeOpts,
   createSignOpts,
   filterCFBundleIdentifier,
-} from '../src/mac';
+} from '../src/mac.js';
 import { describe, it, expect } from 'vitest';
 
 describe('createNotarizeOpts', () => {

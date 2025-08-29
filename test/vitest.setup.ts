@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'node:fs';
 import { expect, vi } from 'vitest';
 
 vi.spyOn(console, 'info').mockImplementation(() => {});
