@@ -371,8 +371,27 @@ export class App {
 
     if (this.opts.tmpdir !== false) {
       debug(`Moving ${this.stagingPath} to ${finalPath}`);
-      await fs.promises.mkdir(finalPath, { recursive: true });
-      await promisifiedGracefulFs.rename(this.stagingPath, finalPath);
+      try {
+        await fs.promises.mkdir(path.resolve(finalPath, '..'), {
+          recursive: true,
+        });
+        await fs.promises.rename(this.stagingPath, finalPath);
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === 'EXDEV') {
+          // Cross-device link, fallback to copy and delete
+          await fs.promises.cp(this.stagingPath, finalPath, {
+            force: true,
+            recursive: true,
+            verbatimSymlinks: true,
+          });
+          await fs.promises.rm(this.stagingPath, {
+            force: true,
+            recursive: true,
+          });
+        } else {
+          throw err;
+        }
+      }
     }
 
     if (this.opts.afterComplete) {
