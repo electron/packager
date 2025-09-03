@@ -1,8 +1,8 @@
-'use strict';
 const eslintConfig = {
   extends: ['eslint:recommended', 'prettier'],
   parserOptions: {
     ecmaVersion: 'latest',
+    sourceType: 'module',
   },
   env: {
     es6: true,
@@ -11,9 +11,6 @@ const eslintConfig = {
   rules: {
     'no-console': 0,
     strict: 'error',
-  },
-  parserOptions: {
-    sourceType: 'module',
   },
   overrides: [
     {
