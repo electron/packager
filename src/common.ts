@@ -5,7 +5,6 @@ import path from 'node:path';
 import createDebug from 'debug';
 import { ComboOptions, Options } from './types.js';
 import { CreateOptions as AsarOptions } from '@electron/asar';
-import { pathToFileURL } from 'node:url';
 
 export const debug = createDebug('electron-packager');
 
@@ -114,11 +113,8 @@ export async function validateElectronApp(
   }
 
   debug('Checking for the main entry point file');
-  const { default: packageJSON } = await import(
-    pathToFileURL(bundledPackageJSONPath).toString(),
-    {
-      with: { type: 'json' },
-    }
+  const packageJSON = JSON.parse(
+    await fs.promises.readFile(bundledPackageJSONPath, 'utf8'),
   );
   const mainScriptBasename = packageJSON.main || 'index.js';
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
