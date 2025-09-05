@@ -11,6 +11,7 @@ const eslintConfig = {
   rules: {
     'no-console': 0,
     strict: 'error',
+    'import/enforce-node-protocol-usage': ['error', 'always'],
   },
   overrides: [
     {
