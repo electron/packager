@@ -31,22 +31,20 @@
   optionalDependencies:
     global-agent "^3.0.0"
 
-"@electron/notarize@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@electron/notarize/-/notarize-3.0.2.tgz#e6afb791f29fd92efed56035cf2d4f2e69ca3648"
-  integrity sha512-3LCARsJXOxEzzbmKFu/I2oq1eroyLdLBY2/J5ysCiPQ8i58TVIpQ7UdOZmthpppy1aBEiy+YGLUkxz5UMDRfgg==
+"@electron/notarize@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@electron/notarize/-/notarize-3.1.0.tgz#43f5a6371b337fd34c8278297e80666c956cbd28"
+  integrity sha512-DHePlWvmUKTNok2+yoOp2ZZ+3ZaLlDWdWD43BfzZhRlUPrBs+EwXDBq3kTJlO+jw2KZzeC3GGlypgw4HQZTD5w==
   dependencies:
     debug "^4.4.0"
     promise-retry "^2.0.1"
 
-"@electron/osx-sign@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@electron/osx-sign/-/osx-sign-2.0.0.tgz#97821bae15b0aa229ae42808ddb427814a1a472c"
-  integrity sha512-jZSzWH21QYbdTy2QxMMtRFlMafyuBRH5EnpC1LJU3uaQV05oo7ldtBRcSI/Eznhw9kFWjjCf2RvC+Nxc1/kQyA==
+"@electron/osx-sign@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@electron/osx-sign/-/osx-sign-2.2.0.tgz#aacc41c3701983599ec6b581687f9735742ea5ee"
+  integrity sha512-3fPxBuuk2s6JTkMZH9VnGAX81HsumHEKqhhptSuQTffy7MZfPAbbcH1cJA/HxfWlD3d7oB9vllTbffsNkqZfig==
   dependencies:
-    "@types/graceful-fs" "^4.1.9"
     debug "^4.3.4"
-    graceful-fs "^4.2.11"
     isbinaryfile "^4.0.8"
     plist "^3.0.5"
     semver "^7.7.1"
