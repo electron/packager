@@ -19,7 +19,6 @@ import { userPathFilter } from './copy-filter.js';
 import { promisifyHooks } from './hooks.js';
 import crypto from 'node:crypto';
 import { ComboOptions } from './types.js';
-import { promisifiedGracefulFs } from './util.js';
 
 export class App {
   asarIntegrity:
@@ -108,7 +107,7 @@ export class App {
 
   async relativeRename(basePath: string, oldName: string, newName: string) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`);
-    await promisifiedGracefulFs.rename(
+    await fs.promises.rename(
       path.join(basePath, oldName),
       path.join(basePath, newName),
     );
