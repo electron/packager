@@ -1,4 +1,4 @@
-import { promisifyHooks, serialHooks } from '../src/hooks';
+import { promisifyHooks, serialHooks } from '../src/hooks.js';
 import { describe, it, expect } from 'vitest';
 
 describe('promisifyHooks', () => {

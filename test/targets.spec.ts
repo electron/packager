@@ -3,12 +3,12 @@ import {
   createPlatformArchPairs,
   supported,
   validateListFromOptions,
-} from '../src/targets';
+} from '../src/targets.js';
 
 import path from 'node:path';
 import { describe, it, expect, vi } from 'vitest';
-import { Options, SupportedPlatform, SupportedArch } from '../src/types';
-import config from './config.json';
+import { Options, SupportedPlatform, SupportedArch } from '../src/types.js';
+import config from './config.json' with { type: 'json' };
 
 describe('allOfficialArchsForPlatformAndVersion', () => {
   it('returns undefined for unknown platforms', () => {

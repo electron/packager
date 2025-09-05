@@ -1,15 +1,17 @@
-import { info, hostInfo, warning } from './common';
-import fs from 'fs-extra';
+import { info, hostInfo, warning } from './common.js';
+import { promisifiedGracefulFs } from './util.js';
 import { initializeProxy } from '@electron/get';
-import { packager } from './packager';
-import path from 'path';
+import { packager } from './packager.js';
+import path from 'node:path';
 import yargs from 'yargs-parser';
-import { Options } from './types';
+import { Options } from './types.js';
 
 /* istanbul ignore next */
 async function printUsageAndExit(isError: boolean) {
   const usage = (
-    await fs.readFile(path.resolve(__dirname, '..', 'usage.txt'))
+    await promisifiedGracefulFs.readFile(
+      path.resolve(import.meta.dirname, '..', 'usage.txt'),
+    )
   ).toString();
   const print = isError ? console.error : console.log;
   print(usage);
@@ -147,7 +149,7 @@ export function parseArgs(argv: string[]) {
         '--version does not take an argument. Perhaps you meant --app-version or --electron-version?\n',
       );
     }
-    console.log(hostInfo());
+    console.log(await hostInfo());
     process.exit(0);
   } else if (!args.dir) {
     await printUsageAndExit(true);

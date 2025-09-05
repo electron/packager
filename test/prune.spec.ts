@@ -1,4 +1,4 @@
-import { isModule } from '../src/prune';
+import { isModule } from '../src/prune.js';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 

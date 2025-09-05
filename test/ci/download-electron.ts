@@ -1,14 +1,14 @@
-import { isPlatformMac } from '../../src/common';
+import { isPlatformMac } from '../../src/common.js';
 import {
   createDownloadCombos,
   downloadElectronZip as packagerDownloadElectronZip,
-} from '../../src/download';
+} from '../../src/download.js';
 import { downloadArtifact } from '@electron/get';
 import os from 'node:os';
 import path from 'node:path';
-import config from '../config.json';
-import { Options } from '../../src/types';
-import { officialArchs, officialPlatforms } from '../../src/targets';
+import config from '../config.json' with { type: 'json' };
+import { Options } from '../../src/types.js';
+import { officialArchs, officialPlatforms } from '../../src/targets.js';
 
 /**
  * Skip testing darwin/mas target on Windows since Electron Packager itself skips it

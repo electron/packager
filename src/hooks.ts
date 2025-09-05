@@ -1,9 +1,9 @@
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 import {
   FinalizePackageTargetsHookFunction,
   HookFunction,
   HookFunctionErrorCallback,
-} from './types';
+} from './types.js';
 
 export async function promisifyHooks(
   hooks: HookFunction[] | FinalizePackageTargetsHookFunction[] | undefined,
@@ -24,7 +24,7 @@ export async function promisifyHooks(
  * If you need the functions called serially, you can use the `serialHooks` utility function:
  *
  * ```javascript
- * const { packager, serialHooks } = require('@electron/packager')
+ * import { packager, serialHooks } from '@electron/packager'
  *
  * packager({
  *   // ...

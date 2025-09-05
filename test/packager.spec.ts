@@ -1,10 +1,10 @@
-import { packager } from '../src/packager';
+import { packager } from '../src/packager.js';
 import { exec } from 'node:child_process';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import util from 'node:util';
-import fs from 'fs-extra';
-import { generateFinalBasename } from '../src/common';
+import { generateFinalBasename } from '../src/common.js';
 import { getHostArch } from '@electron/get';
 import { describe, expect, vi } from 'vitest';
 import {
@@ -13,14 +13,13 @@ import {
   it,
   parseHelperInfoPlist,
   parseInfoPlist,
-} from './utils';
-import { Options } from '../src/types';
-import { createDownloadOpts, downloadElectronZip } from '../src/download';
+} from './utils.js';
+import { Options } from '../src/types.js';
+import { createDownloadOpts, downloadElectronZip } from '../src/download.js';
 import plist, { PlistObject } from 'plist';
-import { filterCFBundleIdentifier } from '../src/mac';
+import { filterCFBundleIdentifier } from '../src/mac.js';
 
-import { dynamicImport } from '../src/dynamicImport';
-import type { NtExecutable, NtExecutableResource } from 'resedit';
+import { NtExecutable, NtExecutableResource, Resource } from 'resedit';
 
 describe('packager', () => {
   it('cannot build apps where the name ends in "Helper"', async ({
@@ -144,7 +143,7 @@ describe('packager', () => {
     );
     // Create a dummy file to detect whether the output directory is replaced in subsequent runs
     const testPath = path.join(paths[0], 'test.txt');
-    await fs.writeFile(testPath, 'test');
+    await fs.promises.writeFile(testPath, 'test');
     // Second run without overwrite should be skipped
     await packager(opts);
     expect(fs.existsSync(testPath)).toBe(true);
@@ -173,7 +172,7 @@ describe('packager', () => {
       ),
     );
     expect(paths[0]).toBeDirectory();
-    await fs.rm(paths[0], { recursive: true, force: true });
+    await fs.promises.rm(paths[0], { recursive: true, force: true });
   });
 
   it('can package with platform/arch set', async ({ baseOpts }) => {
@@ -217,7 +216,7 @@ describe('packager', () => {
 
     const src = path.join(opts.dir, 'main.js');
     const dest = path.join(opts.dir, 'main-link.js');
-    await fs.symlink(src, dest);
+    await fs.promises.symlink(src, dest);
 
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
@@ -225,7 +224,7 @@ describe('packager', () => {
     const destLink = path.join(paths[0], 'resources', 'app', 'main-link.js');
     expect(destLink).toBeSymlink();
 
-    await fs.rm(dest, { force: true });
+    await fs.promises.rm(dest, { force: true });
   });
 
   // FIXME: This flakes with ENOTEMPTY: directory not empty
@@ -399,11 +398,15 @@ describe('packager', () => {
         platform: 'linux',
         arch: 'x64',
       };
-      await fs.ensureDir(customDir);
+      await fs.promises.mkdir(customDir, { recursive: true });
+
       const zipPath = await downloadElectronZip(
         createDownloadOpts(opts, 'linux', 'x64'),
       );
-      await fs.copy(zipPath, path.join(customDir, path.basename(zipPath)));
+      await fs.promises.copyFile(
+        zipPath,
+        path.join(customDir, path.basename(zipPath)),
+      );
 
       const paths = await packager(opts);
 
@@ -527,13 +530,14 @@ describe('packager', () => {
       out: path.join(baseOpts.out!, 'out'),
     };
 
-    await fs.copy(fixture, opts.out!, {
+    await fs.promises.cp(fixture, opts.out!, {
       dereference: true,
       filter: (file) => path.basename(file) !== 'node_modules',
+      recursive: true,
     });
 
-    await fs.ensureDir(opts.out!);
-    await fs.writeFile(path.join(opts.out!, 'ignoreMe'), 'test');
+    await fs.promises.mkdir(opts.out!, { recursive: true });
+    await fs.promises.writeFile(path.join(opts.out!, 'ignoreMe'), 'test');
 
     const [p] = await packager(opts);
     const resourcesPath = path.join(
@@ -807,7 +811,7 @@ describe('packager', () => {
             ) => {
               const hash = crypto.createHash('sha256');
               hash.update(
-                await fs.readFile(
+                await fs.promises.readFile(
                   path.join(
                     extractPath,
                     'Electron.app',
@@ -827,7 +831,7 @@ describe('packager', () => {
         expect(paths).toHaveLength(1);
         const hash = crypto.createHash('sha256');
         hash.update(
-          await fs.readFile(
+          await fs.promises.readFile(
             path.join(
               paths[0],
               `${opts.name}.app`,
@@ -1244,7 +1248,7 @@ describe('packager', () => {
                   `${opts.name} ${helper}.app`,
                 );
                 helperPaths.push(helperPath);
-                await fs.rm(helperPath, {
+                await fs.promises.rm(helperPath, {
                   recursive: true,
                   force: true,
                 });
@@ -1479,19 +1483,16 @@ describe('packager', () => {
       const paths = await packager(opts);
       expect(paths).toHaveLength(1);
 
-      const resedit = await dynamicImport('resedit');
-      const exe = (resedit.NtExecutable as typeof NtExecutable).from(
-        await fs.readFile(path.join(paths[0], 'versionInfoTest.exe')),
+      const exe = NtExecutable.from(
+        await fs.promises.readFile(path.join(paths[0], 'versionInfoTest.exe')),
       );
-      const res = (
-        resedit.NtExecutableResource as typeof NtExecutableResource
-      ).from(exe);
+      const res = NtExecutableResource.from(exe);
 
       const manifest = res.entries.find((e) => e.type === 24)!;
       const manifestString = Buffer.from(manifest.bin).toString('utf-8');
       expect(manifestString).toContain('requireAdministrator');
 
-      const versionInfo = resedit.Resource.VersionInfo.fromEntries(res.entries);
+      const versionInfo = Resource.VersionInfo.fromEntries(res.entries);
       expect(versionInfo.length).toBe(1);
       const version = versionInfo[0];
       const langs = version.getAllLanguagesForStringValues();

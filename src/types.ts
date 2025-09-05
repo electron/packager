@@ -10,9 +10,9 @@
 
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
-import { NotaryToolCredentials } from '@electron/notarize/lib/types';
-import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign/dist/esm/types';
-import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign/dist/esm/types';
+import { NotaryToolCredentials } from '@electron/notarize';
+import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign';
+import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign';
 import type { makeUniversalApp } from '@electron/universal';
 
 /**
@@ -84,8 +84,7 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void;
  * @example
  *
  * ```javascript
- * const packager = require('@electron/packager')
- * const { serialHooks } = require('@electron/packager/src/hooks')
+ * import { packager, serialHooks } from '@electron/packager'
  *
  * packager({
  *   // ...

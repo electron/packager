@@ -1,9 +1,9 @@
 import filenamify from 'filenamify';
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import fs from 'graceful-fs';
+import os from 'node:os';
+import path from 'node:path';
 import createDebug from 'debug';
-import { ComboOptions, Options } from './types';
+import { ComboOptions, Options } from './types.js';
 import { CreateOptions as AsarOptions } from '@electron/asar';
 
 export const debug = createDebug('electron-packager');
@@ -105,7 +105,7 @@ export async function validateElectronApp(
   debug('Checking for a package.json file');
 
   const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json');
-  if (!(await fs.pathExists(bundledPackageJSONPath))) {
+  if (!fs.existsSync(bundledPackageJSONPath)) {
     const originalPackageJSONPath = path.join(appDir, 'package.json');
     throw new Error(
       `Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`,
@@ -113,10 +113,12 @@ export async function validateElectronApp(
   }
 
   debug('Checking for the main entry point file');
-  const packageJSON = await fs.readJson(bundledPackageJSONPath);
+  const packageJSON = JSON.parse(
+    await fs.promises.readFile(bundledPackageJSONPath, 'utf8'),
+  );
   const mainScriptBasename = packageJSON.main || 'index.js';
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
-  if (!(await fs.pathExists(mainScript))) {
+  if (!fs.existsSync(mainScript)) {
     const originalMainScript = path.join(appDir, mainScriptBasename);
     throw new Error(
       `The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`,
@@ -126,9 +128,12 @@ export async function validateElectronApp(
   debug('Validation complete');
 }
 
-export function hostInfo() {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const metadata = require('../package.json');
+export async function hostInfo() {
+  const packageJsonPath = path.resolve(import.meta.dirname, '../package.json');
+
+  const { default: metadata } = await import(packageJsonPath, {
+    with: { type: 'json' },
+  });
 
   return (
     `Electron Packager ${metadata.version}\n` +

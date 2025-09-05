@@ -4,13 +4,13 @@ import {
   ensureArray,
   generateFinalBasename,
   normalizePath,
-} from './common';
-import junk from 'junk';
-import path from 'path';
-import { isModule, Pruner } from './prune';
-import { officialPlatformArchCombos } from './targets';
-import { ComboOptions, Options } from './types';
-import { CopyFilterAsync } from 'fs-extra';
+} from './common.js';
+import { isJunk } from 'junk';
+import path from 'node:path';
+import { isModule, Pruner } from './prune.js';
+import { officialPlatformArchCombos } from './targets.js';
+import { ComboOptions, Options } from './types.js';
+import { CopyOptions } from 'node:fs';
 
 const DEFAULT_IGNORES = [
   '/package-lock\\.json$',
@@ -82,7 +82,7 @@ function generateFilterFunction(
   }
 }
 
-export function userPathFilter(opts: ComboOptions): CopyFilterAsync {
+export function userPathFilter(opts: ComboOptions): CopyOptions['filter'] {
   const filterFunc = generateFilterFunction(opts.ignore || []);
   const ignoredOutDirs = generateIgnoredOutDirs(opts);
   const pruner = opts.prune ? new Pruner(opts.dir, Boolean(opts.quiet)) : null;
@@ -96,7 +96,7 @@ export function userPathFilter(opts: ComboOptions): CopyFilterAsync {
 
     if (opts.junk !== false) {
       // defaults to true
-      if (junk.is(path.basename(fullPath))) {
+      if (isJunk(path.basename(fullPath))) {
         return false;
       }
     }
@@ -116,5 +116,5 @@ export function userPathFilter(opts: ComboOptions): CopyFilterAsync {
     }
 
     return filterFunc(name);
-  } as CopyFilterAsync;
+  };
 }

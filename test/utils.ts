@@ -1,11 +1,11 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import plist, { PlistObject } from 'plist';
-import fs from 'fs-extra';
 import { it as originalIt } from 'vitest';
-import type { ComboOptions, Options } from '../src/types';
-import { isPlatformMac, sanitizeAppName } from '../src/common';
-import config from './config.json';
+import type { ComboOptions, Options } from '../src/types.js';
+import { isPlatformMac, sanitizeAppName } from '../src/common.js';
+import config from './config.json' with { type: 'json' };
 
 export function generateResourcesPath(
   opts: Pick<ComboOptions, 'name' | 'platform'>,
@@ -75,10 +75,10 @@ interface ItContext {
 export const it = originalIt.extend<ItContext>({
   /* eslint-disable-next-line no-empty-pattern */
   baseOpts: async ({}, use) => {
-    const workDir = await fs.mkdtemp(
+    const workDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-workdir-'),
     );
-    const tmpDir = await fs.mkdtemp(
+    const tmpDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-tmpdir-'),
     );
 
@@ -91,7 +91,7 @@ export const it = originalIt.extend<ItContext>({
     };
     await use(opts);
 
-    await fs.rm(workDir, { recursive: true, force: true });
-    await fs.rm(tmpDir, { recursive: true, force: true });
+    await fs.promises.rm(workDir, { recursive: true, force: true });
+    await fs.promises.rm(tmpDir, { recursive: true, force: true });
   },
 });

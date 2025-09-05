@@ -1,4 +1,4 @@
-import { WindowsApp } from '../src/win32';
+import { WindowsApp } from '../src/win32.js';
 import _ from 'lodash';
 import { describe, it, expect } from 'vitest';
 

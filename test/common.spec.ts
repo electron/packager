@@ -5,11 +5,11 @@ import {
   generateFinalBasename,
   validateElectronApp,
   createAsarOpts,
-} from '../src/common';
-import { createDownloadOpts } from '../src/download';
+} from '../src/common.js';
+import { createDownloadOpts } from '../src/download.js';
 
 import { describe, it, expect, vi } from 'vitest';
-import { ComboOptions, Options } from '../src/types';
+import { ComboOptions, Options } from '../src/types.js';
 import path from 'node:path';
 
 describe('logger', () => {
@@ -145,6 +145,8 @@ describe('createAsarOpts', () => {
   });
 
   it('returns false if asar is not an object or a boolean', () => {
-    expect(createAsarOpts({ asar: 'test' } as unknown as ComboOptions)).toBe(false);
+    expect(createAsarOpts({ asar: 'test' } as unknown as ComboOptions)).toBe(
+      false,
+    );
   });
 });
