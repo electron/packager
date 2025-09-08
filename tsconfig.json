@@ -5,8 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "sourceMap": true,
-    "allowJs": true
+    "sourceMap": true
   },
   "include": ["src"]
 }
