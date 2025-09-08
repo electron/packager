@@ -23,7 +23,7 @@ describe('createSignOpts', () => {
     const args = true;
     const signOpts = createSignOpts(args, 'darwin', 'out', 'version');
     expect(signOpts).toEqual({
-      identity: null,
+      identity: undefined,
       app: 'out',
       platform: 'darwin',
       version: 'version',
