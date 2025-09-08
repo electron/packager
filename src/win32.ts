@@ -1,7 +1,7 @@
 import path from 'node:path';
 import {
   sign,
-  SignOptions as WindowsInternalSignOptions,
+  SignOptions as WindowsSignOptions
 } from '@electron/windows-sign';
 import { App } from './platform.js';
 import { debug, sanitizeAppName, warning } from './common.js';
