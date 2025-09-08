@@ -11,8 +11,8 @@
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
 import { NotaryToolCredentials } from '@electron/notarize';
-import { SignOptions as OSXInternalSignOptions } from '@electron/osx-sign';
-import { SignOptions as WindowsInternalSignOptions } from '@electron/windows-sign';
+import { SignOptions as OSXSignOptions } from '@electron/osx-sign';
+import { SignOptions as WindowsSignOptions } from '@electron/windows-sign';
 import type { makeUniversalApp } from '@electron/universal';
 
 /**
