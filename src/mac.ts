@@ -5,7 +5,7 @@ import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
-import { sign, SignOptions } from '@electron/osx-sign';
+import { ElectronMacPlatform, sign, SignOptions } from '@electron/osx-sign';
 import { ComboOptions } from './types.js';
 import { generateAssetCatalogForIcon } from './icon-composer.js';
 
@@ -604,7 +604,7 @@ type CreateSignOptsResult = Mutable<
 >;
 
 export function createSignOpts(
-  properties: ComboOptions['osxSign'],
+  properties: Exclude<ComboOptions['osxSign'], undefined>,
   platform: ComboOptions['platform'],
   app: string,
   version: ComboOptions['electronVersion'],
@@ -615,34 +615,44 @@ export function createSignOpts(
     properties === true ? { identity: null } : { ...properties }
   ) as CreateSignOptsResult;
 
-  // osx-sign options are handed off to sign module, but
-  // with a few additions from the main options
-  // user may think they can pass platform, app, or version, but they will be ignored
-  subOptionWarning(signOpts, 'osx-sign', 'platform', platform, quiet);
-  subOptionWarning(signOpts, 'osx-sign', 'app', app, quiet);
-  subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet);
+  if (typeof properties === 'object') {
+    // osx-sign options are handed off to sign module, but
+    // with a few additions from the main options
+    // user may think they can pass platform, app, or version, but they will be ignored
+    subOptionWarning(signOpts, 'osx-sign', 'platform', platform, quiet);
+    subOptionWarning(signOpts, 'osx-sign', 'app', app, quiet);
+    subOptionWarning(signOpts, 'osx-sign', 'version', version, quiet);
 
-  if (signOpts.binaries) {
-    warning(
-      'osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.',
-      quiet,
-    );
-    delete signOpts.binaries;
+    if (signOpts.binaries) {
+      warning(
+        'osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.',
+        quiet,
+      );
+      delete signOpts.binaries;
+    }
+
+    // Take argument osx-sign as signing identity:
+    // if opts.osxSign is true (bool), fallback to identity=null for
+    // autodiscovery. Otherwise, provide signing certificate info.
+    if ((signOpts.identity as unknown) === true) {
+      (signOpts.identity as unknown) = null;
+    }
+
+    // Default to `continueOnError: true` since this was the default behavior before this option was added
+    if (signOpts.continueOnError !== false) {
+      signOpts.continueOnError = true;
+    }
+
+    return signOpts;
+  } else {
+    return {
+      identity: undefined,
+      platform: platform as ElectronMacPlatform,
+      app,
+      version,
+      continueOnError: true,
+    };
   }
-
-  // Take argument osx-sign as signing identity:
-  // if opts.osxSign is true (bool), fallback to identity=null for
-  // autodiscovery. Otherwise, provide signing certificate info.
-  if ((signOpts.identity as unknown) === true) {
-    (signOpts.identity as unknown) = null;
-  }
-
-  // Default to `continueOnError: true` since this was the default behavior before this option was added
-  if (signOpts.continueOnError !== false) {
-    signOpts.continueOnError = true;
-  }
-
-  return signOpts;
 }
 
 type CreateNotarizeOptsResult = Exclude<NotarizeOptions, { tool?: 'legacy' }>;

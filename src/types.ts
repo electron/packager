@@ -128,8 +128,8 @@ export type FinalizePackageTargetsHookFunction = (
 /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
  * @interface
  */
-export type OsxSignOptions = Omit<
-  OSXInternalSignOptions,
+export type PackagerOsxSignOptions = Omit<
+  OSXSignOptions,
   'app' | 'binaries' | 'platform' | 'version'
 >;
 
@@ -138,7 +138,7 @@ export type OsxSignOptions = Omit<
  * for details.
  * @interface
  */
-export type OsxUniversalOptions = Omit<
+export type PackagerUniversalOptions = Omit<
   MakeUniversalOpts,
   'x64AppPath' | 'arm64AppPath' | 'outAppPath' | 'force'
 >;
@@ -168,8 +168,8 @@ export interface MacOSProtocol {
  * See the documentation for [`@electron/windows-sign`](https://github.com/electron/windows-sign)
  * for details.
  */
-export interface WindowsSignOptions
-  extends Omit<WindowsInternalSignOptions, 'appDirectory'> {
+export interface PackagerWindowsSignOptions
+  extends Omit<WindowsSignOptions, 'appDirectory'> {
   continueOnError?: boolean;
 }
 
@@ -511,13 +511,13 @@ export interface Options {
    *
    * @category macOS
    */
-  osxSign?: true | OsxSignOptions;
+  osxSign?: true | PackagerOsxSignOptions;
   /**
    * Used to provide custom options to the internal call to `@electron/universal` when building a macOS
    * app with the target architecture of "universal".  Unused otherwise, providing a value does not imply
    * a universal app is built.
    */
-  osxUniversal?: OsxUniversalOptions;
+  osxUniversal?: PackagerUniversalOptions;
   /**
    * The base directory where the finished package(s) are created.
    *
@@ -628,7 +628,7 @@ export interface Options {
    * their defaults.
    * @category Windows
    */
-  windowsSign?: true | WindowsSignOptions;
+  windowsSign?: true | PackagerWindowsSignOptions;
 }
 
 /**

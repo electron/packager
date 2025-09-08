@@ -1,11 +1,8 @@
 import path from 'node:path';
-import {
-  sign,
-  SignOptions as WindowsSignOptions
-} from '@electron/windows-sign';
+import { sign, SignOptionsForDirectory } from '@electron/windows-sign';
 import { App } from './platform.js';
 import { debug, sanitizeAppName, warning } from './common.js';
-import { ComboOptions, Options, WindowsSignOptions } from './types.js';
+import { ComboOptions, Options } from './types.js';
 import { ExeMetadata, resedit } from './resedit.js';
 
 export class WindowsApp extends App {
@@ -95,7 +92,7 @@ export class WindowsApp extends App {
         `Running @electron/windows-sign with the options ${JSON.stringify(signOpts)}`,
       );
       try {
-        await sign(signOpts as WindowsInternalSignOptions);
+        await sign(signOpts);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {
@@ -120,27 +117,29 @@ export class WindowsApp extends App {
   }
 }
 
+type CreateSignOptsResult = SignOptionsForDirectory & {
+  continueOnError?: boolean;
+};
+
 function createSignOpts(
-  properties: ComboOptions['windowsSign'],
+  properties: Exclude<ComboOptions['windowsSign'], undefined>,
   windowsMetaData: ComboOptions['win32metadata'],
   appDirectory: string,
-): WindowsSignOptions & WindowsInternalSignOptions {
-  let result: WindowsSignOptions = {};
-
+): CreateSignOptsResult {
   if (typeof properties === 'object') {
-    result = { ...properties };
+    const result = { ...properties };
+    // A little bit of convenience
+    if (
+      windowsMetaData &&
+      windowsMetaData.FileDescription &&
+      !result.description
+    ) {
+      result.description = windowsMetaData.FileDescription;
+    }
+    return { ...result, appDirectory };
+  } else {
+    return { appDirectory };
   }
-
-  // A little bit of convenience
-  if (
-    windowsMetaData &&
-    windowsMetaData.FileDescription &&
-    !result.description
-  ) {
-    result.description = windowsMetaData.FileDescription;
-  }
-
-  return { ...result, appDirectory };
 }
 
 export { WindowsApp as App };
