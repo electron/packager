@@ -141,8 +141,25 @@ export class App {
       `Initializing app in ${this.stagingPath} from ${this.templatePath} template`,
     );
 
-    await fs.promises.rm(this.stagingPath, { recursive: true, force: true });
-    await fs.promises.rename(this.templatePath, this.stagingPath);
+    try {
+      await fs.promises.rm(this.stagingPath, { recursive: true, force: true });
+      await fs.promises.rename(this.templatePath, this.stagingPath);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'EXDEV') {
+        // Cross-device link, fallback to copy and delete
+        await fs.promises.cp(this.templatePath, this.stagingPath, {
+          force: true,
+          recursive: true,
+          verbatimSymlinks: true,
+        });
+        await fs.promises.rm(this.templatePath, {
+          force: true,
+          recursive: true,
+        });
+      } else {
+        throw err;
+      }
+    }
     await this.removeDefaultApp();
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
