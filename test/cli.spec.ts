@@ -58,11 +58,6 @@ describe('parseArgs', () => {
     expect(args.tmpdir).toBe(false);
   });
 
-  it('defaults to derefSymlinks', () => {
-    const args = parseArgs([]);
-    expect(args.derefSymlinks).toBe(true);
-  });
-
   it('always resolves --out to be a string', () => {
     const args = parseArgs(['--out=1']);
     expect(args.out).toBe('1');

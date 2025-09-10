@@ -357,7 +357,7 @@ export interface Options {
    *
    * **Note:** `derefSymlinks` will have no effect if the {@link prebuiltAsar} option is set.
    *
-   * @defaultValue false
+   * @defaultValue true
    *
    */
   derefSymlinks?: boolean;

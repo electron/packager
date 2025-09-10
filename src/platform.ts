@@ -193,7 +193,10 @@ export class App {
     await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, {
       recursive: true,
       filter: userPathFilter(this.opts),
-      dereference: Boolean(this.opts.derefSymlinks),
+      dereference:
+        typeof this.opts.derefSymlinks === 'boolean'
+          ? this.opts.derefSymlinks
+          : true,
     });
     await promisifyHooks(
       this.opts.afterCopy,
