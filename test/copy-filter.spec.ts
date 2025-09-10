@@ -2,17 +2,17 @@ import {
   generateIgnoredOutDirs,
   populateIgnoredPaths,
   userPathFilter,
-} from '../src/copy-filter';
-import fs from 'fs-extra';
+} from '../src/copy-filter.js';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ComboOptions, Options } from '../src';
+import { ComboOptions, Options } from '../src/types.js';
 
 describe('populateIgnoredPaths', () => {
   let tempDir: string;
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(
+    tempDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-'),
     );
   });
@@ -39,9 +39,10 @@ describe('populateIgnoredPaths', () => {
 
     populateIgnoredPaths(opts);
     const targetDir = path.join(tempDir, 'result');
-    await fs.copy(opts.dir, targetDir, {
+    await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
       filter: userPathFilter(opts as ComboOptions),
+      recursive: true,
     });
 
     expect(fs.existsSync(path.join(targetDir, 'node_gyp_bins'))).toBe(false);
@@ -62,7 +63,7 @@ describe('populateIgnoredPaths', () => {
 describe('userPathFilter', () => {
   let tempDir: string;
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(
+    tempDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-'),
     );
   });
@@ -80,9 +81,10 @@ describe('userPathFilter', () => {
 
     populateIgnoredPaths(opts);
     const targetDir = path.join(tempDir, 'result');
-    await fs.copy(opts.dir, targetDir, {
+    await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
       filter: userPathFilter(opts as ComboOptions),
+      recursive: true,
     });
 
     expect(fs.existsSync(path.join(targetDir, 'ignorethis.txt'))).toBe(false);
@@ -100,9 +102,10 @@ describe('userPathFilter', () => {
 
     populateIgnoredPaths(opts);
     const targetDir = path.join(tempDir, 'result');
-    await fs.copy(opts.dir, targetDir, {
+    await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
       filter: userPathFilter(opts as ComboOptions),
+      recursive: true,
     });
 
     expect(fs.existsSync(path.join(targetDir, 'ignorethis.txt'))).toBe(true);
@@ -122,9 +125,10 @@ describe('userPathFilter', () => {
     populateIgnoredPaths(opts);
 
     const targetDir = path.join(tempDir, 'result');
-    await fs.copy(opts.dir, targetDir, {
+    await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
       filter: userPathFilter(opts as ComboOptions),
+      recursive: true,
     });
 
     expect(fs.existsSync(path.join(targetDir, 'package.json'))).toBe(true);
@@ -143,9 +147,10 @@ describe('userPathFilter', () => {
     populateIgnoredPaths(opts);
 
     const targetDir = path.join(tempDir, 'result');
-    await fs.copy(opts.dir, targetDir, {
+    await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
       filter: userPathFilter(opts as ComboOptions),
+      recursive: true,
     });
 
     expect(fs.existsSync(path.join(targetDir, 'subfolder', 'Thumbs.db'))).toBe(

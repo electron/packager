@@ -1,21 +1,21 @@
-import { createDownloadOpts, downloadElectronZip } from '../src/download';
-import fs from 'fs-extra';
+import { createDownloadOpts, downloadElectronZip } from '../src/download.js';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { extractElectronZip } from '../src/unzip';
-import config from './config.json';
+import { extractElectronZip } from '../src/unzip.js';
+import config from './config.json' with { type: 'json' };
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('extractElectronZip', () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(
+    tempDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'electron-packager-test-'),
     );
 
     return async () => {
-      await fs.rm(tempDir, { recursive: true, force: true });
+      await fs.promises.rm(tempDir, { recursive: true, force: true });
     };
   });
 

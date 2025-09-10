@@ -2,7 +2,7 @@ import {
   createNotarizeOpts,
   createSignOpts,
   filterCFBundleIdentifier,
-} from '../src/mac';
+} from '../src/mac.js';
 import { describe, it, expect } from 'vitest';
 
 describe('createNotarizeOpts', () => {
@@ -23,7 +23,7 @@ describe('createSignOpts', () => {
     const args = true;
     const signOpts = createSignOpts(args, 'darwin', 'out', 'version');
     expect(signOpts).toEqual({
-      identity: null,
+      identity: undefined,
       app: 'out',
       platform: 'darwin',
       version: 'version',
@@ -61,7 +61,9 @@ describe('createSignOpts', () => {
   });
 
   it('passes in continueOnError=false', () => {
-    const args: Partial<ReturnType<typeof createSignOpts>> = { continueOnError: false };
+    const args: Partial<ReturnType<typeof createSignOpts>> = {
+      continueOnError: false,
+    };
     const signOpts = createSignOpts(args, 'darwin', 'out', 'version');
     expect(signOpts.continueOnError).toBe(false);
   });

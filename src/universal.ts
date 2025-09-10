@@ -1,10 +1,11 @@
 import { makeUniversalApp } from '@electron/universal';
-import { generateFinalPath, info } from './common';
-import fs from 'fs-extra';
-import path from 'path';
-import { App } from './mac';
-import { ComboOptions, DownloadOptions, SupportedArch } from './types';
-import { Packager } from './packager';
+import { generateFinalPath, info } from './common.js';
+import fs from 'graceful-fs';
+import { promisifiedGracefulFs } from './util.js';
+import path from 'node:path';
+import { App } from './mac.js';
+import { ComboOptions, DownloadOptions, SupportedArch } from './types.js';
+import { Packager } from './packager.js';
 
 export async function packageUniversalMac(
   packageForPlatformAndArchWithOpts: Packager['packageForPlatformAndArchWithOpts'],
@@ -19,8 +20,8 @@ export async function packageUniversalMac(
     `Packaging app for platform ${comboOpts.platform} universal using electron v${comboOpts.electronVersion} - Building x64 and arm64 slices now`,
     comboOpts.quiet,
   );
-  await fs.mkdirp(tempBase);
-  const tempDir = await fs.mkdtemp(
+  await fs.promises.mkdir(tempBase, { recursive: true });
+  const tempDir = await fs.promises.mkdtemp(
     path.resolve(tempBase, 'electron-packager-universal-'),
   );
 
@@ -28,9 +29,12 @@ export async function packageUniversalMac(
   const universalStagingPath = app.stagingPath;
   const finalUniversalPath = generateFinalPath(app.opts);
 
-  if (await fs.pathExists(finalUniversalPath)) {
+  if (fs.existsSync(finalUniversalPath)) {
     if (comboOpts.overwrite) {
-      await fs.remove(finalUniversalPath);
+      await fs.promises.rm(finalUniversalPath, {
+        recursive: true,
+        force: true,
+      });
     } else {
       info(
         `Skipping ${comboOpts.platform} ${comboOpts.arch} (output dir already exists, use --overwrite to force)`,
@@ -73,7 +77,7 @@ export async function packageUniversalMac(
     comboOpts.quiet,
   );
 
-  const generatedFiles = await fs.readdir(x64AppPath);
+  const generatedFiles = await promisifiedGracefulFs.readdir(x64AppPath);
   const appName = generatedFiles.filter(
     (file) => path.extname(file) === '.app',
   )[0];
@@ -95,13 +99,13 @@ export async function packageUniversalMac(
       continue;
     }
 
-    await fs.copy(
+    await fs.promises.cp(
       path.resolve(x64AppPath, generatedFile),
       path.resolve(finalUniversalPath, generatedFile),
     );
   }
 
-  await fs.remove(tempDir);
+  await fs.promises.rm(tempDir, { recursive: true, force: true });
 
   return finalUniversalPath;
 }

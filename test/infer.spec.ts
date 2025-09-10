@@ -1,10 +1,10 @@
-import fs from 'fs-extra';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { getMetadataFromPackageJSON } from '../src/infer';
-import { Options } from '../src/types';
+import { getMetadataFromPackageJSON } from '../src/infer.js';
+import { Options } from '../src/types.js';
 import semver from 'semver';
-import config from './config.json';
+import config from './config.json' with { type: 'json' };
 import { beforeEach, describe, it, expect } from 'vitest';
 
 describe('getMetadataFromPackageJSON', () => {
@@ -31,14 +31,17 @@ describe('getMetadataFromPackageJSON', () => {
     let tempDir: string;
 
     beforeEach(async () => {
-      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'infer-test-'));
-      await fs.copy(
+      tempDir = await fs.promises.mkdtemp(
+        path.join(os.tmpdir(), 'infer-test-'),
+      );
+      await fs.promises.cp(
         path.join(__dirname, 'fixtures', 'infer-win32metadata'),
         tempDir,
+        { recursive: true },
       );
 
       return async () => {
-        await fs.rm(tempDir, { recursive: true, force: true });
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
       };
     });
 
@@ -64,14 +67,19 @@ describe('getMetadataFromPackageJSON', () => {
     });
 
     it('infers win32metadata when author is an object with a name', async () => {
-      const packageJSON = await fs.readJson(path.join(tempDir, 'package.json'));
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(tempDir, 'package.json'), 'utf-8'),
+      );
 
       packageJSON.author = {
         name: 'Jane Doe',
         email: 'jdoe@example.com',
       };
 
-      await fs.writeJson(path.join(tempDir, 'package.json'), packageJSON);
+      await fs.promises.writeFile(
+        path.join(tempDir, 'package.json'),
+        JSON.stringify(packageJSON, null, 2),
+      );
 
       const opts: Options = {
         dir: tempDir,
@@ -83,13 +91,18 @@ describe('getMetadataFromPackageJSON', () => {
     });
 
     it('does not infer win32metadata when author is an object without a name', async () => {
-      const packageJSON = await fs.readJson(path.join(tempDir, 'package.json'));
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(tempDir, 'package.json'), 'utf-8'),
+      );
 
       packageJSON.author = {
         email: 'jdoe@example.com',
       };
 
-      await fs.writeJson(path.join(tempDir, 'package.json'), packageJSON);
+      await fs.promises.writeFile(
+        path.join(tempDir, 'package.json'),
+        JSON.stringify(packageJSON, null, 2),
+      );
 
       const opts: Options = {
         dir: tempDir,
@@ -101,10 +114,15 @@ describe('getMetadataFromPackageJSON', () => {
     });
 
     it('throws if no author is provided', async () => {
-      const packageJSON = await fs.readJson(path.join(tempDir, 'package.json'));
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(tempDir, 'package.json'), 'utf-8'),
+      );
       delete packageJSON.author;
 
-      await fs.writeJson(path.join(tempDir, 'package.json'), packageJSON);
+      await fs.promises.writeFile(
+        path.join(tempDir, 'package.json'),
+        JSON.stringify(packageJSON, null, 2),
+      );
       const opts: Options = {
         dir: tempDir,
         appVersion: '1.0.0',
@@ -118,10 +136,12 @@ describe('getMetadataFromPackageJSON', () => {
   describe('failure cases', () => {
     let tempDir: string;
     beforeEach(async () => {
-      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'infer-test-'));
+      tempDir = await fs.promises.mkdtemp(
+        path.join(os.tmpdir(), 'infer-test-'),
+      );
 
       return async () => {
-        await fs.rm(tempDir, { recursive: true, force: true });
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
       };
     });
 
@@ -132,7 +152,9 @@ describe('getMetadataFromPackageJSON', () => {
       ['electronVersion missing', 'infer-missing-electron-version'],
       ['malformed JSON', 'infer-malformed-json'],
     ])('throws if %s', async (_prop, fixture) => {
-      await fs.copy(path.join(__dirname, 'fixtures', fixture), tempDir);
+      await fs.promises.cp(path.join(__dirname, 'fixtures', fixture), tempDir, {
+        recursive: true,
+      });
       const opts: Options = {
         dir: tempDir,
         name: 'MainJS',

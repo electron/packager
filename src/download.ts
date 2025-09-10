@@ -1,17 +1,17 @@
-import { debug, subOptionWarning } from './common';
+import { debug, subOptionWarning } from './common.js';
 import {
   downloadArtifact,
   ElectronPlatformArtifactDetailsWithDefaults,
 } from '@electron/get';
 import semver from 'semver';
-import { createPlatformArchPairs } from './targets';
+import { createPlatformArchPairs } from './targets.js';
 import {
   DownloadOptions,
   IgnoreFunc,
   Options,
   SupportedArch,
   SupportedPlatform,
-} from './types';
+} from './types.js';
 
 export function createDownloadOpts(
   opts: Options,
