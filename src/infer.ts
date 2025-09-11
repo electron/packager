@@ -7,7 +7,7 @@ import parseAuthor from 'parse-author';
 import path from 'node:path';
 import resolve, { AsyncOpts } from 'resolve';
 import { debug } from './common.js';
-import { Options, SupportedPlatform } from './types.js';
+import { OfficialPlatform, Options } from './types.js';
 
 function isMissingRequiredProperty(props: string[]) {
   return props.some(
@@ -136,7 +136,7 @@ function handleMissingProperties(opts: Options, err: GetPackageInfoError) {
 }
 
 export async function getMetadataFromPackageJSON(
-  platforms: SupportedPlatform[],
+  platforms: OfficialPlatform[],
   opts: Options,
   dir: string,
 ): Promise<void> {

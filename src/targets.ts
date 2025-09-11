@@ -67,11 +67,11 @@ export const supported = {
 
 export function createPlatformArchPairs(
   opts: Options,
-  selectedPlatforms: SupportedPlatform[],
-  selectedArchs: SupportedArch[],
+  selectedPlatforms: OfficialPlatform[],
+  selectedArchs: OfficialArch[],
   ignoreFunc?: IgnoreFunc,
 ) {
-  const combinations: Array<[SupportedPlatform, SupportedArch]> = [];
+  const combinations: Array<[OfficialPlatform, OfficialArch]> = [];
 
   for (const arch of selectedArchs) {
     if (arch === 'universal' && process.platform !== 'darwin') {

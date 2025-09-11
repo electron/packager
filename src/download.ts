@@ -8,15 +8,15 @@ import { createPlatformArchPairs } from './targets.js';
 import {
   DownloadOptions,
   IgnoreFunc,
+  OfficialArch,
+  OfficialPlatform,
   Options,
-  SupportedArch,
-  SupportedPlatform,
 } from './types.js';
 
 export function createDownloadOpts(
   opts: Options,
-  platform: SupportedPlatform,
-  arch: SupportedArch,
+  platform: OfficialPlatform,
+  arch: OfficialArch,
 ): DownloadOptions {
   const downloadOpts = { ...opts.download };
 
@@ -42,8 +42,8 @@ export function createDownloadOpts(
 
 export function createDownloadCombos(
   opts: Options,
-  selectedPlatforms: SupportedPlatform[],
-  selectedArchs: SupportedArch[],
+  selectedPlatforms: OfficialPlatform[],
+  selectedArchs: OfficialArch[],
   ignoreFunc?: IgnoreFunc,
 ) {
   const platformArchPairs = createPlatformArchPairs(

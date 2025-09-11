@@ -635,8 +635,8 @@ export interface Options {
  * @internal
  */
 interface OptionsWithRequiredArchAndPlatform extends Options {
-  arch: Exclude<Options['arch'], undefined>;
-  platform: Exclude<Options['platform'], undefined>;
+  arch: Exclude<Options['arch'], undefined | string[]>;
+  platform: Exclude<Options['platform'], undefined | string[]>;
 }
 
 /**

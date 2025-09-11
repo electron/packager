@@ -23,10 +23,9 @@ import { packageUniversalMac } from './universal.js';
 import {
   ComboOptions,
   DownloadOptions,
+  OfficialArch,
   OfficialPlatform,
   Options,
-  SupportedArch,
-  SupportedPlatform,
 } from './types.js';
 import { App } from './platform.js';
 
@@ -239,8 +238,8 @@ export class Packager {
 
 async function packageAllSpecifiedCombos(
   opts: Options,
-  archs: SupportedArch[],
-  platforms: SupportedPlatform[],
+  archs: OfficialArch[],
+  platforms: OfficialPlatform[],
 ) {
   const packager = new Packager(opts);
   await packager.ensureTempDir();
@@ -277,15 +276,11 @@ async function packageAllSpecifiedCombos(
 export async function packager(opts: Options): Promise<string[]> {
   await debugHostInfo();
 
-  if (debug.enabled) {
-    debug(`Packager Options: ${JSON.stringify(opts)}`);
-  }
+  debug(`Packager Options: ${JSON.stringify(opts)}`);
 
-  const archs = validateListFromOptions(opts, 'arch') as
-    | SupportedArch[]
-    | Error;
+  const archs = validateListFromOptions(opts, 'arch') as OfficialArch[] | Error;
   const platforms = validateListFromOptions(opts, 'platform') as
-    | SupportedPlatform[]
+    | OfficialPlatform[]
     | Error;
 
   if (!Array.isArray(archs)) {
@@ -301,6 +296,7 @@ export async function packager(opts: Options): Promise<string[]> {
 
   const packageJSONDir = path.resolve(process.cwd(), opts.dir) || process.cwd();
 
+  // MUTATION
   await getMetadataFromPackageJSON(platforms, opts, packageJSONDir);
   if (opts.name?.endsWith(' Helper')) {
     throw new Error(
@@ -311,6 +307,7 @@ export async function packager(opts: Options): Promise<string[]> {
   debug(`Application name: ${opts.name}`);
   debug(`Target Electron version: ${opts.electronVersion}`);
 
+  // MUTATION
   populateIgnoredPaths(opts);
 
   await promisifyHooks(opts.afterFinalizePackageTargets, [
