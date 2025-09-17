@@ -511,10 +511,7 @@ export class MacApp extends App implements Plists {
     const platform = this.opts.platform;
     const version = this.opts.electronVersion;
 
-    if (
-      (platform === 'all' || platform === 'mas') &&
-      osxSignOpt === undefined
-    ) {
+    if (platform === 'mas' && osxSignOpt === undefined) {
       warning(
         'signing is required for mas builds. Provide the osx-sign option, ' +
           'or manually sign the app later.',

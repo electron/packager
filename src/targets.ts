@@ -180,8 +180,10 @@ export function allOfficialArchsForPlatformAndVersion(
   return archs;
 }
 
-// Validates list of architectures or platforms.
-// Returns a normalized array if successful, or throws an Error.
+/**
+ * Validates list of architectures or platforms.
+ * @returns A normalized array if successful, or throws an Error.
+ */
 export function validateListFromOptions(
   opts: Options,
   name: keyof typeof supported,
@@ -191,12 +193,13 @@ export function validateListFromOptions(
     return Array.from(set.values());
   }
 
-  let list = opts[name];
+  let list: string | string[] | undefined = opts[name];
+
   if (!list) {
     if (name === 'arch') {
       list = getHostArch();
     } else {
-      list = process[name];
+      list = process.platform;
     }
   } else if (list === 'all') {
     return Array.from(set.values());
@@ -210,6 +213,7 @@ export function validateListFromOptions(
     }
   }
 
+  // TODO: how do we properly type non-official electron packages?
   const officialElectronPackages = usingOfficialElectronPackages(opts);
 
   for (const value of list) {

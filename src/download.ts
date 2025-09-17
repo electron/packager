@@ -66,6 +66,7 @@ export async function downloadElectronZip(downloadOpts: DownloadOptions) {
     downloadOpts.arch === 'armv7l' &&
     semver.lt(downloadOpts.version, '1.0.0')
   ) {
+    //@ts-expect-error: this used to be a valid arch for Electron 0.x
     downloadOpts.arch = 'arm';
   }
   debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`);

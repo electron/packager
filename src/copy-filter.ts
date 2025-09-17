@@ -9,7 +9,12 @@ import { isJunk } from 'junk';
 import path from 'node:path';
 import { isModule, Pruner } from './prune.js';
 import { officialPlatformArchCombos } from './targets.js';
-import { ComboOptions, Options } from './types.js';
+import {
+  ComboOptions,
+  OfficialArch,
+  OfficialPlatform,
+  Options,
+} from './types.js';
 import { CopyOptions } from 'node:fs';
 
 const DEFAULT_IGNORES = [
@@ -50,9 +55,9 @@ export function generateIgnoredOutDirs(opts: ComboOptions): string[] {
     )) {
       for (const arch of archs) {
         const basenameOpts = {
-          arch: arch,
+          arch: arch as OfficialArch,
           name: opts.name,
-          platform: platform,
+          platform: platform as OfficialPlatform,
         };
         ignoredOutDirs.push(
           path.join(process.cwd(), generateFinalBasename(basenameOpts)),

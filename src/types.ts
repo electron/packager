@@ -37,11 +37,6 @@ export type OfficialArch =
  */
 export type OfficialPlatform = 'linux' | 'win32' | 'darwin' | 'mas';
 
-export type TargetArch = OfficialArch | string;
-export type TargetPlatform = OfficialPlatform | string;
-export type ArchOption = TargetArch | 'all';
-export type PlatformOption = TargetPlatform | 'all';
-
 /**
  * Architecture values that we actually support out of the box (not considering unofficial values provided in
  * `download.mirrorOptions`).
@@ -111,15 +106,16 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void;
 export type HookFunction = (
   buildPath: string,
   electronVersion: string,
-  platform: TargetPlatform,
-  arch: TargetArch,
+  platform: OfficialPlatform,
+  arch: OfficialArch,
   callback: HookFunctionErrorCallback,
 ) => void;
 
 export type TargetDefinition = {
-  arch: TargetArch;
-  platform: TargetPlatform;
+  arch: OfficialArch;
+  platform: OfficialPlatform;
 };
+
 export type FinalizePackageTargetsHookFunction = (
   targets: TargetDefinition[],
   callback: HookFunctionErrorCallback,
@@ -294,7 +290,7 @@ export interface Options {
    * - `arm64` _(Linux: Electron 1.8.0 and above; Windows: 6.0.8 and above; macOS: 11.0.0-beta.1 and above)_
    * - `mips64el` _(Electron 1.8.2-beta.5 to 1.8.8)_
    */
-  arch?: ArchOption | ArchOption[];
+  arch?: SupportedArch | SupportedArch[];
   /**
    * Whether to package the application's source code into an archive, using [Electron's
    * archive format](https://github.com/electron/asar). Reasons why you may want to enable
@@ -549,7 +545,7 @@ export interface Options {
    * - `mas` (macOS, specifically for submitting to the Mac App Store)
    * - `win32`
    */
-  platform?: TargetPlatform | 'all' | Array<TargetPlatform | 'all'>;
+  platform?: OfficialPlatform | 'all' | Array<OfficialPlatform | 'all'>;
   /**
    * The path to a prebuilt ASAR file.
    *
@@ -635,8 +631,8 @@ export interface Options {
  * @internal
  */
 interface OptionsWithRequiredArchAndPlatform extends Options {
-  arch: Exclude<Options['arch'], undefined | string[]>;
-  platform: Exclude<Options['platform'], undefined | string[]>;
+  arch: Exclude<Options['arch'], undefined | string[] | 'all'>;
+  platform: Exclude<Options['platform'], undefined | string[] | 'all'>;
 }
 
 /**

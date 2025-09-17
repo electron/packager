@@ -4,7 +4,7 @@ import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
 import { App } from './mac.js';
-import { ComboOptions, DownloadOptions, SupportedArch } from './types.js';
+import { ComboOptions, DownloadOptions, OfficialArch } from './types.js';
 import { Packager } from './packager.js';
 
 export async function packageUniversalMac(
@@ -44,10 +44,10 @@ export async function packageUniversalMac(
     }
   }
 
-  const tempPackages = {} as Record<SupportedArch, string>;
+  const tempPackages = {} as Record<OfficialArch, string>;
 
   await Promise.all(
-    (['x64', 'arm64'] as SupportedArch[]).map(async (tempArch) => {
+    (['x64', 'arm64'] as OfficialArch[]).map(async (tempArch) => {
       const tempOpts = {
         ...comboOpts,
         arch: tempArch,
