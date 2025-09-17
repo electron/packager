@@ -14,7 +14,7 @@ import {
   parseHelperInfoPlist,
   parseInfoPlist,
 } from './utils.js';
-import { Options } from '../src/types.js';
+import { OfficialArch, OfficialPlatform, Options } from '../src/types.js';
 import { createDownloadOpts, downloadElectronZip } from '../src/download.js';
 import plist, { PlistObject } from 'plist';
 import { filterCFBundleIdentifier } from '../src/mac.js';
@@ -25,7 +25,7 @@ describe('packager', () => {
   it('cannot build apps where the name ends in "Helper"', async ({
     baseOpts,
   }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
       name: 'Bad Helper',
     };
@@ -42,32 +42,33 @@ describe('packager', () => {
     { platform: 'android' },
     { arch: 'z80' },
   ])('cannot build with invalid option %s', async (testOpts, { baseOpts }) => {
-    const opts: Options = {
+    const opts = {
+      ...baseOpts,
       platform: 'linux', // required for electronVersion to fail
       arch: 'x64',
-      ...baseOpts,
       ...testOpts,
     };
 
+    // @ts-expect-error - we're passing invalid options in
     await expect(packager(opts)).rejects.toThrow(expect.any(Error));
   });
 
   it('packages with defaults', async ({ baseOpts }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
     };
 
     const defaultOpts = {
-      arch: getHostArch(),
+      arch: getHostArch() as OfficialArch,
       name: opts.name,
-      platform: process.platform,
+      platform: process.platform as OfficialPlatform,
     };
 
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
 
     expect(paths[0]).toEqual(
-      path.join(opts.out!, generateFinalBasename(defaultOpts)),
+      path.join(opts.out, generateFinalBasename(defaultOpts)),
     );
     expect(fs.existsSync(paths[0])).toBe(true);
 
@@ -125,7 +126,7 @@ describe('packager', () => {
   });
 
   it('can overwrite older packages', async ({ baseOpts }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
     };
 
@@ -133,11 +134,11 @@ describe('packager', () => {
     expect(paths).toHaveLength(1);
     expect(paths[0]).toEqual(
       path.join(
-        opts.out!,
+        opts.out,
         generateFinalBasename({
           name: opts.name,
-          platform: process.platform,
-          arch: getHostArch(),
+          platform: process.platform as OfficialPlatform,
+          arch: getHostArch() as OfficialArch,
         }),
       ),
     );
@@ -166,8 +167,8 @@ describe('packager', () => {
         process.cwd(),
         generateFinalBasename({
           name: opts.name,
-          platform: process.platform,
-          arch: getHostArch(),
+          platform: process.platform as OfficialPlatform,
+          arch: getHostArch() as OfficialArch,
         }),
       ),
     );
@@ -176,20 +177,20 @@ describe('packager', () => {
   });
 
   it('can package with platform/arch set', async ({ baseOpts }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
       platform: 'linux',
       arch: 'x64',
-    };
+    } as const;
 
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
     expect(paths[0]).toEqual(
       path.join(
-        opts.out!,
+        opts.out,
         generateFinalBasename({
-          platform: opts.platform as string,
-          arch: opts.arch as string,
+          platform: opts.platform,
+          arch: opts.arch,
           name: opts.name,
         }),
       ),
@@ -197,22 +198,22 @@ describe('packager', () => {
   });
 
   it('can package with tmpdir disabled', async ({ baseOpts }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
       tmpdir: false,
-    };
+    } as const;
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
     expect(paths[0]).toBeDirectory();
   });
 
   it('preserves symlinks with derefSymlinks disabled', async ({ baseOpts }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
       derefSymlinks: false,
       platform: 'linux',
       arch: 'x64',
-    };
+    } as const;
 
     const src = path.join(opts.dir, 'main.js');
     const dest = path.join(opts.dir, 'main-link.js');
@@ -231,7 +232,7 @@ describe('packager', () => {
   it.runIf(process.platform === 'darwin').skip(
     'can package for all target platforms at once',
     async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         all: true,
       };
@@ -259,7 +260,7 @@ describe('packager', () => {
   it.runIf(process.platform !== 'darwin')(
     'can package for all target platforms at once (no universal on non-darwin)',
     async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         all: true,
       };
@@ -287,7 +288,7 @@ describe('packager', () => {
       const extra1Base = 'data1.txt';
       const extra1Path = path.join(__dirname, 'fixtures', extra1Base);
 
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         extraResource: extra1Path,
       };
@@ -299,7 +300,7 @@ describe('packager', () => {
         paths[0],
         generateResourcesPath({
           name: opts.name,
-          platform: process.platform,
+          platform: process.platform as OfficialPlatform,
         }),
       );
 
@@ -314,7 +315,7 @@ describe('packager', () => {
       const extra1Path = path.join(__dirname, 'fixtures', extra1Base);
       const extra2Path = path.join(__dirname, 'fixtures', extra2Base);
 
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         extraResource: [extra1Path, extra2Path],
       };
@@ -326,7 +327,7 @@ describe('packager', () => {
         paths[0],
         generateResourcesPath({
           name: opts.name,
-          platform: process.platform,
+          platform: process.platform as OfficialPlatform,
         }),
       );
 
@@ -342,7 +343,7 @@ describe('packager', () => {
 
   describe.runIf(process.platform === 'linux')('Linux', async () => {
     it('sanitizes binary name', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: '@username/package-name',
       };
@@ -354,7 +355,7 @@ describe('packager', () => {
     });
 
     it('honours the executableName option', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: 'PackageName',
         executableName: 'my-package',
@@ -368,7 +369,7 @@ describe('packager', () => {
   });
 
   it('can package with dir: relative path', async ({ baseOpts }) => {
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
       name: 'relativePathTest',
       dir: path.join('.', 'test', 'fixtures', 'basic'), // dir is relative to process.cwd()
@@ -378,11 +379,11 @@ describe('packager', () => {
     expect(paths).toHaveLength(1);
     expect(paths[0]).toEqual(
       path.join(
-        opts.out!,
+        opts.out,
         generateFinalBasename({
           name: opts.name,
-          platform: process.platform,
-          arch: getHostArch(),
+          platform: process.platform as OfficialPlatform,
+          arch: getHostArch() as OfficialArch,
         }),
       ),
     );
@@ -391,13 +392,13 @@ describe('packager', () => {
   describe('electronZipDir', () => {
     it('can package with electronZipDir', async ({ baseOpts }) => {
       const customDir = path.join(baseOpts.tmpdir as string, 'download');
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: 'electronZipDirTest',
         electronZipDir: customDir,
         platform: 'linux',
         arch: 'x64',
-      };
+      } as const;
       await fs.promises.mkdir(customDir, { recursive: true });
 
       const zipPath = await downloadElectronZip(
@@ -415,7 +416,7 @@ describe('packager', () => {
     });
 
     it('throws if electronZipDir does not exist', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         electronZipDir: path.join(baseOpts.tmpdir as string, 'does-not-exist'),
       };
@@ -428,7 +429,7 @@ describe('packager', () => {
 
   describe('asar', () => {
     it('can package with asar', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         asar: { unpack: '*.pac', unpackDir: 'dir_to_unpack' },
       };
@@ -440,7 +441,10 @@ describe('packager', () => {
 
       const resourcesPath = path.join(
         paths[0],
-        generateResourcesPath({ name: opts.name, platform: process.platform }),
+        generateResourcesPath({
+          name: opts.name,
+          platform: process.platform as OfficialPlatform,
+        }),
       );
 
       expect(fs.existsSync(path.join(resourcesPath, 'app'))).toBe(false);
@@ -457,7 +461,7 @@ describe('packager', () => {
 
     it('ignores asar options if prebuiltAsar is set', async ({ baseOpts }) => {
       vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
         prebuiltAsar: path.join(
@@ -478,7 +482,10 @@ describe('packager', () => {
       expect(paths[0]).toBeDirectory();
       const resourcesPath = path.join(
         paths[0],
-        generateResourcesPath({ name: opts.name, platform: process.platform }),
+        generateResourcesPath({
+          name: opts.name,
+          platform: process.platform as OfficialPlatform,
+        }),
       );
 
       expect(fs.existsSync(path.join(resourcesPath, 'app'))).toBe(false);
@@ -510,7 +517,7 @@ describe('packager', () => {
     });
 
     it('throws if prebuiltAsar is a directory', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
         prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
@@ -524,28 +531,31 @@ describe('packager', () => {
 
   it('should ignore previously-packaged out dir', async ({ baseOpts }) => {
     const fixture = path.join(__dirname, 'fixtures', 'basic');
-    const opts: Options = {
+    const opts = {
       ...baseOpts,
       name: 'ignoreOutDirTest',
-      out: path.join(baseOpts.out!, 'out'),
+      out: path.join(baseOpts.out, 'out'),
     };
 
-    await fs.promises.cp(fixture, opts.out!, {
+    await fs.promises.cp(fixture, opts.out, {
       dereference: true,
       filter: (file) => path.basename(file) !== 'node_modules',
       recursive: true,
     });
 
-    await fs.promises.mkdir(opts.out!, { recursive: true });
-    await fs.promises.writeFile(path.join(opts.out!, 'ignoreMe'), 'test');
+    await fs.promises.mkdir(opts.out, { recursive: true });
+    await fs.promises.writeFile(path.join(opts.out, 'ignoreMe'), 'test');
 
     const [p] = await packager(opts);
     const resourcesPath = path.join(
       p,
-      generateResourcesPath({ name: opts.name, platform: process.platform }),
+      generateResourcesPath({
+        name: opts.name,
+        platform: process.platform as OfficialPlatform,
+      }),
     );
     expect(
-      fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out!))),
+      fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out))),
     ).toBe(false);
   });
 
@@ -682,7 +692,7 @@ describe('packager', () => {
     ])(
       'throws an error if prebuiltAsar and $hook is specified',
       async ({ hook }, { baseOpts }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
           prebuiltAsar: path.join(
@@ -715,7 +725,7 @@ describe('packager', () => {
     it('should prune devDependencies and keep dependencies', async ({
       baseOpts,
     }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
       };
 
@@ -723,7 +733,10 @@ describe('packager', () => {
       expect(paths).toHaveLength(1);
       const resourcesPath = path.join(
         paths[0],
-        generateResourcesPath({ name: opts.name, platform: process.platform }),
+        generateResourcesPath({
+          name: opts.name,
+          platform: process.platform as OfficialPlatform,
+        }),
       );
 
       expect(
@@ -744,7 +757,7 @@ describe('packager', () => {
     });
 
     it('should prune electron in dependencies', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'electron-in-dependencies'),
       };
@@ -753,7 +766,10 @@ describe('packager', () => {
       expect(paths).toHaveLength(1);
       const resourcesPath = path.join(
         paths[0],
-        generateResourcesPath({ name: opts.name, platform: process.platform }),
+        generateResourcesPath({
+          name: opts.name,
+          platform: process.platform as OfficialPlatform,
+        }),
       );
 
       expect(
@@ -855,7 +871,7 @@ describe('packager', () => {
         { type: 'path', extraInfo: extraInfoPath },
         { type: 'object', extraInfo: extraInfoParams },
       ])('can package with extendInfo', async ({ extraInfo }, { baseOpts }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           appBundleId: 'com.electron.extratest',
           appCategoryType: 'public.app-category.music',
@@ -898,7 +914,7 @@ describe('packager', () => {
       ])(
         'can package with extendHelperInfo',
         async ({ extraHelperInfo }, { baseOpts }) => {
-          const opts: Options = {
+          const opts = {
             ...baseOpts,
             appBundleId: 'com.electron.extratest',
             buildVersion: '3.2.1',
@@ -928,7 +944,7 @@ describe('packager', () => {
     });
 
     it('can enable dark mode support in macOS Mojave', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         darwinDarkModeSupport: true,
       };
@@ -940,7 +956,7 @@ describe('packager', () => {
     });
 
     it('can pass protocol schemes to the Info.plist', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         protocols: [
           {
@@ -1006,7 +1022,7 @@ describe('packager', () => {
           },
           { baseOpts },
         ) => {
-          const opts: Options = {
+          const opts = {
             ...baseOpts,
             ...testOpts,
           };
@@ -1028,7 +1044,7 @@ describe('packager', () => {
         const appBundleIdentifier = 'com.electron.username-package-name';
         const expectedSanitizedName = '@username-package-name';
 
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           name: '@username/package-name',
         };
@@ -1050,18 +1066,13 @@ describe('packager', () => {
         buildVersion: '1.0.0.1234',
       },
       {
-        appVersion: 12,
-        buildVersion: 1234,
-      },
-      {
         appVersion: '1.0.0',
       },
       {},
     ])(
       'sets the correct Info.plist values for the app version',
       async (testOpts, { baseOpts }) => {
-        // @ts-expect-error - integers aren't valid according to the types?
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           ...testOpts,
         };
@@ -1081,7 +1092,7 @@ describe('packager', () => {
     it('sets the correct Info.plist values for the appCategoryType', async ({
       baseOpts,
     }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         appCategoryType: 'public.app-category.developer-tools',
       };
@@ -1099,12 +1110,12 @@ describe('packager', () => {
       ])(
         'sets the correct app Info.plist values for appBundleId value %s',
         async (appBundleId, { baseOpts }) => {
-          const opts: Options = {
+          const opts = {
             ...baseOpts,
             appBundleId,
           };
 
-          const defaultBundleName = `com.electron.${opts.name!.toLowerCase()}`;
+          const defaultBundleName = `com.electron.${opts.name.toLowerCase()}`;
           const appBundleIdentifier = filterCFBundleIdentifier(
             opts.appBundleId ?? defaultBundleName,
           );
@@ -1132,13 +1143,13 @@ describe('packager', () => {
       ])(
         'sets the correct legacy helper Info.plist values for $testOpts',
         async ({ testOpts, expectedHelperBundleId }, { baseOpts }) => {
-          const opts: Options = {
+          const opts = {
             ...baseOpts,
             electronVersion: '1.4.13',
             arch: 'x64',
             platform: 'darwin',
             ...testOpts,
-          };
+          } as const;
 
           const paths = await packager(opts);
           expect(paths).toHaveLength(1);
@@ -1180,7 +1191,7 @@ describe('packager', () => {
       ])(
         'sets the correct helper Info.plist values for $testOpts',
         async ({ testOpts, expectedHelperBundleId }, { baseOpts }) => {
-          const opts: Options = {
+          const opts = {
             ...baseOpts,
             ...testOpts,
           };
@@ -1209,7 +1220,7 @@ describe('packager', () => {
     });
 
     it('symlinks frameworks', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
       };
 
@@ -1268,7 +1279,7 @@ describe('packager', () => {
     it('maps appCopyright to NSHumanReadableCopyright', async ({
       baseOpts,
     }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         appCopyright:
           'Copyright © 2013–2025 Organization. All rights reserved.',
@@ -1281,7 +1292,7 @@ describe('packager', () => {
     });
 
     it('maps usageDescription to the correct keys', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         usageDescription: {
           Microphone: 'I am a Karaoke app',
@@ -1292,12 +1303,12 @@ describe('packager', () => {
       expect(paths).toHaveLength(1);
       const infoPlist = parseInfoPlist(paths[0]);
       expect(infoPlist.NSMicrophoneUsageDescription).toBe(
-        opts.usageDescription!.Microphone,
+        opts.usageDescription.Microphone,
       );
     });
 
     it('can package an app named Electron', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: 'Electron',
       };
@@ -1313,7 +1324,7 @@ describe('packager', () => {
       it('does not insert hashes when asar is disabled', async ({
         baseOpts,
       }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           asar: false,
         };
@@ -1325,7 +1336,7 @@ describe('packager', () => {
       });
 
       it('inserts hashes when asar is enabled', async ({ baseOpts }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           asar: true,
         };
@@ -1342,7 +1353,7 @@ describe('packager', () => {
       });
 
       it('inserts hashes when prebuilt asar is used', async ({ baseOpts }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
           prebuiltAsar: path.join(
@@ -1367,7 +1378,7 @@ describe('packager', () => {
 
     describe('codesign', () => {
       it('can sign the app', async ({ baseOpts }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           osxSign: { identity: 'codesign.electronjs.org' },
         };
@@ -1383,12 +1394,12 @@ describe('packager', () => {
 
     describe('Mac App Store', () => {
       it('can package for MAS', async ({ baseOpts }) => {
-        const opts: Options = {
+        const opts = {
           ...baseOpts,
           name: 'masTest',
           arch: 'x64',
           platform: 'mas',
-        };
+        } as const;
 
         const paths = await packager(opts);
         expect(paths).toHaveLength(1);
@@ -1426,12 +1437,12 @@ describe('packager', () => {
 
   describe.runIf(process.platform === 'win32')('Windows', () => {
     it('sanitizes the executable name', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: '@username/package-name',
         platform: 'win32',
         arch: 'x64',
-      };
+      } as const;
 
       const paths = await packager(opts);
       expect(paths).toHaveLength(1);
@@ -1440,13 +1451,13 @@ describe('packager', () => {
     });
 
     it('uses the executableName option', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: '@username/package-name',
         executableName: 'my-app-executable',
         platform: 'win32',
         arch: 'x64',
-      };
+      } as const;
 
       const paths = await packager(opts);
       expect(paths).toHaveLength(1);
@@ -1455,13 +1466,13 @@ describe('packager', () => {
     });
 
     it('sets an icon', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: 'icon-test',
         icon: path.join(__dirname, 'fixtures', 'icon.ico'),
         platform: 'win32',
         arch: 'x64',
-      };
+      } as const;
 
       const paths = await packager(opts);
       expect(paths).toHaveLength(1);
@@ -1470,7 +1481,7 @@ describe('packager', () => {
     });
 
     it('sets the correct metadata in the exe', async ({ baseOpts }) => {
-      const opts: Options = {
+      const opts = {
         ...baseOpts,
         name: 'versionInfoTest',
         platform: 'win32',
@@ -1478,7 +1489,7 @@ describe('packager', () => {
         appVersion: '1.2.3',
         buildVersion: '4.5.6',
         win32metadata: { 'requested-execution-level': 'requireAdministrator' },
-      };
+      } as const;
 
       const paths = await packager(opts);
       expect(paths).toHaveLength(1);

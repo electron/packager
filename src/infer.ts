@@ -7,7 +7,7 @@ import parseAuthor from 'parse-author';
 import path from 'node:path';
 import resolve, { AsyncOpts } from 'resolve';
 import { debug } from './common.js';
-import { OfficialPlatform, Options } from './types.js';
+import { OfficialPlatform, Options, ProcessedOptions } from './types.js';
 
 function isMissingRequiredProperty(props: string[]) {
   return props.some(
@@ -59,10 +59,7 @@ function resolvePromise(id: string, options: AsyncOpts) {
   );
 }
 
-async function getVersion(
-  opts: Options,
-  electronProp: GetPackageInfoResultSourceItem,
-) {
+async function getVersion(electronProp: GetPackageInfoResultSourceItem) {
   const [, packageName] = electronProp.prop.split('.');
   const src = electronProp.src;
 
@@ -70,55 +67,61 @@ async function getVersion(
     await resolvePromise(packageName, { basedir: path.dirname(src) })
   )[1];
   debug(`Inferring target Electron version from ${packageName} in ${src}`);
-  opts.electronVersion = pkg.version;
+  return pkg.version;
 }
 
 async function handleMetadata(
   opts: Options,
   result: GetPackageInfoResult,
-): Promise<void> {
-  if (result.values.productName) {
+): Promise<Partial<ProcessedOptions>> {
+  const processedValues: Partial<ProcessedOptions> = {};
+
+  if (typeof result.values.productName === 'string') {
     debug(
       `Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`,
     );
-    opts.name = result.values.productName as string;
+    processedValues.name = result.values.productName;
   }
 
-  if (result.values.version) {
+  if (typeof result.values.version === 'string') {
     debug(`Inferring appVersion from version in ${result.source.version.src}`);
-    opts.appVersion = result.values.version as string;
-  }
-
-  if (result.values.author && !opts.win32metadata) {
-    opts.win32metadata = {};
+    processedValues.appVersion = result.values.version;
   }
 
   if (result.values.author) {
     const author = result.values.author as string | { name: string };
+    const win32metadata = opts.win32metadata || {};
 
     debug(
       `Inferring win32metadata.CompanyName from author in ${result.source.author.src}`,
     );
     if (typeof author === 'string') {
-      opts.win32metadata!.CompanyName = parseAuthor(author).name;
+      win32metadata.CompanyName = parseAuthor(author).name;
     } else if (author.name) {
-      opts.win32metadata!.CompanyName = author.name;
+      win32metadata.CompanyName = author.name;
     } else {
       debug(
         'Cannot infer win32metadata.CompanyName from author, no name found',
       );
     }
+    processedValues.win32metadata = win32metadata;
   }
 
-  // eslint-disable-next-line no-prototype-builtins
-  if (result.values.hasOwnProperty('dependencies.electron')) {
-    return getVersion(opts, result.source['dependencies.electron']);
-  } else {
-    return Promise.resolve();
+  if (
+    Object.prototype.hasOwnProperty.call(result.values, 'dependencies.electron')
+  ) {
+    processedValues.electronVersion = await getVersion(
+      result.source['dependencies.electron'],
+    );
   }
+
+  return processedValues;
 }
 
-function handleMissingProperties(opts: Options, err: GetPackageInfoError) {
+function handleMissingProperties(
+  opts: Options,
+  err: GetPackageInfoError,
+): Promise<Partial<ProcessedOptions>> {
   const missingProps = err.missingProps.map((prop) => {
     return Array.isArray(prop) ? prop[0] : prop;
   });
@@ -139,7 +142,7 @@ export async function getMetadataFromPackageJSON(
   platforms: OfficialPlatform[],
   opts: Options,
   dir: string,
-): Promise<void> {
+): Promise<Partial<ProcessedOptions>> {
   const props: Array<string | string[]> = [];
 
   if (!opts.name) {
@@ -169,15 +172,10 @@ export async function getMetadataFromPackageJSON(
     props.push('author');
   }
 
-  // Name and version provided, no need to infer
-  if (props.length === 0) {
-    return Promise.resolve();
-  }
-
   // Search package.json files to infer name and version from
   try {
-    const result = await getPackageInfo(props, dir);
-    return handleMetadata(opts, result);
+    const packageInfo = await getPackageInfo(props, dir);
+    return handleMetadata(opts, packageInfo);
   } catch (e) {
     const err = e as GetPackageInfoError;
 

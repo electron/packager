@@ -18,7 +18,7 @@ import {
 import { userPathFilter } from './copy-filter.js';
 import { promisifyHooks } from './hooks.js';
 import crypto from 'node:crypto';
-import { ComboOptions } from './types.js';
+import { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 
 export class App {
   asarIntegrity:
@@ -26,10 +26,13 @@ export class App {
     | undefined = undefined;
   asarOptions: ReturnType<typeof createAsarOpts>;
   cachedStagingPath: string | undefined = undefined;
-  opts: ComboOptions;
+  opts: ProcessedOptionsWithSinglePlatformArch;
   templatePath: string;
 
-  constructor(opts: ComboOptions, templatePath: string) {
+  constructor(
+    opts: ProcessedOptionsWithSinglePlatformArch,
+    templatePath: string,
+  ) {
     this.opts = opts;
     this.templatePath = templatePath;
     this.asarOptions = createAsarOpts(opts);
@@ -253,7 +256,10 @@ export class App {
     );
   }
 
-  prebuiltAsarWarning(option: keyof ComboOptions, triggerWarning: unknown) {
+  prebuiltAsarWarning(
+    option: keyof ProcessedOptionsWithSinglePlatformArch,
+    triggerWarning: unknown,
+  ) {
     if (triggerWarning) {
       warning(
         `prebuiltAsar and ${option} are incompatible, ignoring the ${option} option`,
@@ -279,8 +285,8 @@ export class App {
     this.prebuiltAsarWarning(
       'ignore',
       (
-        this.opts as ComboOptions & {
-          originalIgnore: ComboOptions['ignore'];
+        this.opts as ProcessedOptionsWithSinglePlatformArch & {
+          originalIgnore: ProcessedOptionsWithSinglePlatformArch['ignore'];
         }
       ).originalIgnore,
     );

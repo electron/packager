@@ -628,25 +628,33 @@ export interface Options {
 }
 
 /**
+ * Processed options with populated defaults and inferred values, used internally by the Packager class.
+ * This represents the cleaned and processed version of the input Options.
  * @internal
  */
-interface OptionsWithRequiredArchAndPlatform extends Options {
-  arch: Exclude<Options['arch'], undefined | string[] | 'all'>;
-  platform: Exclude<Options['platform'], undefined | string[] | 'all'>;
+export interface ProcessedOptions extends Options {
+  name: string;
+  appVersion: string;
+  electronVersion: string;
+  ignore: Array<string | RegExp> | IgnoreFunction;
+  originalIgnore?: Options['ignore'];
+  win32metadata?: Win32MetadataOptions;
 }
 
 /**
  * @internal
  */
-export interface DownloadOptions extends OptionsWithRequiredArchAndPlatform {
+export interface ProcessedOptionsWithSinglePlatformArch
+  extends ProcessedOptions {
+  arch: OfficialArch;
+  platform: OfficialPlatform;
+}
+
+/**
+ * @internal
+ */
+export interface DownloadOptions
+  extends ProcessedOptionsWithSinglePlatformArch {
   artifactName: string;
   version: string;
-}
-
-/**
- * @internal
- */
-export interface ComboOptions extends Options {
-  arch: OptionsWithRequiredArchAndPlatform['arch'];
-  platform: OptionsWithRequiredArchAndPlatform['platform'];
 }

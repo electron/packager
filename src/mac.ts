@@ -6,11 +6,10 @@ import path from 'node:path';
 import plist, { PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
 import { ElectronMacPlatform, sign, SignOptions } from '@electron/osx-sign';
-import { ComboOptions } from './types.js';
+import { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   [key in `NS${string}UsageDescription`]: string;
 };
 
@@ -60,7 +59,10 @@ export class MacApp extends App implements Plists {
   helperRendererPlist: Plists['helperRendererPlist'];
   loginHelperPlist: Plists['loginHelperPlist'];
 
-  constructor(opts: ComboOptions, templatePath: string) {
+  constructor(
+    opts: ProcessedOptionsWithSinglePlatformArch,
+    templatePath: string,
+  ) {
     super(opts, templatePath);
 
     this.appName = opts.name as string;
@@ -203,7 +205,9 @@ export class MacApp extends App implements Plists {
 
   async extendPlist(
     basePlist: BasePList,
-    propsOrFilename: ComboOptions['extendInfo' | 'extendHelperInfo'],
+    propsOrFilename: ProcessedOptionsWithSinglePlatformArch[
+      | 'extendInfo'
+      | 'extendHelperInfo'],
   ) {
     if (!propsOrFilename) {
       return Promise.resolve();
@@ -585,7 +589,7 @@ export { MacApp as App };
  * https://developer.apple.com/library/mac/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102070
  */
 export function filterCFBundleIdentifier(
-  identifier: ComboOptions['appBundleId'],
+  identifier: ProcessedOptionsWithSinglePlatformArch['appBundleId'],
 ) {
   return identifier!.replace(/ /g, '-').replace(/[^a-zA-Z0-9.-]/g, '');
 }
@@ -601,10 +605,13 @@ type CreateSignOptsResult = Mutable<
 >;
 
 export function createSignOpts(
-  properties: Exclude<ComboOptions['osxSign'], undefined>,
-  platform: ComboOptions['platform'],
+  properties: Exclude<
+    ProcessedOptionsWithSinglePlatformArch['osxSign'],
+    undefined
+  >,
+  platform: ProcessedOptionsWithSinglePlatformArch['platform'],
   app: string,
-  version: ComboOptions['electronVersion'],
+  version: ProcessedOptionsWithSinglePlatformArch['electronVersion'],
   quiet?: boolean,
 ): CreateSignOptsResult {
   // use default sign opts if osx-sign is true, otherwise clone osx-sign object
@@ -655,7 +662,7 @@ export function createSignOpts(
 type CreateNotarizeOptsResult = Exclude<NotarizeOptions, { tool?: 'legacy' }>;
 
 export function createNotarizeOpts(
-  properties: ComboOptions['osxNotarize'],
+  properties: ProcessedOptionsWithSinglePlatformArch['osxNotarize'],
   appBundleId: string,
   appPath: string,
   quiet: boolean,

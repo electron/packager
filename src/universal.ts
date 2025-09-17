@@ -4,13 +4,17 @@ import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
 import { App } from './mac.js';
-import { ComboOptions, DownloadOptions, OfficialArch } from './types.js';
+import {
+  ProcessedOptionsWithSinglePlatformArch,
+  DownloadOptions,
+  OfficialArch,
+} from './types.js';
 import { Packager } from './packager.js';
 
 export async function packageUniversalMac(
   packageForPlatformAndArchWithOpts: Packager['packageForPlatformAndArchWithOpts'],
   buildDir: string,
-  comboOpts: ComboOptions,
+  comboOpts: ProcessedOptionsWithSinglePlatformArch,
   downloadOpts: DownloadOptions,
   tempBase: string,
 ) {

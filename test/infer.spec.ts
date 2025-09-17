@@ -17,11 +17,11 @@ describe('getMetadataFromPackageJSON', () => {
       dir,
     };
     const packageJSON = await import(path.join(dir, 'package.json'));
-    await getMetadataFromPackageJSON([], opts, opts.dir);
-    expect(opts.electronVersion).toBeDefined();
+    const result = await getMetadataFromPackageJSON([], opts, opts.dir);
+    expect(result.electronVersion).toBeDefined();
     expect(
       semver.satisfies(
-        opts.electronVersion!,
+        result.electronVersion!,
         packageJSON.devDependencies[packageName],
       ),
     ).toBe(true);
@@ -50,8 +50,12 @@ describe('getMetadataFromPackageJSON', () => {
         electronVersion: config.version,
         dir: tempDir,
       };
-      await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
-      expect(opts.win32metadata).toEqual({ CompanyName: 'Foo Bar' });
+      const result = await getMetadataFromPackageJSON(
+        ['win32'],
+        opts,
+        opts.dir,
+      );
+      expect(result.win32metadata).toEqual({ CompanyName: 'Foo Bar' });
     });
 
     it('does not infer win32metadata if it already exists', async () => {
@@ -62,7 +66,12 @@ describe('getMetadataFromPackageJSON', () => {
           CompanyName: 'Existing',
         },
       };
-      await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
+      const result = await getMetadataFromPackageJSON(
+        ['win32'],
+        opts,
+        opts.dir,
+      );
+      expect(result.win32metadata).toBeUndefined();
       expect(opts.win32metadata).toEqual({ CompanyName: 'Existing' });
     });
 
@@ -86,8 +95,12 @@ describe('getMetadataFromPackageJSON', () => {
         electronVersion: config.version,
       };
 
-      await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
-      expect(opts.win32metadata).toEqual({ CompanyName: 'Jane Doe' });
+      const result = await getMetadataFromPackageJSON(
+        ['win32'],
+        opts,
+        opts.dir,
+      );
+      expect(result.win32metadata).toEqual({ CompanyName: 'Jane Doe' });
     });
 
     it('does not infer win32metadata when author is an object without a name', async () => {
@@ -109,8 +122,12 @@ describe('getMetadataFromPackageJSON', () => {
         electronVersion: config.version,
       };
 
-      await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
-      expect(opts.win32metadata).toEqual({});
+      const result = await getMetadataFromPackageJSON(
+        ['win32'],
+        opts,
+        opts.dir,
+      );
+      expect(result.win32metadata).toEqual({});
     });
 
     it('throws if no author is provided', async () => {

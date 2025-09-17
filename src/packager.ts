@@ -21,11 +21,12 @@ import {
 import { extractElectronZip } from './unzip.js';
 import { packageUniversalMac } from './universal.js';
 import {
-  ComboOptions,
+  ProcessedOptionsWithSinglePlatformArch,
   DownloadOptions,
   OfficialArch,
   OfficialPlatform,
   Options,
+  ProcessedOptions,
 } from './types.js';
 import { App } from './platform.js';
 
@@ -33,13 +34,53 @@ async function debugHostInfo() {
   debug(await hostInfo());
 }
 
+async function createProcessedOptions(
+  opts: Options,
+  platforms: OfficialPlatform[],
+  packageJSONDir: string,
+): Promise<ProcessedOptions> {
+  const inferredMetadata = await getMetadataFromPackageJSON(
+    platforms,
+    opts,
+    packageJSONDir,
+  );
+  const ignoreProcessing = populateIgnoredPaths(opts);
+
+  const processedOptions = {
+    ...opts,
+    name: opts.name || inferredMetadata.name,
+    appVersion: opts.appVersion || inferredMetadata.appVersion,
+    electronVersion: opts.electronVersion || inferredMetadata.electronVersion,
+    ignore: ignoreProcessing.ignore,
+    originalIgnore: ignoreProcessing.originalIgnore,
+    win32metadata: opts.win32metadata || inferredMetadata.win32metadata,
+  };
+
+  if (isValidProcessedOptions(processedOptions)) {
+    return processedOptions;
+  } else {
+    throw new Error('Invalid processed options');
+  }
+}
+
+function isValidProcessedOptions(
+  opts: Partial<ProcessedOptions>,
+): opts is ProcessedOptions {
+  return (
+    typeof opts.name === 'string' &&
+    typeof opts.appVersion === 'string' &&
+    typeof opts.electronVersion === 'string' &&
+    typeof opts.ignore !== 'undefined'
+  );
+}
+
 export class Packager {
   canCreateSymlinks: boolean | undefined = undefined;
-  opts: Options;
+  opts: ProcessedOptions;
   tempBase: string;
   useTempDir: boolean;
 
-  constructor(opts: Options) {
+  constructor(opts: ProcessedOptions) {
     this.opts = opts;
     this.tempBase = baseTempDir(opts);
     this.useTempDir = opts.tmpdir !== false;
@@ -53,7 +94,10 @@ export class Packager {
     }
   }
 
-  async testSymlink(comboOpts: ComboOptions, zipPath: string) {
+  async testSymlink(
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
+    zipPath: string,
+  ) {
     await fs.promises.mkdir(this.tempBase, { recursive: true });
     const testPath = await fs.promises.mkdtemp(
       path.join(
@@ -84,7 +128,9 @@ export class Packager {
   }
 
   /* istanbul ignore next */
-  skipHostPlatformSansSymlinkSupport(comboOpts: ComboOptions) {
+  skipHostPlatformSansSymlinkSupport(
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
+  ) {
     info(
       `Cannot create symlinks (on Windows hosts, it requires admin privileges); skipping ${comboOpts.platform} platform`,
       this.opts.quiet,
@@ -94,7 +140,7 @@ export class Packager {
 
   async overwriteAndCreateApp(
     outDir: string,
-    comboOpts: ComboOptions,
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
     zipPath: string,
   ) {
     debug(`Removing ${outDir} due to setting overwrite: true`);
@@ -103,7 +149,7 @@ export class Packager {
   }
 
   async extractElectronZip(
-    comboOpts: ComboOptions,
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
     zipPath: string,
     buildDir: string,
   ) {
@@ -118,8 +164,8 @@ export class Packager {
   }
 
   async buildDir(
-    platform: ComboOptions['platform'],
-    arch: ComboOptions['arch'],
+    platform: ProcessedOptionsWithSinglePlatformArch['platform'],
+    arch: ProcessedOptionsWithSinglePlatformArch['arch'],
   ) {
     let buildParentDir;
     if (this.useTempDir) {
@@ -133,7 +179,10 @@ export class Packager {
     );
   }
 
-  async createApp(comboOpts: ComboOptions, zipPath: string) {
+  async createApp(
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
+    zipPath: string,
+  ) {
     const buildDir = await this.buildDir(comboOpts.platform, comboOpts.arch);
     info(
       `Packaging app for platform ${comboOpts.platform} ${comboOpts.arch} using electron v${comboOpts.electronVersion}`,
@@ -150,7 +199,10 @@ export class Packager {
     return app.create();
   }
 
-  async checkOverwrite(comboOpts: ComboOptions, zipPath: string) {
+  async checkOverwrite(
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
+    zipPath: string,
+  ) {
     const finalPath = generateFinalPath(comboOpts);
     if (fs.existsSync(finalPath)) {
       if (this.opts.overwrite) {
@@ -192,7 +244,7 @@ export class Packager {
   }
 
   async packageForPlatformAndArchWithOpts(
-    comboOpts: ComboOptions,
+    comboOpts: ProcessedOptionsWithSinglePlatformArch,
     downloadOpts: DownloadOptions,
   ) {
     const zipPath = await this.getElectronZipPath(downloadOpts);
@@ -215,7 +267,7 @@ export class Packager {
 
   async packageForPlatformAndArch(downloadOpts: DownloadOptions) {
     // Create delegated options object with specific platform and arch, for output directory naming
-    const comboOpts: ComboOptions = {
+    const comboOpts: ProcessedOptionsWithSinglePlatformArch = {
       ...this.opts,
       arch: downloadOpts.arch,
       platform: downloadOpts.platform,
@@ -237,7 +289,7 @@ export class Packager {
 }
 
 async function packageAllSpecifiedCombos(
-  opts: Options,
+  opts: ProcessedOptions,
   archs: OfficialArch[],
   platforms: OfficialPlatform[],
 ) {
@@ -296,27 +348,34 @@ export async function packager(opts: Options): Promise<string[]> {
 
   const packageJSONDir = path.resolve(process.cwd(), opts.dir) || process.cwd();
 
-  // MUTATION
-  await getMetadataFromPackageJSON(platforms, opts, packageJSONDir);
-  if (opts.name?.endsWith(' Helper')) {
+  const processedOpts = await createProcessedOptions(
+    opts,
+    platforms,
+    packageJSONDir,
+  );
+
+  if (processedOpts.name?.endsWith(' Helper')) {
     throw new Error(
       'Application names cannot end in " Helper" due to limitations on macOS',
     );
   }
 
-  debug(`Application name: ${opts.name}`);
-  debug(`Target Electron version: ${opts.electronVersion}`);
+  debug(`Application name: ${processedOpts.name}`);
+  debug(`Target Electron version: ${processedOpts.electronVersion}`);
 
-  // MUTATION
-  populateIgnoredPaths(opts);
-
-  await promisifyHooks(opts.afterFinalizePackageTargets, [
-    createPlatformArchPairs(opts, platforms, archs).map(([platform, arch]) => ({
-      platform,
-      arch,
-    })),
+  await promisifyHooks(processedOpts.afterFinalizePackageTargets, [
+    createPlatformArchPairs(processedOpts, platforms, archs).map(
+      ([platform, arch]) => ({
+        platform,
+        arch,
+      }),
+    ),
   ]);
-  const appPaths = await packageAllSpecifiedCombos(opts, archs, platforms);
+  const appPaths = await packageAllSpecifiedCombos(
+    processedOpts,
+    archs,
+    platforms,
+  );
   // Remove falsy entries (e.g. skipped platforms)
   return appPaths.filter(
     (appPath) => appPath && typeof appPath === 'string',

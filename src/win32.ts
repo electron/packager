@@ -2,7 +2,7 @@ import path from 'node:path';
 import { sign, SignOptionsForDirectory } from '@electron/windows-sign';
 import { App } from './platform.js';
 import { debug, sanitizeAppName, warning } from './common.js';
-import { ComboOptions, Options } from './types.js';
+import { ProcessedOptionsWithSinglePlatformArch, Options } from './types.js';
 import { ExeMetadata, resedit } from './resedit.js';
 
 export class WindowsApp extends App {
@@ -122,8 +122,11 @@ type CreateSignOptsResult = SignOptionsForDirectory & {
 };
 
 function createSignOpts(
-  properties: Exclude<ComboOptions['windowsSign'], undefined>,
-  windowsMetaData: ComboOptions['win32metadata'],
+  properties: Exclude<
+    ProcessedOptionsWithSinglePlatformArch['windowsSign'],
+    undefined
+  >,
+  windowsMetaData: ProcessedOptionsWithSinglePlatformArch['win32metadata'],
   appDirectory: string,
 ): CreateSignOptsResult {
   if (typeof properties === 'object') {
