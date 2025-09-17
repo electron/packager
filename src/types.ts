@@ -638,7 +638,6 @@ export interface ProcessedOptions extends Options {
   electronVersion: string;
   ignore: Array<string | RegExp> | IgnoreFunction;
   originalIgnore?: Options['ignore'];
-  win32metadata?: Win32MetadataOptions;
 }
 
 /**

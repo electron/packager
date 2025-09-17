@@ -17,14 +17,14 @@ export const officialArchs: OfficialArch[] = [
   'arm64',
   'mips64el',
   'universal',
-];
+] as const;
 
 export const officialPlatforms: OfficialPlatform[] = [
   'darwin',
   'linux',
   'mas',
   'win32',
-];
+] as const;
 
 export const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
