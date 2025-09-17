@@ -40,7 +40,7 @@ describe('promisifyHooks', () => {
       );
 
       const runSerialHook = serialHooks(testHooks);
-      await runSerialHook('', '', '', '', () => {});
+      await runSerialHook('', '', 'darwin', 'arm64', () => {});
       expect(output).toBe('0 1 2 3 4 5 6 7 8 9 10');
     });
   });

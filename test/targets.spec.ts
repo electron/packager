@@ -7,7 +7,7 @@ import {
 
 import path from 'node:path';
 import { describe, it, expect, vi } from 'vitest';
-import { Options, SupportedPlatform, SupportedArch } from '../src/types.js';
+import { Options, OfficialPlatform, OfficialArch } from '../src/types.js';
 import config from './config.json' with { type: 'json' };
 
 describe('allOfficialArchsForPlatformAndVersion', () => {
@@ -159,18 +159,18 @@ describe('createPlatformArchPairs', () => {
       expectedLength: 1,
     },
   ])('builds for $testCase', ({ extraOpts, expectedLength }) => {
-    const opts: Options = {
+    const opts = {
       name: 'test',
       dir: path.join(__dirname, 'fixtures', 'basic'),
       electronVersion: config.version,
       ...extraOpts,
-    };
+    } as Options;
 
     const platforms = validateListFromOptions(
       opts,
       'platform',
-    ) as SupportedPlatform[];
-    const archs = validateListFromOptions(opts, 'arch') as SupportedArch[];
+    ) as OfficialPlatform[];
+    const archs = validateListFromOptions(opts, 'arch') as OfficialArch[];
     const result = createPlatformArchPairs(opts, platforms, archs);
 
     expect(result.length).toEqual(expectedLength);

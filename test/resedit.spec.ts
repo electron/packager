@@ -4,7 +4,15 @@ import { describe, it, expect } from 'vitest';
 
 describe('resedit', () => {
   it('sets win32Metadata defaults', async () => {
-    const opts = { name: 'Win32 App', arch: 'x64', platform: 'win32', dir: '' };
+    const opts = {
+      name: 'Win32 App',
+      arch: 'x64',
+      platform: 'win32',
+      dir: '',
+      appVersion: '1.0.0',
+      electronVersion: '1.0.0',
+      ignore: () => false,
+    } as const;
     const app = new WindowsApp(opts, '');
     const rcOpts = app.generateReseditOptionsSansIcon();
 
@@ -71,8 +79,11 @@ describe('resedit', () => {
         arch: 'x64',
         platform: 'win32',
         dir: '',
+        electronVersion: '1.0.0',
+        ignore: () => false,
+        appVersion: '1.0.0',
         ...testOpts,
-      };
+      } as const;
       const app = new WindowsApp(opts, '');
       const rcOpts = app.generateReseditOptionsSansIcon();
 
