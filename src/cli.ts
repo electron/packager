@@ -20,10 +20,19 @@ async function printUsageAndExit(isError: boolean) {
 
 export function parseArgs(argv: string[]) {
   const args = yargs(argv, {
-    boolean: ['all', 'deref-symlinks', 'junk', 'overwrite', 'prune', 'quiet'],
+    boolean: [
+      'all',
+      'deref-symlinks',
+      'junk',
+      'overwrite',
+      'prune',
+      'quiet',
+      'tmpdir',
+    ],
     default: {
       junk: true,
       prune: true,
+      tmpdir: true,
     },
     string: ['electron-version', 'out'],
   });
@@ -123,15 +132,6 @@ export function parseArgs(argv: string[]) {
     if (!notarize) {
       args.osxNotarize = null;
     }
-  }
-
-  // tmpdir: `String` or `false`
-  if (args.tmpdir === 'false') {
-    warning(
-      '--tmpdir=false is deprecated, use --no-tmpdir instead',
-      args.quiet,
-    );
-    args.tmpdir = false;
   }
 
   return args;
