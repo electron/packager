@@ -18,10 +18,7 @@ import {
 import { userPathFilter } from './copy-filter.js';
 import { runHooks } from './hooks.js';
 import crypto from 'node:crypto';
-import {
-  HookFunction,
-  ProcessedOptionsWithSinglePlatformArch,
-} from './types.js';
+import type { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 
 export class App {
   asarIntegrity:
@@ -185,7 +182,7 @@ export class App {
       await this.buildApp();
     }
 
-    await runHooks<HookFunction>(
+    await runHooks(
       this.opts.afterInitialize,
       this.hookArgsWithOriginalResourcesAppDir,
     );

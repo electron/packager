@@ -57,8 +57,6 @@ export type SupportedPlatform = OfficialPlatform | 'all';
 
 export type IgnoreFunction = (path: string) => boolean;
 
-export type HookFunctionErrorCallback = (err?: Error | null) => void;
-
 /**
  * A function that is called on the completion of a packaging stage.
  *

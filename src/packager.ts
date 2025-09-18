@@ -20,15 +20,13 @@ import {
 } from './targets.js';
 import { extractElectronZip } from './unzip.js';
 import { packageUniversalMac } from './universal.js';
-import {
-  HookFunction,
+import type {
   ProcessedOptionsWithSinglePlatformArch,
   DownloadOptions,
   OfficialArch,
   OfficialPlatform,
   Options,
   ProcessedOptions,
-  FinalizePackageTargetsHookFunction,
 } from './types.js';
 import { App } from './platform.js';
 
@@ -157,7 +155,7 @@ export class Packager {
   ) {
     debug(`Extracting ${zipPath} to ${buildDir}`);
     await extractElectronZip(zipPath, buildDir);
-    await runHooks<HookFunction>(this.opts.afterExtract, {
+    await runHooks(this.opts.afterExtract, {
       buildPath: buildDir,
       electronVersion: comboOpts.electronVersion,
       platform: comboOpts.platform,
@@ -365,7 +363,7 @@ export async function packager(opts: Options): Promise<string[]> {
   debug(`Application name: ${processedOpts.name}`);
   debug(`Target Electron version: ${processedOpts.electronVersion}`);
 
-  await runHooks<FinalizePackageTargetsHookFunction>(
+  await runHooks(
     processedOpts.afterFinalizePackageTargets,
     createPlatformArchPairs(processedOpts, platforms, archs).map(
       ([platform, arch]) => ({
