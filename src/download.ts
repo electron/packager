@@ -8,15 +8,15 @@ import { createPlatformArchPairs } from './targets.js';
 import {
   DownloadOptions,
   IgnoreFunc,
+  OfficialArch,
+  OfficialPlatform,
   Options,
-  SupportedArch,
-  SupportedPlatform,
 } from './types.js';
 
 export function createDownloadOpts(
   opts: Options,
-  platform: SupportedPlatform,
-  arch: SupportedArch,
+  platform: OfficialPlatform,
+  arch: OfficialArch,
 ): DownloadOptions {
   const downloadOpts = { ...opts.download };
 
@@ -42,8 +42,8 @@ export function createDownloadOpts(
 
 export function createDownloadCombos(
   opts: Options,
-  selectedPlatforms: SupportedPlatform[],
-  selectedArchs: SupportedArch[],
+  selectedPlatforms: OfficialPlatform[],
+  selectedArchs: OfficialArch[],
   ignoreFunc?: IgnoreFunc,
 ) {
   const platformArchPairs = createPlatformArchPairs(
@@ -66,6 +66,7 @@ export async function downloadElectronZip(downloadOpts: DownloadOptions) {
     downloadOpts.arch === 'armv7l' &&
     semver.lt(downloadOpts.version, '1.0.0')
   ) {
+    //@ts-expect-error: this used to be a valid arch for Electron 0.x
     downloadOpts.arch = 'arm';
   }
   debug(`Downloading Electron with options ${JSON.stringify(downloadOpts)}`);

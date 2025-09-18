@@ -3,12 +3,15 @@ import path from 'node:path';
 import os from 'node:os';
 import plist, { PlistObject } from 'plist';
 import { it as originalIt } from 'vitest';
-import type { ComboOptions, Options } from '../src/types.js';
+import type {
+  ProcessedOptionsWithSinglePlatformArch,
+  Options,
+} from '../src/types.js';
 import { isPlatformMac, sanitizeAppName } from '../src/common.js';
 import config from './config.json' with { type: 'json' };
 
 export function generateResourcesPath(
-  opts: Pick<ComboOptions, 'name' | 'platform'>,
+  opts: Pick<ProcessedOptionsWithSinglePlatformArch, 'name' | 'platform'>,
 ) {
   if (isPlatformMac(opts.platform)) {
     return path.join(`${opts.name}.app`, 'Contents', 'Resources');
@@ -17,7 +20,7 @@ export function generateResourcesPath(
 }
 
 export function generateNamePath(
-  opts: Pick<ComboOptions, 'name' | 'platform'>,
+  opts: Pick<ProcessedOptionsWithSinglePlatformArch, 'name' | 'platform'>,
 ) {
   if (isPlatformMac(opts.platform)) {
     return path.join(
@@ -66,7 +69,10 @@ export function parseHelperInfoPlist(
 }
 
 interface ItContext {
-  baseOpts: Options;
+  baseOpts: Options &
+    Required<
+      Pick<Options, 'name' | 'dir' | 'electronVersion' | 'out' | 'tmpdir'>
+    >;
 }
 
 /**
@@ -82,7 +88,7 @@ export const it = originalIt.extend<ItContext>({
       path.join(os.tmpdir(), 'electron-packager-test-tmpdir-'),
     );
 
-    const opts: Options = {
+    const opts = {
       name: 'packagerTest',
       dir: path.join(__dirname, 'fixtures', 'basic'),
       electronVersion: config.version,

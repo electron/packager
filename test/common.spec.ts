@@ -9,7 +9,10 @@ import {
 import { createDownloadOpts } from '../src/download.js';
 
 import { describe, it, expect, vi } from 'vitest';
-import { ComboOptions, Options } from '../src/types.js';
+import {
+  ProcessedOptionsWithSinglePlatformArch,
+  Options,
+} from '../src/types.js';
 import path from 'node:path';
 
 describe('logger', () => {
@@ -128,25 +131,37 @@ describe('validateElectronApp', () => {
 
 describe('createAsarOpts', () => {
   it('returns false if asar is not set', () => {
-    expect(createAsarOpts({} as ComboOptions)).toBe(false);
+    expect(createAsarOpts({} as ProcessedOptionsWithSinglePlatformArch)).toBe(
+      false,
+    );
   });
   it('returns false if asar is false', () => {
-    expect(createAsarOpts({ asar: false } as ComboOptions)).toBe(false);
+    expect(
+      createAsarOpts({ asar: false } as ProcessedOptionsWithSinglePlatformArch),
+    ).toBe(false);
   });
 
   it('sets asar options to {} if true', () => {
-    expect(createAsarOpts({ asar: true } as ComboOptions)).toEqual({});
+    expect(
+      createAsarOpts({ asar: true } as ProcessedOptionsWithSinglePlatformArch),
+    ).toEqual({});
   });
 
   it('sets asar options to the value if it is an object', () => {
-    expect(createAsarOpts({ asar: { dot: true } } as ComboOptions)).toEqual({
+    expect(
+      createAsarOpts({
+        asar: { dot: true },
+      } as ProcessedOptionsWithSinglePlatformArch),
+    ).toEqual({
       dot: true,
     });
   });
 
   it('returns false if asar is not an object or a boolean', () => {
-    expect(createAsarOpts({ asar: 'test' } as unknown as ComboOptions)).toBe(
-      false,
-    );
+    expect(
+      createAsarOpts({
+        asar: 'test',
+      } as unknown as ProcessedOptionsWithSinglePlatformArch),
+    ).toBe(false);
   });
 });

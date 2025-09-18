@@ -7,7 +7,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ComboOptions, Options } from '../src/types.js';
+import {
+  ProcessedOptionsWithSinglePlatformArch,
+  Options,
+} from '../src/types.js';
 
 describe('populateIgnoredPaths', () => {
   let tempDir: string;
@@ -22,12 +25,12 @@ describe('populateIgnoredPaths', () => {
     const expected = path.join(tmpdir, 'electron-packager');
     const opts = { tmpdir } as Options;
 
-    populateIgnoredPaths(opts);
+    const result = populateIgnoredPaths(opts);
 
     if (process.platform === 'linux') {
-      expect(opts.ignore).toContain(expected);
+      expect(result.ignore).toContain(expected);
     } else {
-      expect(opts.ignore).not.toContain(expected);
+      expect(result.ignore).not.toContain(expected);
     }
   });
 
@@ -37,11 +40,15 @@ describe('populateIgnoredPaths', () => {
       dir: path.join(__dirname, 'fixtures', 'basic'),
     } as Options;
 
-    populateIgnoredPaths(opts);
+    const ignoreResult = populateIgnoredPaths(opts);
+    const processedOpts = {
+      ...opts,
+      ...ignoreResult,
+    } as ProcessedOptionsWithSinglePlatformArch;
     const targetDir = path.join(tempDir, 'result');
     await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
-      filter: userPathFilter(opts as ComboOptions),
+      filter: userPathFilter(processedOpts),
       recursive: true,
     });
 
@@ -83,7 +90,7 @@ describe('userPathFilter', () => {
     const targetDir = path.join(tempDir, 'result');
     await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
-      filter: userPathFilter(opts as ComboOptions),
+      filter: userPathFilter(opts as ProcessedOptionsWithSinglePlatformArch),
       recursive: true,
     });
 
@@ -104,7 +111,7 @@ describe('userPathFilter', () => {
     const targetDir = path.join(tempDir, 'result');
     await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
-      filter: userPathFilter(opts as ComboOptions),
+      filter: userPathFilter(opts as ProcessedOptionsWithSinglePlatformArch),
       recursive: true,
     });
 
@@ -127,7 +134,7 @@ describe('userPathFilter', () => {
     const targetDir = path.join(tempDir, 'result');
     await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
-      filter: userPathFilter(opts as ComboOptions),
+      filter: userPathFilter(opts as ProcessedOptionsWithSinglePlatformArch),
       recursive: true,
     });
 
@@ -149,7 +156,7 @@ describe('userPathFilter', () => {
     const targetDir = path.join(tempDir, 'result');
     await fs.promises.cp(opts.dir, targetDir, {
       dereference: false,
-      filter: userPathFilter(opts as ComboOptions),
+      filter: userPathFilter(opts as ProcessedOptionsWithSinglePlatformArch),
       recursive: true,
     });
 
@@ -161,7 +168,9 @@ describe('userPathFilter', () => {
 
 describe('generateIgnoredOutDirs', () => {
   it('ignores all possible platform/arch permutations', () => {
-    const ignores = generateIgnoredOutDirs({ name: 'test' } as ComboOptions);
+    const ignores = generateIgnoredOutDirs({
+      name: 'test',
+    } as ProcessedOptionsWithSinglePlatformArch);
     const relativeIgnores = ignores.map((ignore) =>
       path.relative(process.cwd(), ignore),
     );

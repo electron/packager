@@ -9,7 +9,13 @@ import { isJunk } from 'junk';
 import path from 'node:path';
 import { isModule, Pruner } from './prune.js';
 import { officialPlatformArchCombos } from './targets.js';
-import { ComboOptions, Options } from './types.js';
+import {
+  ProcessedOptionsWithSinglePlatformArch,
+  OfficialArch,
+  OfficialPlatform,
+  Options,
+  ProcessedOptions,
+} from './types.js';
 import { CopyOptions } from 'node:fs';
 
 const DEFAULT_IGNORES = [
@@ -22,25 +28,35 @@ const DEFAULT_IGNORES = [
   '/node_gyp_bins($|/)',
 ];
 
-export function populateIgnoredPaths(opts: Options) {
-  (opts as Options & { originalIgnore: Options['ignore'] }).originalIgnore =
-    opts.ignore;
+export function populateIgnoredPaths(
+  opts: Options,
+): Pick<ProcessedOptions, 'ignore' | 'originalIgnore'> {
+  const originalIgnore = opts.ignore;
+  let ignore: ProcessedOptions['ignore'];
 
   if (typeof opts.ignore !== 'function') {
-    if (opts.ignore) {
-      opts.ignore = [...ensureArray(opts.ignore), ...DEFAULT_IGNORES];
-    } else {
-      opts.ignore = [...DEFAULT_IGNORES];
-    }
+    const ignoreArray = opts.ignore
+      ? [...ensureArray(opts.ignore), ...DEFAULT_IGNORES]
+      : [...DEFAULT_IGNORES];
     if (process.platform === 'linux') {
-      opts.ignore.push(baseTempDir(opts));
+      ignoreArray.push(baseTempDir(opts));
     }
+    ignore = ignoreArray;
 
-    debug('Ignored path regular expressions:', opts.ignore);
+    debug('Ignored path regular expressions:', ignore);
+  } else {
+    ignore = opts.ignore;
   }
+
+  return {
+    ignore,
+    originalIgnore,
+  };
 }
 
-export function generateIgnoredOutDirs(opts: ComboOptions): string[] {
+export function generateIgnoredOutDirs(
+  opts: ProcessedOptionsWithSinglePlatformArch,
+): string[] {
   const normalizedOut = opts.out ? path.resolve(opts.out) : null;
   const ignoredOutDirs: string[] = [];
 
@@ -50,9 +66,9 @@ export function generateIgnoredOutDirs(opts: ComboOptions): string[] {
     )) {
       for (const arch of archs) {
         const basenameOpts = {
-          arch: arch,
+          arch: arch as OfficialArch,
           name: opts.name,
-          platform: platform,
+          platform: platform as OfficialPlatform,
         };
         ignoredOutDirs.push(
           path.join(process.cwd(), generateFinalBasename(basenameOpts)),
@@ -69,7 +85,7 @@ export function generateIgnoredOutDirs(opts: ComboOptions): string[] {
 }
 
 function generateFilterFunction(
-  ignore: Exclude<ComboOptions['ignore'], undefined>,
+  ignore: Exclude<ProcessedOptionsWithSinglePlatformArch['ignore'], undefined>,
 ): (file: string) => boolean {
   if (typeof ignore === 'function') {
     return (file) => !ignore(file);
@@ -82,7 +98,9 @@ function generateFilterFunction(
   }
 }
 
-export function userPathFilter(opts: ComboOptions): CopyOptions['filter'] {
+export function userPathFilter(
+  opts: ProcessedOptionsWithSinglePlatformArch,
+): CopyOptions['filter'] {
   const filterFunc = generateFilterFunction(opts.ignore || []);
   const ignoredOutDirs = generateIgnoredOutDirs(opts);
   const pruner = opts.prune ? new Pruner(opts.dir, Boolean(opts.quiet)) : null;

@@ -3,7 +3,7 @@ import fs from 'graceful-fs';
 import os from 'node:os';
 import path from 'node:path';
 import createDebug from 'debug';
-import { ComboOptions, Options } from './types.js';
+import { ProcessedOptionsWithSinglePlatformArch, Options } from './types.js';
 import { CreateOptions as AsarOptions } from '@electron/asar';
 
 export const debug = createDebug('electron-packager');
@@ -13,12 +13,17 @@ export function sanitizeAppName(name: string) {
 }
 
 export function generateFinalBasename(
-  opts: Pick<ComboOptions, 'arch' | 'name' | 'platform'>,
+  opts: Pick<
+    ProcessedOptionsWithSinglePlatformArch,
+    'arch' | 'name' | 'platform'
+  >,
 ) {
-  return `${sanitizeAppName(opts.name!)}-${opts.platform}-${opts.arch}`;
+  return `${sanitizeAppName(opts.name)}-${opts.platform}-${opts.arch}`;
 }
 
-export function generateFinalPath(opts: ComboOptions) {
+export function generateFinalPath(
+  opts: ProcessedOptionsWithSinglePlatformArch,
+) {
   return path.join(opts.out || process.cwd(), generateFinalBasename(opts));
 }
 
@@ -50,7 +55,9 @@ export function subOptionWarning(
   properties[parameter] = value;
 }
 
-export function createAsarOpts(opts: ComboOptions): false | AsarOptions {
+export function createAsarOpts(
+  opts: ProcessedOptionsWithSinglePlatformArch,
+): false | AsarOptions {
   let asarOptions;
   if (opts.asar === true) {
     asarOptions = {};
@@ -73,7 +80,9 @@ export function ensureArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-export function isPlatformMac(platform: ComboOptions['platform']) {
+export function isPlatformMac(
+  platform: ProcessedOptionsWithSinglePlatformArch['platform'],
+) {
   return platform === 'darwin' || platform === 'mas';
 }
 
