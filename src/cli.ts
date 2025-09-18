@@ -22,7 +22,6 @@ export function parseArgs(argv: string[]) {
   const args = yargs(argv, {
     boolean: ['all', 'deref-symlinks', 'junk', 'overwrite', 'prune', 'quiet'],
     default: {
-      'deref-symlinks': true,
       junk: true,
       prune: true,
     },
