@@ -16,9 +16,12 @@ import {
   warning,
 } from './common.js';
 import { userPathFilter } from './copy-filter.js';
-import { promisifyHooks } from './hooks.js';
+import { runHooks } from './hooks.js';
 import crypto from 'node:crypto';
-import { ProcessedOptionsWithSinglePlatformArch } from './types.js';
+import {
+  HookFunction,
+  ProcessedOptionsWithSinglePlatformArch,
+} from './types.js';
 
 export class App {
   asarIntegrity:
@@ -101,11 +104,18 @@ export class App {
   }
 
   get commonHookArgs() {
-    return [this.opts.electronVersion, this.opts.platform, this.opts.arch];
+    return {
+      electronVersion: this.opts.electronVersion,
+      platform: this.opts.platform,
+      arch: this.opts.arch,
+    };
   }
 
   get hookArgsWithOriginalResourcesAppDir() {
-    return [this.originalResourcesAppDir, ...this.commonHookArgs];
+    return {
+      buildPath: this.originalResourcesAppDir,
+      ...this.commonHookArgs,
+    };
   }
 
   async relativeRename(basePath: string, oldName: string, newName: string) {
@@ -175,7 +185,7 @@ export class App {
       await this.buildApp();
     }
 
-    await promisifyHooks(
+    await runHooks<HookFunction>(
       this.opts.afterInitialize,
       this.hookArgsWithOriginalResourcesAppDir,
     );
@@ -188,7 +198,7 @@ export class App {
   }
 
   async copyTemplate() {
-    await promisifyHooks(
+    await runHooks(
       this.opts.beforeCopy,
       this.hookArgsWithOriginalResourcesAppDir,
     );
@@ -198,12 +208,12 @@ export class App {
       filter: userPathFilter(this.opts),
       dereference: Boolean(this.opts.derefSymlinks),
     });
-    await promisifyHooks(
+    await runHooks(
       this.opts.afterCopy,
       this.hookArgsWithOriginalResourcesAppDir,
     );
     if (this.opts.prune) {
-      await promisifyHooks(
+      await runHooks(
         this.opts.afterPrune,
         this.hookArgsWithOriginalResourcesAppDir,
       );
@@ -325,7 +335,7 @@ export class App {
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`);
 
-    await promisifyHooks(
+    await runHooks(
       this.opts.beforeAsar,
       this.hookArgsWithOriginalResourcesAppDir,
     );
@@ -345,7 +355,7 @@ export class App {
       force: true,
     });
 
-    await promisifyHooks(
+    await runHooks(
       this.opts.afterAsar,
       this.hookArgsWithOriginalResourcesAppDir,
     );
@@ -368,9 +378,12 @@ export class App {
 
     const extraResources = ensureArray(this.opts.extraResource);
 
-    const hookArgs = [this.stagingPath, ...this.commonHookArgs];
+    const hookArgs = {
+      buildPath: this.stagingPath,
+      ...this.commonHookArgs,
+    };
 
-    await promisifyHooks(this.opts.beforeCopyExtraResources, hookArgs);
+    await runHooks(this.opts.beforeCopyExtraResources, hookArgs);
 
     await Promise.all(
       extraResources.map((resource) =>
@@ -385,7 +398,7 @@ export class App {
       ),
     );
 
-    await promisifyHooks(this.opts.afterCopyExtraResources, hookArgs);
+    await runHooks(this.opts.afterCopyExtraResources, hookArgs);
   }
 
   async move() {
@@ -417,9 +430,12 @@ export class App {
     }
 
     if (this.opts.afterComplete) {
-      const hookArgs = [finalPath, ...this.commonHookArgs];
+      const hookArgs = {
+        buildPath: finalPath,
+        ...this.commonHookArgs,
+      };
 
-      await promisifyHooks(this.opts.afterComplete, hookArgs);
+      await runHooks(this.opts.afterComplete, hookArgs);
     }
 
     return finalPath;

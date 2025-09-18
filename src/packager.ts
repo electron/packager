@@ -11,7 +11,7 @@ import { createDownloadCombos, downloadElectronZip } from './download.js';
 import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
 import { getMetadataFromPackageJSON } from './infer.js';
-import { promisifyHooks } from './hooks.js';
+import { runHooks } from './hooks.js';
 import path from 'node:path';
 import {
   createPlatformArchPairs,
@@ -21,12 +21,14 @@ import {
 import { extractElectronZip } from './unzip.js';
 import { packageUniversalMac } from './universal.js';
 import {
+  HookFunction,
   ProcessedOptionsWithSinglePlatformArch,
   DownloadOptions,
   OfficialArch,
   OfficialPlatform,
   Options,
   ProcessedOptions,
+  FinalizePackageTargetsHookFunction,
 } from './types.js';
 import { App } from './platform.js';
 
@@ -155,12 +157,12 @@ export class Packager {
   ) {
     debug(`Extracting ${zipPath} to ${buildDir}`);
     await extractElectronZip(zipPath, buildDir);
-    await promisifyHooks(this.opts.afterExtract, [
-      buildDir,
-      comboOpts.electronVersion,
-      comboOpts.platform,
-      comboOpts.arch,
-    ]);
+    await runHooks<HookFunction>(this.opts.afterExtract, {
+      buildPath: buildDir,
+      electronVersion: comboOpts.electronVersion,
+      platform: comboOpts.platform,
+      arch: comboOpts.arch,
+    });
   }
 
   async buildDir(
@@ -363,14 +365,15 @@ export async function packager(opts: Options): Promise<string[]> {
   debug(`Application name: ${processedOpts.name}`);
   debug(`Target Electron version: ${processedOpts.electronVersion}`);
 
-  await promisifyHooks(processedOpts.afterFinalizePackageTargets, [
+  await runHooks<FinalizePackageTargetsHookFunction>(
+    processedOpts.afterFinalizePackageTargets,
     createPlatformArchPairs(processedOpts, platforms, archs).map(
       ([platform, arch]) => ({
         platform,
         arch,
       }),
     ),
-  ]);
+  );
   const appPaths = await packageAllSpecifiedCombos(
     processedOpts,
     archs,

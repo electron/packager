@@ -103,13 +103,12 @@ export type HookFunctionErrorCallback = (err?: Error | null) => void;
  * For real-world examples of `HookFunction`s, see the [list of related
  * plugins](https://github.com/electron/packager#plugins).
  */
-export type HookFunction = (
-  buildPath: string,
-  electronVersion: string,
-  platform: OfficialPlatform,
-  arch: OfficialArch,
-  callback: HookFunctionErrorCallback,
-) => void;
+export type HookFunction = (options: {
+  buildPath: string;
+  electronVersion: string;
+  platform: OfficialPlatform;
+  arch: OfficialArch;
+}) => void | Promise<void>;
 
 export type TargetDefinition = {
   arch: OfficialArch;
@@ -118,8 +117,7 @@ export type TargetDefinition = {
 
 export type FinalizePackageTargetsHookFunction = (
   targets: TargetDefinition[],
-  callback: HookFunctionErrorCallback,
-) => void;
+) => void | Promise<void>;
 
 /** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
  * @interface

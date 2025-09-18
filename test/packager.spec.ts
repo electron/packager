@@ -624,9 +624,8 @@ describe('packager', () => {
             },
           ],
           afterCopyExtraResources: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterCopyExtraResources');
-              callback();
             },
           ],
           afterExtract: [
@@ -648,27 +647,23 @@ describe('packager', () => {
             },
           ],
           afterInitialize: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterInitialize');
-              callback();
             },
           ],
           afterPrune: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterPrune');
-              callback();
             },
           ],
           beforeCopy: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('beforeCopy');
-              callback();
             },
           ],
           beforeCopyExtraResources: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('beforeCopyExtraResources');
-              callback();
             },
           ],
           ...testOpts,
