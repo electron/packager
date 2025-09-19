@@ -12,6 +12,7 @@
     "ncp": "^2.0.0",
     "run-waterfall": "^1.1.1",
     "electron": "27.0.0",
-    "ffi-napi": "4.0.3"
+    "ffi-napi": "4.0.3",
+    "@electron/this-will-never-exist": "1.0.0"
   }
 }

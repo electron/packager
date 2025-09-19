@@ -19,7 +19,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
       - name: Build API documentation
         run: yarn build:docs
       - name: Azure login

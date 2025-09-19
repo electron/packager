@@ -3,6 +3,7 @@
   "productName": "MainJS",
   "description": "Removing electron from dependencies",
   "dependencies": {
-    "electron": "27.0.0"
+    "electron": "27.0.0",
+    "@electron/this-will-never-exist": "1.0.0"
   }
 }

@@ -4,6 +4,7 @@
   "author": "Foo Bar <foo.bar@example.com>",
   "description": "Some description",
   "devDependencies": {
-    "electron": "1.4.15"
+    "electron": "1.4.15",
+    "@electron/this-will-never-exist": "1.0.0"
   }
 }
