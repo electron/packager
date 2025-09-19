@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "electron": "6.0.0",
-    "run-series": "^1.1.1"
+    "run-series": "^1.1.1",
+    "@electron/this-will-never-exist": "1.0.0"
   }
 }
