@@ -15,4 +15,12 @@ typedoc
 npm-debug.log
 dist/
 .eslintcache
-.yarn/install-state.gz
+
+# yarn v4
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
