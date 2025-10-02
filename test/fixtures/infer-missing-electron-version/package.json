@@ -2,6 +2,7 @@
   "name": "Missing electron version",
   "version": "0.0.1",
   "dependencies": {
-    "run-series": "^1.1.1"
+    "run-series": "^1.1.1",
+    "@electron/this-will-never-exist": "1.0.0"
   }
 }

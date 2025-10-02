@@ -4,6 +4,7 @@
   "description": "A prebuilt asar app",
   "main": "main.js",
   "devDependencies": {
-    "electron": "27.0.0"
+    "electron": "27.0.0",
+    "@electron/this-will-never-exist": "1.0.0"
   }
 }

@@ -28,11 +28,10 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: '${{ matrix.node-version }}'
-          cache: 'yarn'
       - name: Setup CI Environment
         run: test/ci/before_install.sh
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Build
         run: yarn build
       - name: Electron Cache

@@ -1347,7 +1347,7 @@ describe('packager', () => {
         expect(infoPlist.ElectronAsarIntegrity).toEqual({
           'Resources/app.asar': {
             algorithm: 'SHA256',
-            hash: 'f4a18a4219d839f07a75a4e93d18f410b020d339c4fe8b5b25a9b380515ef71c',
+            hash: 'e60d812babe8808d3a68572e4d55cc1a2bbde470d9926eafa6b7ea7f86a59767',
           },
         });
       });
