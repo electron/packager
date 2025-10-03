@@ -20,7 +20,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # tag: v5.0.0
         with:
-          node-version-file: .nvmrc
+          # electron/minimal-repro doesn't have a .nvmrc file
+          node-version: lts/*
       - name: Replace electron with electron-nightly
         run: |
           cd minimal-repro
