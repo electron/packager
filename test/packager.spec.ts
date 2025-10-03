@@ -606,37 +606,32 @@ describe('packager', () => {
           platform: 'darwin',
           arch: 'x64',
           afterAsar: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterAsar');
-              callback();
             },
           ],
           afterCopy: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterCopy');
-              callback();
             },
           ],
           afterComplete: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterComplete');
-              callback();
             },
           ],
           afterCopyExtraResources: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterCopyExtraResources');
-              callback();
             },
           ],
           afterExtract: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterExtract');
-              callback();
             },
           ],
           afterFinalizePackageTargets: [
-            (targets, callback) => {
+            (targets) => {
               output.push('afterFinalizePackageTargets');
               expect(targets).toEqual([
                 {
@@ -644,31 +639,26 @@ describe('packager', () => {
                   platform: 'darwin',
                 },
               ]);
-              callback();
             },
           ],
           afterInitialize: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterInitialize');
-              callback();
             },
           ],
           afterPrune: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('afterPrune');
-              callback();
             },
           ],
           beforeCopy: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('beforeCopy');
-              callback();
             },
           ],
           beforeCopyExtraResources: [
-            (buildPath, electronVersion, platform, arch, callback) => {
+            () => {
               output.push('beforeCopyExtraResources');
-              callback();
             },
           ],
           ...testOpts,
@@ -818,18 +808,12 @@ describe('packager', () => {
           ...baseOpts,
           icon: 'foo/bar/baz',
           afterExtract: [
-            async (
-              extractPath,
-              _electronVersion,
-              _platform,
-              _arch,
-              callback,
-            ) => {
+            async ({ buildPath }) => {
               const hash = crypto.createHash('sha256');
               hash.update(
                 await fs.promises.readFile(
                   path.join(
-                    extractPath,
+                    buildPath,
                     'Electron.app',
                     'Contents',
                     'Resources',
@@ -838,7 +822,6 @@ describe('packager', () => {
                 ),
               );
               expectedChecksum = hash.digest('hex');
-              callback();
             },
           ],
         };
@@ -1248,8 +1231,8 @@ describe('packager', () => {
       const opts: Options = {
         ...baseOpts,
         afterExtract: [
-          (buildPath, _electronVersion, _platform, _arch, cb) => {
-            return Promise.all(
+          async ({ buildPath }) => {
+            await Promise.all(
               helpers.map(async (helper) => {
                 const helperPath = path.join(
                   buildPath,
@@ -1263,7 +1246,6 @@ describe('packager', () => {
                   recursive: true,
                   force: true,
                 });
-                cb();
               }),
             );
           },
