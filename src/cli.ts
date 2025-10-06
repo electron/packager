@@ -30,6 +30,7 @@ export function parseArgs(argv: string[]) {
       'tmpdir',
     ],
     default: {
+      asar: true,
       junk: true,
       prune: true,
       tmpdir: true,

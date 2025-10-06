@@ -1,7 +1,7 @@
 import fs from 'graceful-fs';
 import path from 'node:path';
 import {
-  createPackageWithOptions,
+  createPackageWithOptions as createASARWithOptions,
   FileRecord,
   getRawHeader,
 } from '@electron/asar';
@@ -340,7 +340,7 @@ export class App {
       this.hookArgsWithOriginalResourcesAppDir,
     );
 
-    await createPackageWithOptions(
+    await createASARWithOptions(
       this.originalResourcesAppDir,
       this.appAsarPath,
       this.asarOptions,
