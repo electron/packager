@@ -92,33 +92,7 @@ describe('packager', () => {
       ),
     ).toBe(false);
 
-    // packages main.js
-    const inputMain = path.join(__dirname, 'fixtures', 'basic', 'main.js');
-    const outputMain = path.join(resourcesPath, 'app', 'main.js');
-
-    expect(fs.readFileSync(inputMain, 'utf8')).toEqual(
-      fs.readFileSync(outputMain, 'utf8'),
-    );
-
-    // packages subdirectory resources
-    const inputResource = path.join(
-      __dirname,
-      'fixtures',
-      'basic',
-      'ignore',
-      'this.txt',
-    );
-    const outputResource = path.join(
-      resourcesPath,
-      'app',
-      'ignore',
-      'this.txt',
-    );
-
-    expect(fs.readFileSync(inputResource, 'utf8')).toEqual(
-      fs.readFileSync(outputResource, 'utf8'),
-    );
-
+    expect(fs.existsSync(path.join(resourcesPath, 'app.asar'))).toBe(true);
     expect(fs.existsSync(path.join(resourcesPath, 'default_app'))).toBe(false);
     expect(fs.existsSync(path.join(resourcesPath, 'default_app.asar'))).toBe(
       false,
@@ -213,6 +187,7 @@ describe('packager', () => {
       derefSymlinks: false,
       platform: 'linux',
       arch: 'x64',
+      asar: false,
     } as const;
 
     const src = path.join(opts.dir, 'main.js');
@@ -569,19 +544,19 @@ describe('packager', () => {
           'beforeCopy',
           'afterCopy',
           'afterPrune',
+          'afterAsar',
           'afterInitialize',
           'afterComplete',
         ],
       },
       {
-        testOpts: { asar: true },
+        testOpts: { asar: false },
         expectedOutput: [
           'afterFinalizePackageTargets',
           'afterExtract',
           'beforeCopy',
           'afterCopy',
           'afterPrune',
-          'afterAsar',
           'afterInitialize',
           'afterComplete',
         ],
@@ -593,6 +568,7 @@ describe('packager', () => {
           'afterExtract',
           'beforeCopy',
           'afterCopy',
+          'afterAsar',
           'afterInitialize',
           'afterComplete',
         ],
@@ -717,6 +693,7 @@ describe('packager', () => {
     }) => {
       const opts = {
         ...baseOpts,
+        asar: false,
       };
 
       const paths = await packager(opts);

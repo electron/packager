@@ -130,21 +130,26 @@ describe('validateElectronApp', () => {
 });
 
 describe('createAsarOpts', () => {
-  it('returns false if asar is not set', () => {
-    expect(createAsarOpts({} as ProcessedOptionsWithSinglePlatformArch)).toBe(
-      false,
-    );
+  it('unpacks native node modules if true', () => {
+    expect(
+      createAsarOpts({ asar: true } as ProcessedOptionsWithSinglePlatformArch),
+    ).toEqual({
+      unpack: '**/{.**,**}/**/*.node',
+    });
   });
+
+  it('returns true if asar is not set', () => {
+    expect(
+      createAsarOpts({} as ProcessedOptionsWithSinglePlatformArch),
+    ).toEqual({
+      unpack: '**/{.**,**}/**/*.node',
+    });
+  });
+
   it('returns false if asar is false', () => {
     expect(
       createAsarOpts({ asar: false } as ProcessedOptionsWithSinglePlatformArch),
     ).toBe(false);
-  });
-
-  it('sets asar options to {} if true', () => {
-    expect(
-      createAsarOpts({ asar: true } as ProcessedOptionsWithSinglePlatformArch),
-    ).toEqual({});
   });
 
   it('sets asar options to the value if it is an object', () => {
