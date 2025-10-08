@@ -28,7 +28,8 @@ arch               all, or one or more of: ia32, x64, armv7l, arm64, mips64el, u
 asar               whether to package the source code within your app into an archive. You can either
                    pass --asar by itself to use the default configuration, OR use dot notation to
                    configure a list of sub-properties, e.g. --asar.unpackDir=sub_dir - do not use
-                   --asar and its sub-properties simultaneously. Defaults to `true`.
+                   --asar and its sub-properties simultaneously. Defaults to `true`, which sets `asar.unpack`
+                   to '**/{.**,**}/**/*.node' to automatically unpack native node modules.
 
                    Properties supported include:
                    - ordering: path to an ordering file for file packing
