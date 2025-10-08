@@ -55,15 +55,22 @@ export function subOptionWarning(
   properties[parameter] = value;
 }
 
+/**
+ * Creates the final `@electron/asar` options for final packaging function based on user options.
+ * @param opts The processed options for the packager.
+ * @returns The ASAR options or false if ASAR is disabled.
+ */
 export function createAsarOpts(
   opts: ProcessedOptionsWithSinglePlatformArch,
 ): false | AsarOptions {
-  let asarOptions;
-  if (opts.asar === true) {
-    asarOptions = {};
+  let asarOptions: AsarOptions;
+  if (opts.asar === true || opts.asar === undefined) {
+    asarOptions = {
+      unpack: '**/{.**,**}/**/*.node',
+    };
   } else if (typeof opts.asar === 'object') {
     asarOptions = opts.asar;
-  } else if (opts.asar === false || opts.asar === undefined) {
+  } else if (opts.asar === false) {
     return false;
   } else {
     warning(
