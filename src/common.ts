@@ -93,8 +93,15 @@ export function isPlatformMac(
   return platform === 'darwin' || platform === 'mas';
 }
 
+/**
+ * Gets the tmpdir for packaging. Note that if `opts.tmpdir` is false,
+ * we're still returning a path.
+ */
 export function baseTempDir(opts: Options) {
-  return path.join(opts.tmpdir || os.tmpdir(), 'electron-packager');
+  return path.join(
+    typeof opts.tmpdir === 'string' ? opts.tmpdir : os.tmpdir(),
+    'electron-packager',
+  );
 }
 
 /**

@@ -581,9 +581,11 @@ export interface Options {
   quiet?: boolean;
   /**
    * The base directory to use as a temporary directory. Set to `false` to disable use of a
-   * temporary directory. Defaults to the system's temporary directory.
+   * temporary directory.
+   *
+   * @defaultValue Uses the system's temporary directory if `true` or `undefined`.
    */
-  tmpdir?: string | false;
+  tmpdir?: string | boolean;
   /**
    * Human-readable descriptions of how the Electron app uses certain macOS features. These are displayed
    * in the App Store. A non-exhaustive list of available properties:
