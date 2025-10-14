@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import url from 'node:url';
 import { getMetadataFromPackageJSON } from '../src/infer.js';
 import { Options } from '../src/types.js';
 import semver from 'semver';
@@ -16,7 +17,9 @@ describe('getMetadataFromPackageJSON', () => {
     const opts: Options = {
       dir,
     };
-    const packageJSON = await import(path.join(dir, 'package.json'));
+    const packageJSON = await import(
+      url.pathToFileURL(path.join(dir, 'package.json')).toString()
+    );
     const result = await getMetadataFromPackageJSON([], opts, opts.dir);
     expect(result.electronVersion).toBeDefined();
     expect(
