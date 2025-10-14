@@ -1,3 +1,6 @@
+import path from 'node:path';
+import url from 'node:url';
+
 import {
   baseTempDir,
   debug,
@@ -12,7 +15,6 @@ import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
 import { getMetadataFromPackageJSON } from './infer.js';
 import { runHooks } from './hooks.js';
-import path from 'node:path';
 import {
   createPlatformArchPairs,
   osModules,
@@ -28,7 +30,6 @@ import type {
   Options,
   ProcessedOptions,
 } from './types.js';
-import { App } from './platform.js';
 
 async function debugHostInfo() {
   debug(await hostInfo());
@@ -192,10 +193,16 @@ export class Packager {
     debug(`Creating ${buildDir}`);
     await fs.promises.mkdir(buildDir, { recursive: true });
     await this.extractElectronZip(comboOpts, zipPath, buildDir);
-    const os = await import(
-      `${osModules[comboOpts.platform as OfficialPlatform]}.js`
-    );
-    const app = new os.App(comboOpts, buildDir) as App;
+    const osPackagerPath = url
+      .pathToFileURL(
+        path.resolve(
+          import.meta.dirname,
+          `${osModules[comboOpts.platform]}.js`,
+        ),
+      )
+      .toString();
+    const osPackager = await import(osPackagerPath);
+    const app = new osPackager.App(comboOpts, buildDir);
     return app.create();
   }
 

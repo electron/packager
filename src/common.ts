@@ -152,11 +152,10 @@ export async function validateElectronApp(
 }
 
 export async function hostInfo() {
-  const packageJsonPath = path.resolve(import.meta.dirname, '../package.json');
-
-  const { default: metadata } = await import(packageJsonPath, {
-    with: { type: 'json' },
-  });
+  const packageJSONPath = path.resolve(import.meta.dirname, '../package.json');
+  const metadata = JSON.parse(
+    await fs.promises.readFile(packageJSONPath, 'utf8'),
+  );
 
   return (
     `Electron Packager ${metadata.version}\n` +
