@@ -194,7 +194,12 @@ export class Packager {
     await fs.promises.mkdir(buildDir, { recursive: true });
     await this.extractElectronZip(comboOpts, zipPath, buildDir);
     const osPackagerPath = url
-      .pathToFileURL(`${osModules[comboOpts.platform as OfficialPlatform]}.js`)
+      .pathToFileURL(
+        path.resolve(
+          import.meta.dirname,
+          `${osModules[comboOpts.platform]}.js`,
+        ),
+      )
       .toString();
     const osPackager = await import(osPackagerPath);
     const app = new osPackager.App(comboOpts, buildDir);
