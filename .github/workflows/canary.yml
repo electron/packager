@@ -3,6 +3,7 @@ name: electron-nightly Canary
 on:
   schedule:
     - cron: "15 8 * * *"
+  workflow_dispatch:
 
 jobs:
   build:
