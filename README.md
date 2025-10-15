@@ -18,7 +18,7 @@ Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.
 [FAQ](https://github.com/electron/packager/blob/main/docs/faq.md) |
 [Release Notes](https://github.com/electron/packager/blob/main/NEWS.md)
 
-----
+---
 
 ## About
 
@@ -39,17 +39,17 @@ _(files named `electron-v${version}-${platform}-${arch}.zip`)_.
 
 Electron Packager is known to run on the following **host** platforms:
 
-* Windows (32/64 bit)
-* macOS (formerly known as OS X)
-* Linux (x86/x86_64)
+- Windows (32/64 bit)
+- macOS (formerly known as OS X)
+- Linux (x86/x86_64)
 
 It generates executables/bundles for the following **target** platforms:
 
-* Windows (also known as `win32`, for x86, x86_64, and arm64 architectures)
-* macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>*</sup> (for x86_64, arm64, and universal architectures)
-* Linux (for x86, x86_64, armv7l, arm64, and mips64el architectures)
+- Windows (also known as `win32`, for x86, x86_64, and arm64 architectures)
+- macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>\*</sup> (for x86_64, arm64, and universal architectures)
+- Linux (for x86, x86_64, armv7l, arm64, and mips64el architectures)
 
-<sup>*</sup> *Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.*
+<sup>*</sup> *Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.\*
 
 ## Installation
 
@@ -71,24 +71,20 @@ JavaScript API usage can be found in the [API documentation](https://electron.gi
 
 Running Electron Packager from the command line has this basic form:
 
-```
+```sh
 npx @electron/packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
 
-> **Note**:
-> `npx` can be substituted for `yarn` or `npm exec` depending on what package manager and
-> the version you have installed.
-
 This will:
 
-* Find or download the correct release of Electron
-* Use that version of Electron to create an app in `<out>/<appname>-<platform>-<arch>` *(this can be customized via an optional flag)*
+- Find or download the correct release of Electron
+- Use that version of Electron to create an app in `<out>/<appname>-<platform>-<arch>` _(this can be customized via an optional flag)_
 
 `--platform` and `--arch` can be omitted, in two cases:
 
-* If you specify `--all` instead, bundles for all valid combinations of target
+- If you specify `--all` instead, bundles for all valid combinations of target
   platforms/architectures will be created.
-* Otherwise, a single bundle for the host platform/architecture will be created.
+- Otherwise, a single bundle for the host platform/architecture will be created.
 
 For an overview of the other optional flags, run `electron-packager --help` or see
 [usage.txt](https://github.com/electron/packager/blob/main/usage.txt). For
@@ -113,14 +109,15 @@ the `devDependencies` section of `package.json`, by default none of the modules 
 dependencies will be copied in the app bundles. (This behavior can be turned off with the
 `prune: false` API option or `--no-prune` CLI flag.) In addition, folders like `.git` and
 `node_modules/.bin` will be ignored by default. You can use `--ignore` to ignore files and folders
-via a regular expression (*not* a [glob pattern](https://en.wikipedia.org/wiki/Glob_%28programming%29)).
+via a regular expression (_not_ a [glob pattern](https://en.wikipedia.org/wiki/Glob_%28programming%29)).
 Examples include `--ignore=\.gitignore` or `--ignore="\.git(ignore|modules)"`.
 
 #### Example
 
-Let's assume that you have made an app based on the [minimal-repro](https://github.com/electron/minimal-repro) repository on a macOS host platform with the following file structure:
+Let's assume that you have made an app based on the [minimal-repro](https://github.com/electron/minimal-repro)
+repository on an Apple Silicon macOS device with the following file structure:
 
-```
+```plaintext
 foobar
 ├── package.json
 ├── index.html
@@ -130,30 +127,30 @@ foobar
 
 …and that the following is true:
 
-* `@electron/packager` is installed locally
-* `productName` in `package.json` has been set to `Foo Bar`
-* The `electron` module is in the `devDependencies` section of `package.json`, and set to the exact version of `1.4.15`.
-* `npm install` for the `Foo Bar` app has been run at least once
+- `@electron/packager` is installed locally
+- `productName` in `package.json` has been set to `Foo Bar`
+- The `electron` module is in the `devDependencies` section of `package.json`, and set to the exact version of `38.3.0`.
+- `npm install` for the `Foo Bar` app has been run at least once
 
 When one runs the following command for the first time in the `foobar` directory:
 
-```
+```plaintext
 npx @electron/packager .
 ```
 
 `@electron/packager` will do the following:
 
-* Use the current directory for the `sourcedir`
-* Infer the `appname` from the `productName` in `package.json`
-* Infer the `appVersion` from the `version` in `package.json`
-* Infer the `platform` and `arch` from the host, in this example, `darwin` platform and `x64` arch.
-* Download the darwin x64 build of Electron 1.4.15 (and cache the downloads in `~/.electron`)
-* Build the macOS `Foo Bar.app`
-* Place `Foo Bar.app` in `foobar/Foo Bar-darwin-x64/` (since an `out` directory was not specified, it used the current working directory)
+- Use the current directory for the `sourcedir`
+- Infer the `appname` from the `productName` in `package.json`
+- Infer the `appVersion` from the `version` in `package.json`
+- Infer the `platform` and `arch` from the host, in this example, `darwin` platform and `arm64` arch.
+- Download the darwin arm64 build of Electron 38.3.0 (and cache the downloads in `~/.electron`)
+- Build the macOS `Foo Bar.app`
+- Place `Foo Bar.app` in `foobar/Foo Bar-darwin-arm64/` (since an `out` directory was not specified, it used the current working directory)
 
 The file structure now looks like:
 
-```
+```plaintext
 foobar
 ├── Foo Bar-darwin-x64
 │   ├── Foo Bar.app
@@ -167,35 +164,35 @@ foobar
 └── script.js
 ```
 
-The `Foo Bar.app` folder generated can be executed by a system running macOS, which will start the packaged Electron app. This is also true of the Windows x64 build on a system running a new enough version of Windows for a 64-bit system (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
+The `Foo Bar.app` folder generated can be executed by a system running macOS, which will start the packaged Electron app.
+This is also true of the Windows x64 build on a Windows device (via `Foo Bar-win32-x64/Foo Bar.exe`), and so on.
 
 ## Related
 
 - [Electron Forge](https://github.com/electron/forge) - creates, builds, and distributes modern Electron applications
-- [electron-packager-interactive](https://github.com/Urucas/electron-packager-interactive) - an interactive CLI for electron-packager
-- [grunt-electron](https://github.com/sindresorhus/grunt-electron) - grunt plugin for electron-packager
 
 ### Distributable Creators
 
-* [electron-installer-zip](https://github.com/electron-userland/electron-installer-zip) - creates symlink-compatible ZIP files
+- [electron-installer-zip](https://github.com/electron-userland/electron-installer-zip) - creates symlink-compatible ZIP files
 
 Windows:
 
-* [electron-winstaller](https://github.com/electron/windows-installer) - Squirrel.Windows-based installer from the Electron maintainers group
-* [electron-windows-store](https://github.com/felixrieseberg/electron-windows-store) - creates an AppX package for the Windows Store
-* [electron-wix-msi](https://github.com/felixrieseberg/electron-wix-msi) - creates traditional MSI installers
-* [electron-installer-windows](https://github.com/electron-userland/electron-installer-windows) - alternative Squirrel.Windows-based installer
+- [electron-winstaller](https://github.com/electron/windows-installer) - Squirrel.Windows-based installer from the Electron maintainers group
+- [electron-windows-msix](https://github.com/electron-userland/electron-windows-msix) - creates an MSIX package
+- [electron-windows-store](https://github.com/electron-userland/electron-windows-store) - creates an AppX package for the Windows Store
+- [electron-wix-msi](https://github.com/electron-userland/electron-wix-msi) - creates traditional MSI installers
+- [electron-installer-windows](https://github.com/electron-userland/electron-installer-windows) - alternative Squirrel.Windows-based installer
 
 macOS:
 
-* [electron-installer-dmg](https://github.com/electron-userland/electron-installer-dmg) - creates a DMG
+- [electron-installer-dmg](https://github.com/electron-userland/electron-installer-dmg) - creates a DMG
 
 Linux:
 
-* [electron-installer-debian](https://github.com/electron-userland/electron-installer-debian) - creates a DEB file
-* [electron-installer-redhat](https://github.com/electron-userland/electron-installer-redhat) - creates an RPM
-* [electron-installer-flatpak](https://github.com/endlessm/electron-installer-flatpak) - creates a Flatpak file
-* [electron-installer-snap](https://github.com/electron-userland/electron-installer-snap) - creates a Snap file
+- [electron-installer-debian](https://github.com/electron-userland/electron-installer-debian) - creates a DEB file
+- [electron-installer-redhat](https://github.com/electron-userland/electron-installer-redhat) - creates an RPM
+- [electron-installer-flatpak](https://github.com/endlessm/electron-installer-flatpak) - creates a Flatpak file
+- [electron-installer-snap](https://github.com/electron-userland/electron-installer-snap) - creates a Snap file
 
 ### Plugins
 
