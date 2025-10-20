@@ -32,7 +32,7 @@ jobs:
       - name: Install Electron Packager
         run: |
           cd minimal-repro
-          npm install --save-dev @electron/packager@electron/packager
+          npm install --save-dev @electron/packager@latest
         shell: bash
       - name: Package
         run: |
