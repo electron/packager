@@ -86,7 +86,6 @@
     "build:docs": "npx typedoc",
     "lint": "prettier --check \"*.{ts,js,json}\" && eslint src --cache",
     "prepack": "npm run build",
-    "pretest": "npm run build",
     "test": "vitest run",
     "prepare": "husky install"
   },
