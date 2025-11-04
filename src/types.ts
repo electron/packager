@@ -8,17 +8,14 @@
 // * Mark Lee <https://github.com/malept>
 // * Florian Keller <https://github.com/ffflorian>
 
+// For any types imported from other `@electron/*` packages, refer to the specific version documented
+// in `typedoc.json` under the `externalSymbolLinkMappings` key in order to link the documentation sites.
 import { CreateOptions as AsarOptions } from '@electron/asar';
 import { ElectronDownloadRequestOptions as ElectronDownloadOptions } from '@electron/get';
 import { NotaryToolCredentials } from '@electron/notarize';
 import { SignOptions as OSXSignOptions } from '@electron/osx-sign';
 import { SignOptions as WindowsSignOptions } from '@electron/windows-sign';
-import type { makeUniversalApp } from '@electron/universal';
-
-/**
- * @internal
- */
-export type MakeUniversalOpts = Parameters<typeof makeUniversalApp>[0];
+import type { MakeUniversalOpts } from '@electron/universal';
 
 /**
  * Architectures that have been supported by the official Electron prebuilt binaries, past
@@ -58,13 +55,6 @@ export type SupportedPlatform = OfficialPlatform | 'all';
 export type IgnoreFunction = (path: string) => boolean;
 
 /**
- * A function that is called on the completion of a packaging stage.
- *
- * By default, the functions are called in parallel (via
- * [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
- * If you need the functions called serially, there is a utility function provided. Please note that
- * **callback-style functions are not supported by `serialHooks`.**
- *
  * @param buildPath - For {@link Options.afterExtract | afterExtract}, the path to the temporary folder where the prebuilt
  * Electron binary has been extracted to. For {@link Options.afterCopy | afterCopy} and {@link Options.afterPrune | afterPrune}, the path to the
  * folder where the Electron app has been copied to. For {@link Options.afterComplete | afterComplete}, the final directory
@@ -73,6 +63,21 @@ export type IgnoreFunction = (path: string) => boolean;
  * @param platform - The target platform you are packaging for.
  * @param arch - The target architecture you are packaging for.
  * @param callback - Must be called once you have completed your actions.
+ */
+export type HookFunctionArgs = {
+  buildPath: string;
+  electronVersion: string;
+  platform: OfficialPlatform;
+  arch: OfficialArch;
+};
+
+/**
+ * A function that is called on the completion of a packaging stage.
+ *
+ * By default, the functions are called in parallel (via
+ * [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
+ * If you need the functions called serially, there is a utility function provided. Please note that
+ * **callback-style functions are not supported by `serialHooks`.**
  *
  * @example
  *
@@ -101,12 +106,7 @@ export type IgnoreFunction = (path: string) => boolean;
  * For real-world examples of `HookFunction`s, see the [list of related
  * plugins](https://github.com/electron/packager#plugins).
  */
-export type HookFunction = (options: {
-  buildPath: string;
-  electronVersion: string;
-  platform: OfficialPlatform;
-  arch: OfficialArch;
-}) => void | Promise<void>;
+export type HookFunction = (options: HookFunctionArgs) => void | Promise<void>;
 
 export type TargetDefinition = {
   arch: OfficialArch;
