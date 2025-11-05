@@ -4,11 +4,31 @@
   "excludeInternal": true,
   "sort": ["kind", "required-first", "alphabetical"],
   "externalSymbolLinkMappings": {
-    "@electron/notarize": {
-      "NotaryToolCredentials": "https://packages.electronjs.org/notarize/main/types/NotaryToolCredentials.html"
+    "@electron/asar": {
+      "CreateOptions": "https://packages.electronjs.org/asar/v4.0.1/types/CreateOptions.html"
     },
     "@electron/get": {
-      "ElectronDownloadRequestOptions": "https://github.com/electron/get/blob/79dab2b26df3a6841062b676f11d3e7bb1f8995e/src/types.ts#L57"
+      "ElectronDownloadRequestOptions": "https://packages.electronjs.org/get/v4.0.2/interfaces/ElectronDownloadRequestOptions.html"
+    },
+    "@electron/notarize": {
+      "NotaryToolCredentials": "https://packages.electronjs.org/notarize/v3.1.0/types/NotaryToolCredentials.html"
+    },
+    "@electron/osx-sign": {
+      "identity": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html#identity",
+      "identityValidation": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html#identityValidation",
+      "keychain": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html#keychain",
+      "platform": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html#platform",
+      "PerFileSignOptions": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/PerFileSignOptions.html",
+      "__type.provisioningProfile": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html#provisioningProfile",
+      "provisioningProfile": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html#provisioningProfile",
+      "SignOptions": "https://packages.electronjs.org/osx-sign/v2.3.0/interfaces/SignOptions.html"
+    },
+    "@electron/universal": {
+      "MakeUniversalOpts": "https://packages.electronjs.org/universal/v3.0.1/types/MakeUniversalOpts.html",
+      "__type.mergeASARs": "https://packages.electronjs.org/universal/v3.0.1/types/MakeUniversalOpts.html"
+    },
+    "@electron/windows-sign": {
+      "SignOptions": "https://packages.electronjs.org/windows-sign/v2.0.2/types/SignOptions.html"
     }
   }
 }
