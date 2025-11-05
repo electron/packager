@@ -71,7 +71,7 @@
     "lodash": "^4.17.21",
     "prettier": "^3.6.2",
     "tsx": "^4.20.4",
-    "typedoc": "~0.25.4",
+    "typedoc": "~0.28.14",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
@@ -86,7 +86,6 @@
     "build:docs": "npx typedoc",
     "lint": "prettier --check \"*.{ts,js,json}\" && eslint src --cache",
     "prepack": "npm run build",
-    "pretest": "npm run build",
     "test": "vitest run",
     "prepare": "husky install"
   },

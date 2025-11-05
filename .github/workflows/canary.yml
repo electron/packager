@@ -19,10 +19,11 @@ jobs:
           ref: refs/heads/main
           path: minimal-repro
       - name: Setup Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # tag: v5.0.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # tag: v6.0.0
         with:
           # electron/minimal-repro doesn't have a .nvmrc file
           node-version: lts/*
+          cache: 'npm'
       - name: Replace electron with electron-nightly
         run: |
           cd minimal-repro
