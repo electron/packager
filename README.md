@@ -6,12 +6,12 @@ Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.
 [![electron-nightly Canary](https://github.com/electron/packager/actions/workflows/canary.yml/badge.svg)](https://github.com/electron/packager/actions/workflows/canary.yml)
 [![Coverage Status](https://codecov.io/gh/electron/packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/packager)
 [![npm](https://img.shields.io/npm/v/@electron/packager.svg?style=flat)](https://npm.im/@electron/packager)
+[![API docs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F%40electron%2Fpackager%2Flatest&query=%24.version&logo=typescript&logoColor=white&label=API%20Docs)](https://packages.electronjs.org/packager)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
 
 [Supported Platforms](#supported-platforms) |
 [Installation](#installation) |
 [Usage](#usage) |
-[API](https://electron.github.io/packager/main/) |
 [Contributing](https://github.com/electron/packager/blob/main/CONTRIBUTING.md) |
 [Support](https://github.com/electron/packager/blob/main/SUPPORT.md) |
 [Related Apps/Libraries](#related) |
@@ -65,7 +65,7 @@ It is **not** recommended to install `@electron/packager` globally.
 
 ### Via JavaScript
 
-JavaScript API usage can be found in the [API documentation](https://electron.github.io/packager/main/).
+JavaScript API usage can be found in the [API documentation](https://packages.electronjs.org/packager).
 
 ### From the command line
 
