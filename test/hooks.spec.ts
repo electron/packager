@@ -1,7 +1,7 @@
 import { runHooks, serialHooks } from '../src/hooks.js';
 import { describe, it, expect } from 'vitest';
 
-describe('promisifyHooks', () => {
+describe('runHooks', () => {
   it('should call hooks in parallel', async () => {
     let output = '0';
     const makeHook = (number: number, msTimeout: number) => {
