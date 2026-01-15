@@ -42,8 +42,8 @@ describe('promisifyHooks', () => {
         makeHook(number, number % 2 === 0 ? 100 : 0),
       );
 
-      const runSerialHook = serialHooks(testHooks);
-      await runSerialHook({
+      const serializedHooks = serialHooks(testHooks);
+      await runHooks(serializedHooks, {
         buildPath: '',
         electronVersion: '',
         platform: 'darwin',
