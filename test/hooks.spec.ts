@@ -1,7 +1,7 @@
 import { runHooks, serialHooks } from '../src/hooks.js';
 import { describe, it, expect } from 'vitest';
 
-describe('promisifyHooks', () => {
+describe('runHooks', () => {
   it('should call hooks in parallel', async () => {
     let output = '0';
     const makeHook = (number: number, msTimeout: number) => {
@@ -42,8 +42,8 @@ describe('promisifyHooks', () => {
         makeHook(number, number % 2 === 0 ? 100 : 0),
       );
 
-      const runSerialHook = serialHooks(testHooks);
-      await runSerialHook({
+      const serializedHooks = serialHooks(testHooks);
+      await runHooks(serializedHooks, {
         buildPath: '',
         electronVersion: '',
         platform: 'darwin',
