@@ -367,6 +367,12 @@ export async function packager(opts: Options): Promise<string[]> {
     );
   }
 
+  if (processedOpts.name === 'electron') {
+    throw new Error(
+      'Application names cannot be set to "electron" due to limitations on macOS',
+    );
+  }
+
   debug(`Application name: ${processedOpts.name}`);
   debug(`Target Electron version: ${processedOpts.electronVersion}`);
 
