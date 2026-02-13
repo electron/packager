@@ -35,6 +35,19 @@ describe('packager', () => {
     );
   });
 
+  it('cannot build apps where the name is equal to "electron"', async ({
+    baseOpts,
+  }) => {
+    const opts = {
+      ...baseOpts,
+      name: 'electron',
+    };
+
+    await expect(packager(opts)).rejects.toThrowError(
+      'Application names cannot be set to "electron" due to limitations on macOS',
+    );
+  });
+
   it.for([
     {
       electronVersion: '0.0.1',
