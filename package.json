@@ -5,12 +5,18 @@
   "type": "module",
   "module": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js",
-    "./resedit": "./dist/resedit.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./resedit": {
+      "types": "./dist/resedit.d.ts",
+      "default": "./dist/resedit.js"
+    }
   },
   "types": "./dist/index.d.ts",
   "bin": {
-    "electron-packager": "bin/electron-packager.mjs"
+    "electron-packager": "./bin/electron-packager.mjs"
   },
   "repository": {
     "type": "git",
