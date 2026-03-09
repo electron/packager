@@ -153,10 +153,16 @@ export async function resedit(exePath: string, options: ExeMetadata) {
       alg: options.asarIntegrity![file].algorithm,
       value: options.asarIntegrity![file].hash,
     }));
+
+    const integrityBuffer = Buffer.from(JSON.stringify(integrityList), 'utf-8');
+
     res.entries.push({
       type: 'INTEGRITY',
       id: 'ELECTRONASAR',
-      bin: Buffer.from(JSON.stringify(integrityList), 'utf-8').buffer,
+      bin: integrityBuffer.buffer.slice(
+        integrityBuffer.byteOffset,
+        integrityBuffer.byteOffset + integrityBuffer.length,
+      ),
       lang: languageInfo[0].lang,
       codepage: languageInfo[0].codepage,
     });

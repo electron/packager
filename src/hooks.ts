@@ -24,20 +24,22 @@ export async function runHooks<T extends (...args: any[]) => any>(
  * By default, the functions are called in parallel (via
  * [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)).
  * If you need the functions called serially, you can use the `serialHooks` utility function.
+ *
+ * The return value can be passed directly to hook options (e.g., `afterCopy`, `afterExtract`).
  */
-export function serialHooks(
-  hooks: HookFunction[],
-): (opts: Parameters<HookFunction>[0]) => Promise<void>;
+export function serialHooks(hooks: HookFunction[]): [HookFunction];
 export function serialHooks(
   hooks: FinalizePackageTargetsHookFunction[],
-): (opts: Parameters<FinalizePackageTargetsHookFunction>[0]) => Promise<void>;
+): [FinalizePackageTargetsHookFunction];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function serialHooks<T extends (...args: any[]) => any>(
   hooks: T[] = [],
-) {
-  return async function (opts: Parameters<T>[0]): Promise<void> {
-    for (const hook of hooks) {
-      await hook(opts);
-    }
-  };
+): [T] {
+  return [
+    async function (opts: Parameters<T>[0]): Promise<void> {
+      for (const hook of hooks) {
+        await hook(opts);
+      }
+    } as T,
+  ];
 }

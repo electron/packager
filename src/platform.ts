@@ -394,6 +394,7 @@ export class App {
             this.resourcesDir,
             path.basename(resource),
           ),
+          { recursive: true },
         ),
       ),
     );
