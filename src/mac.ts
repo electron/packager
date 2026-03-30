@@ -2,16 +2,37 @@ import { App } from './platform.js';
 import { debug, sanitizeAppName, subOptionWarning, warning } from './common.js';
 import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
+import crypto from 'node:crypto';
 import path from 'node:path';
-import plist, { PlistValue } from 'plist';
+import plist, { PlistObject, PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
 import { ElectronMacPlatform, sign, SignOptions } from '@electron/osx-sign';
+import semver from 'semver';
 import { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
   [key in `NS${string}UsageDescription`]: string;
 };
+
+type AsarIntegrity = NonNullable<App['asarIntegrity']>;
+
+function isAsarIntegrity(value: unknown): value is AsarIntegrity {
+  if (typeof value !== 'object' || value === null) return false;
+  const entries = Object.values(value);
+  if (entries.length === 0) return false;
+  return entries.every(
+    (entry) =>
+      typeof entry === 'object' &&
+      entry !== null &&
+      'algorithm' in entry &&
+      typeof entry.algorithm === 'string' &&
+      entry.algorithm.length > 0 &&
+      'hash' in entry &&
+      typeof entry.hash === 'string' &&
+      entry.hash.length > 0,
+  );
+}
 
 type BasePList = {
   CFBundleDisplayName: string;
@@ -510,6 +531,135 @@ export class MacApp extends App implements Plists {
     await fs.promises.rename(this.electronAppPath, this.renamedAppPath);
   }
 
+  /**
+   * Sentinel string embedded in the Electron Framework binary, used as a marker
+   * for the integrity digest storage location.
+   * @see https://github.com/electron/electron/blob/2d5597b1b0fa697905380184e26c9f0947e05c5d/shell/common/asar/integrity_digest.mm#L24
+   */
+  static INTEGRITY_DIGEST_SENTINEL = 'AGbevlPCksUGKNL8TSn7wGmJEuJsXb2A';
+
+  async setIntegrityDigest() {
+    if (
+      !this.opts.electronVersion ||
+      !semver.valid(this.opts.electronVersion)
+    ) {
+      debug(
+        `Cannot determine Electron version (got "${this.opts.electronVersion}"), skipping integrity digest`,
+      );
+      return;
+    }
+    if (!semver.gte(this.opts.electronVersion, '41.0.0-alpha.1')) {
+      return;
+    }
+
+    const appPath = this.renamedAppPath ?? this.electronAppPath;
+    let integrity = this.asarIntegrity;
+
+    // For universal builds, asarIntegrity isn't set on the shell App instance.
+    // Fall back to reading it from the merged app's Info.plist.
+    if (!integrity || Object.keys(integrity).length === 0) {
+      const plistPath = path.join(appPath, 'Contents', 'Info.plist');
+      if (fs.existsSync(plistPath)) {
+        try {
+          const plistData = plist.parse(
+            (await fs.promises.readFile(plistPath)).toString(),
+          ) as PlistObject;
+          if (isAsarIntegrity(plistData.ElectronAsarIntegrity)) {
+            integrity = plistData.ElectronAsarIntegrity;
+          }
+        } catch (err) {
+          warning(
+            `Failed to read asar integrity from ${plistPath}: ${err}. The integrity digest will not be written.`,
+            this.opts.quiet,
+          );
+          return;
+        }
+      }
+    }
+
+    if (!integrity || Object.keys(integrity).length === 0) {
+      return;
+    }
+    const frameworkPath = path.join(
+      appPath,
+      'Contents',
+      'Frameworks',
+      'Electron Framework.framework',
+      'Electron Framework',
+    );
+    if (!fs.existsSync(frameworkPath)) {
+      warning(
+        `Electron Framework binary not found at ${frameworkPath}. The asar integrity digest will not be written, which may cause runtime failures.`,
+        this.opts.quiet,
+      );
+      return;
+    }
+
+    // Calculate v1 integrity digest: SHA256 over sorted (key, algorithm, hash) tuples
+    // @see https://github.com/electron/electron/blob/2d5597b1b0fa697905380184e26c9f0947e05c5d/shell/common/asar/integrity_digest.mm#L52-L66
+    const integrityHash = crypto.createHash('SHA256');
+    for (const key of Object.keys(integrity).sort()) {
+      const { algorithm, hash } = integrity[key];
+      integrityHash.update(key);
+      integrityHash.update(algorithm);
+      integrityHash.update(hash);
+    }
+    const digest = integrityHash.digest();
+
+    // Write digest into every sentinel location in the Electron Framework binary
+    const frameworkBinary = await fs.promises.readFile(frameworkPath);
+    const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+    let searchOffset = 0;
+    let found = false;
+    let written = false;
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const sentinelIndex = frameworkBinary.indexOf(sentinel, searchOffset);
+      if (sentinelIndex === -1) break;
+      found = true;
+
+      const base = sentinelIndex + sentinel.length;
+      if (base + 34 > frameworkBinary.length) {
+        warning(
+          `Insufficient space after integrity digest sentinel at offset ${sentinelIndex} in Electron Framework binary. The binary may be corrupted or incompatible.`,
+          this.opts.quiet,
+        );
+        searchOffset = base;
+        continue;
+      }
+      frameworkBinary.writeUInt8(1, base); // used = true
+      frameworkBinary.writeUInt8(1, base + 1); // version = 1
+      digest.copy(frameworkBinary, base + 2); // 32-byte SHA256 digest
+      written = true;
+
+      searchOffset = base + 2 + 32;
+    }
+
+    if (found && !written) {
+      throw new Error(
+        'Found integrity digest sentinel(s) in Electron Framework binary but could not write to any of them. The binary may be corrupted.',
+      );
+    }
+
+    if (written) {
+      try {
+        await fs.promises.writeFile(frameworkPath, frameworkBinary);
+      } catch (err) {
+        throw new Error(
+          `Failed to write integrity digest to Electron Framework binary at ${frameworkPath}: ${err}`,
+        );
+      }
+      debug('Wrote integrity digest to Electron Framework binary');
+    } else {
+      warning(
+        `No integrity digest sentinel found in Electron Framework binary at ${frameworkPath}. ` +
+          'This is unexpected for Electron >= 41.0.0. The asar integrity digest was not written.',
+        this.opts.quiet,
+      );
+    }
+  }
+
   async signAppIfSpecified() {
     const osxSignOpt = this.opts.osxSign;
     const platform = this.opts.platform;
@@ -575,6 +725,7 @@ export class MacApp extends App implements Plists {
     await this.renameElectron();
     await this.renameAppAndHelpers();
     await this.copyExtraResources();
+    await this.setIntegrityDigest();
     await this.signAppIfSpecified();
     await this.notarizeAppIfSpecified();
     return this.move();

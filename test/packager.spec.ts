@@ -17,7 +17,7 @@ import {
 import { OfficialArch, OfficialPlatform, Options } from '../src/types.js';
 import { createDownloadOpts, downloadElectronZip } from '../src/download.js';
 import plist, { PlistObject } from 'plist';
-import { filterCFBundleIdentifier } from '../src/mac.js';
+import { filterCFBundleIdentifier, MacApp } from '../src/mac.js';
 
 import { NtExecutable, NtExecutableResource, Resource } from 'resedit';
 
@@ -1345,6 +1345,146 @@ describe('packager', () => {
             hash: '5efe069acf1f8d2622f2da149fcedcd5e17f9e7f4bc6f7ffe89255ee96647d4f',
           },
         });
+      });
+    });
+
+    describe('asar integrity digest', () => {
+      it('writes digest into Electron Framework binary when asar is enabled', async ({
+        baseOpts,
+      }) => {
+        const opts = {
+          ...baseOpts,
+          asar: true,
+        };
+
+        const [finalPath] = await packager(opts);
+        const appPath = path.join(finalPath, `${opts.name}.app`);
+        const frameworkPath = path.join(
+          appPath,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+          'Electron Framework',
+        );
+        const binary = fs.readFileSync(frameworkPath);
+        const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+
+        const sentinelIndex = binary.indexOf(sentinel);
+        expect(sentinelIndex).not.toBe(-1);
+
+        const base = sentinelIndex + sentinel.length;
+        expect(binary.readUInt8(base)).toBe(1); // used = true
+        expect(binary.readUInt8(base + 1)).toBe(1); // version = 1
+
+        // Verify the stored digest matches a fresh calculation from the plist
+        const infoPlist = parseInfoPlist(finalPath);
+        const integrity = infoPlist.ElectronAsarIntegrity as Record<
+          string,
+          { algorithm: string; hash: string }
+        >;
+        const expectedHash = crypto.createHash('SHA256');
+        for (const key of Object.keys(integrity).sort()) {
+          expectedHash.update(key);
+          expectedHash.update(integrity[key].algorithm);
+          expectedHash.update(integrity[key].hash);
+        }
+        const expectedDigest = expectedHash.digest();
+        const storedDigest = binary.subarray(base + 2, base + 2 + 32);
+        expect(storedDigest).toEqual(expectedDigest);
+      });
+
+      it('does not write digest when asar is disabled', async ({
+        baseOpts,
+      }) => {
+        const opts = {
+          ...baseOpts,
+          asar: false,
+        };
+
+        const [finalPath] = await packager(opts);
+        const appPath = path.join(finalPath, `${opts.name}.app`);
+        const frameworkPath = path.join(
+          appPath,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+          'Electron Framework',
+        );
+        const binary = fs.readFileSync(frameworkPath);
+        const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+
+        const sentinelIndex = binary.indexOf(sentinel);
+        if (sentinelIndex !== -1) {
+          const base = sentinelIndex + sentinel.length;
+          expect(binary.readUInt8(base)).toBe(0); // used = false
+        }
+      });
+
+      it('writes digest from Info.plist fallback when asarIntegrity is not set on the instance', async ({
+        baseOpts,
+      }) => {
+        // This simulates the universal build path where the shell MacApp instance
+        // doesn't have asarIntegrity set, but the merged app's Info.plist does.
+        const opts = {
+          ...baseOpts,
+          asar: true,
+        };
+
+        const [finalPath] = await packager(opts);
+        const appPath = path.join(finalPath, `${opts.name}.app`);
+        const frameworkPath = path.join(
+          appPath,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+          'Electron Framework',
+        );
+
+        // Read the expected digest from the plist (written during normal packaging)
+        const infoPlist = parseInfoPlist(finalPath);
+        const integrity = infoPlist.ElectronAsarIntegrity as Record<
+          string,
+          { algorithm: string; hash: string }
+        >;
+        const expectedHash = crypto.createHash('SHA256');
+        for (const key of Object.keys(integrity).sort()) {
+          expectedHash.update(key);
+          expectedHash.update(integrity[key].algorithm);
+          expectedHash.update(integrity[key].hash);
+        }
+        const expectedDigest = expectedHash.digest();
+
+        // Zero out the digest area in the binary to simulate a fresh universal merge
+        const binary = fs.readFileSync(frameworkPath);
+        const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+        const sentinelIndex = binary.indexOf(sentinel);
+        expect(sentinelIndex).not.toBe(-1);
+        const base = sentinelIndex + sentinel.length;
+        binary.fill(0, base, base + 34);
+        fs.writeFileSync(frameworkPath, binary);
+
+        // Create a MacApp instance without asarIntegrity set, pointing at the packaged app
+        const macApp = new MacApp(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          { ...opts, platform: 'darwin', arch: 'x64' } as any,
+          '',
+        );
+        // Point stagingPath at the output directory so renamedAppPath resolves correctly
+        macApp.cachedStagingPath = finalPath;
+        expect(macApp.asarIntegrity).toBeUndefined();
+
+        await macApp.setIntegrityDigest();
+
+        // Verify the digest was written correctly from the plist fallback
+        const updatedBinary = fs.readFileSync(frameworkPath);
+        const updatedBase = updatedBinary.indexOf(sentinel) + sentinel.length;
+        expect(updatedBinary.readUInt8(updatedBase)).toBe(1); // used = true
+        expect(updatedBinary.readUInt8(updatedBase + 1)).toBe(1); // version = 1
+        const storedDigest = updatedBinary.subarray(
+          updatedBase + 2,
+          updatedBase + 2 + 32,
+        );
+        expect(storedDigest).toEqual(expectedDigest);
       });
     });
 
