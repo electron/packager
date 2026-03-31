@@ -92,7 +92,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "build:docs": "npx typedoc",
+    "build:docs": "typedoc",
     "lint": "prettier --check \"*.{ts,js,json}\" && eslint src --cache",
     "prepack": "npm run build",
     "test": "vitest run",
