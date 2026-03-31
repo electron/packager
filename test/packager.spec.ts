@@ -1414,10 +1414,9 @@ describe('packager', () => {
         const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
 
         const sentinelIndex = binary.indexOf(sentinel);
-        if (sentinelIndex !== -1) {
-          const base = sentinelIndex + sentinel.length;
-          expect(binary.readUInt8(base)).toBe(0); // used = false
-        }
+        expect(sentinelIndex).not.toBe(-1);
+        const base = sentinelIndex + sentinel.length;
+        expect(binary.readUInt8(base)).toBe(0); // used = false
       });
 
       it('writes digest from Info.plist fallback when asarIntegrity is not set on the instance', async ({
