@@ -1485,6 +1485,117 @@ describe('packager', () => {
         );
         expect(storedDigest).toEqual(expectedDigest);
       });
+
+      it('finds a sentinel that straddles a 4 MB chunk boundary', async ({
+        baseOpts,
+      }) => {
+        // The chunked scanner overreads sentinel.length-1 bytes into the next
+        // chunk so a sentinel split across a boundary is still detected. This
+        // is the one correctness invariant that makes chunking safe, and the
+        // real framework binary's sentinel almost never lands on a boundary.
+        const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+        const SCAN_CHUNK_SIZE = 4 * 1024 * 1024;
+        const sentinelOffset = SCAN_CHUNK_SIZE - 10;
+        const fileSize = sentinelOffset + sentinel.length + 34 + 64;
+
+        const binary = Buffer.alloc(fileSize);
+        sentinel.copy(binary, sentinelOffset);
+
+        const appPath = path.join(baseOpts.out, `${baseOpts.name}.app`);
+        const frameworkPath = path.join(
+          appPath,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+          'Electron Framework',
+        );
+        fs.mkdirSync(path.dirname(frameworkPath), { recursive: true });
+        fs.writeFileSync(frameworkPath, binary);
+
+        const macApp = new MacApp(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          { ...baseOpts, platform: 'darwin', arch: 'x64' } as any,
+          '',
+        );
+        macApp.cachedStagingPath = baseOpts.out;
+        macApp.asarIntegrity = {
+          'Resources/app.asar': {
+            algorithm: 'SHA256',
+            hash: 'a'.repeat(64),
+          },
+        };
+
+        await macApp.setIntegrityDigest();
+
+        const result = fs.readFileSync(frameworkPath);
+        const base = sentinelOffset + sentinel.length;
+        expect(result.readUInt8(base)).toBe(1); // used = true
+        expect(result.readUInt8(base + 1)).toBe(1); // version = 1
+
+        const expectedHash = crypto.createHash('SHA256');
+        expectedHash.update('Resources/app.asar');
+        expectedHash.update('SHA256');
+        expectedHash.update('a'.repeat(64));
+        expect(result.subarray(base + 2, base + 34)).toEqual(
+          expectedHash.digest(),
+        );
+      });
+
+      it('writes digest to every sentinel in a multi-slice binary', async ({
+        baseOpts,
+      }) => {
+        // Universal macOS binaries contain one sentinel per arch slice. Place
+        // each in a different 4 MB chunk so concurrent workers discover them
+        // independently and positions.sort() + the multi-write loop are both
+        // exercised.
+        const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+        const SCAN_CHUNK_SIZE = 4 * 1024 * 1024;
+        const offsets = [1024, SCAN_CHUNK_SIZE + 1024];
+        const fileSize = offsets[1] + sentinel.length + 34 + 64;
+
+        const binary = Buffer.alloc(fileSize);
+        for (const off of offsets) sentinel.copy(binary, off);
+
+        const appPath = path.join(baseOpts.out, `${baseOpts.name}.app`);
+        const frameworkPath = path.join(
+          appPath,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+          'Electron Framework',
+        );
+        fs.mkdirSync(path.dirname(frameworkPath), { recursive: true });
+        fs.writeFileSync(frameworkPath, binary);
+
+        const macApp = new MacApp(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          { ...baseOpts, platform: 'darwin', arch: 'x64' } as any,
+          '',
+        );
+        macApp.cachedStagingPath = baseOpts.out;
+        macApp.asarIntegrity = {
+          'Resources/app.asar': {
+            algorithm: 'SHA256',
+            hash: 'b'.repeat(64),
+          },
+        };
+
+        await macApp.setIntegrityDigest();
+
+        const result = fs.readFileSync(frameworkPath);
+        const expectedHash = crypto.createHash('SHA256');
+        expectedHash.update('Resources/app.asar');
+        expectedHash.update('SHA256');
+        expectedHash.update('b'.repeat(64));
+        const expectedDigest = expectedHash.digest();
+
+        for (const off of offsets) {
+          const base = off + sentinel.length;
+          expect(result.readUInt8(base)).toBe(1); // used = true
+          expect(result.readUInt8(base + 1)).toBe(1); // version = 1
+          expect(result.subarray(base + 2, base + 34)).toEqual(expectedDigest);
+        }
+      });
     });
 
     describe('codesign', () => {
