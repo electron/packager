@@ -19,7 +19,7 @@ updates:
     # Creates a single PR with all security-related updates.
     security-updates:
       applies-to: "security-updates"
-      update-types: ["minor", "patch"]
+      update-types: ["major", "minor", "patch"]
 - package-ecosystem: "npm"
   directory: "/"
   schedule:
@@ -39,4 +39,4 @@ updates:
     # Creates a single PR with all security-related updates.
     security-updates:
       applies-to: "security-updates"
-      update-types: ["minor", "patch"]
+      update-types: ["major", "minor", "patch"]
