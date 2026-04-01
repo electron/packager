@@ -19,7 +19,7 @@ jobs:
           ref: refs/heads/main
           path: minimal-repro
       - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # tag: v6.2.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # tag: v6.3.0
         with:
           # electron/minimal-repro doesn't have a .nvmrc file
           node-version: lts/*
