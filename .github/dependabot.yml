@@ -4,6 +4,8 @@ updates:
   directory: "/"
   schedule:
     interval: "monthly"
+  cooldown:
+    default-days: 7
   groups:
     # Creates a separate PR for each non-security-related major update.
     major-version-updates:
