@@ -35,4 +35,4 @@ jobs:
         uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
         with:
           inlineScript: | # zizmor: ignore[template-injection] This only runs on tags
-            az storage blob upload-batch --account-name ${{ secrets.AZURE_ECOSYSTEM_PACKAGES_STORAGE_ACCOUNT_NAME }} -d '$web/${{ github.event.repository.name }}/${{ github.ref_name }}' -s ./docs --overwrite --auth-mode login
+            az storage blob upload-batch --account-name ${{ secrets.AZURE_ECOSYSTEM_PACKAGES_STORAGE_ACCOUNT_NAME }} -d '$web/${{ github.event.repository.name }}/${{ github.ref_name }}' -s ./typedoc --overwrite --auth-mode login
