@@ -117,5 +117,8 @@
       "eslint --fix"
     ]
   },
+  "resolutions": {
+    "fsevents": "npm:@electron/fsevents@2.3.3-fork"
+  },
   "packageManager": "yarn@4.10.2"
 }
