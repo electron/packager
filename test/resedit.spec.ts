@@ -1,5 +1,4 @@
 import { WindowsApp } from '../src/win32.js';
-import _ from 'lodash';
 import { describe, it, expect } from 'vitest';
 
 describe('resedit', () => {
@@ -88,7 +87,7 @@ describe('resedit', () => {
       const rcOpts = app.generateReseditOptionsSansIcon();
 
       for (const [key, value] of Object.entries(expectedValues)) {
-        expect(_.get(rcOpts, key)).toBe(value);
+        expect(rcOpts).toHaveProperty(key, value);
       }
     },
   );
