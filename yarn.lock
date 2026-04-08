@@ -83,7 +83,6 @@ __metadata:
     "@tsconfig/node22": "npm:^22.0.2"
     "@types/debug": "npm:^4.1.12"
     "@types/graceful-fs": "npm:^4.1.9"
-    "@types/lodash": "npm:^4.17.20"
     "@types/node": "npm:~22.10.7"
     "@types/parse-author": "npm:^2.0.2"
     "@types/plist": "npm:^3.0.5"
@@ -106,7 +105,6 @@ __metadata:
     husky: "npm:^9.1.7"
     junk: "npm:^4.0.1"
     lint-staged: "npm:^16.1.5"
-    lodash: "npm:^4.17.21"
     parse-author: "npm:^2.0.0"
     plist: "npm:^3.1.0"
     prettier: "npm:^3.6.2"
@@ -1025,13 +1023,6 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 10c0/6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:^4.17.20":
-  version: 4.17.20
-  resolution: "@types/lodash@npm:4.17.20"
-  checksum: 10c0/98cdd0faae22cbb8079a01a3bb65aa8f8c41143367486c1cbf5adc83f16c9272a2a5d2c1f541f61d0d73da543c16ee1d21cf2ef86cb93cd0cc0ac3bced6dd88f
   languageName: node
   linkType: hard
 
@@ -4322,13 +4313,6 @@ __metadata:
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: 10c0/402fa16a1edd7538de5b5903a90228aa48eb5533986ba7fa26606a49db2572bf414ff73a2c9f5d5fd36b31c46a5d5c7e1527749c07cbcf965ccff5fbdf32c506
-  languageName: node
-  linkType: hard
-
-"lodash@npm:^4.17.21":
-  version: 4.17.23
-  resolution: "lodash@npm:4.17.23"
-  checksum: 10c0/1264a90469f5bb95d4739c43eb6277d15b6d9e186df4ac68c3620443160fc669e2f14c11e7d8b2ccf078b81d06147c01a8ccced9aab9f9f63d50dcf8cace6bf6
   languageName: node
   linkType: hard
 
