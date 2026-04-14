@@ -69,7 +69,6 @@
     "@types/yargs-parser": "^21.0.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "lodash": "^4.17.21",
     "oxfmt": "^0.44.0",
     "oxlint": "^1.59.0",
     "oxlint-tsgolint": "^0.20.0",

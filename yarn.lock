@@ -91,7 +91,6 @@ __metadata:
     husky: "npm:^9.1.7"
     junk: "npm:^4.0.1"
     lint-staged: "npm:^16.4.0"
-    lodash: "npm:^4.17.21"
     oxfmt: "npm:^0.44.0"
     oxlint: "npm:^1.59.0"
     oxlint-tsgolint: "npm:^0.20.0"
@@ -2739,13 +2738,6 @@ __metadata:
   version: 4.4.2
   resolution: "lodash.get@npm:4.4.2"
   checksum: 10c0/48f40d471a1654397ed41685495acb31498d5ed696185ac8973daef424a749ca0c7871bf7b665d5c14f5cc479394479e0307e781f61d5573831769593411be6e
-  languageName: node
-  linkType: hard
-
-"lodash@npm:^4.17.21":
-  version: 4.18.1
-  resolution: "lodash@npm:4.18.1"
-  checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
   languageName: node
   linkType: hard
 
