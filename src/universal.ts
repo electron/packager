@@ -4,11 +4,7 @@ import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
 import path from 'node:path';
 import { App } from './mac.js';
-import {
-  ProcessedOptionsWithSinglePlatformArch,
-  DownloadOptions,
-  OfficialArch,
-} from './types.js';
+import { ProcessedOptionsWithSinglePlatformArch, DownloadOptions, OfficialArch } from './types.js';
 import { Packager } from './packager.js';
 
 export async function packageUniversalMac(
@@ -25,9 +21,7 @@ export async function packageUniversalMac(
     comboOpts.quiet,
   );
   await fs.promises.mkdir(tempBase, { recursive: true });
-  const tempDir = await fs.promises.mkdtemp(
-    path.resolve(tempBase, 'electron-packager-universal-'),
-  );
+  const tempDir = await fs.promises.mkdtemp(path.resolve(tempBase, 'electron-packager-universal-'));
 
   const app = new App(comboOpts, buildDir);
   const universalStagingPath = app.stagingPath;
@@ -76,15 +70,10 @@ export async function packageUniversalMac(
   const x64AppPath = tempPackages.x64;
   const arm64AppPath = tempPackages.arm64;
 
-  info(
-    `Stitching universal app for platform ${comboOpts.platform}`,
-    comboOpts.quiet,
-  );
+  info(`Stitching universal app for platform ${comboOpts.platform}`, comboOpts.quiet);
 
   const generatedFiles = await promisifiedGracefulFs.readdir(x64AppPath);
-  const appName = generatedFiles.filter(
-    (file) => path.extname(file) === '.app',
-  )[0];
+  const appName = generatedFiles.filter((file) => path.extname(file) === '.app')[0];
 
   await makeUniversalApp({
     ...comboOpts.osxUniversal,

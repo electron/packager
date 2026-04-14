@@ -1,7 +1,7 @@
 declare module 'get-package-info' {
   type Props = Array<string | string[]>;
 
-  export type GetPackageInfoResultSourceItem = {
+  type GetPackageInfoResultSourceItem = {
     /** path to the package.json file */
     src: string;
 
@@ -12,20 +12,21 @@ declare module 'get-package-info' {
     pkg: Record<string, unknown>;
   };
 
-  export type GetPackageInfoResult = {
+  type GetPackageInfoResult = {
     source: Record<string, GetPackageInfoResultSourceItem>;
     values: Record<string, unknown>;
   };
 
-  function getPackageInfo(
-    props: Props,
-    dir: string,
-  ): Promise<GetPackageInfoResult>;
-
-  export type GetPackageInfoError = Error & {
+  type GetPackageInfoError = Error & {
     missingProps: Props;
     result: GetPackageInfoResult;
   };
+
+  function getPackageInfo(props: Props, dir: string): Promise<GetPackageInfoResult>;
+
+  namespace getPackageInfo {
+    export { GetPackageInfoResultSourceItem, GetPackageInfoResult, GetPackageInfoError };
+  }
 
   export = getPackageInfo;
 }

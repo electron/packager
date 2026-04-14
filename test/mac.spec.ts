@@ -1,8 +1,4 @@
-import {
-  createNotarizeOpts,
-  createSignOpts,
-  filterCFBundleIdentifier,
-} from '../src/mac.js';
+import { createNotarizeOpts, createSignOpts, filterCFBundleIdentifier } from '../src/mac.js';
 import { describe, it, expect } from 'vitest';
 
 describe('createNotarizeOpts', () => {
@@ -71,13 +67,9 @@ describe('createSignOpts', () => {
 
 describe('filterCFBundleIdentifier', () => {
   it('replaces spaces with hyphens', () => {
-    expect(filterCFBundleIdentifier('com.electron.beep boop')).toBe(
-      'com.electron.beep-boop',
-    );
+    expect(filterCFBundleIdentifier('com.electron.beep boop')).toBe('com.electron.beep-boop');
   });
   it('removes all other special characters', () => {
-    expect(filterCFBundleIdentifier('com.electron.téæ?&*')).toBe(
-      'com.electron.t',
-    );
+    expect(filterCFBundleIdentifier('com.electron.téæ?&*')).toBe('com.electron.t');
   });
 });

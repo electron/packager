@@ -10,9 +10,7 @@ import { debug } from './common.js';
 import { OfficialPlatform, Options, ProcessedOptions } from './types.js';
 
 function isMissingRequiredProperty(props: string[]) {
-  return props.some(
-    (prop) => prop === 'productName' || prop === 'dependencies.electron',
-  );
+  return props.some((prop) => prop === 'productName' || prop === 'dependencies.electron');
 }
 
 function errorMessageForProperty(prop: string) {
@@ -63,9 +61,7 @@ async function getVersion(electronProp: GetPackageInfoResultSourceItem) {
   const [, packageName] = electronProp.prop.split('.');
   const src = electronProp.src;
 
-  const pkg = (
-    await resolvePromise(packageName, { basedir: path.dirname(src) })
-  )[1];
+  const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1];
   debug(`Inferring target Electron version from ${packageName} in ${src}`);
   return pkg.version;
 }
@@ -92,27 +88,19 @@ async function handleMetadata(
     const author = result.values.author as string | { name: string };
     const win32metadata = opts.win32metadata || {};
 
-    debug(
-      `Inferring win32metadata.CompanyName from author in ${result.source.author.src}`,
-    );
+    debug(`Inferring win32metadata.CompanyName from author in ${result.source.author.src}`);
     if (typeof author === 'string') {
       win32metadata.CompanyName = parseAuthor(author).name;
     } else if (author.name) {
       win32metadata.CompanyName = author.name;
     } else {
-      debug(
-        'Cannot infer win32metadata.CompanyName from author, no name found',
-      );
+      debug('Cannot infer win32metadata.CompanyName from author, no name found');
     }
     processedValues.win32metadata = win32metadata;
   }
 
-  if (
-    Object.prototype.hasOwnProperty.call(result.values, 'dependencies.electron')
-  ) {
-    processedValues.electronVersion = await getVersion(
-      result.source['dependencies.electron'],
-    );
+  if (Object.prototype.hasOwnProperty.call(result.values, 'dependencies.electron')) {
+    processedValues.electronVersion = await getVersion(result.source['dependencies.electron']);
   }
 
   return processedValues;
@@ -162,13 +150,8 @@ export async function getMetadataFromPackageJSON(
     ]);
   }
 
-  if (
-    platforms.includes('win32') &&
-    !(opts.win32metadata && opts.win32metadata.CompanyName)
-  ) {
-    debug(
-      'Requiring author in package.json, as CompanyName was not specified for win32metadata',
-    );
+  if (platforms.includes('win32') && !(opts.win32metadata && opts.win32metadata.CompanyName)) {
+    debug('Requiring author in package.json, as CompanyName was not specified for win32metadata');
     props.push('author');
   }
 

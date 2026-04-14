@@ -32,9 +32,7 @@ export function serialHooks(
   hooks: FinalizePackageTargetsHookFunction[],
 ): [FinalizePackageTargetsHookFunction];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function serialHooks<T extends (...args: any[]) => any>(
-  hooks: T[] = [],
-): [T] {
+export function serialHooks<T extends (...args: any[]) => any>(hooks: T[] = []): [T] {
   return [
     async function (opts: Parameters<T>[0]): Promise<void> {
       for (const hook of hooks) {

@@ -9,10 +9,7 @@ export type ExeMetadata = {
   legalCopyright?: string;
   productName?: string;
   iconPath?: string;
-  asarIntegrity?: Record<
-    string,
-    Pick<FileRecord['integrity'], 'algorithm' | 'hash'>
-  >;
+  asarIntegrity?: Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>>;
   win32Metadata?: Win32MetadataOptions;
 };
 
@@ -56,9 +53,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
         'Failed to parse win32 executable resources, failed to locate existing icon group',
       );
     }
-    const iconFile = Data.IconFile.from(
-      await promisifiedGracefulFs.readFile(options.iconPath),
-    );
+    const iconFile = Data.IconFile.from(await promisifiedGracefulFs.readFile(options.iconPath));
     Resource.IconGroupEntry.replaceIconsForResource(
       res.entries,
       existingIconGroups[0].id,
@@ -90,16 +85,12 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     const manifestEntry = manifests[0];
     if (options.win32Metadata?.['application-manifest']) {
       manifestEntry.bin = Buffer.from(
-        await promisifiedGracefulFs.readFile(
-          options.win32Metadata?.['application-manifest'],
-        ),
+        await promisifiedGracefulFs.readFile(options.win32Metadata?.['application-manifest']),
       ).buffer;
     } else if (options.win32Metadata?.['requested-execution-level']) {
       // This implementation matches what rcedit used to do, in theory we can be Smarter
       // and use an actual XML parser, but for now let's match the old impl
-      const currentManifestContent = Buffer.from(manifestEntry.bin).toString(
-        'utf-8',
-      );
+      const currentManifestContent = Buffer.from(manifestEntry.bin).toString('utf-8');
       const newContent = currentManifestContent.replace(
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
         `$1${options.win32Metadata?.['requested-execution-level']}$2`,
@@ -118,9 +109,7 @@ export async function resedit(exePath: string, options: ExeMetadata) {
   if (options.fileVersion)
     versionInfo[0].setFileVersion(...parseVersionString(options.fileVersion));
   if (options.productVersion)
-    versionInfo[0].setProductVersion(
-      ...parseVersionString(options.productVersion),
-    );
+    versionInfo[0].setProductVersion(...parseVersionString(options.productVersion));
   const languageInfo = versionInfo[0].getAllLanguagesForStringValues();
   if (languageInfo.length !== 1) {
     throw new Error(
