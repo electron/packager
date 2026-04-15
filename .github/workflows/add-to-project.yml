@@ -1,6 +1,6 @@
 name: Add to Ecosystem WG Project
 
-on:
+on: # zizmor: ignore[dangerous-triggers]
   issues:
     types:
       - opened
