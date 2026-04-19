@@ -1,10 +1,4 @@
-import {
-  baseTempDir,
-  debug,
-  ensureArray,
-  generateFinalBasename,
-  normalizePath,
-} from './common.js';
+import { baseTempDir, debug, ensureArray, generateFinalBasename, normalizePath } from './common.js';
 import { isJunk } from 'junk';
 import path from 'node:path';
 import { isModule, Pruner } from './prune.js';
@@ -54,25 +48,19 @@ export function populateIgnoredPaths(
   };
 }
 
-export function generateIgnoredOutDirs(
-  opts: ProcessedOptionsWithSinglePlatformArch,
-): string[] {
+export function generateIgnoredOutDirs(opts: ProcessedOptionsWithSinglePlatformArch): string[] {
   const normalizedOut = opts.out ? path.resolve(opts.out) : null;
   const ignoredOutDirs: string[] = [];
 
   if (normalizedOut === null || normalizedOut === process.cwd()) {
-    for (const [platform, archs] of Object.entries(
-      officialPlatformArchCombos,
-    )) {
+    for (const [platform, archs] of Object.entries(officialPlatformArchCombos)) {
       for (const arch of archs) {
         const basenameOpts = {
           arch: arch as OfficialArch,
           name: opts.name,
           platform: platform as OfficialPlatform,
         };
-        ignoredOutDirs.push(
-          path.join(process.cwd(), generateFinalBasename(basenameOpts)),
-        );
+        ignoredOutDirs.push(path.join(process.cwd(), generateFinalBasename(basenameOpts)));
       }
     }
   } else {

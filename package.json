@@ -67,19 +67,14 @@
     "@types/resolve": "^1.20.6",
     "@types/semver": "^7.7.0",
     "@types/yargs-parser": "^21.0.3",
-    "@typescript-eslint/eslint-plugin": "8.39.1",
-    "@typescript-eslint/parser": "^8.39.1",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^7.2.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
-    "prettier": "^3.6.2",
+    "lint-staged": "^16.4.0",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
+    "oxlint-tsgolint": "^0.20.0",
     "tsx": "^4.20.4",
-    "typedoc": "~0.28.14",
-    "typescript": "^5.9.2",
+    "typedoc": "~0.28.0",
+    "typescript": "^6.0.2",
     "vitest": "^3.2.4"
   },
   "engines": {
@@ -91,10 +86,11 @@
   "scripts": {
     "build": "tsc",
     "build:docs": "typedoc",
-    "lint": "prettier --check \"*.{ts,js,json}\" && eslint src --cache",
+    "lint": "oxfmt --check . && oxlint",
+    "lint:fix": "oxfmt --write . && oxlint --fix",
     "prepack": "npm run build",
     "test": "vitest run",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "directories": {
     "test": "test"
@@ -109,10 +105,12 @@
     "url": "https://github.com/electron/packager?sponsor=1"
   },
   "lint-staged": {
-    "*.json": "prettier --write",
-    "*.{js,ts}": [
-      "prettier --write",
-      "eslint --fix"
+    "*.{js,ts,mjs}": [
+      "oxfmt --write",
+      "oxlint --fix"
+    ],
+    "*.{json,html}": [
+      "oxfmt --write"
     ]
   },
   "packageManager": "yarn@4.10.2"

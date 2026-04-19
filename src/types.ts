@@ -21,13 +21,7 @@ import type { MakeUniversalOpts } from '@electron/universal';
  * Architectures that have been supported by the official Electron prebuilt binaries, past
  * and present.
  */
-export type OfficialArch =
-  | 'ia32'
-  | 'x64'
-  | 'armv7l'
-  | 'arm64'
-  | 'mips64el'
-  | 'universal';
+export type OfficialArch = 'ia32' | 'x64' | 'armv7l' | 'arm64' | 'mips64el' | 'universal';
 
 /**
  * Platforms that have been supported by the official Electron prebuilt binaries, past and present.
@@ -160,8 +154,7 @@ export interface MacOSProtocol {
  * See the documentation for [`@electron/windows-sign`](https://github.com/electron/windows-sign)
  * for details.
  */
-export interface PackagerWindowsSignOptions
-  extends Omit<WindowsSignOptions, 'appDirectory'> {
+export interface PackagerWindowsSignOptions extends Omit<WindowsSignOptions, 'appDirectory'> {
   continueOnError?: boolean;
 }
 
@@ -180,10 +173,7 @@ export interface Win32MetadataOptions {
   /** Defaults to either `productName` or `name` from the nearest `package.json`. */
   InternalName?: string;
   /** See [MSDN](https://msdn.microsoft.com/en-us/library/6ad1fshk.aspx#Anchor_9) for details. */
-  'requested-execution-level'?:
-    | 'asInvoker'
-    | 'highestAvailable'
-    | 'requireAdministrator';
+  'requested-execution-level'?: 'asInvoker' | 'highestAvailable' | 'requireAdministrator';
   /**
    * Path to a local manifest file.
    *
@@ -641,8 +631,7 @@ export interface ProcessedOptions extends Options {
 /**
  * @internal
  */
-export interface ProcessedOptionsWithSinglePlatformArch
-  extends ProcessedOptions {
+export interface ProcessedOptionsWithSinglePlatformArch extends ProcessedOptions {
   arch: OfficialArch;
   platform: OfficialPlatform;
 }
@@ -650,8 +639,7 @@ export interface ProcessedOptionsWithSinglePlatformArch
 /**
  * @internal
  */
-export interface DownloadOptions
-  extends ProcessedOptionsWithSinglePlatformArch {
+export interface DownloadOptions extends ProcessedOptionsWithSinglePlatformArch {
   artifactName: string;
   version: string;
 }

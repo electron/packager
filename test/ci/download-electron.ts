@@ -30,9 +30,7 @@ async function downloadAll(version: string) {
   await downloadElectronChecksum(version);
   return Promise.all([
     ...combinations.map((combination) =>
-      combination.arch === 'universal'
-        ? null
-        : downloadElectronZip(version, combination),
+      combination.arch === 'universal' ? null : downloadElectronZip(version, combination),
     ),
     downloadElectronZip('6.0.0', {
       platform: 'darwin',

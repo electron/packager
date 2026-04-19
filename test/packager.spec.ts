@@ -22,9 +22,7 @@ import { filterCFBundleIdentifier } from '../src/mac.js';
 import { NtExecutable, NtExecutableResource, Resource } from 'resedit';
 
 describe('packager', () => {
-  it('cannot build apps where the name ends in "Helper"', async ({
-    baseOpts,
-  }) => {
+  it('cannot build apps where the name ends in "Helper"', async ({ baseOpts }) => {
     const opts = {
       ...baseOpts,
       name: 'Bad Helper',
@@ -35,9 +33,7 @@ describe('packager', () => {
     );
   });
 
-  it('cannot build apps where the name is equal to "electron"', async ({
-    baseOpts,
-  }) => {
+  it('cannot build apps where the name is equal to "electron"', async ({ baseOpts }) => {
     const opts = {
       ...baseOpts,
       name: 'electron',
@@ -80,16 +76,11 @@ describe('packager', () => {
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
 
-    expect(paths[0]).toEqual(
-      path.join(opts.out, generateFinalBasename(defaultOpts)),
-    );
+    expect(paths[0]).toEqual(path.join(opts.out, generateFinalBasename(defaultOpts)));
     expect(fs.existsSync(paths[0])).toBe(true);
 
     const appPath = path.join(paths[0], generateNamePath(defaultOpts));
-    const resourcesPath = path.join(
-      paths[0],
-      generateResourcesPath(defaultOpts),
-    );
+    const resourcesPath = path.join(paths[0], generateResourcesPath(defaultOpts));
 
     if (process.platform === 'darwin') {
       expect(appPath).toBeDirectory();
@@ -99,17 +90,13 @@ describe('packager', () => {
     expect(fs.existsSync(resourcesPath)).toBe(true);
 
     // Doesn't package devDependencies
-    expect(
-      fs.existsSync(
-        path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'),
-      ),
-    ).toBe(false);
+    expect(fs.existsSync(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))).toBe(
+      false,
+    );
 
     expect(fs.existsSync(path.join(resourcesPath, 'app.asar'))).toBe(true);
     expect(fs.existsSync(path.join(resourcesPath, 'default_app'))).toBe(false);
-    expect(fs.existsSync(path.join(resourcesPath, 'default_app.asar'))).toBe(
-      false,
-    );
+    expect(fs.existsSync(path.join(resourcesPath, 'default_app.asar'))).toBe(false);
   });
 
   it('can overwrite older packages', async ({ baseOpts }) => {
@@ -140,9 +127,7 @@ describe('packager', () => {
     expect(fs.existsSync(testPath)).toBe(false);
   });
 
-  it('defaults the out directory to the current working directory', async ({
-    baseOpts,
-  }) => {
+  it('defaults the out directory to the current working directory', async ({ baseOpts }) => {
     const opts = {
       ...baseOpts,
       out: undefined,
@@ -389,13 +374,8 @@ describe('packager', () => {
       } as const;
       await fs.promises.mkdir(customDir, { recursive: true });
 
-      const zipPath = await downloadElectronZip(
-        createDownloadOpts(opts, 'linux', 'x64'),
-      );
-      await fs.promises.copyFile(
-        zipPath,
-        path.join(customDir, path.basename(zipPath)),
-      );
+      const zipPath = await downloadElectronZip(createDownloadOpts(opts, 'linux', 'x64'));
+      await fs.promises.copyFile(zipPath, path.join(customDir, path.basename(zipPath)));
 
       const paths = await packager(opts);
 
@@ -409,9 +389,7 @@ describe('packager', () => {
         electronZipDir: path.join(baseOpts.tmpdir as string, 'does-not-exist'),
       };
 
-      await expect(packager(opts)).rejects.toThrowError(
-        'Electron ZIP directory does not exist',
-      );
+      await expect(packager(opts)).rejects.toThrowError('Electron ZIP directory does not exist');
     });
   });
 
@@ -437,14 +415,10 @@ describe('packager', () => {
 
       expect(fs.existsSync(path.join(resourcesPath, 'app'))).toBe(false);
       expect(fs.existsSync(path.join(resourcesPath, 'app.asar'))).toBe(true);
-      expect(fs.existsSync(path.join(resourcesPath, 'app.asar.unpacked'))).toBe(
+      expect(fs.existsSync(path.join(resourcesPath, 'app.asar.unpacked'))).toBe(true);
+      expect(fs.existsSync(path.join(resourcesPath, 'app.asar.unpacked', 'dir_to_unpack'))).toBe(
         true,
       );
-      expect(
-        fs.existsSync(
-          path.join(resourcesPath, 'app.asar.unpacked', 'dir_to_unpack'),
-        ),
-      ).toBe(true);
     });
 
     it('ignores asar options if prebuiltAsar is set', async ({ baseOpts }) => {
@@ -452,12 +426,7 @@ describe('packager', () => {
       const opts = {
         ...baseOpts,
         dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-        prebuiltAsar: path.join(
-          __dirname,
-          'fixtures',
-          'asar-prebuilt',
-          'app.asar',
-        ),
+        prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt', 'app.asar'),
         asar: { unpack: '*.pac', unpackDir: 'dir_to_unpack' },
         ignore: ['foo'],
         prune: false,
@@ -477,17 +446,10 @@ describe('packager', () => {
       );
 
       expect(fs.existsSync(path.join(resourcesPath, 'app'))).toBe(false);
-      expect(fs.existsSync(path.join(resourcesPath, 'app.asar.unpacked'))).toBe(
-        false,
-      );
+      expect(fs.existsSync(path.join(resourcesPath, 'app.asar.unpacked'))).toBe(false);
       expect(fs.existsSync(path.join(resourcesPath, 'app.asar'))).toBe(true);
-      expect(
-        fs.readFileSync(path.join(resourcesPath, 'app.asar'), 'utf8'),
-      ).toEqual(
-        fs.readFileSync(
-          path.join(__dirname, 'fixtures', 'asar-prebuilt', 'app.asar'),
-          'utf8',
-        ),
+      expect(fs.readFileSync(path.join(resourcesPath, 'app.asar'), 'utf8')).toEqual(
+        fs.readFileSync(path.join(__dirname, 'fixtures', 'asar-prebuilt', 'app.asar'), 'utf8'),
       );
 
       expect(console.warn).toHaveBeenCalledWith(
@@ -511,9 +473,7 @@ describe('packager', () => {
         prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
       };
 
-      await expect(packager(opts)).rejects.toThrowError(
-        'prebuiltAsar must be an asar file',
-      );
+      await expect(packager(opts)).rejects.toThrowError('prebuiltAsar must be an asar file');
     });
   });
 
@@ -542,9 +502,7 @@ describe('packager', () => {
         platform: process.platform as OfficialPlatform,
       }),
     );
-    expect(
-      fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out))),
-    ).toBe(false);
+    expect(fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out)))).toBe(false);
   });
 
   describe('hooks', () => {
@@ -668,42 +626,26 @@ describe('packager', () => {
       {
         hook: 'afterPrune',
       },
-    ])(
-      'throws an error if prebuiltAsar and $hook is specified',
-      async ({ hook }, { baseOpts }) => {
-        const opts = {
-          ...baseOpts,
-          dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-          prebuiltAsar: path.join(
-            __dirname,
-            'fixtures',
-            'asar-prebuilt',
-            'app.asar',
-          ),
-          [hook]: [
-            (
-              _: string,
-              __: string,
-              ___: string,
-              ____: string,
-              callback: () => void,
-            ) => {
-              callback();
-            },
-          ],
-        };
+    ])('throws an error if prebuiltAsar and $hook is specified', async ({ hook }, { baseOpts }) => {
+      const opts = {
+        ...baseOpts,
+        dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
+        prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt', 'app.asar'),
+        [hook]: [
+          (_: string, __: string, ___: string, ____: string, callback: () => void) => {
+            callback();
+          },
+        ],
+      };
 
-        await expect(packager(opts)).rejects.toThrowError(
-          `${hook} is incompatible with prebuiltAsar`,
-        );
-      },
-    );
+      await expect(packager(opts)).rejects.toThrowError(
+        `${hook} is incompatible with prebuiltAsar`,
+      );
+    });
   });
 
   describe('prune', () => {
-    it('should prune devDependencies and keep dependencies', async ({
-      baseOpts,
-    }) => {
+    it('should prune devDependencies and keep dependencies', async ({ baseOpts }) => {
       const opts = {
         ...baseOpts,
         asar: false,
@@ -719,21 +661,15 @@ describe('packager', () => {
         }),
       );
 
-      expect(
-        fs.existsSync(
-          path.join(resourcesPath, 'app', 'node_modules', 'run-series'),
-        ),
-      ).toBe(true);
-      expect(
-        fs.existsSync(
-          path.join(resourcesPath, 'app', 'node_modules', '@types', 'node'),
-        ),
-      ).toBe(true);
-      expect(
-        fs.existsSync(
-          path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'),
-        ),
-      ).toBe(false);
+      expect(fs.existsSync(path.join(resourcesPath, 'app', 'node_modules', 'run-series'))).toBe(
+        true,
+      );
+      expect(fs.existsSync(path.join(resourcesPath, 'app', 'node_modules', '@types', 'node'))).toBe(
+        true,
+      );
+      expect(fs.existsSync(path.join(resourcesPath, 'app', 'node_modules', 'run-waterfall'))).toBe(
+        false,
+      );
     });
 
     it('should prune electron in dependencies', async ({ baseOpts }) => {
@@ -752,11 +688,9 @@ describe('packager', () => {
         }),
       );
 
-      expect(
-        fs.existsSync(
-          path.join(resourcesPath, 'app', 'node_modules', 'electron'),
-        ),
-      ).toBe(false);
+      expect(fs.existsSync(path.join(resourcesPath, 'app', 'node_modules', 'electron'))).toBe(
+        false,
+      );
     });
   });
 
@@ -790,9 +724,7 @@ describe('packager', () => {
         },
       );
 
-      it('skips icon packaging if icon path is invalid', async ({
-        baseOpts,
-      }) => {
+      it('skips icon packaging if icon path is invalid', async ({ baseOpts }) => {
         let expectedChecksum;
         const opts: Options = {
           ...baseOpts,
@@ -802,13 +734,7 @@ describe('packager', () => {
               const hash = crypto.createHash('sha256');
               hash.update(
                 await fs.promises.readFile(
-                  path.join(
-                    buildPath,
-                    'Electron.app',
-                    'Contents',
-                    'Resources',
-                    'electron.icns',
-                  ),
+                  path.join(buildPath, 'Electron.app', 'Contents', 'Resources', 'electron.icns'),
                 ),
               );
               expectedChecksum = hash.digest('hex');
@@ -821,13 +747,7 @@ describe('packager', () => {
         const hash = crypto.createHash('sha256');
         hash.update(
           await fs.promises.readFile(
-            path.join(
-              paths[0],
-              `${opts.name}.app`,
-              'Contents',
-              'Resources',
-              'electron.icns',
-            ),
+            path.join(paths[0], `${opts.name}.app`, 'Contents', 'Resources', 'electron.icns'),
           ),
         );
 
@@ -837,9 +757,7 @@ describe('packager', () => {
 
     describe('extendInfo', () => {
       const extraInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist');
-      const extraInfoParams = plist.parse(
-        fs.readFileSync(extraInfoPath).toString(),
-      ) as PlistObject;
+      const extraInfoParams = plist.parse(fs.readFileSync(extraInfoPath).toString()) as PlistObject;
       it.for([
         { type: 'path', extraInfo: extraInfoPath },
         { type: 'object', extraInfo: extraInfoParams },
@@ -857,10 +775,7 @@ describe('packager', () => {
         expect(infoPlist.TestKeyString).toBe('String data');
         expect(infoPlist.TestKeyInt).toBe(12345);
         expect(infoPlist.TestKeyBool).toBe(true);
-        expect(infoPlist.TestKeyArray).toEqual([
-          'public.content',
-          'public.data',
-        ]);
+        expect(infoPlist.TestKeyArray).toEqual(['public.content', 'public.data']);
         expect(infoPlist.TestKeyDict).toEqual({
           Number: 98765,
           CFBundleVersion: '0.0.0',
@@ -873,47 +788,35 @@ describe('packager', () => {
     });
 
     describe('extendHelperInfo', () => {
-      const extraHelperInfoPath = path.join(
-        __dirname,
-        'fixtures',
-        'extrainfo.plist',
-      );
+      const extraHelperInfoPath = path.join(__dirname, 'fixtures', 'extrainfo.plist');
       const extraHelperInfoParams = plist.parse(
         fs.readFileSync(extraHelperInfoPath).toString(),
       ) as PlistObject;
       it.for([
         { type: 'path', extraHelperInfo: extraHelperInfoPath },
         { type: 'object', extraHelperInfo: extraHelperInfoParams },
-      ])(
-        'can package with extendHelperInfo',
-        async ({ extraHelperInfo }, { baseOpts }) => {
-          const opts = {
-            ...baseOpts,
-            appBundleId: 'com.electron.extratest',
-            buildVersion: '3.2.1',
-            extendHelperInfo: extraHelperInfo,
-          };
+      ])('can package with extendHelperInfo', async ({ extraHelperInfo }, { baseOpts }) => {
+        const opts = {
+          ...baseOpts,
+          appBundleId: 'com.electron.extratest',
+          buildVersion: '3.2.1',
+          extendHelperInfo: extraHelperInfo,
+        };
 
-          const paths = await packager(opts);
-          const helperInfoPlist = parseHelperInfoPlist(paths[0]);
-          expect(helperInfoPlist.TestKeyString).toBe('String data');
-          expect(helperInfoPlist.TestKeyInt).toBe(12345);
-          expect(helperInfoPlist.TestKeyBool).toBe(true);
-          expect(helperInfoPlist.TestKeyArray).toEqual([
-            'public.content',
-            'public.data',
-          ]);
-          expect(helperInfoPlist.TestKeyDict).toEqual({
-            Number: 98765,
-            CFBundleVersion: '0.0.0',
-          });
-          expect(helperInfoPlist.CFBundleVersion).toBe(opts.buildVersion);
-          expect(helperInfoPlist.CFBundleIdentifier).toBe(
-            `${opts.appBundleId}.helper`,
-          );
-          expect(helperInfoPlist.CFBundlePackageType).toBe('APPL');
-        },
-      );
+        const paths = await packager(opts);
+        const helperInfoPlist = parseHelperInfoPlist(paths[0]);
+        expect(helperInfoPlist.TestKeyString).toBe('String data');
+        expect(helperInfoPlist.TestKeyInt).toBe(12345);
+        expect(helperInfoPlist.TestKeyBool).toBe(true);
+        expect(helperInfoPlist.TestKeyArray).toEqual(['public.content', 'public.data']);
+        expect(helperInfoPlist.TestKeyDict).toEqual({
+          Number: 98765,
+          CFBundleVersion: '0.0.0',
+        });
+        expect(helperInfoPlist.CFBundleVersion).toBe(opts.buildVersion);
+        expect(helperInfoPlist.CFBundleIdentifier).toBe(`${opts.appBundleId}.helper`);
+        expect(helperInfoPlist.CFBundlePackageType).toBe('APPL');
+      });
     });
 
     it('can enable dark mode support in macOS Mojave', async ({ baseOpts }) => {
@@ -987,14 +890,7 @@ describe('packager', () => {
         },
       ])(
         'names the executable correctly with $type',
-        async (
-          {
-            testOpts,
-            expectedAppName: expectedAppName,
-            expectedExecutableName,
-          },
-          { baseOpts },
-        ) => {
+        async ({ testOpts, expectedAppName, expectedExecutableName }, { baseOpts }) => {
           const opts = {
             ...baseOpts,
             ...testOpts,
@@ -1042,29 +938,22 @@ describe('packager', () => {
         appVersion: '1.0.0',
       },
       {},
-    ])(
-      'sets the correct Info.plist values for the app version',
-      async (testOpts, { baseOpts }) => {
-        const opts = {
-          ...baseOpts,
-          ...testOpts,
-        };
+    ])('sets the correct Info.plist values for the app version', async (testOpts, { baseOpts }) => {
+      const opts = {
+        ...baseOpts,
+        ...testOpts,
+      };
 
-        const paths = await packager(opts);
-        expect(paths).toHaveLength(1);
-        const infoPlist = parseInfoPlist(paths[0]);
-        expect(infoPlist.CFBundleVersion).toBe(
-          String(opts.buildVersion ?? opts.appVersion ?? '4.99.101'),
-        );
-        expect(infoPlist.CFBundleShortVersionString).toBe(
-          String(opts.appVersion ?? '4.99.101'),
-        );
-      },
-    );
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+      const infoPlist = parseInfoPlist(paths[0]);
+      expect(infoPlist.CFBundleVersion).toBe(
+        String(opts.buildVersion ?? opts.appVersion ?? '4.99.101'),
+      );
+      expect(infoPlist.CFBundleShortVersionString).toBe(String(opts.appVersion ?? '4.99.101'));
+    });
 
-    it('sets the correct Info.plist values for the appCategoryType', async ({
-      baseOpts,
-    }) => {
+    it('sets the correct Info.plist values for the appCategoryType', async ({ baseOpts }) => {
       const opts = {
         ...baseOpts,
         appCategoryType: 'public.app-category.developer-tools',
@@ -1076,11 +965,7 @@ describe('packager', () => {
     });
 
     describe('appBundleId', () => {
-      it.for([
-        'com.electron.app-test',
-        'com.electron."bãśè tëßt!@#$%^&*()?\'',
-        undefined,
-      ])(
+      it.for(['com.electron.app-test', 'com.electron."bãśè tëßt!@#$%^&*()?\'', undefined])(
         'sets the correct app Info.plist values for appBundleId value %s',
         async (appBundleId, { baseOpts }) => {
           const opts = {
@@ -1136,12 +1021,8 @@ describe('packager', () => {
             'Contents',
             'Info.plist',
           );
-          const infoPlist = plist.parse(
-            fs.readFileSync(plistPath, 'utf8'),
-          ) as PlistObject;
-          expect(infoPlist.CFBundleIdentifier).toBe(
-            `${expectedHelperBundleId}.NP`,
-          );
+          const infoPlist = plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
+          expect(infoPlist.CFBundleIdentifier).toBe(`${expectedHelperBundleId}.NP`);
           expect(infoPlist.CFBundleName).toBe(`${opts.name} Helper NP`);
           expect(infoPlist.CFBundleDisplayName).toBe(`${opts.name} Helper NP`);
           expect(infoPlist.CFBundleExecutable).toBe(`${opts.name} Helper NP`);
@@ -1178,15 +1059,9 @@ describe('packager', () => {
 
           for (const helperType of ['GPU', 'Renderer', 'Plugin'] as const) {
             const helperPlist = parseHelperInfoPlist(paths[0], helperType);
-            expect(helperPlist.CFBundleName).toBe(
-              `${opts.name} Helper (${helperType})`,
-            );
-            expect(helperPlist.CFBundleExecutable).toBe(
-              `${opts.name} Helper (${helperType})`,
-            );
-            expect(helperPlist.CFBundleIdentifier).toBe(
-              `${expectedHelperBundleId}`,
-            );
+            expect(helperPlist.CFBundleName).toBe(`${opts.name} Helper (${helperType})`);
+            expect(helperPlist.CFBundleExecutable).toBe(`${opts.name} Helper (${helperType})`);
+            expect(helperPlist.CFBundleIdentifier).toBe(`${expectedHelperBundleId}`);
           }
         },
       );
@@ -1213,9 +1088,7 @@ describe('packager', () => {
       expect(path.join(frameworkPath, 'Versions', 'Current')).toBeSymlink();
     });
 
-    it('does not handle EH and NP helpers for modern Electron versions', async ({
-      baseOpts,
-    }) => {
+    it('does not handle EH and NP helpers for modern Electron versions', async ({ baseOpts }) => {
       const helpers = ['Helper EH', 'Helper NP'];
       const helperPaths: string[] = [];
       const opts: Options = {
@@ -1248,13 +1121,10 @@ describe('packager', () => {
       }
     });
 
-    it('maps appCopyright to NSHumanReadableCopyright', async ({
-      baseOpts,
-    }) => {
+    it('maps appCopyright to NSHumanReadableCopyright', async ({ baseOpts }) => {
       const opts = {
         ...baseOpts,
-        appCopyright:
-          'Copyright © 2013–2025 Organization. All rights reserved.',
+        appCopyright: 'Copyright © 2013–2025 Organization. All rights reserved.',
       };
 
       const paths = await packager(opts);
@@ -1274,9 +1144,7 @@ describe('packager', () => {
       const paths = await packager(opts);
       expect(paths).toHaveLength(1);
       const infoPlist = parseInfoPlist(paths[0]);
-      expect(infoPlist.NSMicrophoneUsageDescription).toBe(
-        opts.usageDescription.Microphone,
-      );
+      expect(infoPlist.NSMicrophoneUsageDescription).toBe(opts.usageDescription.Microphone);
     });
 
     it('can package an app named Electron', async ({ baseOpts }) => {
@@ -1293,9 +1161,7 @@ describe('packager', () => {
     });
 
     describe('asar integrity hashes', () => {
-      it('does not insert hashes when asar is disabled', async ({
-        baseOpts,
-      }) => {
+      it('does not insert hashes when asar is disabled', async ({ baseOpts }) => {
         const opts = {
           ...baseOpts,
           asar: false,
@@ -1328,12 +1194,7 @@ describe('packager', () => {
         const opts = {
           ...baseOpts,
           dir: path.join(__dirname, 'fixtures', 'asar-prebuilt'),
-          prebuiltAsar: path.join(
-            __dirname,
-            'fixtures',
-            'asar-prebuilt',
-            'app.asar',
-          ),
+          prebuiltAsar: path.join(__dirname, 'fixtures', 'asar-prebuilt', 'app.asar'),
         };
 
         const paths = await packager(opts);
@@ -1392,14 +1253,10 @@ describe('packager', () => {
 
         expect(helperPath).toBeDirectory();
         const plistPath = path.join(helperPath, 'Contents', 'Info.plist');
-        const plistData = plist.parse(
-          fs.readFileSync(plistPath, 'utf8'),
-        ) as PlistObject;
+        const plistData = plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
         expect(plistData.CFBundleExecutable).toBe(helperName);
         expect(plistData.CFBundleName).toBe(helperName);
-        expect(plistData.CFBundleIdentifier).toBe(
-          'com.electron.mastest.loginhelper',
-        );
+        expect(plistData.CFBundleIdentifier).toBe('com.electron.mastest.loginhelper');
 
         const contentsPath = path.join(helperPath, 'Contents');
         expect(path.join(contentsPath, 'MacOS', helperName)).toBeFile();

@@ -13,17 +13,12 @@ export function sanitizeAppName(name: string) {
 }
 
 export function generateFinalBasename(
-  opts: Pick<
-    ProcessedOptionsWithSinglePlatformArch,
-    'arch' | 'name' | 'platform'
-  >,
+  opts: Pick<ProcessedOptionsWithSinglePlatformArch, 'arch' | 'name' | 'platform'>,
 ) {
   return `${sanitizeAppName(opts.name)}-${opts.platform}-${opts.arch}`;
 }
 
-export function generateFinalPath(
-  opts: ProcessedOptionsWithSinglePlatformArch,
-) {
+export function generateFinalPath(opts: ProcessedOptionsWithSinglePlatformArch) {
   return path.join(opts.out || process.cwd(), generateFinalBasename(opts));
 }
 
@@ -47,10 +42,7 @@ export function subOptionWarning(
   quiet?: boolean,
 ) {
   if (Object.prototype.hasOwnProperty.call(properties, parameter)) {
-    warning(
-      `${optionName}.${parameter} will be inferred from the main options`,
-      quiet,
-    );
+    warning(`${optionName}.${parameter} will be inferred from the main options`, quiet);
   }
   properties[parameter] = value;
 }
@@ -60,9 +52,7 @@ export function subOptionWarning(
  * @param opts The processed options for the packager.
  * @returns The ASAR options or false if ASAR is disabled.
  */
-export function createAsarOpts(
-  opts: ProcessedOptionsWithSinglePlatformArch,
-): false | AsarOptions {
+export function createAsarOpts(opts: ProcessedOptionsWithSinglePlatformArch): false | AsarOptions {
   let asarOptions: AsarOptions;
   if (opts.asar === true || opts.asar === undefined) {
     asarOptions = {
@@ -87,9 +77,7 @@ export function ensureArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-export function isPlatformMac(
-  platform: ProcessedOptionsWithSinglePlatformArch['platform'],
-) {
+export function isPlatformMac(platform: ProcessedOptionsWithSinglePlatformArch['platform']) {
   return platform === 'darwin' || platform === 'mas';
 }
 
@@ -120,10 +108,7 @@ export function normalizePath(pathToNormalize: string) {
  * @param appDir - the directory specified by the user
  * @param bundledAppDir - the directory where the appDir is copied to in the bundled Electron app
  */
-export async function validateElectronApp(
-  appDir: string,
-  bundledAppDir: string,
-) {
+export async function validateElectronApp(appDir: string, bundledAppDir: string) {
   debug('Validating bundled Electron app');
   debug('Checking for a package.json file');
 
@@ -136,9 +121,7 @@ export async function validateElectronApp(
   }
 
   debug('Checking for the main entry point file');
-  const packageJSON = JSON.parse(
-    await fs.promises.readFile(bundledPackageJSONPath, 'utf8'),
-  );
+  const packageJSON = JSON.parse(await fs.promises.readFile(bundledPackageJSONPath, 'utf8'));
   const mainScriptBasename = packageJSON.main || 'index.js';
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
   if (!fs.existsSync(mainScript)) {
@@ -153,9 +136,7 @@ export async function validateElectronApp(
 
 export async function hostInfo() {
   const packageJSONPath = path.resolve(import.meta.dirname, '../package.json');
-  const metadata = JSON.parse(
-    await fs.promises.readFile(packageJSONPath, 'utf8'),
-  );
+  const metadata = JSON.parse(await fs.promises.readFile(packageJSONPath, 'utf8'));
 
   return (
     `Electron Packager ${metadata.version}\n` +

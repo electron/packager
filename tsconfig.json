@@ -4,6 +4,7 @@
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true
   },
