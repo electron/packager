@@ -1,39 +1,38 @@
-import getPackageInfo, {
-  GetPackageInfoError,
-  GetPackageInfoResult,
-  GetPackageInfoResultSourceItem,
-} from 'get-package-info';
 import parseAuthor from 'parse-author';
 import path from 'node:path';
-import resolve, { AsyncOpts } from 'resolve';
+import { createRequire } from 'node:module';
+import { promisifiedGracefulFs } from './util.js';
 import { debug } from './common.js';
 import { OfficialPlatform, Options, ProcessedOptions } from './types.js';
 
-function isMissingRequiredProperty(props: string[]) {
-  return props.some((prop) => prop === 'productName' || prop === 'dependencies.electron');
+type PackageJSON = {
+  name?: string;
+  productName?: string;
+  version?: string;
+  author?: string | { name?: string };
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+};
+
+const ELECTRON_PACKAGES = ['electron', 'electron-nightly'] as const;
+
+async function* walkPackageJSONs(dir: string): AsyncGenerator<{ src: string; pkg: PackageJSON }> {
+  let prev: string | undefined;
+  let cur = path.resolve(dir);
+  while (cur !== prev) {
+    const src = path.join(cur, 'package.json');
+    try {
+      const contents = await promisifiedGracefulFs.readFile(src, 'utf8');
+      yield { src, pkg: JSON.parse(contents.replace(/^\uFEFF/, '')) };
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+    }
+    prev = cur;
+    cur = path.dirname(cur);
+  }
 }
 
-function errorMessageForProperty(prop: string) {
-  let hash, propDescription;
-  switch (prop) {
-    case 'productName':
-      hash = 'name';
-      propDescription = 'application name';
-      break;
-    case 'dependencies.electron':
-      hash = 'electronversion';
-      propDescription = 'Electron version';
-      break;
-    case 'version':
-      hash = 'appversion';
-      propDescription = 'application version';
-      break;
-    /* istanbul ignore next */
-    default:
-      hash = '';
-      propDescription = `[Unknown Property (${prop})]`;
-  }
-
+function errorMessageForProperty(propDescription: string, hash: string) {
   return (
     `Unable to determine ${propDescription}. Please specify an ${propDescription}\n\n` +
     'For more information, please see\n' +
@@ -41,89 +40,11 @@ function errorMessageForProperty(prop: string) {
   );
 }
 
-function resolvePromise(id: string, options: AsyncOpts) {
-  return new Promise<[string | undefined, { version: string }]>(
-    // eslint-disable-next-line promise/param-names
-    (accept, reject) => {
-      resolve(id, options, (err, mainPath, pkg) => {
-        if (err) {
-          /* istanbul ignore next */
-          reject(err);
-        } else {
-          accept([mainPath as string | undefined, pkg as { version: string }]);
-        }
-      });
-    },
-  );
-}
-
-async function getVersion(electronProp: GetPackageInfoResultSourceItem) {
-  const [, packageName] = electronProp.prop.split('.');
-  const src = electronProp.src;
-
-  const pkg = (await resolvePromise(packageName, { basedir: path.dirname(src) }))[1];
-  debug(`Inferring target Electron version from ${packageName} in ${src}`);
+async function resolveElectronVersion(packageName: string, fromSrc: string) {
+  const pkgJsonPath = createRequire(fromSrc).resolve(`${packageName}/package.json`);
+  const pkg = JSON.parse(await promisifiedGracefulFs.readFile(pkgJsonPath, 'utf8'));
+  debug(`Inferring target Electron version from ${packageName} in ${fromSrc}`);
   return pkg.version;
-}
-
-async function handleMetadata(
-  opts: Options,
-  result: GetPackageInfoResult,
-): Promise<Partial<ProcessedOptions>> {
-  const processedValues: Partial<ProcessedOptions> = {};
-
-  if (typeof result.values.productName === 'string') {
-    debug(
-      `Inferring application name from ${result.source.productName.prop} in ${result.source.productName.src}`,
-    );
-    processedValues.name = result.values.productName;
-  }
-
-  if (typeof result.values.version === 'string') {
-    debug(`Inferring appVersion from version in ${result.source.version.src}`);
-    processedValues.appVersion = result.values.version;
-  }
-
-  if (result.values.author) {
-    const author = result.values.author as string | { name: string };
-    const win32metadata = opts.win32metadata || {};
-
-    debug(`Inferring win32metadata.CompanyName from author in ${result.source.author.src}`);
-    if (typeof author === 'string') {
-      win32metadata.CompanyName = parseAuthor(author).name;
-    } else if (author.name) {
-      win32metadata.CompanyName = author.name;
-    } else {
-      debug('Cannot infer win32metadata.CompanyName from author, no name found');
-    }
-    processedValues.win32metadata = win32metadata;
-  }
-
-  if (Object.prototype.hasOwnProperty.call(result.values, 'dependencies.electron')) {
-    processedValues.electronVersion = await getVersion(result.source['dependencies.electron']);
-  }
-
-  return processedValues;
-}
-
-function handleMissingProperties(
-  opts: Options,
-  err: GetPackageInfoError,
-): Promise<Partial<ProcessedOptions>> {
-  const missingProps = err.missingProps.map((prop) => {
-    return Array.isArray(prop) ? prop[0] : prop;
-  });
-
-  if (isMissingRequiredProperty(missingProps)) {
-    const messages = missingProps.map(errorMessageForProperty);
-
-    debug(err.message);
-    err.message = messages.join('\n') + '\n';
-    throw err;
-  } else {
-    // Missing props not required, can continue w/ partial result
-    return handleMetadata(opts, err.result);
-  }
 }
 
 export async function getMetadataFromPackageJSON(
@@ -131,46 +52,95 @@ export async function getMetadataFromPackageJSON(
   opts: Options,
   dir: string,
 ): Promise<Partial<ProcessedOptions>> {
-  const props: Array<string | string[]> = [];
+  const result: Partial<ProcessedOptions> = {};
 
-  if (!opts.name) {
-    props.push(['productName', 'name']);
-  }
+  let needName = !opts.name;
+  let needVersion = !opts.appVersion;
+  let needElectron = !opts.electronVersion;
+  let needAuthor = platforms.includes('win32') && !opts.win32metadata?.CompanyName;
 
-  if (!opts.appVersion) {
-    props.push('version');
-  }
-
-  if (!opts.electronVersion) {
-    props.push([
-      'dependencies.electron',
-      'devDependencies.electron',
-      'dependencies.electron-nightly',
-      'devDependencies.electron-nightly',
-    ]);
-  }
-
-  if (platforms.includes('win32') && !(opts.win32metadata && opts.win32metadata.CompanyName)) {
+  if (needAuthor) {
     debug('Requiring author in package.json, as CompanyName was not specified for win32metadata');
-    props.push('author');
   }
 
-  // Search package.json files to infer name and version from
-  try {
-    const packageInfo = await getPackageInfo(props, dir);
-    return handleMetadata(opts, packageInfo);
-  } catch (e) {
-    const err = e as GetPackageInfoError;
+  const initiallyNeeded = [
+    needName && 'productName',
+    needVersion && 'version',
+    needElectron && 'dependencies.electron',
+    needAuthor && 'author',
+  ].filter(Boolean) as string[];
 
-    if (err.missingProps) {
-      if (err.missingProps.length === props.length) {
-        debug(err.message);
-        err.message = `Could not locate a package.json file in "${path.resolve(opts.dir)}" or its parent directories for an Electron app with the following fields: ${err.missingProps.join(', ')}`;
-      } else {
-        return handleMissingProperties(opts, err);
+  if (!initiallyNeeded.length) return result;
+
+  for await (const { src, pkg } of walkPackageJSONs(dir)) {
+    if (needName) {
+      const name = pkg.productName ?? pkg.name;
+      if (name !== undefined) {
+        const field = pkg.productName !== undefined ? 'productName' : 'name';
+        debug(`Inferring application name from ${field} in ${src}`);
+        result.name = name;
+        needName = false;
       }
     }
 
-    throw err;
+    if (needVersion && pkg.version !== undefined) {
+      debug(`Inferring appVersion from version in ${src}`);
+      result.appVersion = pkg.version;
+      needVersion = false;
+    }
+
+    if (needAuthor && pkg.author !== undefined) {
+      debug(`Inferring win32metadata.CompanyName from author in ${src}`);
+      const win32metadata = opts.win32metadata || {};
+      if (typeof pkg.author === 'string') {
+        win32metadata.CompanyName = parseAuthor(pkg.author).name;
+      } else if (pkg.author.name) {
+        win32metadata.CompanyName = pkg.author.name;
+      } else {
+        debug('Cannot infer win32metadata.CompanyName from author, no name found');
+      }
+      result.win32metadata = win32metadata;
+      needAuthor = false;
+    }
+
+    if (needElectron) {
+      for (const packageName of ELECTRON_PACKAGES) {
+        if (
+          pkg.dependencies?.[packageName] !== undefined ||
+          pkg.devDependencies?.[packageName] !== undefined
+        ) {
+          result.electronVersion = await resolveElectronVersion(packageName, src);
+          needElectron = false;
+          break;
+        }
+      }
+    }
+
+    if (!needName && !needVersion && !needElectron && !needAuthor) break;
   }
+
+  const stillMissing = [
+    needName && 'productName',
+    needVersion && 'version',
+    needElectron && 'dependencies.electron',
+    needAuthor && 'author',
+  ].filter(Boolean) as string[];
+
+  if (stillMissing.length) {
+    if (stillMissing.length === initiallyNeeded.length) {
+      throw new Error(
+        `Could not locate a package.json file in "${path.resolve(opts.dir)}" or its parent directories for an Electron app with the following fields: ${initiallyNeeded.join(', ')}`,
+      );
+    }
+    if (needName || needElectron) {
+      const messages: string[] = [];
+      if (needName) messages.push(errorMessageForProperty('application name', 'name'));
+      if (needVersion) messages.push(errorMessageForProperty('application version', 'appversion'));
+      if (needElectron)
+        messages.push(errorMessageForProperty('Electron version', 'electronversion'));
+      throw new Error(messages.join('\n') + '\n');
+    }
+  }
+
+  return result;
 }
