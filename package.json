@@ -69,7 +69,6 @@
     "oxfmt": "^0.44.0",
     "oxlint": "^1.59.0",
     "oxlint-tsgolint": "^0.20.0",
-    "tsx": "^4.20.4",
     "typedoc": "~0.28.0",
     "typescript": "^6.0.2",
     "vitest": "^3.2.4"

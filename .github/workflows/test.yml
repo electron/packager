@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - '22.12.x'
+          - '22.22.x'
         os:
           - macos-latest
           - ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
           path: ~/.cache/electron
           key: v1-electron-cache-${{ matrix.os }}
       - name: Download Electron binaries
-        run: yarn tsx test/ci/download-electron.ts
+        run: node test/ci/download-electron.ts
       - name: Lint
         run: yarn run lint
       - name: Test
