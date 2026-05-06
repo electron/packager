@@ -10,9 +10,7 @@ describe('extractElectronZip', () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), 'electron-packager-test-'),
-    );
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-'));
 
     return async () => {
       await fs.promises.rm(tempDir, { recursive: true, force: true });

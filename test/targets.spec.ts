@@ -21,10 +21,7 @@ describe('allOfficialArchsForPlatformAndVersion', () => {
   });
 
   it('returns the correct arches for a known platform', () => {
-    const result = allOfficialArchsForPlatformAndVersion(
-      'darwin',
-      config.version,
-    );
+    const result = allOfficialArchsForPlatformAndVersion('darwin', config.version);
     expect(result.sort()).toEqual(['arm64', 'x64', 'universal'].sort());
   });
 
@@ -38,10 +35,7 @@ describe('allOfficialArchsForPlatformAndVersion', () => {
   it('returns linux/mips64el when the correct version is specified', () => {
     const result = allOfficialArchsForPlatformAndVersion('linux', '1.8.2');
     expect(result).toContain('mips64el');
-    const result2 = allOfficialArchsForPlatformAndVersion(
-      'linux',
-      '1.8.2-beta.4',
-    );
+    const result2 = allOfficialArchsForPlatformAndVersion('linux', '1.8.2-beta.4');
     expect(result2).not.toContain('mips64el');
   });
 
@@ -84,9 +78,7 @@ describe('validateListFromOptions', () => {
       },
     });
 
-    expect(validateListFromOptions({} as unknown as Options, 'arch')).toEqual([
-      'armv7l',
-    ]);
+    expect(validateListFromOptions({} as unknown as Options, 'arch')).toEqual(['armv7l']);
 
     vi.unstubAllGlobals();
   });
@@ -100,8 +92,7 @@ describe('createPlatformArchPairs', () => {
       expectedLength: process.platform === 'darwin' ? 12 : 10, // no universal on other platforms
     },
     {
-      testCase:
-        'available targets in a version without arm64 or mips64el support',
+      testCase: 'available targets in a version without arm64 or mips64el support',
       extraOpts: { all: true, electronVersion: '1.4.13' },
       expectedLength: 7,
     },
@@ -166,10 +157,7 @@ describe('createPlatformArchPairs', () => {
       ...extraOpts,
     } as Options;
 
-    const platforms = validateListFromOptions(
-      opts,
-      'platform',
-    ) as OfficialPlatform[];
+    const platforms = validateListFromOptions(opts, 'platform') as OfficialPlatform[];
     const archs = validateListFromOptions(opts, 'arch') as OfficialArch[];
     const result = createPlatformArchPairs(opts, platforms, archs);
 

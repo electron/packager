@@ -176,10 +176,7 @@ export class MacApp extends App implements Plists {
   helperRendererPlist: Plists['helperRendererPlist'];
   loginHelperPlist: Plists['loginHelperPlist'];
 
-  constructor(
-    opts: ProcessedOptionsWithSinglePlatformArch,
-    templatePath: string,
-  ) {
+  constructor(opts: ProcessedOptionsWithSinglePlatformArch, templatePath: string) {
     super(opts, templatePath);
 
     this.appName = opts.name as string;
@@ -227,9 +224,7 @@ export class MacApp extends App implements Plists {
   }
 
   get bundleName() {
-    return filterCFBundleIdentifier(
-      this.opts.appBundleId || this.defaultBundleName,
-    );
+    return filterCFBundleIdentifier(this.opts.appBundleId || this.defaultBundleName);
   }
 
   get originalResourcesDir() {
@@ -295,9 +290,7 @@ export class MacApp extends App implements Plists {
     suffix?: string,
     identifierIgnoresSuffix?: boolean,
   ) {
-    let helperSuffix: string,
-      identifier: typeof this.helperBundleIdentifier,
-      name: string;
+    let helperSuffix: string, identifier: typeof this.helperBundleIdentifier, name: string;
 
     if (suffix) {
       helperSuffix = `Helper ${suffix}`;
@@ -312,19 +305,12 @@ export class MacApp extends App implements Plists {
       identifier = this.helperBundleIdentifier;
       name = this.appName;
     }
-    return this.updatePlist(
-      helperPlist!,
-      `${this.appName} ${helperSuffix}`,
-      identifier,
-      name,
-    );
+    return this.updatePlist(helperPlist!, `${this.appName} ${helperSuffix}`, identifier, name);
   }
 
   async extendPlist(
     basePlist: BasePList,
-    propsOrFilename: ProcessedOptionsWithSinglePlatformArch[
-      | 'extendInfo'
-      | 'extendHelperInfo'],
+    propsOrFilename: ProcessedOptionsWithSinglePlatformArch['extendInfo' | 'extendHelperInfo'],
   ) {
     if (!propsOrFilename) {
       return Promise.resolve();
@@ -339,9 +325,7 @@ export class MacApp extends App implements Plists {
   }
 
   async loadPlist(filename: string, propName?: PlistNames) {
-    const loadedPlist = plist.parse(
-      (await promisifiedGracefulFs.readFile(filename)).toString(),
-    );
+    const loadedPlist = plist.parse((await promisifiedGracefulFs.readFile(filename)).toString());
     if (propName) {
       (this[propName] as unknown) = loadedPlist;
     }
@@ -365,14 +349,8 @@ export class MacApp extends App implements Plists {
     ] as LoadPlistParams[];
 
     const possiblePlists = [
-      [
-        this.ehPlistFilename('Electron Helper (Renderer).app'),
-        'helperRendererPlist',
-      ],
-      [
-        this.ehPlistFilename('Electron Helper (Plugin).app'),
-        'helperPluginPlist',
-      ],
+      [this.ehPlistFilename('Electron Helper (Renderer).app'), 'helperRendererPlist'],
+      [this.ehPlistFilename('Electron Helper (Plugin).app'), 'helperPluginPlist'],
       [this.ehPlistFilename('Electron Helper (GPU).app'), 'helperGPUPlist'],
       [this.ehPlistFilename('Electron Helper EH.app'), 'helperEHPlist'],
       [this.ehPlistFilename('Electron Helper NP.app'), 'helperNPPlist'],
@@ -380,15 +358,10 @@ export class MacApp extends App implements Plists {
     ];
 
     const optional = await Promise.all(
-      possiblePlists.map(async (item) =>
-        fs.existsSync(item[0]) ? item : null,
-      ),
+      possiblePlists.map(async (item) => (fs.existsSync(item[0]) ? item : null)),
     );
 
-    return [
-      ...plists,
-      ...(optional as LoadPlistParams[]).filter((item) => item),
-    ];
+    return [...plists, ...(optional as LoadPlistParams[]).filter((item) => item)];
   }
 
   appRelativePlatformPath(p: string) {
@@ -426,17 +399,11 @@ export class MacApp extends App implements Plists {
       ['helperNPPlist', 'NP'],
     ] as unknown as Array<[PlistNames, string, boolean?]>;
 
-    for (const [plistKey] of [
-      ...updateIfExists,
-      ['helperPlist'] as PlistNames[],
-    ]) {
+    for (const [plistKey] of [...updateIfExists, ['helperPlist'] as PlistNames[]]) {
       if (!this[plistKey]) {
         continue;
       }
-      await this.extendPlist(
-        this[plistKey] as BasePList,
-        this.opts.extendHelperInfo,
-      );
+      await this.extendPlist(this[plistKey] as BasePList, this.opts.extendHelperInfo);
     }
 
     this.helperPlist = this.updateHelperPlist(this.helperPlist);
@@ -444,10 +411,7 @@ export class MacApp extends App implements Plists {
       if (!this[plistKey]) {
         continue;
       }
-      (this[plistKey] as unknown) = this.updateHelperPlist(
-        this[plistKey],
-        ...suffixArgs,
-      );
+      (this[plistKey] as unknown) = this.updateHelperPlist(this[plistKey], ...suffixArgs);
     }
 
     // Some properties need to go on all helpers as well, version, usage info, etc.
@@ -466,9 +430,8 @@ export class MacApp extends App implements Plists {
     if (this.appVersion) {
       const appVersionString = '' + this.appVersion;
       for (const plistKey of plistsToUpdate) {
-        this[plistKey]!.CFBundleShortVersionString = this[
-          plistKey
-        ]!.CFBundleVersion = appVersionString;
+        this[plistKey]!.CFBundleShortVersionString = this[plistKey]!.CFBundleVersion =
+          appVersionString;
       }
     }
 
@@ -528,9 +491,7 @@ export class MacApp extends App implements Plists {
       ' Helper (Plugin)',
       ' Helper (GPU)',
     ];
-    await Promise.all(
-      helpers.map((suffix) => this.moveHelper(this.frameworksPath, suffix)),
-    );
+    await Promise.all(helpers.map((suffix) => this.moveHelper(this.frameworksPath, suffix)));
     if (fs.existsSync(this.loginItemsPath)) {
       await this.moveHelper(this.loginItemsPath, ' Login Helper');
     }
@@ -556,22 +517,9 @@ export class MacApp extends App implements Plists {
     newBasename: string,
   ) {
     const originalAppname = `${originalBasename}.app`;
-    const executableBasePath = path.join(
-      helperDirectory,
-      originalAppname,
-      'Contents',
-      'MacOS',
-    );
-    await this.relativeRename(
-      executableBasePath,
-      originalBasename,
-      newBasename,
-    );
-    await this.relativeRename(
-      helperDirectory,
-      originalAppname,
-      `${newBasename}.app`,
-    );
+    const executableBasePath = path.join(helperDirectory, originalAppname, 'Contents', 'MacOS');
+    await this.relativeRename(executableBasePath, originalBasename, newBasename);
+    await this.relativeRename(helperDirectory, originalAppname, `${newBasename}.app`);
   }
 
   async copyIconComposerIcon(appPlist: NonNullable<Plists['appPlist']>) {
@@ -587,9 +535,7 @@ export class MacApp extends App implements Plists {
       // Ignore error if icon doesn't exist, in case only the .icns format was provided
     }
     if (iconComposerIcon) {
-      debug(
-        `Generating asset catalog for icon composer "${iconComposerIcon}" file`,
-      );
+      debug(`Generating asset catalog for icon composer "${iconComposerIcon}" file`);
       const assetCatalog = await generateAssetCatalogForIcon(iconComposerIcon);
       appPlist.CFBundleIconName = 'Icon';
       await promisifiedGracefulFs.writeFile(
@@ -612,9 +558,7 @@ export class MacApp extends App implements Plists {
       // Ignore error if icon doesn't exist, in case it's only available for other OSes
     }
     if (icon) {
-      debug(
-        `Copying icon "${icon}" to app's Resources as "${this.appPlist!.CFBundleIconFile}"`,
-      );
+      debug(`Copying icon "${icon}" to app's Resources as "${this.appPlist!.CFBundleIconFile}"`);
       await fs.promises.cp(
         icon,
         path.join(this.originalResourcesDir, this.appPlist!.CFBundleIconFile),
@@ -727,18 +671,13 @@ export class MacApp extends App implements Plists {
         version,
         this.opts.quiet,
       );
-      debug(
-        `Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`,
-      );
+      debug(`Running @electron/osx-sign with the options ${JSON.stringify(signOpts)}`);
       try {
         await sign(signOpts);
       } catch (err) {
         // Although not signed successfully, the application is packed.
         if (signOpts.continueOnError) {
-          warning(
-            `Code sign failed; please retry manually. ${err}`,
-            this.opts.quiet,
-          );
+          warning(`Code sign failed; please retry manually. ${err}`, this.opts.quiet);
         } else {
           throw err;
         }
@@ -802,10 +741,7 @@ type CreateSignOptsResult = Mutable<
 >;
 
 export function createSignOpts(
-  properties: Exclude<
-    ProcessedOptionsWithSinglePlatformArch['osxSign'],
-    undefined
-  >,
+  properties: Exclude<ProcessedOptionsWithSinglePlatformArch['osxSign'], undefined>,
   platform: ProcessedOptionsWithSinglePlatformArch['platform'],
   app: string,
   version: ProcessedOptionsWithSinglePlatformArch['electronVersion'],

@@ -3,10 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import plist, { PlistObject } from 'plist';
 import { it as originalIt } from 'vitest';
-import type {
-  ProcessedOptionsWithSinglePlatformArch,
-  Options,
-} from '../src/types.js';
+import type { ProcessedOptionsWithSinglePlatformArch, Options } from '../src/types.js';
 import { isPlatformMac, sanitizeAppName } from '../src/common.js';
 import config from './config.json' with { type: 'json' };
 
@@ -23,12 +20,7 @@ export function generateNamePath(
   opts: Pick<ProcessedOptionsWithSinglePlatformArch, 'name' | 'platform'>,
 ) {
   if (isPlatformMac(opts.platform)) {
-    return path.join(
-      `${opts.name}.app`,
-      'Contents',
-      'Frameworks',
-      `${opts.name} Helper.app`,
-    );
+    return path.join(`${opts.name}.app`, 'Contents', 'Frameworks', `${opts.name} Helper.app`);
   }
 
   return opts.name + (opts.platform === 'win32' ? '.exe' : '');
@@ -38,12 +30,7 @@ export function parseInfoPlist(basePath: string): PlistObject {
   const parts = path.basename(basePath).split('-');
   const appName = parts.slice(0, parts.length - 2).join('-');
   const sanitizedAppName = sanitizeAppName(appName);
-  const plistPath = path.join(
-    basePath,
-    `${sanitizedAppName}.app`,
-    'Contents',
-    'Info.plist',
-  );
+  const plistPath = path.join(basePath, `${sanitizedAppName}.app`, 'Contents', 'Info.plist');
   return plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
 }
 
@@ -70,9 +57,7 @@ export function parseHelperInfoPlist(
 
 interface ItContext {
   baseOpts: Options &
-    Required<
-      Pick<Options, 'name' | 'dir' | 'electronVersion' | 'out' | 'tmpdir'>
-    >;
+    Required<Pick<Options, 'name' | 'dir' | 'electronVersion' | 'out' | 'tmpdir'>>;
 }
 
 /**

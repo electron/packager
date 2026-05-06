@@ -9,10 +9,7 @@ import {
 import { createDownloadOpts } from '../src/download.js';
 
 import { describe, it, expect, vi } from 'vitest';
-import {
-  ProcessedOptionsWithSinglePlatformArch,
-  Options,
-} from '../src/types.js';
+import { ProcessedOptionsWithSinglePlatformArch, Options } from '../src/types.js';
 import path from 'node:path';
 
 describe('logger', () => {
@@ -69,35 +66,19 @@ describe('generateFileBasename', () => {
 
 describe('validateElectronApp', () => {
   it('validates electron app with main field in package.json', async () => {
-    const fixture = path.join(
-      __dirname,
-      'fixtures',
-      'validate-success-with-main',
-    );
+    const fixture = path.join(__dirname, 'fixtures', 'validate-success-with-main');
 
-    await expect(
-      validateElectronApp('original-dir', fixture),
-    ).resolves.toBeUndefined();
+    await expect(validateElectronApp('original-dir', fixture)).resolves.toBeUndefined();
   });
 
   it('validates electron app without main field in package.json', async () => {
-    const fixture = path.join(
-      __dirname,
-      'fixtures',
-      'validate-success-without-main',
-    );
+    const fixture = path.join(__dirname, 'fixtures', 'validate-success-without-main');
 
-    await expect(
-      validateElectronApp('original-dir', fixture),
-    ).resolves.toBeUndefined();
+    await expect(validateElectronApp('original-dir', fixture)).resolves.toBeUndefined();
   });
 
   it('fails on an Electron app without package.json', async () => {
-    const fixture = path.join(
-      __dirname,
-      'fixtures',
-      'validate-failure-without-package-json',
-    );
+    const fixture = path.join(__dirname, 'fixtures', 'validate-failure-without-package-json');
 
     await expect(validateElectronApp('original-dir', fixture)).rejects.toThrow(
       `Application manifest was not found. Make sure "${path.join('original-dir', 'package.json')}" exists and does not get ignored by your ignore option`,
@@ -105,11 +86,7 @@ describe('validateElectronApp', () => {
   });
 
   it('fails on an Electron app with a package.json with a main field missing main entry point', async () => {
-    const fixture = path.join(
-      __dirname,
-      'fixtures',
-      'validate-failure-without-main-or-index',
-    );
+    const fixture = path.join(__dirname, 'fixtures', 'validate-failure-without-main-or-index');
 
     await expect(validateElectronApp('original-dir', fixture)).rejects.toThrow(
       `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'index.js')}" exists and does not get ignored by your ignore option`,
@@ -131,25 +108,19 @@ describe('validateElectronApp', () => {
 
 describe('createAsarOpts', () => {
   it('unpacks native node modules if true', () => {
-    expect(
-      createAsarOpts({ asar: true } as ProcessedOptionsWithSinglePlatformArch),
-    ).toEqual({
+    expect(createAsarOpts({ asar: true } as ProcessedOptionsWithSinglePlatformArch)).toEqual({
       unpack: '**/{.**,**}/**/*.node',
     });
   });
 
   it('returns true if asar is not set', () => {
-    expect(
-      createAsarOpts({} as ProcessedOptionsWithSinglePlatformArch),
-    ).toEqual({
+    expect(createAsarOpts({} as ProcessedOptionsWithSinglePlatformArch)).toEqual({
       unpack: '**/{.**,**}/**/*.node',
     });
   });
 
   it('returns false if asar is false', () => {
-    expect(
-      createAsarOpts({ asar: false } as ProcessedOptionsWithSinglePlatformArch),
-    ).toBe(false);
+    expect(createAsarOpts({ asar: false } as ProcessedOptionsWithSinglePlatformArch)).toBe(false);
   });
 
   it('sets asar options to the value if it is an object', () => {
