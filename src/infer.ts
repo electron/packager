@@ -1,4 +1,3 @@
-import parseAuthor from 'parse-author';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { promisifiedGracefulFs } from './util.js';
@@ -15,6 +14,43 @@ type PackageJSON = {
 };
 
 const ELECTRON_PACKAGES = ['electron', 'electron-nightly'] as const;
+
+// Inlined from parse-author / author-regex (MIT, Jon Schlinkert)
+function authorRegex() {
+  return /^\s*([^<(]*?)\s*([<(]([^>)]*?)[>)])?\s*([<(]([^>)]*?)[>)])*\s*$/;
+}
+
+export function parseAuthor(str: string) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected author to be a string');
+  }
+
+  if (!str || !/\w/.test(str)) {
+    return {};
+  }
+
+  const match = ([] as (string | undefined)[]).concat.apply([], authorRegex().exec(str) || []);
+  const author: { name?: string; email?: string; url?: string } = {};
+
+  if (match[1]) {
+    author.name = match[1];
+  }
+
+  for (let i = 2; i < match.length; i++) {
+    const val = match[i];
+
+    if (i % 2 === 0 && val && match[i + 1]) {
+      if (val.charAt(0) === '<') {
+        author.email = match[i + 1];
+        i++;
+      } else if (val.charAt(0) === '(') {
+        author.url = match[i + 1];
+        i++;
+      }
+    }
+  }
+  return author;
+}
 
 async function* walkPackageJSONs(dir: string): AsyncGenerator<{ src: string; pkg: PackageJSON }> {
   let prev: string | undefined;
