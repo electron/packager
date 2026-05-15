@@ -483,10 +483,7 @@ export class MacApp extends App implements Plists {
   static INTEGRITY_DIGEST_SENTINEL = 'AGbevlPCksUGKNL8TSn7wGmJEuJsXb2A';
 
   async setIntegrityDigest() {
-    if (
-      !this.opts.electronVersion ||
-      !semver.valid(this.opts.electronVersion)
-    ) {
+    if (!this.opts.electronVersion || !semver.valid(this.opts.electronVersion)) {
       debug(
         `Cannot determine Electron version (got "${this.opts.electronVersion}"), skipping integrity digest`,
       );

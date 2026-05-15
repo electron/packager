@@ -1254,9 +1254,7 @@ describe('packager', () => {
         expect(storedDigest).toEqual(expectedDigest);
       });
 
-      it('does not write digest when asar is disabled', async ({
-        baseOpts,
-      }) => {
+      it('does not write digest when asar is disabled', async ({ baseOpts }) => {
         const opts = {
           ...baseOpts,
           asar: false,
@@ -1341,10 +1339,7 @@ describe('packager', () => {
         const updatedBase = updatedBinary.indexOf(sentinel) + sentinel.length;
         expect(updatedBinary.readUInt8(updatedBase)).toBe(1); // used = true
         expect(updatedBinary.readUInt8(updatedBase + 1)).toBe(1); // version = 1
-        const storedDigest = updatedBinary.subarray(
-          updatedBase + 2,
-          updatedBase + 2 + 32,
-        );
+        const storedDigest = updatedBinary.subarray(updatedBase + 2, updatedBase + 2 + 32);
         expect(storedDigest).toEqual(expectedDigest);
       });
     });
