@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - '22.12.x'
+          - '22.22.x'
         os:
           - macos-latest
           - ubuntu-latest
@@ -24,8 +24,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: '${{ matrix.node-version }}'
           cache: 'yarn'
@@ -36,12 +38,12 @@ jobs:
       - name: Build
         run: yarn build
       - name: Electron Cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/electron
           key: v1-electron-cache-${{ matrix.os }}
       - name: Download Electron binaries
-        run: npx tsx test/ci/download-electron.ts
+        run: node test/ci/download-electron.ts
       - name: Lint
         run: yarn run lint
       - name: Test
@@ -49,3 +51,17 @@ jobs:
           yarn run test
       - name: Build Docs
         run: yarn run build:docs
+  gha-done:
+    name: GitHub Actions Completed
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+    needs: test
+    if: always()
+    steps:
+    - name: Fail if any needed job failed or was cancelled
+      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+      run: exit 1
+    - name: GitHub Actions Jobs Done
+      run: |
+        echo "All GitHub Actions Jobs are done"

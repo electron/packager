@@ -30,7 +30,6 @@ feature. Known modules include:
 * `electron-notarize*`
 * `electron-osx-sign`
 * `electron-packager` (always use this one before filing an issue)
-* `get-package-info`
 
 We use the [`debug`](https://www.npmjs.com/package/debug#usage) module for this functionality. It
 has examples on how to set environment variables if you don't know how.

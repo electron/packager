@@ -7,17 +7,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  ProcessedOptionsWithSinglePlatformArch,
-  Options,
-} from '../src/types.js';
+import { ProcessedOptionsWithSinglePlatformArch, Options } from '../src/types.js';
 
 describe('populateIgnoredPaths', () => {
   let tempDir: string;
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), 'electron-packager-test-'),
-    );
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-'));
   });
 
   it('ignores the generated temporary directory only on Linux', () => {
@@ -55,9 +50,7 @@ describe('populateIgnoredPaths', () => {
     expect(fs.existsSync(path.join(targetDir, 'node_gyp_bins'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'ignore.o'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'ignore.obj'))).toBe(false);
-    expect(fs.existsSync(path.join(targetDir, 'package-lock.json'))).toBe(
-      false,
-    );
+    expect(fs.existsSync(path.join(targetDir, 'package-lock.json'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'pnpm-lock.yaml'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'yarn.lock'))).toBe(false);
     expect(fs.existsSync(path.join(targetDir, 'Thumbs.db'))).toBe(false);
@@ -70,9 +63,7 @@ describe('populateIgnoredPaths', () => {
 describe('userPathFilter', () => {
   let tempDir: string;
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), 'electron-packager-test-'),
-    );
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'electron-packager-test-'));
   });
   it.each([
     ['string', 'ignorethis'],
@@ -95,9 +86,7 @@ describe('userPathFilter', () => {
     });
 
     expect(fs.existsSync(path.join(targetDir, 'ignorethis.txt'))).toBe(false);
-    expect(fs.existsSync(path.join(targetDir, 'ignore', 'this.txt'))).toBe(
-      true,
-    );
+    expect(fs.existsSync(path.join(targetDir, 'ignore', 'this.txt'))).toBe(true);
   });
 
   it('parses slashes in the ignore pattern', async () => {
@@ -116,9 +105,7 @@ describe('userPathFilter', () => {
     });
 
     expect(fs.existsSync(path.join(targetDir, 'ignorethis.txt'))).toBe(true);
-    expect(fs.existsSync(path.join(targetDir, 'ignore', 'this.txt'))).toBe(
-      false,
-    );
+    expect(fs.existsSync(path.join(targetDir, 'ignore', 'this.txt'))).toBe(false);
   });
 
   it('only ignores files within the app directory', async () => {
@@ -160,9 +147,7 @@ describe('userPathFilter', () => {
       recursive: true,
     });
 
-    expect(fs.existsSync(path.join(targetDir, 'subfolder', 'Thumbs.db'))).toBe(
-      !junk,
-    );
+    expect(fs.existsSync(path.join(targetDir, 'subfolder', 'Thumbs.db'))).toBe(!junk);
   });
 });
 
@@ -171,9 +156,7 @@ describe('generateIgnoredOutDirs', () => {
     const ignores = generateIgnoredOutDirs({
       name: 'test',
     } as ProcessedOptionsWithSinglePlatformArch);
-    const relativeIgnores = ignores.map((ignore) =>
-      path.relative(process.cwd(), ignore),
-    );
+    const relativeIgnores = ignores.map((ignore) => path.relative(process.cwd(), ignore));
     expect(relativeIgnores).toMatchSnapshot();
   });
 });

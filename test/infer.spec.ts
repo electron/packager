@@ -2,11 +2,51 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
-import { getMetadataFromPackageJSON } from '../src/infer.js';
+import { getMetadataFromPackageJSON, parseAuthor } from '../src/infer.js';
 import { Options } from '../src/types.js';
 import semver from 'semver';
 import config from './config.json' with { type: 'json' };
 import { beforeEach, describe, it, expect } from 'vitest';
+
+describe('parseAuthor', () => {
+  it('parses name only', () => {
+    expect(parseAuthor('Foo Bar')).toEqual({ name: 'Foo Bar' });
+  });
+
+  it('parses name and email', () => {
+    expect(parseAuthor('Foo Bar <foo.bar@example.com>')).toEqual({
+      name: 'Foo Bar',
+      email: 'foo.bar@example.com',
+    });
+  });
+
+  it('parses name, email, and url', () => {
+    expect(parseAuthor('Foo Bar <foo.bar@example.com> (https://example.com)')).toEqual({
+      name: 'Foo Bar',
+      email: 'foo.bar@example.com',
+      url: 'https://example.com',
+    });
+  });
+
+  it('parses email and url without a name', () => {
+    expect(parseAuthor('<foo.bar@example.com> (https://example.com)')).toEqual({
+      email: 'foo.bar@example.com',
+      url: 'https://example.com',
+    });
+  });
+
+  it('returns an empty object for an empty string', () => {
+    expect(parseAuthor('')).toEqual({});
+  });
+
+  it('returns an empty object for whitespace-only input', () => {
+    expect(parseAuthor('   ')).toEqual({});
+  });
+
+  it('throws if input is not a string', () => {
+    expect(() => parseAuthor(123 as unknown as string)).toThrow(TypeError);
+  });
+});
 
 describe('getMetadataFromPackageJSON', () => {
   it.each([
@@ -17,16 +57,11 @@ describe('getMetadataFromPackageJSON', () => {
     const opts: Options = {
       dir,
     };
-    const packageJSON = await import(
-      url.pathToFileURL(path.join(dir, 'package.json')).toString()
-    );
+    const packageJSON = await import(url.pathToFileURL(path.join(dir, 'package.json')).toString());
     const result = await getMetadataFromPackageJSON([], opts, opts.dir);
     expect(result.electronVersion).toBeDefined();
     expect(
-      semver.satisfies(
-        result.electronVersion!,
-        packageJSON.devDependencies[packageName],
-      ),
+      semver.satisfies(result.electronVersion!, packageJSON.devDependencies[packageName]),
     ).toBe(true);
   });
 
@@ -34,14 +69,10 @@ describe('getMetadataFromPackageJSON', () => {
     let tempDir: string;
 
     beforeEach(async () => {
-      tempDir = await fs.promises.mkdtemp(
-        path.join(os.tmpdir(), 'infer-test-'),
-      );
-      await fs.promises.cp(
-        path.join(__dirname, 'fixtures', 'infer-win32metadata'),
-        tempDir,
-        { recursive: true },
-      );
+      tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'infer-test-'));
+      await fs.promises.cp(path.join(__dirname, 'fixtures', 'infer-win32metadata'), tempDir, {
+        recursive: true,
+      });
 
       return async () => {
         await fs.promises.rm(tempDir, { recursive: true, force: true });
@@ -53,11 +84,7 @@ describe('getMetadataFromPackageJSON', () => {
         electronVersion: config.version,
         dir: tempDir,
       };
-      const result = await getMetadataFromPackageJSON(
-        ['win32'],
-        opts,
-        opts.dir,
-      );
+      const result = await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
       expect(result.win32metadata).toEqual({ CompanyName: 'Foo Bar' });
     });
 
@@ -69,11 +96,7 @@ describe('getMetadataFromPackageJSON', () => {
           CompanyName: 'Existing',
         },
       };
-      const result = await getMetadataFromPackageJSON(
-        ['win32'],
-        opts,
-        opts.dir,
-      );
+      const result = await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
       expect(result.win32metadata).toBeUndefined();
       expect(opts.win32metadata).toEqual({ CompanyName: 'Existing' });
     });
@@ -98,11 +121,7 @@ describe('getMetadataFromPackageJSON', () => {
         electronVersion: config.version,
       };
 
-      const result = await getMetadataFromPackageJSON(
-        ['win32'],
-        opts,
-        opts.dir,
-      );
+      const result = await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
       expect(result.win32metadata).toEqual({ CompanyName: 'Jane Doe' });
     });
 
@@ -125,11 +144,7 @@ describe('getMetadataFromPackageJSON', () => {
         electronVersion: config.version,
       };
 
-      const result = await getMetadataFromPackageJSON(
-        ['win32'],
-        opts,
-        opts.dir,
-      );
+      const result = await getMetadataFromPackageJSON(['win32'], opts, opts.dir);
       expect(result.win32metadata).toEqual({});
     });
 
@@ -147,18 +162,14 @@ describe('getMetadataFromPackageJSON', () => {
         dir: tempDir,
         appVersion: '1.0.0',
       };
-      await expect(
-        getMetadataFromPackageJSON(['win32'], opts, opts.dir),
-      ).rejects.toThrow(Error);
+      await expect(getMetadataFromPackageJSON(['win32'], opts, opts.dir)).rejects.toThrow(Error);
     });
   });
 
   describe('failure cases', () => {
     let tempDir: string;
     beforeEach(async () => {
-      tempDir = await fs.promises.mkdtemp(
-        path.join(os.tmpdir(), 'infer-test-'),
-      );
+      tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'infer-test-'));
 
       return async () => {
         await fs.promises.rm(tempDir, { recursive: true, force: true });
@@ -179,9 +190,7 @@ describe('getMetadataFromPackageJSON', () => {
         dir: tempDir,
         name: 'MainJS',
       };
-      await expect(
-        getMetadataFromPackageJSON([], opts, opts.dir),
-      ).rejects.toThrow(Error);
+      await expect(getMetadataFromPackageJSON([], opts, opts.dir)).rejects.toThrow(Error);
     });
   });
 });

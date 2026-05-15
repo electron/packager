@@ -5,9 +5,13 @@ on:
     - cron: "15 8 * * *"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       matrix:
         os: [windows-latest, macOS-latest, ubuntu-latest]
@@ -18,8 +22,9 @@ jobs:
           repository: electron/minimal-repro
           ref: refs/heads/main
           path: minimal-repro
+          persist-credentials: false
       - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # tag: v6.2.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # tag: v6.4.0
         with:
           # electron/minimal-repro doesn't have a .nvmrc file
           node-version: lts/*
@@ -37,9 +42,11 @@ jobs:
           npm install --save-dev @electron/packager@latest
         shell: bash
       - name: Package
+        env:
+          MATRIX_OS: ${{ matrix.os }}
         run: |
           cd minimal-repro
-          if [ "${{ matrix.os }}" == "macOS-latest" ]; then
+          if [ "$MATRIX_OS" == "macOS-latest" ]; then
             node_modules/.bin/electron-packager . --arch=universal
           else
             node_modules/.bin/electron-packager . --arch=all

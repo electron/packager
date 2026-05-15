@@ -21,18 +21,14 @@ import crypto from 'node:crypto';
 import type { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 
 export class App {
-  asarIntegrity:
-    | Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>>
-    | undefined = undefined;
+  asarIntegrity: Record<string, Pick<FileRecord['integrity'], 'algorithm' | 'hash'>> | undefined =
+    undefined;
   asarOptions: ReturnType<typeof createAsarOpts>;
   cachedStagingPath: string | undefined = undefined;
   opts: ProcessedOptionsWithSinglePlatformArch;
   templatePath: string;
 
-  constructor(
-    opts: ProcessedOptionsWithSinglePlatformArch,
-    templatePath: string,
-  ) {
+  constructor(opts: ProcessedOptionsWithSinglePlatformArch, templatePath: string) {
     this.opts = opts;
     this.templatePath = templatePath;
     this.asarOptions = createAsarOpts(opts);
@@ -117,10 +113,7 @@ export class App {
 
   async relativeRename(basePath: string, oldName: string, newName: string) {
     debug(`Renaming ${oldName} to ${newName} in ${basePath}`);
-    await fs.promises.rename(
-      path.join(basePath, oldName),
-      path.join(basePath, newName),
-    );
+    await fs.promises.rename(path.join(basePath, oldName), path.join(basePath, newName));
   }
 
   async renameElectron() {
@@ -147,9 +140,7 @@ export class App {
    * this.originalResourcesAppDir is predictable (e.g. before .app is renamed for Mac)
    */
   async initialize() {
-    debug(
-      `Initializing app in ${this.stagingPath} from ${this.templatePath} template`,
-    );
+    debug(`Initializing app in ${this.stagingPath} from ${this.templatePath} template`);
 
     try {
       await fs.promises.rm(this.stagingPath, { recursive: true, force: true });
@@ -174,18 +165,13 @@ export class App {
     if (this.opts.prebuiltAsar) {
       await this.copyPrebuiltAsar();
       this.asarIntegrity = {
-        [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(
-          this.appAsarPath,
-        ),
+        [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
       };
     } else {
       await this.buildApp();
     }
 
-    await runHooks(
-      this.opts.afterInitialize,
-      this.hookArgsWithOriginalResourcesAppDir,
-    );
+    await runHooks(this.opts.afterInitialize, this.hookArgsWithOriginalResourcesAppDir);
   }
 
   async buildApp() {
@@ -195,28 +181,16 @@ export class App {
   }
 
   async copyTemplate() {
-    await runHooks(
-      this.opts.beforeCopy,
-      this.hookArgsWithOriginalResourcesAppDir,
-    );
+    await runHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
     await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, {
       recursive: true,
       filter: userPathFilter(this.opts),
-      dereference:
-        typeof this.opts.derefSymlinks === 'boolean'
-          ? this.opts.derefSymlinks
-          : true,
+      dereference: typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true,
     });
-    await runHooks(
-      this.opts.afterCopy,
-      this.hookArgsWithOriginalResourcesAppDir,
-    );
+    await runHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
     if (this.opts.prune) {
-      await runHooks(
-        this.opts.afterPrune,
-        this.hookArgsWithOriginalResourcesAppDir,
-      );
+      await runHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
     }
   }
 
@@ -242,9 +216,7 @@ export class App {
       throw new Error('No filename specified to normalizeIconExtension');
     }
 
-    const iconFilenames = Array.isArray(this.opts.icon)
-      ? this.opts.icon
-      : [this.opts.icon];
+    const iconFilenames = Array.isArray(this.opts.icon) ? this.opts.icon : [this.opts.icon];
     for (let iconFilename of iconFilenames) {
       const ext = path.extname(iconFilename);
       if (ext !== targetExt) {
@@ -280,10 +252,7 @@ export class App {
 
   async copyPrebuiltAsar() {
     if (this.asarOptions) {
-      warning(
-        'prebuiltAsar has been specified, all asar options will be ignored',
-        this.opts.quiet,
-      );
+      warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet);
     }
 
     for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune'] as const) {
@@ -301,10 +270,7 @@ export class App {
       ).originalIgnore,
     );
     this.prebuiltAsarWarning('prune', !this.opts.prune);
-    this.prebuiltAsarWarning(
-      'derefSymlinks',
-      this.opts.derefSymlinks !== undefined,
-    );
+    this.prebuiltAsarWarning('derefSymlinks', this.opts.derefSymlinks !== undefined);
 
     const src = path.resolve(this.opts.prebuiltAsar!);
 
@@ -335,35 +301,21 @@ export class App {
 
     debug(`Running asar with the options ${JSON.stringify(this.asarOptions)}`);
 
-    await runHooks(
-      this.opts.beforeAsar,
-      this.hookArgsWithOriginalResourcesAppDir,
-    );
+    await runHooks(this.opts.beforeAsar, this.hookArgsWithOriginalResourcesAppDir);
 
-    await createASARWithOptions(
-      this.originalResourcesAppDir,
-      this.appAsarPath,
-      this.asarOptions,
-    );
+    await createASARWithOptions(this.originalResourcesAppDir, this.appAsarPath, this.asarOptions);
     this.asarIntegrity = {
-      [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(
-        this.appAsarPath,
-      ),
+      [this.appRelativePlatformPath(this.appAsarPath)]: this.getAsarIntegrity(this.appAsarPath),
     };
     await fs.promises.rm(this.originalResourcesAppDir, {
       recursive: true,
       force: true,
     });
 
-    await runHooks(
-      this.opts.afterAsar,
-      this.hookArgsWithOriginalResourcesAppDir,
-    );
+    await runHooks(this.opts.afterAsar, this.hookArgsWithOriginalResourcesAppDir);
   }
 
-  getAsarIntegrity(
-    path: string,
-  ): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
+  getAsarIntegrity(path: string): Pick<FileRecord['integrity'], 'algorithm' | 'hash'> {
     const { headerString } = getRawHeader(path);
     return {
       algorithm: 'SHA256',
@@ -389,11 +341,7 @@ export class App {
       extraResources.map((resource) =>
         fs.promises.cp(
           resource,
-          path.resolve(
-            this.stagingPath,
-            this.resourcesDir,
-            path.basename(resource),
-          ),
+          path.resolve(this.stagingPath, this.resourcesDir, path.basename(resource)),
           { recursive: true },
         ),
       ),

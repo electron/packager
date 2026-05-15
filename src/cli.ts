@@ -9,9 +9,7 @@ import { Options } from './types.js';
 /* istanbul ignore next */
 async function printUsageAndExit(isError: boolean) {
   const usage = (
-    await promisifiedGracefulFs.readFile(
-      path.resolve(import.meta.dirname, '..', 'usage.txt'),
-    )
+    await promisifiedGracefulFs.readFile(path.resolve(import.meta.dirname, '..', 'usage.txt'))
   ).toString();
   const print = isError ? console.error : console.log;
   print(usage);
@@ -20,15 +18,7 @@ async function printUsageAndExit(isError: boolean) {
 
 export function parseArgs(argv: string[]) {
   const args = yargs(argv, {
-    boolean: [
-      'all',
-      'deref-symlinks',
-      'junk',
-      'overwrite',
-      'prune',
-      'quiet',
-      'tmpdir',
-    ],
+    boolean: ['all', 'deref-symlinks', 'junk', 'overwrite', 'prune', 'quiet', 'tmpdir'],
     default: {
       asar: true,
       junk: true,
@@ -44,21 +34,14 @@ export function parseArgs(argv: string[]) {
   const protocolSchemes = [].concat(args.protocol || []);
   const protocolNames = [].concat(args.protocolName || []);
 
-  if (
-    protocolSchemes &&
-    protocolNames &&
-    protocolNames.length === protocolSchemes.length
-  ) {
+  if (protocolSchemes && protocolNames && protocolNames.length === protocolSchemes.length) {
     args.protocols = protocolSchemes.map(function (scheme, i) {
       return { schemes: [scheme], name: protocolNames[i] };
     });
   }
 
   if (args.out === '') {
-    warning(
-      'Specifying --out= without a value is the same as the default value',
-      args.quiet,
-    );
+    warning('Specifying --out= without a value is the same as the default value', args.quiet);
     args.out = null;
   }
 
@@ -113,10 +96,7 @@ export function parseArgs(argv: string[]) {
 
   if (args.osxNotarize) {
     let notarize = true;
-    if (
-      typeof args.osxNotarize !== 'object' ||
-      Array.isArray(args.osxNotarize)
-    ) {
+    if (typeof args.osxNotarize !== 'object' || Array.isArray(args.osxNotarize)) {
       warning(
         '--osx-notarize does not take any arguments, it only has sub-properties (see --help)',
         args.quiet,

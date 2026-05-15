@@ -19,12 +19,7 @@ export const officialArchs: OfficialArch[] = [
   'universal',
 ] as const;
 
-export const officialPlatforms: OfficialPlatform[] = [
-  'darwin',
-  'linux',
-  'mas',
-  'win32',
-] as const;
+export const officialPlatforms: OfficialPlatform[] = ['darwin', 'linux', 'mas', 'win32'] as const;
 
 export const officialPlatformArchCombos = {
   darwin: ['x64', 'arm64', 'universal'],
@@ -123,26 +118,16 @@ function unsupportedListOption(
 }
 
 function usingOfficialElectronPackages(opts: Options) {
+  return !opts.download || !Object.prototype.hasOwnProperty.call(opts.download, 'mirrorOptions');
+}
+
+function validOfficialPlatformArch(platform: SupportedPlatform, arch: SupportedArch) {
   return (
-    !opts.download ||
-    !Object.prototype.hasOwnProperty.call(opts.download, 'mirrorOptions')
+    officialPlatformArchCombos[platform] && officialPlatformArchCombos[platform].includes(arch)
   );
 }
 
-function validOfficialPlatformArch(
-  platform: SupportedPlatform,
-  arch: SupportedArch,
-) {
-  return (
-    officialPlatformArchCombos[platform] &&
-    officialPlatformArchCombos[platform].includes(arch)
-  );
-}
-
-function officialBuildExists(
-  opts: Pick<Options, 'electronVersion'>,
-  buildVersion: string,
-) {
+function officialBuildExists(opts: Pick<Options, 'electronVersion'>, buildVersion: string) {
   return semver.satisfies(opts.electronVersion!, buildVersion, {
     includePrerelease: true,
   });
@@ -165,14 +150,9 @@ export function allOfficialArchsForPlatformAndVersion(
   const archs = officialPlatformArchCombos[platform];
 
   if (buildVersions[platform]) {
-    const excludedArchs = (
-      Object.keys(buildVersions[platform]) as SupportedArch[]
-    ).filter(
+    const excludedArchs = (Object.keys(buildVersions[platform]) as SupportedArch[]).filter(
       (arch) =>
-        !officialBuildExists(
-          { electronVersion: electronVersion },
-          buildVersions[platform][arch],
-        ),
+        !officialBuildExists({ electronVersion: electronVersion }, buildVersions[platform][arch]),
     );
     return archs.filter((arch) => !excludedArchs.includes(arch));
   }
@@ -184,10 +164,7 @@ export function allOfficialArchsForPlatformAndVersion(
  * Validates list of architectures or platforms.
  * @returns A normalized array if successful, or throws an Error.
  */
-export function validateListFromOptions(
-  opts: Options,
-  name: keyof typeof supported,
-) {
+export function validateListFromOptions(opts: Options, name: keyof typeof supported) {
   const set = supported[name] as Set<string>;
   if (opts.all) {
     return Array.from(set.values());

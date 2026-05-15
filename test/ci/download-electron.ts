@@ -1,14 +1,14 @@
-import { isPlatformMac } from '../../src/common.js';
+import { isPlatformMac } from '../../dist/common.js';
 import {
   createDownloadCombos,
   downloadElectronZip as packagerDownloadElectronZip,
-} from '../../src/download.js';
+} from '../../dist/download.js';
 import { downloadArtifact } from '@electron/get';
 import os from 'node:os';
 import path from 'node:path';
 import config from '../config.json' with { type: 'json' };
-import { Options } from '../../src/types.js';
-import { officialArchs, officialPlatforms } from '../../src/targets.js';
+import type { Options } from '../../src/types.js';
+import { officialArchs, officialPlatforms } from '../../dist/targets.js';
 
 /**
  * Skip testing darwin/mas target on Windows since Electron Packager itself skips it
@@ -30,9 +30,7 @@ async function downloadAll(version: string) {
   await downloadElectronChecksum(version);
   return Promise.all([
     ...combinations.map((combination) =>
-      combination.arch === 'universal'
-        ? null
-        : downloadElectronZip(version, combination),
+      combination.arch === 'universal' ? null : downloadElectronZip(version, combination),
     ),
     downloadElectronZip('6.0.0', {
       platform: 'darwin',

@@ -1,5 +1,4 @@
 import { WindowsApp } from '../src/win32.js';
-import _ from 'lodash';
 import { describe, it, expect } from 'vitest';
 
 describe('resedit', () => {
@@ -71,25 +70,22 @@ describe('resedit', () => {
         'win32Metadata.application-manifest': '/path/to/manifest.xml',
       },
     },
-  ])(
-    'sets the right version string for $testOpts',
-    async ({ testOpts, expectedValues }) => {
-      const opts = {
-        name: 'Win32 App',
-        arch: 'x64',
-        platform: 'win32',
-        dir: '',
-        electronVersion: '1.0.0',
-        ignore: () => false,
-        appVersion: '1.0.0',
-        ...testOpts,
-      } as const;
-      const app = new WindowsApp(opts, '');
-      const rcOpts = app.generateReseditOptionsSansIcon();
+  ])('sets the right version string for $testOpts', async ({ testOpts, expectedValues }) => {
+    const opts = {
+      name: 'Win32 App',
+      arch: 'x64',
+      platform: 'win32',
+      dir: '',
+      electronVersion: '1.0.0',
+      ignore: () => false,
+      appVersion: '1.0.0',
+      ...testOpts,
+    } as const;
+    const app = new WindowsApp(opts, '');
+    const rcOpts = app.generateReseditOptionsSansIcon();
 
-      for (const [key, value] of Object.entries(expectedValues)) {
-        expect(_.get(rcOpts, key)).toBe(value);
-      }
-    },
-  );
+    for (const [key, value] of Object.entries(expectedValues)) {
+      expect(rcOpts).toHaveProperty(key, value);
+    }
+  });
 });

@@ -17,8 +17,7 @@ export class Pruner {
     this.quiet = quiet;
     this.galactus = new DestroyerOfModules({
       rootDirectory: dir,
-      shouldKeepModuleTest: (module, isDevDep) =>
-        this.shouldKeepModule(module, isDevDep),
+      shouldKeepModuleTest: (module, isDevDep) => this.shouldKeepModule(module, isDevDep),
     });
   }
 
@@ -48,10 +47,7 @@ export class Pruner {
     }
 
     if (ELECTRON_MODULES.includes(module.name)) {
-      warning(
-        `Found '${module.name}' but not as a devDependency, pruning anyway`,
-        this.quiet,
-      );
+      warning(`Found '${module.name}' but not as a devDependency, pruning anyway`, this.quiet);
       return false;
     }
 
@@ -67,14 +63,10 @@ function isNodeModuleFolder(pathToCheck: string) {
   return (
     path.basename(path.dirname(pathToCheck)) === 'node_modules' ||
     (path.basename(path.dirname(pathToCheck)).startsWith('@') &&
-      path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) ===
-        'node_modules')
+      path.basename(path.resolve(pathToCheck, `..${path.sep}..`)) === 'node_modules')
   );
 }
 
 export async function isModule(pathToCheck: string) {
-  return (
-    fs.existsSync(path.join(pathToCheck, 'package.json')) &&
-    isNodeModuleFolder(pathToCheck)
-  );
+  return fs.existsSync(path.join(pathToCheck, 'package.json')) && isNodeModuleFolder(pathToCheck);
 }
