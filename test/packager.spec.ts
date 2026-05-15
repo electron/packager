@@ -1342,9 +1342,7 @@ describe('packager', () => {
         expect(storedDigest).toEqual(expectedDigest);
       });
 
-      it('finds a sentinel that straddles a 4 MB chunk boundary', async ({
-        baseOpts,
-      }) => {
+      it('finds a sentinel that straddles a 4 MB chunk boundary', async ({ baseOpts }) => {
         // The chunked scanner overreads sentinel.length-1 bytes into the next
         // chunk so a sentinel split across a boundary is still detected. This
         // is the one correctness invariant that makes chunking safe, and the
@@ -1392,14 +1390,10 @@ describe('packager', () => {
         expectedHash.update('Resources/app.asar');
         expectedHash.update('SHA256');
         expectedHash.update('a'.repeat(64));
-        expect(result.subarray(base + 2, base + 34)).toEqual(
-          expectedHash.digest(),
-        );
+        expect(result.subarray(base + 2, base + 34)).toEqual(expectedHash.digest());
       });
 
-      it('writes digest to every sentinel in a multi-slice binary', async ({
-        baseOpts,
-      }) => {
+      it('writes digest to every sentinel in a multi-slice binary', async ({ baseOpts }) => {
         // Universal macOS binaries contain one sentinel per arch slice. Place
         // each in a different 4 MB chunk so concurrent workers discover them
         // independently and positions.sort() + the multi-write loop are both
