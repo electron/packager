@@ -83,6 +83,7 @@ export async function packageUniversalMac(
     force: false,
   });
 
+  await app.setIntegrityDigest();
   await app.signAppIfSpecified();
   await app.notarizeAppIfSpecified();
   await app.move();
