@@ -34,6 +34,102 @@ function isAsarIntegrity(value: unknown): value is AsarIntegrity {
   );
 }
 
+/**
+ * Scans `frameworkPath` for integrity digest sentinels and patches the 34-byte
+ * slot after each with {used=1, version=1, digest}. Reads in 4 MB chunks with
+ * two workers so Buffer.indexOf overlaps with disk I/O, and writes positionally
+ * so only the changed bytes hit disk. Chunks overread by (sentinel.length - 1)
+ * bytes so a sentinel straddling a boundary is still detected.
+ * @see https://github.com/electron/fuses/pull/96
+ */
+async function writeIntegrityDigest(
+  frameworkPath: string,
+  sentinel: Buffer,
+  digest: Buffer,
+  quiet: boolean | undefined,
+): Promise<void> {
+  const PAYLOAD_LEN = 34; // used(1) + version(1) + SHA256(32)
+  const SCAN_CHUNK_SIZE = 4 * 1024 * 1024;
+  const SCAN_CONCURRENCY = 2;
+  const overlap = sentinel.length - 1;
+
+  const handle = await fs.promises.open(frameworkPath, 'r+');
+  try {
+    const { size } = await handle.stat();
+    const numChunks = Math.ceil(size / SCAN_CHUNK_SIZE);
+    const positions: number[] = [];
+
+    let next = 0;
+    const worker = async () => {
+      const buf = Buffer.allocUnsafe(SCAN_CHUNK_SIZE + overlap);
+      for (let chunk = next++; chunk < numChunks; chunk = next++) {
+        const start = chunk * SCAN_CHUNK_SIZE;
+        const len = Math.min(SCAN_CHUNK_SIZE + overlap, size - start);
+        const { bytesRead } = await handle.read(buf, 0, len, start);
+        const haystack = buf.subarray(0, bytesRead);
+
+        let idx = haystack.indexOf(sentinel);
+        while (idx !== -1) {
+          positions.push(start + idx);
+          idx = haystack.indexOf(sentinel, idx + 1);
+        }
+      }
+    };
+
+    const workers = Math.min(SCAN_CONCURRENCY, numChunks);
+    await Promise.all(Array.from({ length: workers }, worker));
+    positions.sort((a, b) => a - b);
+
+    if (positions.length === 0) {
+      warning(
+        `No integrity digest sentinel found in Electron Framework binary at ${frameworkPath}. ` +
+          'This is unexpected for Electron >= 41.0.0. The asar integrity digest was not written.',
+        quiet,
+      );
+      return;
+    }
+
+    // Validate every slot has room before touching the file, so a failure
+    // on one slice doesn't leave the binary half-modified.
+    const writePositions: number[] = [];
+    for (const sentinelIndex of positions) {
+      const base = sentinelIndex + sentinel.length;
+      if (base + PAYLOAD_LEN > size) {
+        warning(
+          `Insufficient space after integrity digest sentinel at offset ${sentinelIndex} in Electron Framework binary. The binary may be corrupted or incompatible.`,
+          quiet,
+        );
+        continue;
+      }
+      writePositions.push(base);
+    }
+
+    if (writePositions.length === 0) {
+      throw new Error(
+        'Found integrity digest sentinel(s) in Electron Framework binary but could not write to any of them. The binary may be corrupted.',
+      );
+    }
+
+    const payload = Buffer.allocUnsafe(PAYLOAD_LEN);
+    payload.writeUInt8(1, 0); // used = true
+    payload.writeUInt8(1, 1); // version = 1
+    digest.copy(payload, 2); // 32-byte SHA256 digest
+
+    try {
+      for (const base of writePositions) {
+        await handle.write(payload, 0, payload.length, base);
+      }
+    } catch (err) {
+      throw new Error(
+        `Failed to write integrity digest to Electron Framework binary at ${frameworkPath}: ${err}`,
+      );
+    }
+    debug('Wrote integrity digest to Electron Framework binary');
+  } finally {
+    await handle.close();
+  }
+}
+
 type BasePList = {
   CFBundleDisplayName: string;
   CFBundleExecutable: string;
@@ -547,58 +643,8 @@ export class MacApp extends App implements Plists {
     }
     const digest = integrityHash.digest();
 
-    // Write digest into every sentinel location in the Electron Framework binary
-    const frameworkBinary = await fs.promises.readFile(frameworkPath);
     const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
-    let searchOffset = 0;
-    let found = false;
-    let written = false;
-
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const sentinelIndex = frameworkBinary.indexOf(sentinel, searchOffset);
-      if (sentinelIndex === -1) break;
-      found = true;
-
-      const base = sentinelIndex + sentinel.length;
-      if (base + 34 > frameworkBinary.length) {
-        warning(
-          `Insufficient space after integrity digest sentinel at offset ${sentinelIndex} in Electron Framework binary. The binary may be corrupted or incompatible.`,
-          this.opts.quiet,
-        );
-        searchOffset = base;
-        continue;
-      }
-      frameworkBinary.writeUInt8(1, base); // used = true
-      frameworkBinary.writeUInt8(1, base + 1); // version = 1
-      digest.copy(frameworkBinary, base + 2); // 32-byte SHA256 digest
-      written = true;
-
-      searchOffset = base + 2 + 32;
-    }
-
-    if (found && !written) {
-      throw new Error(
-        'Found integrity digest sentinel(s) in Electron Framework binary but could not write to any of them. The binary may be corrupted.',
-      );
-    }
-
-    if (written) {
-      try {
-        await fs.promises.writeFile(frameworkPath, frameworkBinary);
-      } catch (err) {
-        throw new Error(
-          `Failed to write integrity digest to Electron Framework binary at ${frameworkPath}: ${err}`,
-        );
-      }
-      debug('Wrote integrity digest to Electron Framework binary');
-    } else {
-      warning(
-        `No integrity digest sentinel found in Electron Framework binary at ${frameworkPath}. ` +
-          'This is unexpected for Electron >= 41.0.0. The asar integrity digest was not written.',
-        this.opts.quiet,
-      );
-    }
+    await writeIntegrityDigest(frameworkPath, sentinel, digest, this.opts.quiet);
   }
 
   async signAppIfSpecified() {
