@@ -1,5 +1,5 @@
-import extractZip from 'extract-zip';
+import { extract } from '@electron-internal/extract-zip';
 
 export async function extractElectronZip(zipPath: string, targetDir: string) {
-  await extractZip(zipPath, { dir: targetDir });
+  await extract(zipPath, { dir: targetDir });
 }
