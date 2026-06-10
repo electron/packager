@@ -89,6 +89,11 @@ async function writeIntegrityDigest(
       return;
     }
 
+    // A single sentinel is expected per Mach-O slice (e.g. 2 for a universal
+    // binary), but we don't cap the count: fat binaries can contain any number
+    // of slices, so we patch every sentinel we find rather than assume a maximum.
+    debug(`Found ${positions.length} integrity digest sentinel(s) in Electron Framework binary`);
+
     // Validate every slot has room before touching the file, so a failure
     // on one slice doesn't leave the binary half-modified.
     const writePositions: number[] = [];
@@ -118,13 +123,13 @@ async function writeIntegrityDigest(
     try {
       for (const base of writePositions) {
         await handle.write(payload, 0, payload.length, base);
+        debug(`Wrote integrity digest to Electron Framework binary at offset ${base}`);
       }
     } catch (err) {
       throw new Error(
         `Failed to write integrity digest to Electron Framework binary at ${frameworkPath}: ${err}`,
       );
     }
-    debug('Wrote integrity digest to Electron Framework binary');
   } finally {
     await handle.close();
   }
@@ -586,6 +591,9 @@ export class MacApp extends App implements Plists {
       return;
     }
     if (!semver.gte(this.opts.electronVersion, '41.0.0-alpha.1')) {
+      debug(
+        `Electron version ${this.opts.electronVersion} is older than 41.0.0, skipping integrity digest`,
+      );
       return;
     }
 
@@ -707,6 +715,9 @@ export class MacApp extends App implements Plists {
     await this.renameElectron();
     await this.renameAppAndHelpers();
     await this.copyExtraResources();
+    // The integrity digest patches the Electron Framework binary in place, so it
+    // must run before signing — modifying the app afterwards invalidates the
+    // code signature. This ordering is mirrored in `universal.ts`.
     await this.setIntegrityDigest();
     await this.signAppIfSpecified();
     await this.notarizeAppIfSpecified();

@@ -83,6 +83,9 @@ export async function packageUniversalMac(
     force: false,
   });
 
+  // The integrity digest patches the Electron Framework binary in place, so it
+  // must run before signing — modifying the app afterwards invalidates the code
+  // signature. This ordering is mirrored in `MacApp.create()`.
   await app.setIntegrityDigest();
   await app.signAppIfSpecified();
   await app.notarizeAppIfSpecified();
