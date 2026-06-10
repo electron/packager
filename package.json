@@ -36,6 +36,7 @@
     "usage.txt"
   ],
   "dependencies": {
+    "@electron-internal/extract-zip": "^1.0.1",
     "@electron/asar": "^4.0.1",
     "@electron/get": "^5.0.0",
     "@electron/notarize": "^3.1.0",
@@ -44,7 +45,6 @@
     "@electron/windows-sign": "^2.0.2",
     "@malept/cross-spawn-promise": "^2.0.0",
     "debug": "^4.4.1",
-    "extract-zip": "^2.0.1",
     "filenamify": "^6.0.0",
     "galactus": "^2.0.2",
     "graceful-fs": "^4.2.11",
@@ -69,7 +69,7 @@
     "oxlint-tsgolint": "^0.20.0",
     "typedoc": "~0.28.0",
     "typescript": "^6.0.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.0"
   },
   "engines": {
     "node": ">= 22.12.0"
