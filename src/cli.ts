@@ -25,7 +25,7 @@ export function parseArgs(argv: string[]) {
       prune: true,
       tmpdir: true,
     },
-    string: ['electron-version', 'out'],
+    string: ['app-copyright', 'app-version', 'build-version', 'electron-version', 'out'],
   });
 
   args.dir = args._[0];

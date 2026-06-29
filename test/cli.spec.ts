@@ -9,6 +9,23 @@ describe('parseArgs', () => {
     expect(argsWithVersion.electronVersion).toBe('1.2.3');
   });
 
+  it('keeps numeric-looking version/copyright args as strings', () => {
+    const args = parseArgs([
+      '--app-version',
+      '1.0',
+      '--build-version',
+      '2.0',
+      '--app-copyright',
+      '3.0',
+    ]);
+    expect(args.appVersion).toBe('1.0');
+    expect(typeof args.appVersion).toBe('string');
+    expect(args.buildVersion).toBe('2.0');
+    expect(typeof args.buildVersion).toBe('string');
+    expect(args.appCopyright).toBe('3.0');
+    expect(typeof args.appCopyright).toBe('string');
+  });
+
   it('populates opts.asar', () => {
     const args = parseArgs(['--asar=true']);
     expect(args.asar).toBe(true);
