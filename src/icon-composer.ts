@@ -6,7 +6,27 @@ import path from 'node:path';
 import plist from 'plist';
 import semver from 'semver';
 
-export async function generateAssetCatalogForIcon(inputPath: string) {
+// `actool` is not guaranteed to produce a byte-identical `Assets.car` across
+// invocations, so when building a universal app we must compile each `.icon`
+// exactly once and reuse the output for every architecture. Otherwise the
+// per-arch `Assets.car` files differ and the universal stitch fails. The cache
+// is keyed by the resolved input path and lives for the duration of the process,
+// which spans both arch slices of a universal build.
+const assetCatalogCache = new Map<string, Promise<Buffer>>();
+
+export function generateAssetCatalogForIcon(inputPath: string): Promise<Buffer> {
+  const cacheKey = path.resolve(inputPath);
+  let assetCatalog = assetCatalogCache.get(cacheKey);
+  if (!assetCatalog) {
+    assetCatalog = compileAssetCatalogForIcon(inputPath);
+    // Don't cache failures so a transient `actool` error can be retried.
+    assetCatalog.catch(() => assetCatalogCache.delete(cacheKey));
+    assetCatalogCache.set(cacheKey, assetCatalog);
+  }
+  return assetCatalog;
+}
+
+async function compileAssetCatalogForIcon(inputPath: string) {
   if (!semver.gte(os.release(), '25.0.0')) {
     throw new Error(`actool .icon support is currently limited to macOS 26 and higher`);
   }
