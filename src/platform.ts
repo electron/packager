@@ -17,6 +17,7 @@ import {
 } from './common.js';
 import { userPathFilter } from './copy-filter.js';
 import { runHooks } from './hooks.js';
+import { sanitizeAppPackageJson } from './sanitize-package-json.js';
 import crypto from 'node:crypto';
 import type { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 
@@ -189,6 +190,7 @@ export class App {
       dereference: typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true,
     });
     await runHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
+    await sanitizeAppPackageJson(this.opts, this.originalResourcesAppDir);
     if (this.opts.prune) {
       await runHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
     }
@@ -255,7 +257,12 @@ export class App {
       warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet);
     }
 
-    for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune'] as const) {
+    for (const hookName of [
+      'beforeCopy',
+      'afterCopy',
+      'afterPrune',
+      'sanitizePackageJson',
+    ] as const) {
       if (this.opts[hookName]) {
         throw new Error(`${hookName} is incompatible with prebuiltAsar`);
       }
