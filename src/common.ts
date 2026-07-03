@@ -99,10 +99,32 @@ export function normalizePath(pathToNormalize: string) {
   return pathToNormalize.replace(/\\/g, '/');
 }
 
+/**
+ * Resolves a path and canonicalizes it via `realpath`, so that two paths referring to the same
+ * location compare as equal even when one of them goes through a symlink (e.g. `/var` vs
+ * `/private/var` on macOS). Falls back to the resolved path if it does not exist.
+ */
+function canonicalizePath(pathToCanonicalize: string): string {
+  const resolvedPath = path.resolve(pathToCanonicalize);
+  try {
+    return fs.realpathSync(resolvedPath);
+  } catch {
+    return resolvedPath;
+  }
+}
+
+/**
+ * Whether `childPath` is equal to or contained within `parentPath`. Both paths must already be
+ * canonicalized. Uses `path.relative` so that, on Windows, the comparison is case-insensitive.
+ */
+function isPathInside(childPath: string, parentPath: string): boolean {
+  const relativePath = path.relative(parentPath, childPath);
+  return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
+}
+
 function findOutDirContaining(fullPath: string, ignoredOutDirs: string[]): string | undefined {
-  return ignoredOutDirs.find(
-    (outDir) => fullPath === outDir || fullPath.startsWith(`${outDir}${path.sep}`),
-  );
+  const canonicalFullPath = canonicalizePath(fullPath);
+  return ignoredOutDirs.find((outDir) => isPathInside(canonicalFullPath, canonicalizePath(outDir)));
 }
 
 /**
@@ -125,7 +147,12 @@ export async function validateElectronApp(
 
   const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json');
   if (!fs.existsSync(bundledPackageJSONPath)) {
-    if (ignoredOutDirs.includes(path.resolve(appDir))) {
+    const canonicalAppDir = canonicalizePath(appDir);
+    if (
+      ignoredOutDirs.some(
+        (outDir) => path.relative(canonicalizePath(outDir), canonicalAppDir) === '',
+      )
+    ) {
       throw new Error(
         `The out directory (${path.resolve(appDir)}) is the same as your app directory. The out directory is automatically excluded from packaging, so nothing would be packaged; choose an out directory outside of your app directory`,
       );
