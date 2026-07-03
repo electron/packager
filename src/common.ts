@@ -99,6 +99,12 @@ export function normalizePath(pathToNormalize: string) {
   return pathToNormalize.replace(/\\/g, '/');
 }
 
+function findOutDirContaining(fullPath: string, ignoredOutDirs: string[]): string | undefined {
+  return ignoredOutDirs.find(
+    (outDir) => fullPath === outDir || fullPath.startsWith(`${outDir}${path.sep}`),
+  );
+}
+
 /**
  * Validates that the application directory contains a package.json file, and that there exists an
  * appropriate main entry point file, per the rules of the "main" field in package.json.
@@ -107,13 +113,23 @@ export function normalizePath(pathToNormalize: string) {
  *
  * @param appDir - the directory specified by the user
  * @param bundledAppDir - the directory where the appDir is copied to in the bundled Electron app
+ * @param ignoredOutDirs - resolved out directories that are excluded from the bundled app
  */
-export async function validateElectronApp(appDir: string, bundledAppDir: string) {
+export async function validateElectronApp(
+  appDir: string,
+  bundledAppDir: string,
+  ignoredOutDirs: string[] = [],
+) {
   debug('Validating bundled Electron app');
   debug('Checking for a package.json file');
 
   const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json');
   if (!fs.existsSync(bundledPackageJSONPath)) {
+    if (ignoredOutDirs.includes(path.resolve(appDir))) {
+      throw new Error(
+        `The out directory (${path.resolve(appDir)}) is the same as your app directory. The out directory is automatically excluded from packaging, so nothing would be packaged; choose an out directory outside of your app directory`,
+      );
+    }
     const originalPackageJSONPath = path.join(appDir, 'package.json');
     throw new Error(
       `Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`,
@@ -126,6 +142,12 @@ export async function validateElectronApp(appDir: string, bundledAppDir: string)
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
   if (!fs.existsSync(mainScript)) {
     const originalMainScript = path.join(appDir, mainScriptBasename);
+    const outDir = findOutDirContaining(path.resolve(appDir, mainScriptBasename), ignoredOutDirs);
+    if (outDir) {
+      throw new Error(
+        `The out directory (${outDir}) is inside your app directory and contains your app's main entry point (${originalMainScript}). The out directory is automatically excluded from packaging; choose an out directory outside of your app directory`,
+      );
+    }
     throw new Error(
       `The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`,
     );

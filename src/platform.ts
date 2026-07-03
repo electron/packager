@@ -15,7 +15,7 @@ import {
   validateElectronApp,
   warning,
 } from './common.js';
-import { userPathFilter } from './copy-filter.js';
+import { generateIgnoredOutDirs, userPathFilter } from './copy-filter.js';
 import { runHooks } from './hooks.js';
 import crypto from 'node:crypto';
 import type { ProcessedOptionsWithSinglePlatformArch } from './types.js';
@@ -176,7 +176,11 @@ export class App {
 
   async buildApp() {
     await this.copyTemplate();
-    await validateElectronApp(this.opts.dir, this.originalResourcesAppDir);
+    await validateElectronApp(
+      this.opts.dir,
+      this.originalResourcesAppDir,
+      generateIgnoredOutDirs(this.opts),
+    );
     await this.asarApp();
   }
 
