@@ -1446,6 +1446,38 @@ describe('packager', () => {
           expect(result.subarray(base + 2, base + 34)).toEqual(expectedDigest);
         }
       });
+
+      it('leaves a valid ad-hoc framework signature when osxSign is not specified', async ({
+        baseOpts,
+      }) => {
+        // Patching the digest invalidates the framework's shipped ad-hoc
+        // signature; without the re-sign fallback, unsigned packages are
+        // killed at launch on Apple Silicon.
+        const opts = {
+          ...baseOpts,
+          asar: true,
+        };
+
+        const [finalPath] = await packager(opts);
+        const frameworkPath = path.join(
+          finalPath,
+          `${opts.name}.app`,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+        );
+
+        // Guard against a vacuous pass: the digest must actually have been
+        // written before the signature check means anything.
+        const binary = fs.readFileSync(path.join(frameworkPath, 'Electron Framework'));
+        const sentinelIndex = binary.indexOf(Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL));
+        expect(sentinelIndex).not.toBe(-1);
+        expect(binary.readUInt8(sentinelIndex + MacApp.INTEGRITY_DIGEST_SENTINEL.length)).toBe(1);
+
+        await expect(
+          util.promisify(exec)(`codesign --verify --strict "${frameworkPath}"`),
+        ).resolves.toEqual(expect.anything());
+      });
     });
 
     describe('codesign', () => {

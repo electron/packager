@@ -55,9 +55,12 @@ export async function packageUniversalMac(
         ...downloadOpts,
         arch: tempArch,
       };
-      // Do not sign or notarize the individual slices, we sign and notarize the merged app later
+      // Do not sign or notarize the individual slices, we sign and notarize the merged app later.
+      // The integrity digest is likewise skipped for slices (see MacApp.applyIntegrityDigest):
+      // the merged app gets its own digest + re-sign.
       delete tempOpts.osxSign;
       delete tempOpts.osxNotarize;
+      tempOpts.universalSliceBuild = true;
 
       // @TODO(erikian): I don't like this type cast, the return type for `packageForPlatformAndArchWithOpts` is probably wrong
       tempPackages[tempArch] = (await packageForPlatformAndArchWithOpts(
@@ -86,7 +89,7 @@ export async function packageUniversalMac(
   // The integrity digest patches the Electron Framework binary in place, so it
   // must run before signing — modifying the app afterwards invalidates the code
   // signature. This ordering is mirrored in `MacApp.create()`.
-  await app.setIntegrityDigest();
+  await app.applyIntegrityDigest();
   await app.signAppIfSpecified();
   await app.notarizeAppIfSpecified();
   await app.move();

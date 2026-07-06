@@ -634,6 +634,8 @@ export interface ProcessedOptions extends Options {
 export interface ProcessedOptionsWithSinglePlatformArch extends ProcessedOptions {
   arch: OfficialArch;
   platform: OfficialPlatform;
+  /** Set for the intermediate x64/arm64 builds that get merged into a universal package. */
+  universalSliceBuild?: boolean;
 }
 
 /**
