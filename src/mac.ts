@@ -844,7 +844,7 @@ export function createSignOpts(
 
     if (signOpts.binaries) {
       warning(
-        'osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign.',
+        'osx-sign.binaries is not an allowed sub-option. Not passing to @electron/osx-sign. Bundled binaries (including those in app.asar.unpacked) are signed automatically; native modules packed inside app.asar should be unpacked instead (e.g., via the asar "unpack" option).',
         quiet,
       );
       delete signOpts.binaries;
