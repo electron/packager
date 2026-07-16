@@ -103,11 +103,8 @@ export async function resedit(exePath: string, options: ExeMetadata) {
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
         `$1${options.win32Metadata?.['requested-execution-level']}$2`,
       );
-      const newContentBuffer = Buffer.from(newContent, 'utf-8');
-      manifestEntry.bin = newContentBuffer.buffer.slice(
-        newContentBuffer.byteOffset,
-        newContentBuffer.byteOffset + newContentBuffer.length,
-      );
+      // TextEncoder yields a Uint8Array with its own non-pooled ArrayBuffer
+      manifestEntry.bin = new TextEncoder().encode(newContent).buffer;
     }
   }
 
