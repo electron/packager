@@ -182,21 +182,18 @@ describe('resedit', () => {
       const realReadFile = promisifiedGracefulFs.readFile;
       const readFileSpy = vi
         .spyOn(promisifiedGracefulFs, 'readFile')
-        .mockImplementation(async function (this: unknown, ...args) {
-          const result = await (realReadFile as (...a: unknown[]) => Promise<unknown>).apply(
-            this,
-            args,
-          );
-          if (args[0] === manifestPath && Buffer.isBuffer(result)) {
-            const backing = Buffer.alloc(result.length + 128, '<lots of garbage bytes/>');
-            result.copy(backing, 64);
-            const view = backing.subarray(64, 64 + result.length);
-            expect(view.byteOffset).not.toBe(0);
-            expect(view.buffer.byteLength).toBeGreaterThan(view.length);
-            return view;
+        .mockImplementation(async (filePath, options) => {
+          const result = await realReadFile(filePath, options);
+          if (filePath !== manifestPath || !Buffer.isBuffer(result)) {
+            return result;
           }
-          return result;
-        } as typeof promisifiedGracefulFs.readFile);
+          const backing = Buffer.alloc(result.length + 128, '<lots of garbage bytes/>');
+          result.copy(backing, 64);
+          const view = backing.subarray(64, 64 + result.length);
+          expect(view.byteOffset).not.toBe(0);
+          expect(view.buffer.byteLength).toBeGreaterThan(view.length);
+          return view;
+        });
 
       try {
         await resedit(exePath, {
