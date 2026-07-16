@@ -84,9 +84,17 @@ export async function resedit(exePath: string, options: ExeMetadata) {
     }
     const manifestEntry = manifests[0];
     if (options.win32Metadata?.['application-manifest']) {
-      manifestEntry.bin = Buffer.from(
-        await promisifiedGracefulFs.readFile(options.win32Metadata?.['application-manifest']),
-      ).buffer;
+      const manifestBuffer = await promisifiedGracefulFs.readFile(
+        options.win32Metadata?.['application-manifest'],
+      );
+      // A Buffer is often a view into a larger shared ArrayBuffer (e.g. Node's
+      // internal buffer pool), so we must slice out the exact byte range
+      // instead of using the entire backing ArrayBuffer
+      manifestEntry.bin = manifestBuffer.buffer.slice(
+        manifestBuffer.byteOffset,
+        manifestBuffer.byteOffset + manifestBuffer.length,
+        // readFile never returns a SharedArrayBuffer-backed Buffer
+      ) as ArrayBuffer;
     } else if (options.win32Metadata?.['requested-execution-level']) {
       // This implementation matches what rcedit used to do, in theory we can be Smarter
       // and use an actual XML parser, but for now let's match the old impl
@@ -95,7 +103,8 @@ export async function resedit(exePath: string, options: ExeMetadata) {
         /(<requestedExecutionLevel level=")asInvoker(" uiAccess="false"\/>)/g,
         `$1${options.win32Metadata?.['requested-execution-level']}$2`,
       );
-      manifestEntry.bin = Buffer.from(newContent, 'utf-8').buffer;
+      // TextEncoder yields a Uint8Array with its own non-pooled ArrayBuffer
+      manifestEntry.bin = new TextEncoder().encode(newContent).buffer;
     }
   }
 
