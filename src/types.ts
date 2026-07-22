@@ -255,6 +255,10 @@ export interface Options {
    * with this argument. If neither are provided, the version of Electron will be used. Maps
    * to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString`
    * on macOS.
+   *
+   * The resolved value is also written to the `version` field of the packaged app's
+   * `package.json`, which is how the version reaches `app.getVersion()` at runtime on
+   * platforms without executable version metadata, such as Linux.
    */
   appVersion?: string;
   /**
