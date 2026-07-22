@@ -46,10 +46,10 @@ Electron Packager is known to run on the following **host** platforms:
 It generates executables/bundles for the following **target** platforms:
 
 - Windows (also known as `win32`, for x86[^ia32], x86_64, and arm64 architectures)
-- macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)<sup>\*</sup> (for x86_64, arm64, and universal architectures)
+- macOS (also known as `darwin`) / [Mac App Store](https://electronjs.org/docs/tutorial/mac-app-store-submission-guide/) (also known as `mas`)[^macos] (for x86_64, arm64, and universal architectures)
 - Linux (for x86, x86_64, armv7l[^ia32], arm64, and mips64el architectures)
 
-<sup>*</sup> *Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.\*
+[^macos]: Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.
 
 [^ia32]: Windows x86 (`ia32`) and Linux `armv7l` builds are only published for Electron <= 43 — starting with Electron 44.0.0-alpha.4, official builds for these architectures are no longer provided.
 
