@@ -59,6 +59,32 @@ describe('allOfficialArchsForPlatformAndVersion', () => {
     const result2 = allOfficialArchsForPlatformAndVersion('mas', '10.0.0');
     expect(result2).not.toContain('arm64');
   });
+
+  it('supports win32/ia32 for the correct versions', () => {
+    const result = allOfficialArchsForPlatformAndVersion('win32', '43.0.0');
+    expect(result).toContain('ia32');
+    const result2 = allOfficialArchsForPlatformAndVersion('win32', '44.0.0-alpha.3');
+    expect(result2).toContain('ia32');
+    const result3 = allOfficialArchsForPlatformAndVersion('win32', '44.0.0-alpha.4');
+    expect(result3).not.toContain('ia32');
+    const result4 = allOfficialArchsForPlatformAndVersion('win32', '44.0.0');
+    expect(result4).not.toContain('ia32');
+    const result5 = allOfficialArchsForPlatformAndVersion('win32', '45.0.0-nightly.20260714');
+    expect(result5).not.toContain('ia32');
+  });
+
+  it('supports linux/armv7l for the correct versions', () => {
+    const result = allOfficialArchsForPlatformAndVersion('linux', '43.0.0');
+    expect(result).toContain('armv7l');
+    const result2 = allOfficialArchsForPlatformAndVersion('linux', '44.0.0-alpha.3');
+    expect(result2).toContain('armv7l');
+    const result3 = allOfficialArchsForPlatformAndVersion('linux', '44.0.0-alpha.4');
+    expect(result3).not.toContain('armv7l');
+    const result4 = allOfficialArchsForPlatformAndVersion('linux', '44.0.0');
+    expect(result4).not.toContain('armv7l');
+    const result5 = allOfficialArchsForPlatformAndVersion('linux', '45.0.0-nightly.20260714');
+    expect(result5).not.toContain('armv7l');
+  });
 });
 
 describe('validateListFromOptions', () => {
@@ -105,6 +131,36 @@ describe('createPlatformArchPairs', () => {
       testCase: 'all arches with a single platform',
       extraOpts: { platform: 'linux', arch: 'all' },
       expectedLength: 3,
+    },
+    {
+      testCase: 'all win32 arches in a version without ia32 support',
+      extraOpts: { platform: 'win32', arch: 'all', electronVersion: '44.0.0-alpha.4' },
+      expectedLength: 2,
+    },
+    {
+      testCase: 'all linux arches in a version without ia32, armv7l, or mips64el support',
+      extraOpts: { platform: 'linux', arch: 'all', electronVersion: '45.0.0-nightly.20260714' },
+      expectedLength: 2,
+    },
+    {
+      testCase: 'win32/ia32 in the last version that supports it',
+      extraOpts: { platform: 'win32', arch: 'ia32', electronVersion: '44.0.0-alpha.3' },
+      expectedLength: 1,
+    },
+    {
+      testCase: 'win32/ia32 in a version that no longer supports it',
+      extraOpts: { platform: 'win32', arch: 'ia32', electronVersion: '44.0.0-alpha.4' },
+      expectedLength: 0,
+    },
+    {
+      testCase: 'linux/armv7l in the last version that supports it',
+      extraOpts: { platform: 'linux', arch: 'armv7l', electronVersion: '44.0.0-alpha.3' },
+      expectedLength: 1,
+    },
+    {
+      testCase: 'linux/armv7l in a version that no longer supports it',
+      extraOpts: { platform: 'linux', arch: 'armv7l', electronVersion: '45.0.0-nightly.20260714' },
+      expectedLength: 0,
     },
     {
       testCase: 'platform/arch combinations (arrays)',
