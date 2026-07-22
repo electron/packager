@@ -2,16 +2,141 @@ import { App } from './platform.js';
 import { debug, sanitizeAppName, subOptionWarning, warning } from './common.js';
 import fs from 'graceful-fs';
 import { promisifiedGracefulFs } from './util.js';
+import crypto from 'node:crypto';
 import path from 'node:path';
-import plist, { PlistValue } from 'plist';
+import plist, { PlistObject, PlistValue } from 'plist';
 import { notarize, NotarizeOptions } from '@electron/notarize';
 import { ElectronMacPlatform, sign, SignOptions } from '@electron/osx-sign';
+import { spawn } from '@malept/cross-spawn-promise';
+import semver from 'semver';
 import { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 import { generateAssetCatalogForIcon } from './icon-composer.js';
 
 type NSUsageDescription = {
   [key in `NS${string}UsageDescription`]: string;
 };
+
+type AsarIntegrity = NonNullable<App['asarIntegrity']>;
+
+function isAsarIntegrity(value: unknown): value is AsarIntegrity {
+  if (typeof value !== 'object' || value === null) return false;
+  const entries = Object.values(value);
+  if (entries.length === 0) return false;
+  return entries.every(
+    (entry) =>
+      typeof entry === 'object' &&
+      entry !== null &&
+      'algorithm' in entry &&
+      typeof entry.algorithm === 'string' &&
+      entry.algorithm.length > 0 &&
+      'hash' in entry &&
+      typeof entry.hash === 'string' &&
+      entry.hash.length > 0,
+  );
+}
+
+/**
+ * Scans `frameworkPath` for integrity digest sentinels and patches the 34-byte
+ * slot after each with {used=1, version=1, digest}. Reads in 4 MB chunks with
+ * two workers so Buffer.indexOf overlaps with disk I/O, and writes positionally
+ * so only the changed bytes hit disk. Chunks overread by (sentinel.length - 1)
+ * bytes so a sentinel straddling a boundary is still detected.
+ * Returns whether the binary was actually modified.
+ * @see https://github.com/electron/fuses/pull/96
+ */
+async function writeIntegrityDigest(
+  frameworkPath: string,
+  sentinel: Buffer,
+  digest: Buffer,
+  quiet: boolean | undefined,
+): Promise<boolean> {
+  const PAYLOAD_LEN = 34; // used(1) + version(1) + SHA256(32)
+  const SCAN_CHUNK_SIZE = 4 * 1024 * 1024;
+  const SCAN_CONCURRENCY = 2;
+  const overlap = sentinel.length - 1;
+
+  const handle = await fs.promises.open(frameworkPath, 'r+');
+  try {
+    const { size } = await handle.stat();
+    const numChunks = Math.ceil(size / SCAN_CHUNK_SIZE);
+    const positions: number[] = [];
+
+    let next = 0;
+    const worker = async () => {
+      const buf = Buffer.allocUnsafe(SCAN_CHUNK_SIZE + overlap);
+      for (let chunk = next++; chunk < numChunks; chunk = next++) {
+        const start = chunk * SCAN_CHUNK_SIZE;
+        const len = Math.min(SCAN_CHUNK_SIZE + overlap, size - start);
+        const { bytesRead } = await handle.read(buf, 0, len, start);
+        const haystack = buf.subarray(0, bytesRead);
+
+        let idx = haystack.indexOf(sentinel);
+        while (idx !== -1) {
+          positions.push(start + idx);
+          idx = haystack.indexOf(sentinel, idx + 1);
+        }
+      }
+    };
+
+    const workers = Math.min(SCAN_CONCURRENCY, numChunks);
+    await Promise.all(Array.from({ length: workers }, worker));
+    positions.sort((a, b) => a - b);
+
+    if (positions.length === 0) {
+      warning(
+        `No integrity digest sentinel found in Electron Framework binary at ${frameworkPath}. ` +
+          'This is unexpected for Electron >= 41.0.0. The asar integrity digest was not written.',
+        quiet,
+      );
+      return false;
+    }
+
+    // A single sentinel is expected per Mach-O slice (e.g. 2 for a universal
+    // binary), but we don't cap the count: fat binaries can contain any number
+    // of slices, so we patch every sentinel we find rather than assume a maximum.
+    debug(`Found ${positions.length} integrity digest sentinel(s) in Electron Framework binary`);
+
+    // Validate every slot has room before touching the file, so a failure
+    // on one slice doesn't leave the binary half-modified.
+    const writePositions: number[] = [];
+    for (const sentinelIndex of positions) {
+      const base = sentinelIndex + sentinel.length;
+      if (base + PAYLOAD_LEN > size) {
+        warning(
+          `Insufficient space after integrity digest sentinel at offset ${sentinelIndex} in Electron Framework binary. The binary may be corrupted or incompatible.`,
+          quiet,
+        );
+        continue;
+      }
+      writePositions.push(base);
+    }
+
+    if (writePositions.length === 0) {
+      throw new Error(
+        'Found integrity digest sentinel(s) in Electron Framework binary but could not write to any of them. The binary may be corrupted.',
+      );
+    }
+
+    const payload = Buffer.allocUnsafe(PAYLOAD_LEN);
+    payload.writeUInt8(1, 0); // used = true
+    payload.writeUInt8(1, 1); // version = 1
+    digest.copy(payload, 2); // 32-byte SHA256 digest
+
+    try {
+      for (const base of writePositions) {
+        await handle.write(payload, 0, payload.length, base);
+        debug(`Wrote integrity digest to Electron Framework binary at offset ${base}`);
+      }
+    } catch (err) {
+      throw new Error(
+        `Failed to write integrity digest to Electron Framework binary at ${frameworkPath}: ${err}`,
+      );
+    }
+    return true;
+  } finally {
+    await handle.close();
+  }
+}
 
 type BasePList = {
   CFBundleDisplayName: string;
@@ -454,6 +579,156 @@ export class MacApp extends App implements Plists {
     await fs.promises.rename(this.electronAppPath, this.renamedAppPath);
   }
 
+  /**
+   * Sentinel string embedded in the Electron Framework binary, used as a marker
+   * for the integrity digest storage location.
+   * @see https://github.com/electron/electron/blob/2d5597b1b0fa697905380184e26c9f0947e05c5d/shell/common/asar/integrity_digest.mm#L24
+   */
+  static INTEGRITY_DIGEST_SENTINEL = 'AGbevlPCksUGKNL8TSn7wGmJEuJsXb2A';
+
+  private get frameworkBundlePath() {
+    return path.join(
+      this.renamedAppPath ?? this.electronAppPath,
+      'Contents',
+      'Frameworks',
+      'Electron Framework.framework',
+    );
+  }
+
+  /**
+   * Writes the asar integrity digest into the Electron Framework binary and,
+   * if the binary was modified, restores a valid ad-hoc signature on it.
+   * Skipped for the intermediate slices of a universal build: their
+   * frameworks are replaced wholesale when the slices are merged, and the
+   * bundle re-sign would add a per-arch `_CodeSignature/CodeResources` file
+   * that makes the slices differ in ways `@electron/universal` rejects. The
+   * merged app gets its own digest + re-sign instead.
+   */
+  async applyIntegrityDigest() {
+    if (this.opts.universalSliceBuild) {
+      return;
+    }
+    if (await this.setIntegrityDigest()) {
+      await this.resetFrameworkAdHocSignature();
+    }
+  }
+
+  /**
+   * Writes the asar integrity digest into the Electron Framework binary.
+   * Returns whether the binary was actually modified, so callers know the
+   * framework's ad-hoc code signature has been invalidated and needs
+   * re-signing (see {@link MacApp#resetFrameworkAdHocSignature}).
+   */
+  async setIntegrityDigest(): Promise<boolean> {
+    if (!this.opts.electronVersion || !semver.valid(this.opts.electronVersion)) {
+      debug(
+        `Cannot determine Electron version (got "${this.opts.electronVersion}"), skipping integrity digest`,
+      );
+      return false;
+    }
+    if (!semver.gte(this.opts.electronVersion, '41.0.0-alpha.1')) {
+      debug(
+        `Electron version ${this.opts.electronVersion} is older than 41.0.0, skipping integrity digest`,
+      );
+      return false;
+    }
+
+    const appPath = this.renamedAppPath ?? this.electronAppPath;
+    let integrity = this.asarIntegrity;
+
+    // For universal builds, asarIntegrity isn't set on the shell App instance.
+    // Fall back to reading it from the merged app's Info.plist.
+    if (!integrity || Object.keys(integrity).length === 0) {
+      const plistPath = path.join(appPath, 'Contents', 'Info.plist');
+      if (fs.existsSync(plistPath)) {
+        try {
+          const plistData = plist.parse(
+            (await fs.promises.readFile(plistPath)).toString(),
+          ) as PlistObject;
+          if (isAsarIntegrity(plistData.ElectronAsarIntegrity)) {
+            integrity = plistData.ElectronAsarIntegrity;
+          }
+        } catch (err) {
+          warning(
+            `Failed to read asar integrity from ${plistPath}: ${err}. The integrity digest will not be written.`,
+            this.opts.quiet,
+          );
+          return false;
+        }
+      }
+    }
+
+    if (!integrity || Object.keys(integrity).length === 0) {
+      return false;
+    }
+    const frameworkPath = path.join(this.frameworkBundlePath, 'Electron Framework');
+    if (!fs.existsSync(frameworkPath)) {
+      warning(
+        `Electron Framework binary not found at ${frameworkPath}. The asar integrity digest will not be written, which may cause runtime failures.`,
+        this.opts.quiet,
+      );
+      return false;
+    }
+
+    // Calculate v1 integrity digest: SHA256 over sorted (key, algorithm, hash) tuples
+    // @see https://github.com/electron/electron/blob/2d5597b1b0fa697905380184e26c9f0947e05c5d/shell/common/asar/integrity_digest.mm#L52-L66
+    const integrityHash = crypto.createHash('SHA256');
+    for (const key of Object.keys(integrity).sort()) {
+      const { algorithm, hash } = integrity[key];
+      integrityHash.update(key);
+      integrityHash.update(algorithm);
+      integrityHash.update(hash);
+    }
+    const digest = integrityHash.digest();
+
+    const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+    return writeIntegrityDigest(frameworkPath, sentinel, digest, this.opts.quiet);
+  }
+
+  /**
+   * Writing the integrity digest invalidates the ad-hoc code signature that
+   * official Electron builds ship with, and Apple Silicon refuses to load
+   * binaries whose signature is invalid. Restore a valid ad-hoc signature on
+   * the patched framework (mirrors `resetAdHocDarwinSignature` in
+   * `@electron/fuses`). This runs even when osx-sign re-signs the app
+   * afterwards: sign failures are reduced to a warning under osx-sign's
+   * `continueOnError` (the default), and the ad-hoc signature keeps the app
+   * loadable in that case.
+   */
+  async resetFrameworkAdHocSignature() {
+    const frameworkPath = this.frameworkBundlePath;
+
+    if (process.platform !== 'darwin') {
+      if (!this.opts.osxSign) {
+        warning(
+          'The Electron Framework binary was modified to embed the asar integrity digest, ' +
+            'which invalidated its code signature, and codesign is unavailable on ' +
+            `${process.platform} to restore it. The app will not launch on Apple Silicon ` +
+            'until it is re-signed (e.g. via the osxSign option or `codesign --force --sign -`).',
+          this.opts.quiet,
+        );
+      }
+      return;
+    }
+
+    debug(`Resetting ad-hoc signature on ${frameworkPath}`);
+    try {
+      // --deep is required: sealing the framework bundle validates its nested
+      // Helpers, and Electron's x64 dists ship those (and everything else)
+      // unsigned, so plain x64 and universal builds fail without it.
+      await spawn('codesign', [
+        '--sign',
+        '-',
+        '--force',
+        '--deep',
+        '--preserve-metadata=entitlements,requirements,flags,runtime',
+        frameworkPath,
+      ]);
+    } catch (err) {
+      throw new Error(`Failed to reset the ad-hoc code signature on ${frameworkPath}: ${err}`);
+    }
+  }
+
   async signAppIfSpecified() {
     const osxSignOpt = this.opts.osxSign;
     const platform = this.opts.platform;
@@ -514,6 +789,10 @@ export class MacApp extends App implements Plists {
     await this.renameElectron();
     await this.renameAppAndHelpers();
     await this.copyExtraResources();
+    // The integrity digest patches the Electron Framework binary in place, so it
+    // must run before signing — modifying the app afterwards invalidates the
+    // code signature. This ordering is mirrored in `universal.ts`.
+    await this.applyIntegrityDigest();
     await this.signAppIfSpecified();
     await this.notarizeAppIfSpecified();
     return this.move();
