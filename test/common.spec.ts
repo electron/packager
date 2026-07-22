@@ -104,6 +104,26 @@ describe('validateElectronApp', () => {
       `The main entry point to your app was not found. Make sure "${path.join('original-dir', 'main.js')}" exists and does not get ignored by your ignore option`,
     );
   });
+
+  it('fails on an Electron app whose app directory is the out directory', async () => {
+    const fixture = path.join(__dirname, 'fixtures', 'validate-failure-without-package-json');
+
+    await expect(
+      validateElectronApp('original-dir', fixture, [path.resolve('original-dir')]),
+    ).rejects.toThrow(
+      `The out directory (${path.resolve('original-dir')}) is the same as your app directory. The out directory is automatically excluded from packaging, so nothing would be packaged; choose an out directory outside of your app directory`,
+    );
+  });
+
+  it('fails on an Electron app whose main entry point is inside the out directory', async () => {
+    const fixture = path.join(__dirname, 'fixtures', 'validate-failure-main-in-out-dir');
+
+    await expect(
+      validateElectronApp('original-dir', fixture, [path.resolve('original-dir', 'dist')]),
+    ).rejects.toThrow(
+      `The out directory (${path.resolve('original-dir', 'dist')}) is inside your app directory and contains your app's main entry point (${path.join('original-dir', 'dist', 'main.js')}). The out directory is automatically excluded from packaging; choose an out directory outside of your app directory`,
+    );
+  });
 });
 
 describe('createAsarOpts', () => {

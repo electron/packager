@@ -505,6 +505,49 @@ describe('packager', () => {
     expect(fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out)))).toBe(false);
   });
 
+  it('should fail with a descriptive error if the out dir is the app dir', async ({ baseOpts }) => {
+    const opts = {
+      ...baseOpts,
+      out: baseOpts.dir,
+    };
+
+    await expect(packager(opts)).rejects.toThrowError(
+      `The out directory (${path.resolve(opts.dir)}) is the same as your app directory. The out directory is automatically excluded from packaging, so nothing would be packaged; choose an out directory outside of your app directory`,
+    );
+  });
+
+  it('should fail with a descriptive error if the out dir contains the main entry point', async ({
+    baseOpts,
+  }) => {
+    const fixture = path.join(__dirname, 'fixtures', 'basic');
+    const appDir = path.join(baseOpts.out, 'app');
+    await fs.promises.cp(fixture, appDir, {
+      dereference: true,
+      filter: (file) => path.basename(file) !== 'node_modules',
+      recursive: true,
+    });
+    const packageJSON = JSON.parse(
+      await fs.promises.readFile(path.join(appDir, 'package.json'), 'utf8'),
+    );
+    packageJSON.main = 'dist/main.js';
+    await fs.promises.writeFile(
+      path.join(appDir, 'package.json'),
+      JSON.stringify(packageJSON, null, 2),
+    );
+    await fs.promises.mkdir(path.join(appDir, 'dist'), { recursive: true });
+    await fs.promises.rename(path.join(appDir, 'main.js'), path.join(appDir, 'dist', 'main.js'));
+
+    const opts = {
+      ...baseOpts,
+      dir: appDir,
+      out: path.join(appDir, 'dist'),
+    };
+
+    await expect(packager(opts)).rejects.toThrowError(
+      `The out directory (${path.join(appDir, 'dist')}) is inside your app directory and contains your app's main entry point (${path.join(appDir, 'dist', 'main.js')}). The out directory is automatically excluded from packaging; choose an out directory outside of your app directory`,
+    );
+  });
+
   describe('hooks', () => {
     it.for([
       {
