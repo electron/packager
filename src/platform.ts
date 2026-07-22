@@ -183,11 +183,36 @@ export class App {
   async copyTemplate() {
     await runHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
-    await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, {
+    const filter = userPathFilter(this.opts)!;
+    const copyOpts = {
       recursive: true,
-      filter: userPathFilter(this.opts),
+      filter,
       dereference: typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true,
-    });
+    };
+
+    const src = path.resolve(this.opts.dir);
+    const dest = path.resolve(this.originalResourcesAppDir);
+    const relativeDest = path.relative(src, dest);
+    if (
+      relativeDest &&
+      relativeDest !== '..' &&
+      !relativeDest.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relativeDest)
+    ) {
+      // The destination is inside the app dir (e.g. tmpdir: false with the out dir
+      // inside the project dir). fs.cp rejects dest-inside-src before the filter runs,
+      // so copy each top-level entry individually instead.
+      await fs.promises.mkdir(dest, { recursive: true });
+      for (const entry of await fs.promises.readdir(src)) {
+        const srcEntry = path.join(src, entry);
+        const destEntry = path.join(dest, entry);
+        if (await filter(srcEntry, destEntry)) {
+          await fs.promises.cp(srcEntry, destEntry, copyOpts);
+        }
+      }
+    } else {
+      await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, copyOpts);
+    }
     await runHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
     if (this.opts.prune) {
       await runHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);

@@ -179,6 +179,33 @@ describe('packager', () => {
     expect(paths[0]).toBeDirectory();
   });
 
+  // https://github.com/electron/packager/issues/1679
+  it('can package with tmpdir disabled and the out dir inside the project dir', async ({
+    baseOpts,
+  }) => {
+    const projectDir = path.join(baseOpts.tmpdir as string, 'project');
+    await fs.promises.cp(baseOpts.dir, projectDir, { recursive: true });
+
+    const opts = {
+      ...baseOpts,
+      dir: projectDir,
+      out: path.join(projectDir, 'out'),
+      tmpdir: false,
+      asar: false,
+      platform: 'linux',
+      arch: 'x64',
+    } as const;
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    expect(paths[0]).toBeDirectory();
+
+    const appDir = path.join(paths[0], 'resources', 'app');
+    expect(path.join(appDir, 'main.js')).toBeFile();
+    // The out dir must not be copied into the packaged app
+    expect(fs.existsSync(path.join(appDir, 'out'))).toBe(false);
+  });
+
   it('preserves symlinks with derefSymlinks disabled', async ({ baseOpts }) => {
     const opts = {
       ...baseOpts,
