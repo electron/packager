@@ -102,6 +102,28 @@ export type HookFunctionArgs = {
  */
 export type HookFunction = (options: HookFunctionArgs) => void | Promise<void>;
 
+/**
+ * A function that receives the parsed contents of the bundled app's `package.json` and
+ * returns the object that will be written back to disk. Mutating and returning the received
+ * object is fine. May be asynchronous.
+ *
+ * The functions in the {@link Options.sanitizePackageJson | sanitizePackageJson} array run
+ * serially, and each function receives the object returned by the previous one.
+ *
+ * @param packageJson - The parsed `package.json` contents. For the first function in the
+ * array, the contents as copied into the bundled app; for subsequent functions, the object
+ * returned by the previous function.
+ * @param electronVersion - The version of Electron that is being bundled with the application.
+ * @param platform - The target platform you are packaging for.
+ * @param arch - The target architecture you are packaging for.
+ */
+export type SanitizePackageJsonFunction = (
+  packageJson: Record<string, unknown>,
+  electronVersion: string,
+  platform: OfficialPlatform,
+  arch: OfficialArch,
+) => Record<string, unknown> | Promise<Record<string, unknown>>;
+
 export type TargetDefinition = {
   arch: OfficialArch;
   platform: OfficialPlatform;
@@ -574,6 +596,57 @@ export interface Options {
    * Defaults to `false`.
    */
   quiet?: boolean;
+  /**
+   * An array of functions that rewrite the app's `package.json` after it has been copied
+   * into the bundled app. The functions run serially: the first receives the parsed
+   * `package.json` contents, each subsequent function receives the object returned by the
+   * previous one, and the object returned by the last function is written back to disk
+   * with two-space indentation. Like the other hook options, each function is also passed
+   * the Electron version and the target platform and arch, and asynchronous functions are
+   * supported.
+   *
+   * The functions run after all {@link afterCopy} functions have completed and before the
+   * {@link afterPrune} functions run, so the bundled app never ships the intermediate
+   * (unsanitized) `package.json`.
+   *
+   * If this option is not set (or set to an empty array), Electron Packager applies a
+   * default sanitizer that strips development-only fields which previously shipped inside
+   * every packaged app: `devDependencies`, `scripts`, `workspaces`, `packageManager`,
+   * `resolutions`, `overrides`, `pnpm`, `private`, `publishConfig`, `devEngines`, `jest`,
+   * `eslintConfig`, `prettier`, `browserslist`, `lint-staged`, `nano-staged`, `husky`,
+   * `commitlint`, `mocha`, `ava`, `nyc`, `c8`, `tap`, `xo`, and `standard`. All other
+   * fields are kept, notably `main`, `name`, `productName`, `version`, `type`, `imports`,
+   * `exports`, `dependencies`, `optionalDependencies`, and `peerDependencies`.
+   *
+   * Providing a non-empty array **replaces** the default sanitizer entirely. To extend the
+   * default instead, include `defaultSanitizePackageJson` (exported from
+   * `@electron/packager`) in the array:
+   *
+   * ```javascript
+   * import { packager, defaultSanitizePackageJson } from '@electron/packager'
+   *
+   * packager({
+   *   // ...
+   *   sanitizePackageJson: [
+   *     defaultSanitizePackageJson,
+   *     (packageJson) => {
+   *       delete packageJson.myCustomField
+   *       return packageJson
+   *     },
+   *   ],
+   * })
+   * ```
+   *
+   * Note that {@link prune} determines the pruned modules from the source directory's
+   * `package.json`, not the bundled copy, so removing `devDependencies` here does not
+   * affect pruning. However, the `main` field (when the entry point is not `index.js`)
+   * must survive sanitization for the packaged app to be valid, and dependency fields
+   * should be kept if anything inspects the bundled `package.json` at runtime.
+   *
+   * **Note:** `sanitizePackageJson` is incompatible with the {@link prebuiltAsar} option,
+   * and the default sanitizer is not applied to prebuilt ASAR archives.
+   */
+  sanitizePackageJson?: SanitizePackageJsonFunction[];
   /**
    * The base directory to use as a temporary directory. Set to `false` to disable use of a
    * temporary directory.
