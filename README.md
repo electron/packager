@@ -51,7 +51,7 @@ It generates executables/bundles for the following **target** platforms:
 
 <sup>*</sup> *Note for macOS / Mac App Store target bundles: the `.app` bundle can only be signed when building on a host macOS platform.\*
 
-<sup>†</sup> *Windows x86 (`ia32`) and Linux `armv7l` builds are only published for Electron ≤ 43 — starting with Electron 44.0.0-alpha.4, official builds for these architectures are no longer provided.*
+<sup>†</sup> *Windows x86 (`ia32`) and Linux `armv7l` builds are only published for Electron <= 43 — starting with Electron 44.0.0-alpha.4, official builds for these architectures are no longer provided.*
 
 ## Installation
 
