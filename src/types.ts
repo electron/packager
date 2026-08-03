@@ -255,6 +255,10 @@ export interface Options {
    * with this argument. If neither are provided, the version of Electron will be used. Maps
    * to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString`
    * on macOS.
+   *
+   * The resolved value is also written to the `version` field of the packaged app's
+   * `package.json`, which is how the version reaches `app.getVersion()` at runtime on
+   * platforms without executable version metadata, such as Linux.
    */
   appVersion?: string;
   /**
@@ -489,7 +493,12 @@ export interface Options {
    * [@electron/osx-sign](https://npm.im/@electron/osx-sign#opts---options) for sub-option descriptions and
    * their defaults. Options include, but are not limited to:
    * - `identity` (*string*): The identity used when signing the package via `codesign`.
-   * - `binaries` (*array<string>*): Path to additional binaries that will be signed along with built-ins of Electron/
+   *
+   * **Note:** The `binaries` sub-option is intentionally not passed through to `@electron/osx-sign`
+   * (see [issue #285](https://github.com/electron/packager/issues/285)). Binaries inside the packaged
+   * app, including those under `app.asar.unpacked`, are automatically discovered and signed. Native
+   * modules packed inside `app.asar` cannot be signed individually, so they should be unpacked (e.g.,
+   * via the {@link asar} `unpack` option or Electron Forge's `AutoUnpackNativesPlugin`) to be signed.
    *
    * @category macOS
    */

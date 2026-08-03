@@ -85,8 +85,9 @@ osx-sign           (macOS host platform only) Whether to sign the macOS app pack
                    For info on supported values see https://npm.im/@electron/osx-sign#opts---options
                    Properties supported include:
                    - identity: should contain the identity to be used when running `codesign`
-                   - entitlements: the path to entitlements used in signing
-                   - entitlements-inherit: the path to the 'child' entitlements
+                   Note: per-file signing options such as custom entitlements cannot be set via the
+                   CLI. To customize entitlements, use the JavaScript API and provide an
+                   `osxSign.optionsForFile` function. See https://github.com/electron/osx-sign for details.
 osx-notarize       (macOS host platform only, requires --osx-sign) Whether to notarize the macOS app
                    packages. You must use dot notation to configure a list of sub-properties, e.g.
                    --osx-notarize.appleId="foo@example.com"
