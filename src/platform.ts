@@ -177,7 +177,34 @@ export class App {
   async buildApp() {
     await this.copyTemplate();
     await validateElectronApp(this.opts.dir, this.originalResourcesAppDir);
+    await this.writeAppVersion();
     await this.asarApp();
+  }
+
+  /**
+   * Writes the resolved {@link Options.appVersion | appVersion} to the `version` field of the
+   * copied app's `package.json`, so that `app.getVersion()` returns it at runtime even on
+   * platforms that don't store the version in executable metadata (i.e. Linux).
+   *
+   * Only the copy of the app in the staging directory is modified, never the user's source
+   * directory.
+   */
+  async writeAppVersion() {
+    if (typeof this.opts.appVersion !== 'string') {
+      return;
+    }
+
+    const packageJSONPath = path.join(this.originalResourcesAppDir, 'package.json');
+    const packageJSON = JSON.parse(
+      (await fs.promises.readFile(packageJSONPath, 'utf8')).replace(/^\uFEFF/, ''),
+    );
+    if (packageJSON.version === this.opts.appVersion) {
+      return;
+    }
+
+    debug(`Setting version in ${packageJSONPath} to ${this.opts.appVersion}`);
+    packageJSON.version = this.opts.appVersion;
+    await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
   }
 
   async copyTemplate() {

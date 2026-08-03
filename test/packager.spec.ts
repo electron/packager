@@ -15,6 +15,7 @@ import {
   parseInfoPlist,
 } from './utils.js';
 import { OfficialArch, OfficialPlatform, Options } from '../src/types.js';
+import { extractFile } from '@electron/asar';
 import { createDownloadOpts, downloadElectronZip } from '../src/download.js';
 import plist, { PlistObject } from 'plist';
 import { filterCFBundleIdentifier } from '../src/mac.js';
@@ -474,6 +475,58 @@ describe('packager', () => {
       };
 
       await expect(packager(opts)).rejects.toThrowError('prebuiltAsar must be an asar file');
+    });
+  });
+
+  describe('appVersion', () => {
+    it('writes appVersion into the packaged package.json', async ({ baseOpts }) => {
+      const opts = {
+        ...baseOpts,
+        appVersion: '1.2.3',
+        platform: 'linux',
+        arch: 'x64',
+      } as const;
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const asarPath = path.join(
+        paths[0],
+        generateResourcesPath({ name: opts.name, platform: opts.platform }),
+        'app.asar',
+      );
+      const packageJSON = JSON.parse(extractFile(asarPath, 'package.json').toString('utf8'));
+      expect(packageJSON.version).toEqual('1.2.3');
+
+      // The user's source package.json must never be modified
+      const sourcePackageJSON = JSON.parse(
+        fs.readFileSync(path.join(opts.dir, 'package.json'), 'utf8'),
+      );
+      expect(sourcePackageJSON.version).toEqual('4.99.101');
+    });
+
+    it('writes appVersion into the packaged package.json when asar is disabled', async ({
+      baseOpts,
+    }) => {
+      const opts = {
+        ...baseOpts,
+        appVersion: '5.6.7',
+        asar: false,
+        platform: 'linux',
+        arch: 'x64',
+      } as const;
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const packageJSONPath = path.join(
+        paths[0],
+        generateResourcesPath({ name: opts.name, platform: opts.platform }),
+        'app',
+        'package.json',
+      );
+      const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
+      expect(packageJSON.version).toEqual('5.6.7');
     });
   });
 
