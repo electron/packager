@@ -100,6 +100,34 @@ export function normalizePath(pathToNormalize: string) {
 }
 
 /**
+ * Resolves a path and canonicalizes it via `realpath`, so that two paths referring to the same
+ * location compare as equal even when one of them goes through a symlink (e.g. `/var` vs
+ * `/private/var` on macOS). Falls back to the resolved path if it does not exist.
+ */
+function canonicalizePath(pathToCanonicalize: string): string {
+  const resolvedPath = path.resolve(pathToCanonicalize);
+  try {
+    return fs.realpathSync(resolvedPath);
+  } catch {
+    return resolvedPath;
+  }
+}
+
+/**
+ * Whether `childPath` is equal to or contained within `parentPath`. Both paths must already be
+ * canonicalized. Uses `path.relative` so that, on Windows, the comparison is case-insensitive.
+ */
+function isPathInside(childPath: string, parentPath: string): boolean {
+  const relativePath = path.relative(parentPath, childPath);
+  return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
+}
+
+function findOutDirContaining(fullPath: string, ignoredOutDirs: string[]): string | undefined {
+  const canonicalFullPath = canonicalizePath(fullPath);
+  return ignoredOutDirs.find((outDir) => isPathInside(canonicalFullPath, canonicalizePath(outDir)));
+}
+
+/**
  * Validates that the application directory contains a package.json file, and that there exists an
  * appropriate main entry point file, per the rules of the "main" field in package.json.
  *
@@ -107,13 +135,28 @@ export function normalizePath(pathToNormalize: string) {
  *
  * @param appDir - the directory specified by the user
  * @param bundledAppDir - the directory where the appDir is copied to in the bundled Electron app
+ * @param ignoredOutDirs - resolved out directories that are excluded from the bundled app
  */
-export async function validateElectronApp(appDir: string, bundledAppDir: string) {
+export async function validateElectronApp(
+  appDir: string,
+  bundledAppDir: string,
+  ignoredOutDirs: string[] = [],
+) {
   debug('Validating bundled Electron app');
   debug('Checking for a package.json file');
 
   const bundledPackageJSONPath = path.join(bundledAppDir, 'package.json');
   if (!fs.existsSync(bundledPackageJSONPath)) {
+    const canonicalAppDir = canonicalizePath(appDir);
+    if (
+      ignoredOutDirs.some(
+        (outDir) => path.relative(canonicalizePath(outDir), canonicalAppDir) === '',
+      )
+    ) {
+      throw new Error(
+        `The out directory (${path.resolve(appDir)}) is the same as your app directory. The out directory is automatically excluded from packaging, so nothing would be packaged; choose an out directory outside of your app directory`,
+      );
+    }
     const originalPackageJSONPath = path.join(appDir, 'package.json');
     throw new Error(
       `Application manifest was not found. Make sure "${originalPackageJSONPath}" exists and does not get ignored by your ignore option`,
@@ -126,6 +169,12 @@ export async function validateElectronApp(appDir: string, bundledAppDir: string)
   const mainScript = path.resolve(bundledAppDir, mainScriptBasename);
   if (!fs.existsSync(mainScript)) {
     const originalMainScript = path.join(appDir, mainScriptBasename);
+    const outDir = findOutDirContaining(path.resolve(appDir, mainScriptBasename), ignoredOutDirs);
+    if (outDir) {
+      throw new Error(
+        `The out directory (${outDir}) is inside your app directory and contains your app's main entry point (${originalMainScript}). The out directory is automatically excluded from packaging; choose an out directory outside of your app directory`,
+      );
+    }
     throw new Error(
       `The main entry point to your app was not found. Make sure "${originalMainScript}" exists and does not get ignored by your ignore option`,
     );
