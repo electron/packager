@@ -148,9 +148,12 @@ export class App {
       await fs.promises.rename(this.templatePath, this.stagingPath);
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === 'EXDEV') {
-        // Cross-device link, fallback to copy and delete
+        // Cross-device link, fallback to copy and delete.
+        // preserveTimestamps keeps this path consistent with the rename above,
+        // which preserves the timestamps set at extraction time.
         await fs.promises.cp(this.templatePath, this.stagingPath, {
           force: true,
+          preserveTimestamps: true,
           recursive: true,
           verbatimSymlinks: true,
         });
@@ -428,6 +431,7 @@ export class App {
           // Cross-device link, fallback to copy and delete
           await fs.promises.cp(this.stagingPath, finalPath, {
             force: true,
+            preserveTimestamps: true,
             recursive: true,
             verbatimSymlinks: true,
           });
