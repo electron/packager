@@ -15,8 +15,9 @@ import {
   validateElectronApp,
   warning,
 } from './common.js';
-import { userPathFilter } from './copy-filter.js';
+import { generateIgnoredOutDirs, userPathFilter } from './copy-filter.js';
 import { runHooks } from './hooks.js';
+import { sanitizeAppPackageJson } from './sanitize-package-json.js';
 import crypto from 'node:crypto';
 import type { ProcessedOptionsWithSinglePlatformArch } from './types.js';
 
@@ -147,9 +148,12 @@ export class App {
       await fs.promises.rename(this.templatePath, this.stagingPath);
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === 'EXDEV') {
-        // Cross-device link, fallback to copy and delete
+        // Cross-device link, fallback to copy and delete.
+        // preserveTimestamps keeps this path consistent with the rename above,
+        // which preserves the timestamps set at extraction time.
         await fs.promises.cp(this.templatePath, this.stagingPath, {
           force: true,
+          preserveTimestamps: true,
           recursive: true,
           verbatimSymlinks: true,
         });
@@ -176,19 +180,76 @@ export class App {
 
   async buildApp() {
     await this.copyTemplate();
-    await validateElectronApp(this.opts.dir, this.originalResourcesAppDir);
+    await validateElectronApp(
+      this.opts.dir,
+      this.originalResourcesAppDir,
+      generateIgnoredOutDirs(this.opts),
+    );
+    await this.writeAppVersion();
     await this.asarApp();
+  }
+
+  /**
+   * Writes the resolved {@link Options.appVersion | appVersion} to the `version` field of the
+   * copied app's `package.json`, so that `app.getVersion()` returns it at runtime even on
+   * platforms that don't store the version in executable metadata (i.e. Linux).
+   *
+   * Only the copy of the app in the staging directory is modified, never the user's source
+   * directory.
+   */
+  async writeAppVersion() {
+    if (typeof this.opts.appVersion !== 'string') {
+      return;
+    }
+
+    const packageJSONPath = path.join(this.originalResourcesAppDir, 'package.json');
+    const packageJSON = JSON.parse(
+      (await fs.promises.readFile(packageJSONPath, 'utf8')).replace(/^\uFEFF/, ''),
+    );
+    if (packageJSON.version === this.opts.appVersion) {
+      return;
+    }
+
+    debug(`Setting version in ${packageJSONPath} to ${this.opts.appVersion}`);
+    packageJSON.version = this.opts.appVersion;
+    await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
   }
 
   async copyTemplate() {
     await runHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
-    await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, {
+    const filter = userPathFilter(this.opts)!;
+    const copyOpts = {
       recursive: true,
-      filter: userPathFilter(this.opts),
+      filter,
       dereference: typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true,
-    });
+    };
+
+    const src = path.resolve(this.opts.dir);
+    const dest = path.resolve(this.originalResourcesAppDir);
+    const relativeDest = path.relative(src, dest);
+    if (
+      relativeDest &&
+      relativeDest !== '..' &&
+      !relativeDest.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relativeDest)
+    ) {
+      // The destination is inside the app dir (e.g. tmpdir: false with the out dir
+      // inside the project dir). fs.cp rejects dest-inside-src before the filter runs,
+      // so copy each top-level entry individually instead.
+      await fs.promises.mkdir(dest, { recursive: true });
+      for (const entry of await fs.promises.readdir(src)) {
+        const srcEntry = path.join(src, entry);
+        const destEntry = path.join(dest, entry);
+        if (await filter(srcEntry, destEntry)) {
+          await fs.promises.cp(srcEntry, destEntry, copyOpts);
+        }
+      }
+    } else {
+      await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, copyOpts);
+    }
     await runHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
+    await sanitizeAppPackageJson(this.opts, this.originalResourcesAppDir);
     if (this.opts.prune) {
       await runHooks(this.opts.afterPrune, this.hookArgsWithOriginalResourcesAppDir);
     }
@@ -255,7 +316,12 @@ export class App {
       warning('prebuiltAsar has been specified, all asar options will be ignored', this.opts.quiet);
     }
 
-    for (const hookName of ['beforeCopy', 'afterCopy', 'afterPrune'] as const) {
+    for (const hookName of [
+      'beforeCopy',
+      'afterCopy',
+      'afterPrune',
+      'sanitizePackageJson',
+    ] as const) {
       if (this.opts[hookName]) {
         throw new Error(`${hookName} is incompatible with prebuiltAsar`);
       }
@@ -365,6 +431,7 @@ export class App {
           // Cross-device link, fallback to copy and delete
           await fs.promises.cp(this.stagingPath, finalPath, {
             force: true,
+            preserveTimestamps: true,
             recursive: true,
             verbatimSymlinks: true,
           });

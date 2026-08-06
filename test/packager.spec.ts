@@ -15,6 +15,7 @@ import {
   parseInfoPlist,
 } from './utils.js';
 import { OfficialArch, OfficialPlatform, Options } from '../src/types.js';
+import { extractFile } from '@electron/asar';
 import { createDownloadOpts, downloadElectronZip } from '../src/download.js';
 import plist, { PlistObject } from 'plist';
 import { filterCFBundleIdentifier, MacApp } from '../src/mac.js';
@@ -177,6 +178,33 @@ describe('packager', () => {
     const paths = await packager(opts);
     expect(paths).toHaveLength(1);
     expect(paths[0]).toBeDirectory();
+  });
+
+  // https://github.com/electron/packager/issues/1679
+  it('can package with tmpdir disabled and the out dir inside the project dir', async ({
+    baseOpts,
+  }) => {
+    const projectDir = path.join(baseOpts.tmpdir as string, 'project');
+    await fs.promises.cp(baseOpts.dir, projectDir, { recursive: true });
+
+    const opts = {
+      ...baseOpts,
+      dir: projectDir,
+      out: path.join(projectDir, 'out'),
+      tmpdir: false,
+      asar: false,
+      platform: 'linux',
+      arch: 'x64',
+    } as const;
+
+    const paths = await packager(opts);
+    expect(paths).toHaveLength(1);
+    expect(paths[0]).toBeDirectory();
+
+    const appDir = path.join(paths[0], 'resources', 'app');
+    expect(path.join(appDir, 'main.js')).toBeFile();
+    // The out dir must not be copied into the packaged app
+    expect(fs.existsSync(path.join(appDir, 'out'))).toBe(false);
   });
 
   it('preserves symlinks with derefSymlinks disabled', async ({ baseOpts }) => {
@@ -477,6 +505,58 @@ describe('packager', () => {
     });
   });
 
+  describe('appVersion', () => {
+    it('writes appVersion into the packaged package.json', async ({ baseOpts }) => {
+      const opts = {
+        ...baseOpts,
+        appVersion: '1.2.3',
+        platform: 'linux',
+        arch: 'x64',
+      } as const;
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const asarPath = path.join(
+        paths[0],
+        generateResourcesPath({ name: opts.name, platform: opts.platform }),
+        'app.asar',
+      );
+      const packageJSON = JSON.parse(extractFile(asarPath, 'package.json').toString('utf8'));
+      expect(packageJSON.version).toEqual('1.2.3');
+
+      // The user's source package.json must never be modified
+      const sourcePackageJSON = JSON.parse(
+        fs.readFileSync(path.join(opts.dir, 'package.json'), 'utf8'),
+      );
+      expect(sourcePackageJSON.version).toEqual('4.99.101');
+    });
+
+    it('writes appVersion into the packaged package.json when asar is disabled', async ({
+      baseOpts,
+    }) => {
+      const opts = {
+        ...baseOpts,
+        appVersion: '5.6.7',
+        asar: false,
+        platform: 'linux',
+        arch: 'x64',
+      } as const;
+
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const packageJSONPath = path.join(
+        paths[0],
+        generateResourcesPath({ name: opts.name, platform: opts.platform }),
+        'app',
+        'package.json',
+      );
+      const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
+      expect(packageJSON.version).toEqual('5.6.7');
+    });
+  });
+
   it('should ignore previously-packaged out dir', async ({ baseOpts }) => {
     const fixture = path.join(__dirname, 'fixtures', 'basic');
     const opts = {
@@ -503,6 +583,49 @@ describe('packager', () => {
       }),
     );
     expect(fs.existsSync(path.join(resourcesPath, 'app', path.basename(opts.out)))).toBe(false);
+  });
+
+  it('should fail with a descriptive error if the out dir is the app dir', async ({ baseOpts }) => {
+    const opts = {
+      ...baseOpts,
+      out: baseOpts.dir,
+    };
+
+    await expect(packager(opts)).rejects.toThrowError(
+      `The out directory (${path.resolve(opts.dir)}) is the same as your app directory. The out directory is automatically excluded from packaging, so nothing would be packaged; choose an out directory outside of your app directory`,
+    );
+  });
+
+  it('should fail with a descriptive error if the out dir contains the main entry point', async ({
+    baseOpts,
+  }) => {
+    const fixture = path.join(__dirname, 'fixtures', 'basic');
+    const appDir = path.join(baseOpts.out, 'app');
+    await fs.promises.cp(fixture, appDir, {
+      dereference: true,
+      filter: (file) => path.basename(file) !== 'node_modules',
+      recursive: true,
+    });
+    const packageJSON = JSON.parse(
+      await fs.promises.readFile(path.join(appDir, 'package.json'), 'utf8'),
+    );
+    packageJSON.main = 'dist/main.js';
+    await fs.promises.writeFile(
+      path.join(appDir, 'package.json'),
+      JSON.stringify(packageJSON, null, 2),
+    );
+    await fs.promises.mkdir(path.join(appDir, 'dist'), { recursive: true });
+    await fs.promises.rename(path.join(appDir, 'main.js'), path.join(appDir, 'dist', 'main.js'));
+
+    const opts = {
+      ...baseOpts,
+      dir: appDir,
+      out: path.join(appDir, 'dist'),
+    };
+
+    await expect(packager(opts)).rejects.toThrowError(
+      `The out directory (${path.join(appDir, 'dist')}) is inside your app directory and contains your app's main entry point (${path.join(appDir, 'dist', 'main.js')}). The out directory is automatically excluded from packaging; choose an out directory outside of your app directory`,
+    );
   });
 
   describe('hooks', () => {
@@ -1185,7 +1308,9 @@ describe('packager', () => {
         expect(infoPlist.ElectronAsarIntegrity).toEqual({
           'Resources/app.asar': {
             algorithm: 'SHA256',
-            hash: 'e60d812babe8808d3a68572e4d55cc1a2bbde470d9926eafa6b7ea7f86a59767',
+            // Changes whenever the default package.json sanitizer changes the
+            // bundled app's contents.
+            hash: '1ef463648455a3760882316029e8516d8b6f9ea9e9d3eb7af0cc66c603ac86c3',
           },
         });
       });

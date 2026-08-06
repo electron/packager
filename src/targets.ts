@@ -35,6 +35,7 @@ const buildVersions = {
   },
   linux: {
     arm64: '>= 1.8.0',
+    armv7l: '<44.0.0-alpha.4',
     ia32: '<19.0.0-beta.1',
     mips64el: '^1.8.2-beta.5',
   },
@@ -44,6 +45,7 @@ const buildVersions = {
   },
   win32: {
     arm64: '>= 6.0.8',
+    ia32: '<44.0.0-alpha.4',
   },
 } as Record<SupportedPlatform, Record<SupportedArch, string>>;
 
