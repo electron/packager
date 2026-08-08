@@ -296,12 +296,19 @@ describe('packager', () => {
       };
 
       const [finalPath] = await packager(opts);
+      // Read the concrete binary under Versions/A rather than through the
+      // bundle's root-level `Electron Framework` symlink: on Windows hosts the
+      // `Versions/Current` link in the extracted bundle is a file-type symlink
+      // that cannot be traversed as a directory, so resolving the root symlink
+      // fails with ENOENT.
       const frameworkPath = path.join(
         finalPath,
         `${opts.name}.app`,
         'Contents',
         'Frameworks',
         'Electron Framework.framework',
+        'Versions',
+        'A',
         'Electron Framework',
       );
       const binary = fs.readFileSync(frameworkPath);
