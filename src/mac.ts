@@ -670,6 +670,22 @@ export class MacApp extends App implements Plists {
       return false;
     }
 
+    // Patching the binary invalidates the ad-hoc signature official Electron
+    // builds ship with, and only codesign (macOS-only) can restore it — Apple
+    // Silicon refuses to launch binaries with an invalid signature. Electron
+    // fails open when the digest slot is unwritten, so skipping the patch here
+    // keeps cross-packaged apps launchable; they just don't get digest
+    // enforcement.
+    if (process.platform !== 'darwin') {
+      warning(
+        `The asar integrity digest is not supported when packaging for macOS on ${process.platform} ` +
+          'because codesign is unavailable to restore the Electron Framework code signature ' +
+          'after embedding the digest. Package on macOS to enable integrity digest enforcement.',
+        this.opts.quiet,
+      );
+      return false;
+    }
+
     // Calculate v1 integrity digest: SHA256 over sorted (key, algorithm, hash) tuples
     // @see https://github.com/electron/electron/blob/2d5597b1b0fa697905380184e26c9f0947e05c5d/shell/common/asar/integrity_digest.mm#L52-L66
     const integrityHash = crypto.createHash('SHA256');
@@ -697,19 +713,6 @@ export class MacApp extends App implements Plists {
    */
   async resetFrameworkAdHocSignature() {
     const frameworkPath = this.frameworkBundlePath;
-
-    if (process.platform !== 'darwin') {
-      if (!this.opts.osxSign) {
-        warning(
-          'The Electron Framework binary was modified to embed the asar integrity digest, ' +
-            'which invalidated its code signature, and codesign is unavailable on ' +
-            `${process.platform} to restore it. The app will not launch on Apple Silicon ` +
-            'until it is re-signed (e.g. via the osxSign option or `codesign --force --sign -`).',
-          this.opts.quiet,
-        );
-      }
-      return;
-    }
 
     debug(`Resetting ad-hoc signature on ${frameworkPath}`);
     try {

@@ -284,6 +284,38 @@ describe('packager', () => {
     },
   );
 
+  describe.runIf(process.platform !== 'darwin')('asar integrity digest (non-darwin host)', () => {
+    it('skips patching the Electron Framework binary so its ad-hoc signature stays valid', async ({
+      baseOpts,
+    }) => {
+      const opts = {
+        ...baseOpts,
+        platform: 'darwin' as OfficialPlatform,
+        arch: 'arm64' as OfficialArch,
+        asar: true,
+      };
+
+      const [finalPath] = await packager(opts);
+      const frameworkPath = path.join(
+        finalPath,
+        `${opts.name}.app`,
+        'Contents',
+        'Frameworks',
+        'Electron Framework.framework',
+        'Electron Framework',
+      );
+      const binary = fs.readFileSync(frameworkPath);
+      const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+
+      const sentinelIndex = binary.indexOf(sentinel);
+      expect(sentinelIndex).not.toBe(-1);
+      // used must stay 0: the digest is skipped off-macOS because codesign
+      // is unavailable to restore the framework signature the patch would
+      // invalidate, and an unwritten slot fails open at runtime.
+      expect(binary.readUInt8(sentinelIndex + sentinel.length)).toBe(0);
+    });
+  });
+
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
     it('can package with extraResource string', async ({ baseOpts }) => {
       const extra1Base = 'data1.txt';
