@@ -8,6 +8,7 @@ import { generateFinalBasename } from '../src/common.js';
 import { getHostArch } from '@electron/get';
 import { describe, expect, vi } from 'vitest';
 import {
+  computeExpectedDigest,
   generateNamePath,
   generateResourcesPath,
   it,
@@ -1407,13 +1408,7 @@ describe('packager', () => {
           string,
           { algorithm: string; hash: string }
         >;
-        const expectedHash = crypto.createHash('SHA256');
-        for (const key of Object.keys(integrity).sort()) {
-          expectedHash.update(key);
-          expectedHash.update(integrity[key].algorithm);
-          expectedHash.update(integrity[key].hash);
-        }
-        const expectedDigest = expectedHash.digest();
+        const expectedDigest = computeExpectedDigest(integrity);
         const storedDigest = binary.subarray(base + 2, base + 2 + 32);
         expect(storedDigest).toEqual(expectedDigest);
       });
@@ -1468,13 +1463,7 @@ describe('packager', () => {
           string,
           { algorithm: string; hash: string }
         >;
-        const expectedHash = crypto.createHash('SHA256');
-        for (const key of Object.keys(integrity).sort()) {
-          expectedHash.update(key);
-          expectedHash.update(integrity[key].algorithm);
-          expectedHash.update(integrity[key].hash);
-        }
-        const expectedDigest = expectedHash.digest();
+        const expectedDigest = computeExpectedDigest(integrity);
 
         // Zero out the digest area in the binary to simulate a fresh universal merge
         const binary = fs.readFileSync(frameworkPath);
@@ -1536,12 +1525,13 @@ describe('packager', () => {
           '',
         );
         macApp.cachedStagingPath = baseOpts.out;
-        macApp.asarIntegrity = {
+        const integrity = {
           'Resources/app.asar': {
             algorithm: 'SHA256',
             hash: 'a'.repeat(64),
           },
         };
+        macApp.asarIntegrity = integrity;
 
         await macApp.setIntegrityDigest();
 
@@ -1549,12 +1539,7 @@ describe('packager', () => {
         const base = sentinelOffset + sentinel.length;
         expect(result.readUInt8(base)).toBe(1); // used = true
         expect(result.readUInt8(base + 1)).toBe(1); // version = 1
-
-        const expectedHash = crypto.createHash('SHA256');
-        expectedHash.update('Resources/app.asar');
-        expectedHash.update('SHA256');
-        expectedHash.update('a'.repeat(64));
-        expect(result.subarray(base + 2, base + 34)).toEqual(expectedHash.digest());
+        expect(result.subarray(base + 2, base + 34)).toEqual(computeExpectedDigest(integrity));
       });
 
       it('writes digest to every sentinel in a multi-slice binary', async ({ baseOpts }) => {
@@ -1587,21 +1572,18 @@ describe('packager', () => {
           '',
         );
         macApp.cachedStagingPath = baseOpts.out;
-        macApp.asarIntegrity = {
+        const integrity = {
           'Resources/app.asar': {
             algorithm: 'SHA256',
             hash: 'b'.repeat(64),
           },
         };
+        macApp.asarIntegrity = integrity;
 
         await macApp.setIntegrityDigest();
 
         const result = fs.readFileSync(frameworkPath);
-        const expectedHash = crypto.createHash('SHA256');
-        expectedHash.update('Resources/app.asar');
-        expectedHash.update('SHA256');
-        expectedHash.update('b'.repeat(64));
-        const expectedDigest = expectedHash.digest();
+        const expectedDigest = computeExpectedDigest(integrity);
 
         for (const off of offsets) {
           const base = off + sentinel.length;

@@ -97,24 +97,14 @@ async function writeIntegrityDigest(
     debug(`Found ${positions.length} integrity digest sentinel(s) in Electron Framework binary`);
 
     // Validate every slot has room before touching the file, so a failure
-    // on one slice doesn't leave the binary half-modified.
-    const writePositions: number[] = [];
+    // on one slice doesn't leave the binary half-modified: a partial patch
+    // would make one arch slice enforce the digest while another fails open.
     for (const sentinelIndex of positions) {
-      const base = sentinelIndex + sentinel.length;
-      if (base + PAYLOAD_LEN > size) {
-        warning(
-          `Insufficient space after integrity digest sentinel at offset ${sentinelIndex} in Electron Framework binary. The binary may be corrupted or incompatible.`,
-          quiet,
+      if (sentinelIndex + sentinel.length + PAYLOAD_LEN > size) {
+        throw new Error(
+          `Insufficient space after integrity digest sentinel at offset ${sentinelIndex} in Electron Framework binary. The binary may be corrupted or incompatible; the integrity digest was not written.`,
         );
-        continue;
       }
-      writePositions.push(base);
-    }
-
-    if (writePositions.length === 0) {
-      throw new Error(
-        'Found integrity digest sentinel(s) in Electron Framework binary but could not write to any of them. The binary may be corrupted.',
-      );
     }
 
     const payload = Buffer.allocUnsafe(PAYLOAD_LEN);
@@ -123,7 +113,8 @@ async function writeIntegrityDigest(
     digest.copy(payload, 2); // 32-byte SHA256 digest
 
     try {
-      for (const base of writePositions) {
+      for (const sentinelIndex of positions) {
+        const base = sentinelIndex + sentinel.length;
         await handle.write(payload, 0, payload.length, base);
         debug(`Wrote integrity digest to Electron Framework binary at offset ${base}`);
       }
@@ -586,13 +577,12 @@ export class MacApp extends App implements Plists {
    */
   static INTEGRITY_DIGEST_SENTINEL = 'AGbevlPCksUGKNL8TSn7wGmJEuJsXb2A';
 
+  /**
+   * Resolves inside the renamed app bundle, so it is only valid after
+   * {@link MacApp#renameAppAndHelpers} has run.
+   */
   private get frameworkBundlePath() {
-    return path.join(
-      this.renamedAppPath ?? this.electronAppPath,
-      'Contents',
-      'Frameworks',
-      'Electron Framework.framework',
-    );
+    return path.join(this.renamedAppPath, 'Contents', 'Frameworks', 'Electron Framework.framework');
   }
 
   /**
@@ -618,6 +608,8 @@ export class MacApp extends App implements Plists {
    * Returns whether the binary was actually modified, so callers know the
    * framework's ad-hoc code signature has been invalidated and needs
    * re-signing (see {@link MacApp#resetFrameworkAdHocSignature}).
+   * Must run after {@link MacApp#renameAppAndHelpers}: paths are resolved
+   * inside the renamed app bundle.
    */
   async setIntegrityDigest(): Promise<boolean> {
     if (!this.opts.electronVersion || !semver.valid(this.opts.electronVersion)) {
@@ -633,7 +625,26 @@ export class MacApp extends App implements Plists {
       return false;
     }
 
-    const appPath = this.renamedAppPath ?? this.electronAppPath;
+    // Patching the binary invalidates the ad-hoc signature official Electron
+    // builds ship with, and only codesign (macOS-only) can restore it — Apple
+    // Silicon refuses to launch binaries with an invalid signature. Electron
+    // fails open when the digest slot is unwritten, so skipping the patch here
+    // keeps cross-packaged apps launchable; they just don't get digest
+    // enforcement. Checked before any filesystem work: on Windows the
+    // framework path below isn't even resolvable (its Versions/Current
+    // symlink can't be traversed), which would otherwise surface as a
+    // misleading "binary not found" warning.
+    if (process.platform !== 'darwin') {
+      warning(
+        `The asar integrity digest is not supported when packaging for macOS on ${process.platform} ` +
+          'because codesign is unavailable to restore the Electron Framework code signature ' +
+          'after embedding the digest. Package on macOS to enable integrity digest enforcement.',
+        this.opts.quiet,
+      );
+      return false;
+    }
+
+    const appPath = this.renamedAppPath;
     let integrity = this.asarIntegrity;
 
     // For universal builds, asarIntegrity isn't set on the shell App instance.
@@ -665,22 +676,6 @@ export class MacApp extends App implements Plists {
     if (!fs.existsSync(frameworkPath)) {
       warning(
         `Electron Framework binary not found at ${frameworkPath}. The asar integrity digest will not be written, which may cause runtime failures.`,
-        this.opts.quiet,
-      );
-      return false;
-    }
-
-    // Patching the binary invalidates the ad-hoc signature official Electron
-    // builds ship with, and only codesign (macOS-only) can restore it — Apple
-    // Silicon refuses to launch binaries with an invalid signature. Electron
-    // fails open when the digest slot is unwritten, so skipping the patch here
-    // keeps cross-packaged apps launchable; they just don't get digest
-    // enforcement.
-    if (process.platform !== 'darwin') {
-      warning(
-        `The asar integrity digest is not supported when packaging for macOS on ${process.platform} ` +
-          'because codesign is unavailable to restore the Electron Framework code signature ' +
-          'after embedding the digest. Package on macOS to enable integrity digest enforcement.',
         this.opts.quiet,
       );
       return false;
