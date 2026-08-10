@@ -133,13 +133,22 @@ export type FinalizePackageTargetsHookFunction = (
   targets: TargetDefinition[],
 ) => void | Promise<void>;
 
-/** See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
- * @interface
+/**
+ * See the documentation for [`@electron/osx-sign`](https://npm.im/@electron/osx-sign#opts) for details.
  */
-export type PackagerOsxSignOptions = Omit<
+export interface PackagerOsxSignOptions extends Omit<
   OSXSignOptions,
   'app' | 'binaries' | 'platform' | 'version'
->;
+> {
+  /**
+   * Whether to keep packaging (and print a warning) when signing fails. Set this to `false` to
+   * make a signing failure fail the packaging run instead. Packager handles this option itself,
+   * `@electron/osx-sign` has no equivalent.
+   *
+   * @defaultValue `true`
+   */
+  continueOnError?: boolean;
+}
 
 /**
  * See the documentation for [`@electron/universal`](https://github.com/electron/universal)
@@ -177,6 +186,14 @@ export interface MacOSProtocol {
  * for details.
  */
 export interface PackagerWindowsSignOptions extends Omit<WindowsSignOptions, 'appDirectory'> {
+  /**
+   * Whether to keep packaging (and print a warning) when signing fails. Unlike
+   * {@link PackagerOsxSignOptions.continueOnError}, a signing failure fails the packaging run unless
+   * this is set to `true`. Packager handles this option itself, `@electron/windows-sign` has no
+   * equivalent.
+   *
+   * @defaultValue `false`
+   */
   continueOnError?: boolean;
 }
 
