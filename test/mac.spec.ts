@@ -1,4 +1,5 @@
 import { createNotarizeOpts, createSignOpts, filterCFBundleIdentifier } from '../src/mac.js';
+import type { PackagerOsxSignOptions } from '../src/types.js';
 import { describe, it, expect } from 'vitest';
 
 describe('createNotarizeOpts', () => {
@@ -57,9 +58,9 @@ describe('createSignOpts', () => {
   });
 
   it('passes in continueOnError=false', () => {
-    const args: Partial<ReturnType<typeof createSignOpts>> = {
-      continueOnError: false,
-    };
+    // Typed as the public option type on purpose: continueOnError has to be
+    // declared there, or users can't set it without a cast.
+    const args: PackagerOsxSignOptions = { continueOnError: false };
     const signOpts = createSignOpts(args, 'darwin', 'out', 'version');
     expect(signOpts.continueOnError).toBe(false);
   });
