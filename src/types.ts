@@ -331,6 +331,26 @@ export interface Options {
    */
   asar?: boolean | AsarOptions;
   /**
+   * Whether to embed the asar integrity digest into the Electron Framework binary of macOS
+   * (`darwin`/`mas`) apps, enabling Electron's tamper detection for the `ElectronAsarIntegrity`
+   * `Info.plist` entries when the `embeddedAsarIntegrityValidation` fuse is enabled. Only
+   * applies when packaging on a macOS host with the {@link asar} option set, for Electron
+   * ≥ 41.0.0. Embedding the digest re-signs the Electron Framework with an ad-hoc signature
+   * (the digest patch invalidates the one Electron ships).
+   *
+   * Set to `false` to skip embedding the digest, leaving the Electron Framework untouched.
+   * The digest slot then fails open at runtime: apps remain launchable and per-file asar
+   * integrity checks still apply, but the `ElectronAsarIntegrity` plist entries themselves are
+   * not tamper-protected. Disable this if you modify `app.asar` after packaging (and manage
+   * integrity yourself, e.g. via `@electron/fuses`), or if you merge separately-packaged
+   * `x64`/`arm64` outputs with `@electron/universal` manually — the re-signed frameworks
+   * differ per arch in ways `makeUniversalApp` rejects (prefer `arch: 'universal'`, which
+   * handles the digest correctly).
+   *
+   * Defaults to `true`.
+   */
+  asarIntegrityDigest?: boolean;
+  /**
    * Functions to be called before your app directory is packaged into an .asar file.
    *
    * **Note**: `beforeAsar` will only be called if the {@link asar} option is set.

@@ -37,6 +37,15 @@ asar               whether to package the source code within your app into an ar
                      regex .match this string
                    - unpackDir: unpacks the dir to the app.asar.unpacked directory whose names glob
                      pattern or exactly match this string. It's relative to the <sourcedir>.
+asar-integrity-digest
+                   whether to embed the asar integrity digest into the Electron Framework binary
+                   of macOS apps (and re-sign it ad-hoc), enabling tamper detection for the
+                   ElectronAsarIntegrity Info.plist entries when the embeddedAsarIntegrityValidation
+                   fuse is enabled. Only applies when packaging on a macOS host with --asar, for
+                   Electron >= 41.0.0. Defaults to `true`; pass --no-asar-integrity-digest to leave
+                   the Electron Framework untouched, e.g. when modifying app.asar after packaging
+                   or when merging separately-packaged x64/arm64 outputs with @electron/universal
+                   manually
 build-version      build version to set for the app
 download           a list of sub-options to pass to @electron/get. They are specified via dot
                    notation, e.g., --download.cacheRoot=/tmp/cache

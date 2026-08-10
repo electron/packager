@@ -588,13 +588,18 @@ export class MacApp extends App implements Plists {
   /**
    * Writes the asar integrity digest into the Electron Framework binary and,
    * if the binary was modified, restores a valid ad-hoc signature on it.
-   * Skipped for the intermediate slices of a universal build: their
-   * frameworks are replaced wholesale when the slices are merged, and the
-   * bundle re-sign would add a per-arch `_CodeSignature/CodeResources` file
-   * that makes the slices differ in ways `@electron/universal` rejects. The
-   * merged app gets its own digest + re-sign instead.
+   * Skipped when the user opts out via `asarIntegrityDigest: false`, and for
+   * the intermediate slices of a universal build: their frameworks are
+   * replaced wholesale when the slices are merged, and the bundle re-sign
+   * would add a per-arch `_CodeSignature/CodeResources` file that makes the
+   * slices differ in ways `@electron/universal` rejects. The merged app gets
+   * its own digest + re-sign instead.
    */
   async applyIntegrityDigest() {
+    if (this.opts.asarIntegrityDigest === false) {
+      debug('asarIntegrityDigest is disabled, skipping integrity digest');
+      return;
+    }
     if (this.opts.universalSliceBuild) {
       return;
     }

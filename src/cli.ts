@@ -18,7 +18,16 @@ async function printUsageAndExit(isError: boolean) {
 
 export function parseArgs(argv: string[]) {
   const args = yargs(argv, {
-    boolean: ['all', 'deref-symlinks', 'junk', 'overwrite', 'prune', 'quiet', 'tmpdir'],
+    boolean: [
+      'all',
+      'asar-integrity-digest',
+      'deref-symlinks',
+      'junk',
+      'overwrite',
+      'prune',
+      'quiet',
+      'tmpdir',
+    ],
     default: {
       asar: true,
       junk: true,

@@ -38,6 +38,15 @@ describe('parseArgs', () => {
     expect(args2.asar).toBe(true);
   });
 
+  it('populates opts.asarIntegrityDigest', () => {
+    const emptyArgs = parseArgs([]);
+    expect(emptyArgs.asarIntegrityDigest).toBeUndefined();
+    const optOutArgs = parseArgs(['--no-asar-integrity-digest']);
+    expect(optOutArgs.asarIntegrityDigest).toBe(false);
+    const optInArgs = parseArgs(['--asar-integrity-digest']);
+    expect(optInArgs.asarIntegrityDigest).toBe(true);
+  });
+
   it('populates opts.osxSign', () => {
     const args = parseArgs(['--osx-sign=true']);
     expect(args.osxSign).toBe(true);

@@ -324,6 +324,25 @@ describe('packager', () => {
     });
   });
 
+  describe('asar integrity digest opt-out', () => {
+    it('short-circuits before any digest or re-sign work when asarIntegrityDigest is false', async ({
+      baseOpts,
+    }) => {
+      const macApp = new MacApp(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { ...baseOpts, platform: 'darwin', arch: 'x64', asarIntegrityDigest: false } as any,
+        '',
+      );
+      const setDigest = vi.spyOn(macApp, 'setIntegrityDigest');
+      const resetSignature = vi.spyOn(macApp, 'resetFrameworkAdHocSignature');
+
+      await macApp.applyIntegrityDigest();
+
+      expect(setDigest).not.toHaveBeenCalled();
+      expect(resetSignature).not.toHaveBeenCalled();
+    });
+  });
+
   describe.runIf(process.platform !== 'win32')('extraResource', () => {
     it('can package with extraResource string', async ({ baseOpts }) => {
       const extra1Base = 'data1.txt';
@@ -1435,6 +1454,38 @@ describe('packager', () => {
         expect(sentinelIndex).not.toBe(-1);
         const base = sentinelIndex + sentinel.length;
         expect(binary.readUInt8(base)).toBe(0); // used = false
+      });
+
+      it('does not patch or re-sign the framework when asarIntegrityDigest is false', async ({
+        baseOpts,
+      }) => {
+        const opts = {
+          ...baseOpts,
+          asar: true,
+          asarIntegrityDigest: false,
+        };
+
+        const [finalPath] = await packager(opts);
+        const frameworkDir = path.join(
+          finalPath,
+          `${opts.name}.app`,
+          'Contents',
+          'Frameworks',
+          'Electron Framework.framework',
+        );
+        const binary = fs.readFileSync(path.join(frameworkDir, 'Electron Framework'));
+        const sentinel = Buffer.from(MacApp.INTEGRITY_DIGEST_SENTINEL);
+
+        const sentinelIndex = binary.indexOf(sentinel);
+        expect(sentinelIndex).not.toBe(-1);
+        // The slot stays unwritten, so Electron fails open at runtime.
+        expect(binary.readUInt8(sentinelIndex + sentinel.length)).toBe(0); // used = false
+        // The framework is not re-signed, so no per-arch resource seal is
+        // added that would make separately-packaged arch outputs differ in
+        // ways a manual @electron/universal merge rejects.
+        expect(fs.existsSync(path.join(frameworkDir, 'Versions', 'A', '_CodeSignature'))).toBe(
+          false,
+        );
       });
 
       it('writes digest from Info.plist fallback when asarIntegrity is not set on the instance', async ({
