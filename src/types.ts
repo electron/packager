@@ -331,21 +331,32 @@ export interface Options {
    */
   asar?: boolean | AsarOptions;
   /**
-   * Whether to embed the asar integrity digest into the Electron Framework binary of macOS
-   * (`darwin`/`mas`) apps, enabling Electron's tamper detection for the `ElectronAsarIntegrity`
-   * `Info.plist` entries when the `embeddedAsarIntegrityValidation` fuse is enabled. Only
-   * applies when packaging on a macOS host with the {@link asar} option set, for Electron
-   * ≥ 41.0.0. Embedding the digest re-signs the Electron Framework with an ad-hoc signature
-   * (the digest patch invalidates the one Electron ships).
+   * Whether to embed the [asar integrity](https://www.electronjs.org/docs/latest/tutorial/asar-integrity)
+   * digest into the Electron Framework binary of macOS apps. With the digest embedded, apps
+   * that enable the `EnableEmbeddedAsarIntegrityValidation` fuse refuse to launch if the
+   * `ElectronAsarIntegrity` entries in `Info.plist` are tampered with. Embedding modifies the
+   * Electron Framework binary, so the framework is re-signed with an ad-hoc signature
+   * afterwards (`osxSign` still re-signs the whole app on top of this).
    *
-   * Set to `false` to skip embedding the digest, leaving the Electron Framework untouched.
-   * The digest slot then fails open at runtime: apps remain launchable and per-file asar
-   * integrity checks still apply, but the `ElectronAsarIntegrity` plist entries themselves are
-   * not tamper-protected. Disable this if you modify `app.asar` after packaging (and manage
-   * integrity yourself, e.g. via `@electron/fuses`), or if you merge separately-packaged
-   * `x64`/`arm64` outputs with `@electron/universal` manually — the re-signed frameworks
-   * differ per arch in ways `makeUniversalApp` rejects (prefer `arch: 'universal'`, which
-   * handles the digest correctly).
+   * The digest is only embedded when all of the following are true, and this option is a no-op
+   * otherwise:
+   * - the {@link asar} option is enabled
+   * - the {@link platform} is `darwin` or `mas`
+   * - the {@link electronVersion} is 41.0.0 or higher
+   * - the app is packaged on a macOS host
+   *
+   * Set this to `false` if:
+   * - you modify `app.asar` (or its `Info.plist` entries) after packaging — a stale embedded
+   *   digest would make the packaged app fail at launch once the fuse is enabled. Manage the
+   *   digest yourself instead, e.g. with `@electron/fuses`.
+   * - you package `x64` and `arm64` apps separately and merge them yourself with
+   *   `@electron/universal` — the re-sign adds a per-arch `_CodeSignature/CodeResources` to
+   *   the framework, and `makeUniversalApp` rejects inputs that differ that way. Prefer
+   *   `arch: 'universal'`, which embeds the digest into the merged app correctly.
+   *
+   * When set to `false`, the Electron Framework is left exactly as Electron ships it. Apps
+   * remain launchable and per-file asar integrity validation still applies; only the
+   * `ElectronAsarIntegrity` plist entries themselves are left unprotected against tampering.
    *
    * Defaults to `true`.
    */
