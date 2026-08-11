@@ -348,6 +348,37 @@ export interface Options {
    */
   asar?: boolean | AsarOptions;
   /**
+   * Whether to embed the [asar integrity](https://www.electronjs.org/docs/latest/tutorial/asar-integrity)
+   * digest into the Electron Framework binary of macOS apps. With the digest embedded, apps
+   * that enable the `EnableEmbeddedAsarIntegrityValidation` fuse refuse to launch if the
+   * `ElectronAsarIntegrity` entries in `Info.plist` are tampered with. Embedding modifies the
+   * Electron Framework binary, so the framework is re-signed with an ad-hoc signature
+   * afterwards (`osxSign` still re-signs the whole app on top of this).
+   *
+   * The digest is only embedded when all of the following are true, and this option is a no-op
+   * otherwise:
+   * - the {@link asar} option is enabled
+   * - the {@link platform} is `darwin` or `mas`
+   * - the {@link electronVersion} is 41.0.0 or higher
+   * - the app is packaged on a macOS host
+   *
+   * Set this to `false` if:
+   * - you modify `app.asar` (or its `Info.plist` entries) after packaging — a stale embedded
+   *   digest would make the packaged app fail at launch once the fuse is enabled. Manage the
+   *   digest yourself instead, e.g. with `@electron/fuses`.
+   * - you package `x64` and `arm64` apps separately and merge them yourself with
+   *   `@electron/universal` — the re-sign adds a per-arch `_CodeSignature/CodeResources` to
+   *   the framework, and `makeUniversalApp` rejects inputs that differ that way. Prefer
+   *   `arch: 'universal'`, which embeds the digest into the merged app correctly.
+   *
+   * When set to `false`, the Electron Framework is left exactly as Electron ships it. Apps
+   * remain launchable and per-file asar integrity validation still applies; only the
+   * `ElectronAsarIntegrity` plist entries themselves are left unprotected against tampering.
+   *
+   * Defaults to `true`.
+   */
+  asarIntegrityDigest?: boolean;
+  /**
    * Functions to be called before your app directory is packaged into an .asar file.
    *
    * **Note**: `beforeAsar` will only be called if the {@link asar} option is set.
@@ -733,6 +764,8 @@ export interface ProcessedOptions extends Options {
 export interface ProcessedOptionsWithSinglePlatformArch extends ProcessedOptions {
   arch: OfficialArch;
   platform: OfficialPlatform;
+  /** Set for the intermediate x64/arm64 builds that get merged into a universal package. */
+  universalSliceBuild?: boolean;
 }
 
 /**

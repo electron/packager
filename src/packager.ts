@@ -239,6 +239,9 @@ export class Packager {
       arch: downloadOpts.arch,
       platform: downloadOpts.platform,
       electronVersion: downloadOpts.version,
+      // Internal flag, only packageUniversalMac may set it (on its slice builds,
+      // which don't pass through here) — strip it if it leaked in via user opts.
+      universalSliceBuild: undefined,
     };
 
     if (isPlatformMac(comboOpts.platform) && comboOpts.arch === 'universal') {

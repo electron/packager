@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -53,6 +54,22 @@ export function parseHelperInfoPlist(
     'Info.plist',
   );
   return plist.parse(fs.readFileSync(plistPath, 'utf8')) as PlistObject;
+}
+
+/**
+ * Computes the expected v1 asar integrity digest: SHA256 over sorted
+ * (key, algorithm, hash) tuples, mirroring `MacApp.setIntegrityDigest`.
+ */
+export function computeExpectedDigest(
+  integrity: Record<string, { algorithm: string; hash: string }>,
+): Buffer {
+  const hash = crypto.createHash('SHA256');
+  for (const key of Object.keys(integrity).sort()) {
+    hash.update(key);
+    hash.update(integrity[key].algorithm);
+    hash.update(integrity[key].hash);
+  }
+  return hash.digest();
 }
 
 interface ItContext {
