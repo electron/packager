@@ -108,6 +108,33 @@ describe('userPathFilter', () => {
     expect(fs.existsSync(path.join(targetDir, 'ignore', 'this.txt'))).toBe(false);
   });
 
+  it.runIf(process.platform === 'win32')(
+    'ignores the out dir when only the drive letter case differs',
+    async () => {
+      const appDir = path.join(tempDir, 'app');
+      const outDir = path.join(appDir, 'out');
+      await fs.promises.mkdir(outDir, { recursive: true });
+      await fs.promises.writeFile(path.join(appDir, 'main.js'), 'console.log(1)');
+      await fs.promises.writeFile(path.join(outDir, 'previous-build.txt'), 'previous build');
+
+      // The same directory, but with the drive letter in lower case, which is what
+      // path.resolve() hands back when that is how the user typed --out.
+      const outWithLowerCaseDrive = outDir[0].toLowerCase() + outDir.slice(1);
+      const opts = { name: 'test', dir: appDir, out: outWithLowerCaseDrive } as Options;
+
+      populateIgnoredPaths(opts);
+      const targetDir = path.join(tempDir, 'result');
+      await fs.promises.cp(appDir, targetDir, {
+        dereference: false,
+        filter: userPathFilter(opts as ProcessedOptionsWithSinglePlatformArch),
+        recursive: true,
+      });
+
+      expect(fs.existsSync(path.join(targetDir, 'main.js'))).toBe(true);
+      expect(fs.existsSync(path.join(targetDir, 'out', 'previous-build.txt'))).toBe(false);
+    },
+  );
+
   it('only ignores files within the app directory', async () => {
     const opts = {
       name: 'test',
@@ -159,4 +186,20 @@ describe('generateIgnoredOutDirs', () => {
     const relativeIgnores = ignores.map((ignore) => path.relative(process.cwd(), ignore));
     expect(relativeIgnores).toMatchSnapshot();
   });
+
+  it.runIf(process.platform === 'win32')(
+    'treats an out dir that is the working directory as such when the drive letter case differs',
+    () => {
+      const cwd = process.cwd();
+      const optsForCwd = { name: 'test', out: cwd } as ProcessedOptionsWithSinglePlatformArch;
+      const optsForLowerCaseDrive = {
+        name: 'test',
+        out: cwd[0].toLowerCase() + cwd.slice(1),
+      } as ProcessedOptionsWithSinglePlatformArch;
+
+      expect(generateIgnoredOutDirs(optsForLowerCaseDrive)).toEqual(
+        generateIgnoredOutDirs(optsForCwd),
+      );
+    },
+  );
 });
