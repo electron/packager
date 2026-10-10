@@ -219,10 +219,16 @@ export class App {
     await runHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
     const filter = userPathFilter(this.opts)!;
+    const dereference =
+      typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true;
     const copyOpts = {
       recursive: true,
       filter,
-      dereference: typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true,
+      dereference,
+      // Without this, fs.cp rewrites relative symlink targets as absolute paths into the
+      // source dir, which break once the packaged app is moved to another machine.
+      // fs.cp throws if both options are true.
+      verbatimSymlinks: !dereference,
     };
 
     const src = path.resolve(this.opts.dir);
