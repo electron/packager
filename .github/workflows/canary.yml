@@ -28,6 +28,7 @@ jobs:
         with:
           # electron/minimal-repro doesn't have a .nvmrc file
           node-version: lts/*
+          check-latest: true
           cache: 'npm'
           cache-dependency-path: minimal-repro/package-lock.json
       - name: Replace electron with electron-nightly
