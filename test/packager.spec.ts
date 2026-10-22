@@ -230,6 +230,30 @@ describe('packager', () => {
     await fs.promises.rm(dest, { force: true });
   });
 
+  it('preserves relative symlink targets with derefSymlinks disabled', async ({ baseOpts }) => {
+    const opts = {
+      ...baseOpts,
+      derefSymlinks: false,
+      platform: 'linux',
+      arch: 'x64',
+      asar: false,
+    } as const;
+
+    const dest = path.join(opts.dir, 'main-relative-link.js');
+    await fs.promises.symlink('main.js', dest);
+
+    try {
+      const paths = await packager(opts);
+      expect(paths).toHaveLength(1);
+
+      const destLink = path.join(paths[0], 'resources', 'app', 'main-relative-link.js');
+      expect(destLink).toBeSymlink();
+      expect(await fs.promises.readlink(destLink)).toBe('main.js');
+    } finally {
+      await fs.promises.rm(dest, { force: true });
+    }
+  });
+
   // FIXME: This flakes with ENOTEMPTY: directory not empty
   it.runIf(process.platform === 'darwin').skip(
     'can package for all target platforms at once',
