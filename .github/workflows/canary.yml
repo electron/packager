@@ -32,13 +32,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: minimal-repro/package-lock.json
       - name: Replace electron with electron-nightly
-        run: |
+        run: | # zizmor: ignore[adhoc-packages]
           cd minimal-repro
           npm uninstall --save-dev electron
           npm install --save-dev electron-nightly@latest
         shell: bash
       - name: Install Electron Packager
-        run: |
+        run: | # zizmor: ignore[adhoc-packages]
           cd minimal-repro
           npm install --save-dev @electron/packager@latest
         shell: bash
