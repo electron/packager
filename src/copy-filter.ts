@@ -49,10 +49,13 @@ export function populateIgnoredPaths(
 }
 
 export function generateIgnoredOutDirs(opts: ProcessedOptionsWithSinglePlatformArch): string[] {
+  // `path.resolve` preserves the case of whatever was passed to `--out`, so comparing the result
+  // against `process.cwd()` as a string misses the case where they name the same directory but
+  // are spelled differently. `path.relative` is case-insensitive on Windows.
   const normalizedOut = opts.out ? path.resolve(opts.out) : null;
   const ignoredOutDirs: string[] = [];
 
-  if (normalizedOut === null || normalizedOut === process.cwd()) {
+  if (normalizedOut === null || path.relative(normalizedOut, process.cwd()) === '') {
     for (const [platform, archs] of Object.entries(officialPlatformArchCombos)) {
       for (const arch of archs) {
         const basenameOpts = {
@@ -96,7 +99,11 @@ export function userPathFilter(
   return async function filter(file) {
     const fullPath = path.resolve(file);
 
-    if (ignoredOutDirs.includes(fullPath)) {
+    // Compare with `path.relative` rather than string equality: `path.resolve` preserves the
+    // case of whatever the user passed to `--out` (including the drive letter), while the paths
+    // handed to this filter come from walking `opts.dir`. On Windows the same directory can
+    // therefore arrive here with a different case, and `path.relative` is case-insensitive there.
+    if (ignoredOutDirs.some((outDir) => path.relative(outDir, fullPath) === '')) {
       return false;
     }
 
