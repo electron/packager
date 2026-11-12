@@ -16,7 +16,7 @@
   },
   "types": "./dist/index.d.ts",
   "bin": {
-    "electron-packager": "./bin/electron-packager.mjs"
+    "electron-packager": "bin/electron-packager.mjs"
   },
   "repository": {
     "type": "git",
