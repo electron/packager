@@ -106,7 +106,7 @@ __metadata:
     vitest: "npm:^5.0.5"
     yargs-parser: "npm:^22.0.0"
   bin:
-    electron-packager: ./bin/electron-packager.mjs
+    electron-packager: bin/electron-packager.mjs
   languageName: unknown
   linkType: soft
 
