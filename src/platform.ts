@@ -218,11 +218,36 @@ export class App {
   async copyTemplate() {
     await runHooks(this.opts.beforeCopy, this.hookArgsWithOriginalResourcesAppDir);
 
-    const filter = userPathFilter(this.opts)!;
+    const userFilter = userPathFilter(this.opts)!;
+    const dereference =
+      typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true;
+    // On Windows, fs.symlink() without an explicit type picks 'file' or 'dir' by stat-ing
+    // the target relative to the new link. With verbatimSymlinks, fs.cp can create a
+    // relative link before its target directory has been copied, which silently yields a
+    // file link that Windows can't traverse. Skip symlinks during the copy and recreate
+    // them afterwards with the type of their target in the source dir.
+    const deferredSymlinks: [string, string][] = [];
+    const filter =
+      process.platform === 'win32' && !dereference
+        ? async (src: string, dest: string) => {
+            if (!(await userFilter(src, dest))) {
+              return false;
+            }
+            if ((await fs.promises.lstat(src)).isSymbolicLink()) {
+              deferredSymlinks.push([src, dest]);
+              return false;
+            }
+            return true;
+          }
+        : userFilter;
     const copyOpts = {
       recursive: true,
       filter,
-      dereference: typeof this.opts.derefSymlinks === 'boolean' ? this.opts.derefSymlinks : true,
+      dereference,
+      // Without this, fs.cp rewrites relative symlink targets as absolute paths into the
+      // source dir, which break once the packaged app is moved to another machine.
+      // fs.cp throws if both options are true.
+      verbatimSymlinks: !dereference,
     };
 
     const src = path.resolve(this.opts.dir);
@@ -247,6 +272,14 @@ export class App {
       }
     } else {
       await fs.promises.cp(this.opts.dir, this.originalResourcesAppDir, copyOpts);
+    }
+    for (const [srcLink, destLink] of deferredSymlinks) {
+      const target = await fs.promises.readlink(srcLink);
+      const isDir = await fs.promises.stat(srcLink).then(
+        (stat) => stat.isDirectory(),
+        () => false,
+      );
+      await fs.promises.symlink(target, destLink, isDir ? 'dir' : 'file');
     }
     await runHooks(this.opts.afterCopy, this.hookArgsWithOriginalResourcesAppDir);
     await sanitizeAppPackageJson(this.opts, this.originalResourcesAppDir);
